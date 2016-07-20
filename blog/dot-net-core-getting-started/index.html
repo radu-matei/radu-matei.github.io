@@ -1,0 +1,997 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>Getting Started with .NET Core and VS Code</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.16" />
+        
+
+
+        
+            <meta name="author" content="Radu Matei">
+        
+        
+            
+                <meta name="description" content="Radu Matei - Microsoft Technical Evangelist, Microsoft Student Partner, Computer Science Student">
+            
+        
+
+        
+
+  <meta name="twitter:card" content="summary"/>
+
+
+
+<meta name="twitter:title" content="Getting Started with .NET Core and VS Code"/>
+<meta name="twitter:description" content="Table of Contents Getting started with .NET Core Installing .NET Core Building a .NET Core application using the command line interface Installing Visual Studio Code Running in Visual Studio Code Debugging in Visual Studio Code Adding classes and navigating through code Conclusion Getting started with .NET Core In the previous article, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code."/>
+<meta name="twitter:site" content="@Matei_Radu"/>
+
+
+        <meta property="og:title" content="Getting Started with .NET Core and VS Code" />
+<meta property="og:description" content="Table of Contents Getting started with .NET Core Installing .NET Core Building a .NET Core application using the command line interface Installing Visual Studio Code Running in Visual Studio Code Debugging in Visual Studio Code Adding classes and navigating through code Conclusion Getting started with .NET Core In the previous article, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://radu-matei.github.io/blog/dot-net-core-getting-started/" />
+
+
+<meta property="og:updated_time" content="2016-07-17T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+        
+<meta itemprop="name" content="Getting Started with .NET Core and VS Code">
+<meta itemprop="description" content="Table of Contents Getting started with .NET Core Installing .NET Core Building a .NET Core application using the command line interface Installing Visual Studio Code Running in Visual Studio Code Debugging in Visual Studio Code Adding classes and navigating through code Conclusion Getting started with .NET Core In the previous article, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.">
+
+
+<meta itemprop="dateModified" content="2016-07-17T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1062">
+
+
+
+<meta itemprop="keywords" content="aspnet-core,dotnet-core," />
+
+        
+
+        
+
+        
+        
+            
+        
+
+        
+        
+
+        
+            
+                
+                    <link rel="stylesheet" href="/css/main.min.css" />
+                
+            
+        
+
+        
+        
+        
+            
+        
+    </head>
+    <body>
+
+        
+        <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+        <h2><a href="/">Radu Matei</i></a></h2>
+    
+
+    <nav class="links">
+        <ul>
+            
+                <li>
+                    <a href="/blog">
+                        
+                            <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/categories">
+                        Categories
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/about">
+                        About
+                    </a>
+                </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="q" value="site:http://radu-matei.github.io">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+        <section>
+            <form class="search" method="get" action="//google.com/search">
+                <input type="text" name="q" placeholder="Search" />
+                <input type="hidden" name="q" value="site:http://radu-matei.github.io">
+            </form>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                
+                    <li>
+                        <a href="/blog">
+                            <h3>
+                                
+                                    <i class="fa fa-newspaper-o">&nbsp;</i>
+                                
+                                Blog
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            <h3>
+                                
+                                Categories
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/about">
+                            <h3>
+                                
+                                About
+                            </h3>
+                        </a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-routing/"><p>ASP .NET Core Routing</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-startup/"><p>ASP .NET Core Startup</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-getting-started/"><p>ASP .NET Core Introduction</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/"><p>Getting Started with .NET Core and VS Code</p></a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        
+</section>
+
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&text=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code&via=Matei_Radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+    <header>
+    <div class="title">
+        
+            <h1><a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/">Getting Started with .NET Core and VS Code</a></h1>
+            
+        
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2016-07-17'>
+            July 17, 2016</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>5 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&text=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code&via=Matei_Radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
+    
+
+    
+
+
+    <div id="content">
+        
+
+<p><strong>Table of Contents</strong></p>
+
+<ul>
+<li><a href="#getting-started-with-net-core">Getting started with .NET Core</a>
+
+<ul>
+<li><a href="#installing-net-core">Installing .NET Core</a></li>
+<li><a href="#building-a-net-core-application-using-the-command-line-interface">Building a .NET Core application using the command line interface</a></li>
+<li><a href="#installing-visual-studio-code">Installing Visual Studio Code</a></li>
+<li><a href="#running-in-visual-studio-code">Running in Visual Studio Code</a></li>
+<li><a href="#debugging-in-visual-studio-code">Debugging in Visual Studio Code</a></li>
+<li><a href="#adding-classes-and-navigating-through-code">Adding classes and navigating through code</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul></li>
+</ul>
+
+<h1 id="getting-started-with-net-core">Getting started with .NET Core</h1>
+
+<p><a href="https://radu.microsoft.pub.ro/dot-net-core-introduction/">In the previous article</a>, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.</p>
+
+<blockquote>
+<p>This tutorial can be done using Windows, Linux or macOS..</p>
+</blockquote>
+
+<h2 id="installing-net-core">Installing .NET Core</h2>
+
+<p>Wether your OS is Windows, Linux or macOS, you can <a href="https://www.microsoft.com/net/core">go to this page and follow the instructions</a> for getting .NET Core on your machine.</p>
+
+<p>When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet"><code>dotnet</code></a>.</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG" alt="dotnet PowerShell" />
+&gt; Output for the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet"><code>dotnet</code></a> command in PowerShell. The output is similar for Linux and macOS.</p>
+
+<p>At this point, you have successfully installed .NET Core and you can start building applications.</p>
+
+<h2 id="building-a-net-core-application-using-the-command-line-interface">Building a .NET Core application using the command line interface</h2>
+
+<p>In Windows PowerShell or the Linux / macOS Terminal, let&rsquo;s create a new directory. I will call it <code>dot-net-tutorial</code> and navigate to it and create a new console application here using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new"><code>dotnet new</code></a> command.</p>
+
+<pre><code>mkdir dot-net-tutorial
+cd dot-net-tutorial
+dotnet new
+</code></pre>
+
+<p>This is how it should look like after executing these commands.
+<img src="https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG" alt="enter image description here" /></p>
+
+<p>Notice how we got two files after creating the project</p>
+
+<ul>
+<li><code>Program.cs</code>- C# file containing the entry point in the console application - the <code>Main</code> method</li>
+</ul>
+
+<pre><code>using System;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine(&quot;Hello World!&quot;);
+        }
+    }
+}
+
+</code></pre>
+
+<blockquote>
+<p>This is a basic <code>Hello World</code> example in C# and you can <a href="https://radu.microsoft.pub.ro/csharp-fundamentals-01/">find more information about everything in the code in this article</a>.</p>
+</blockquote>
+
+<ul>
+<li><code>project.json</code> - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.
+<code>
+{
+&quot;version&quot;: &quot;1.0.0-*&quot;,
+&quot;buildOptions&quot;: {
+&quot;debugType&quot;: &quot;portable&quot;,
+&quot;emitEntryPoint&quot;: true
+},
+&quot;dependencies&quot;: {},
+&quot;frameworks&quot;: {
+&quot;netcoreapp1.0&quot;: {
+  &quot;dependencies&quot;: {
+    &quot;Microsoft.NETCore.App&quot;: {
+      &quot;type&quot;: &quot;platform&quot;,
+      &quot;version&quot;: &quot;1.0.0&quot;
+    }
+  },
+  &quot;imports&quot;: &quot;dnxcore50&quot;
+}
+}
+}
+</code></li>
+</ul>
+
+<blockquote>
+<p>In a future release, the <code>project</code> file will return to a <code>.csproj</code> extension in order to maitain compatibility with all Visual Studio and Xamarin projects.</p>
+</blockquote>
+
+<p>Calling <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore"><code>dotnet restore</code></a>  will restore all dependencies of the application.</p>
+
+<pre><code>dotnet restore
+</code></pre>
+
+<blockquote>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore"><code>dotnet restore</code></a> calls into NuGet to restore the tree of dependencies. NuGet analyzes the <code>project.json</code> file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the <code>project.lock.json</code> file. The <code>project.lock.json</code> file is necessary to be able to compile and run.</p>
+
+<p>The <code>project.lock.json</code> file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.</p>
+</blockquote>
+
+<p><img src="/img/article-photos/dot-net-getting-started/dotnet-restore.JPG" alt="" /></p>
+
+<p>At this point, we can run the application and see if the output is the expected one using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run"><code>dotnet run</code></a> command.</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/dotnet-run.JPG" alt="" /></p>
+
+<p>This is how you create, build and run a basic .NET Core application using the command line.</p>
+
+<h2 id="installing-visual-studio-code">Installing Visual Studio Code</h2>
+
+<p>We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</p>
+
+<blockquote>
+<p><a href="https://code.visualstudio.com/">Install Visual Studio code from here</a></p>
+</blockquote>
+
+<p>In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs <a href="omnisharp.net/">OmniSharp</a> for IntelliSense.</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG" alt="" /></p>
+
+<p>After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.</p>
+
+<blockquote>
+<p>You can do this in the command line by using <code>code .</code></p>
+</blockquote>
+
+<h2 id="running-in-visual-studio-code">Running in Visual Studio Code</h2>
+
+<p>In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-assets.JPG" alt="" /></p>
+
+<blockquote>
+<p>This will add a <code>.vscode</code> folder in the solution root with two <code>.json</code> files - <code>tasks.json</code> and <code>launch.json</code></p>
+</blockquote>
+
+<p>We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-run.jpg" alt="" /></p>
+
+<p>If everything goes well, you should be able to see the output in the debug console.</p>
+
+<h2 id="debugging-in-visual-studio-code">Debugging in Visual Studio Code</h2>
+
+<p>We saw how to run the application, not let&rsquo;s add a method that adds two integers.</p>
+
+<pre><code>using System;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            int a = 7, b = 12;
+
+            Console.WriteLine(Add(a, b));
+        }
+
+        public static int Add(int a, int b)
+        {
+            int sum = a + b;
+            return sum;
+        }
+    }
+}
+</code></pre>
+
+<p>If we add a breakpoint at the <code>return sum</code> line and we run the application, we get the following output:</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg" alt="" /></p>
+
+<p>The execution stopped at the line with the breakpoint and we can see the state of our program at this point.</p>
+
+<h2 id="adding-classes-and-navigating-through-code">Adding classes and navigating through code</h2>
+
+<p>At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.</p>
+
+<blockquote>
+<p>You can see a <a href="https://github.com/Microsoft/vscode-tips-and-tricks">full list of VS Code tips and tricks on the official Microsoft GitHub organization here</a>.</p>
+</blockquote>
+
+<p>We will add a very basic <code>Person</code> class based on <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes">this project</a>.</p>
+
+<pre><code>public class Person
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Age { get; set; }
+
+        public Person()
+        {
+        }
+
+        public Person(string firstName, string lastName, int age)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Age = age;
+        }
+
+        public void PrintPerson()
+        {
+            Console.WriteLine(&quot;First Name: {0}, Last Name: {1}, Age: {2}&quot;, FirstName, LastName, Age);
+        }
+</code></pre>
+
+<p>It is a very basic class with three properties, two constructors and a method that prints the information to the console.</p>
+
+<blockquote>
+<p>You can <a href="https://github.com/microsoft-dx/csharp-fundamentals">find all necessary materials to learn C# in this repository</a>.</p>
+</blockquote>
+
+<p>In the <code>Main</code> method, we instantiate a new <code>Person</code> object and use the <code>PrintPerson</code> method to display the properties.</p>
+
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG" alt="" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>We saw how to install .NET Core and how to build and run a console application using the command line.</p>
+
+<p>Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.</p>
+
+    </div>
+        
+    <footer>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+
+                    
+
+                    
+                        Category
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categoriesdotnet-core'>dotnet-core</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+<ul class="actions pagination">
+    
+        <li><a href="http://radu-matei.github.io/blog/dot-net-core-introduction/"
+                class="button big previous">Introduction to .NET Core</a></li>
+    
+
+    
+        <li><a href="http://radu-matei.github.io/blog/aspnet-core-getting-started/"
+                class="button big next">ASP .NET Core Introduction</a></li>
+    
+</ul>
+
+
+
+<div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+
+                    (function() {
+                        
+
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        
+                        var disqus_shortname = 'radu-matei';
+                        var disqus_url = 'http://radu-matei.github.io';
+
+
+                        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+
+    </div>
+         
+    
+<section id="sidebar">
+
+    
+        <section id="intro">
+            
+            
+                
+                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                
+            
+            
+                <header>
+                   <a href="/"> <h2>Radu Matei</h2></a>
+                    <p>Software developer, Microsoft Technical Evangelist Intern, Computer Science Student, Microsoft Student Partner</p>
+                </header>
+            
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+<li><a href="//stackoverflow.com/users/3084239/radu-matei" target="_blank" title="Stack Overflow" class="fa fa-stack-overflow"></a></li>
+
+
+
+
+
+
+
+
+
+<li><a href="//facebook.com/matei.radu94" target="_blank" title="Facebook" class="fa fa-facebook"></a></li>
+
+
+
+<li><a href="//twitter.com/Matei_Radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <ul class="posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-routing/">ASP .NET Core Routing</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-20'>
+                                    July 20, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-startup/">ASP .NET Core Startup</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-19'>
+                                    July 19, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-getting-started/">ASP .NET Core Introduction</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-18'>
+                                    July 18, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/">Getting Started with .NET Core and VS Code</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-17'>
+                                    July 17, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+
+                
+                    <li>
+                        <ul class="actions">
+                            <li><a href=
+                            
+                                /blog/
+                            
+                            class="button">View more posts</a></li>
+                        </ul>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+    
+    
+    
+        <section id="categories">
+            <ul class="posts">
+                <header>
+                    <h3><a href="/categories/">Categories</a></h3>
+                </header>
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/aspnet-core/">aspnet-core</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dotnet-core/">dotnet-core</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+            </ul>
+        </section>
+    
+
+    
+        
+
+    
+        <section id="footer">
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+<li><a href="//stackoverflow.com/users/3084239/radu-matei" target="_blank" title="Stack Overflow" class="fa fa-stack-overflow"></a></li>
+
+
+
+
+
+
+
+
+
+<li><a href="//facebook.com/matei.radu94" target="_blank" title="Facebook" class="fa fa-facebook"></a></li>
+
+
+
+<li><a href="//twitter.com/Matei_Radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+
+            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a>. Ported by <a href="//github.com/jpescador" target="_blank">Julio Pescador</a>. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+        </section>
+
+</section>
+
+            </div>
+        <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+        
+        
+
+        
+        
+            
+        
+
+        
+        
+
+        
+            
+                
+                    <script src="/js/main.min.js"></script>
+                
+            
+        
+
+            
+            <script>hljs.initHighlightingOnLoad();</script>
+            
+
+            
+    </body>
+</html>
+

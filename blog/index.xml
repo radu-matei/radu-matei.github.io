@@ -1,0 +1,855 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Radu Matei - Developer Evangelist</title>
+    <link>http://radu-matei.github.io/blog/</link>
+    <description>Recent content in Blogs on Radu Matei - Developer Evangelist</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 20 Jul 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://radu-matei.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>ASP .NET Core Routing</title>
+      <link>http://radu-matei.github.io/blog/aspnet-core-routing/</link>
+      <pubDate>Wed, 20 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/aspnet-core-routing/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#&#34;&gt;Routing&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-the-routing-package&#34;&gt;Installing the Routing package&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-the-routing-service-in-startup&#34;&gt;Adding the Routing Service in Startup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-and-handling-custom-routes&#34;&gt;Adding and handling custom routes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#the-full-startup-class&#34;&gt;The full Startup class&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;routing&#34;&gt;Routing&lt;/h1&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In the previous example we built a very simple web application that responded with &lt;code&gt;Hello, Universe&lt;/code&gt; and the current server time for every request.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;When the application is running and you navigate to &lt;a href=&#34;http://localhost5000&#34;&gt;http://localhost5000&lt;/a&gt;, regardless of the path followed (&lt;a href=&#34;http://localhost:5000/something/something-else/etc&#34;&gt;http://localhost:5000/something/something-else/etc&lt;/a&gt;), the response is the same.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The best place to start learning about Routing is the &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/routing.html&#34;&gt;Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Since we haven&amp;rsquo;t started talking about MVC, the routing discussed here will not include any MVC-specific routing on controllers, actions or parameters, but routing done using &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/routing.html#using-routing-middleware&#34;&gt;Routing Middleware&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;installing-the-routing-package&#34;&gt;Installing the &lt;code&gt;Routing&lt;/code&gt; package&lt;/h2&gt;
+
+&lt;p&gt;First of all, we need to add the &lt;code&gt;Microsoft.AspNetCore.Routing&lt;/code&gt; dependency from NuGet.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;,
+        &amp;quot;Microsoft.AspNetCore.Routing&amp;quot;: &amp;quot;1.0.0&amp;quot;
+      }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is how the &lt;code&gt;dependencies&lt;/code&gt; node of &lt;code&gt;project.json&lt;/code&gt; should look like.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The difference form the &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-startup.md#building-the-hello-world-web-application-with-startup&#34;&gt;previous example&lt;/a&gt; is just the addition of the &lt;code&gt;Routing&lt;/code&gt; package.&lt;/p&gt;
+
+&lt;p&gt;From now on, when adding a new dependency from NuGet the full &lt;code&gt;project.json&lt;/code&gt; will not be shown anymore, but only the new package added.&lt;/p&gt;
+
+&lt;p&gt;At the time of writing this article, the latest version for all ASP .NET Core libraries is &lt;code&gt;1.0.0&lt;/code&gt;. As newer versions are released, check the release notes to see if there are any breaking changes when updating packages.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;adding-the-routing-service-in-startup&#34;&gt;Adding the &lt;code&gt;Routing&lt;/code&gt; Service in &lt;code&gt;Startup&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;When we discussed &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-startup.md#the-anatomy-of-the-startup-class&#34;&gt;the anatomy of the &lt;code&gt;Startup&lt;/code&gt; class&lt;/a&gt;, besides the &lt;code&gt;Configure&lt;/code&gt; method we have used before, there was also a method called &lt;code&gt;ConfigureServices&lt;/code&gt; used for configuring services that our application needs.&lt;/p&gt;
+
+&lt;p&gt;Since we are going to use Routing, we should add it as a service in &lt;code&gt;Startup&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;adding-and-handling-custom-routes&#34;&gt;Adding and handling custom routes&lt;/h2&gt;
+
+&lt;p&gt;First of all, in the &lt;code&gt;Configure&lt;/code&gt; method from &lt;code&gt;Startup&lt;/code&gt; we need to instantiate a new instance of the &lt;code&gt;RouteBuilder&lt;/code&gt; class that will allow us to build custom routes and handle them.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var routeBuilder = new RouteBuilder(app);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We will then use this instance to map requests to to specific paths with our request handlers, allowing us to handle&lt;code&gt;GET&lt;/code&gt; and &lt;code&gt;POST&lt;/code&gt; requests from clients.&lt;/p&gt;
+
+&lt;p&gt;The way to map a &lt;code&gt;GET&lt;/code&gt; request is to use the &lt;code&gt;MapGet&lt;/code&gt; method from &lt;code&gt;RouteBuilder&lt;/code&gt;. Mapping the application root - &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt; is done through:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from root!&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Mapping specific paths for &lt;code&gt;GET&lt;/code&gt; - for example &lt;a href=&#34;http://localhost:5000/hello&#34;&gt;http://localhost:5000/hello&lt;/a&gt; is done in the following way.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;hello&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from /hello&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can create paths that contain multiple elements and we can extract the parameters entered when making the request. For example, when requesting on &lt;code&gt;hello/{name}&lt;/code&gt;, we can extract the parameter &lt;code&gt;{name}&lt;/code&gt; and use it when constructing the response:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;hello/{name}&amp;quot;, context =&amp;gt; context.Response
+                                                      .WriteAsync($&amp;quot;Hello, {context.GetRouteValue(&amp;quot;name&amp;quot;)}&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can also add constrains on the parameters. For example, let&amp;rsquo;s create a respond for requests coming to the path &lt;code&gt;/square/{number}&lt;/code&gt;, where &lt;code&gt;{number}&lt;/code&gt; is an &lt;code&gt;int&lt;/code&gt; and responds with the square of the number.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;square/{number:int}&amp;quot;, context =&amp;gt;
+        {
+            int number = Convert.ToInt32(context.GetRouteValue(&amp;quot;number&amp;quot;));
+            return context.Response.WriteAsync($&amp;quot;The square of {number} is {number * number}&amp;quot;);
+        });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;For a full list of parameter constraints, see this table from &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/routing.html#id7&#34;&gt;the Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In order to test wether the routing works properly, open a browser and navigate to your custom route and check if the output is the desired one.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can also place some breakpoint inside the custom route handlers and iterate through the handlers step-by-step, watching how the response is formed.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:5000
+http://localhost:5000/hello
+http://localhost:5000/hello/John
+http://localhost:5000/square/3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So far we only created routing mapped for the &lt;code&gt;GET&lt;/code&gt; method, so we can test the output from a browser tab.
+Now we will add routing for a &lt;code&gt;POST&lt;/code&gt; method (so we will not be able to test it by navigating to the URL in the browser).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapPost(&amp;quot;post&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Posting!&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order to test this route, we need to use a tool that sends &lt;code&gt;HTTP&lt;/code&gt; requests to our application. We will use &lt;a href=&#34;https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop&#34;&gt;PostMan for Google Chrome&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-routing/routing-postman.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;If we try and change the method type in PostMan from &lt;code&gt;POST&lt;/code&gt; to &lt;code&gt;GET&lt;/code&gt;, we notice how the request fails.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;the-full-startup-class&#34;&gt;The full &lt;code&gt;Startup&lt;/code&gt; class&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void Configure(IApplicationBuilder app)
+    {
+        
+        var routeBuilder = new RouteBuilder(app);
+        
+        routeBuilder.MapGet(&amp;quot;&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from root!&amp;quot;));
+        routeBuilder.MapGet(&amp;quot;hello&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from /hello&amp;quot;));
+        routeBuilder.MapGet(&amp;quot;hello/{name}&amp;quot;, context =&amp;gt; context.Response
+                                                              .WriteAsync($&amp;quot;Hello, {context.GetRouteValue(&amp;quot;name&amp;quot;)}&amp;quot;));
+
+        routeBuilder.MapGet(&amp;quot;square/{number:int}&amp;quot;, context =&amp;gt;
+        {
+            int number = Convert.ToInt32(context.GetRouteValue(&amp;quot;number&amp;quot;));
+            return context.Response.WriteAsync($&amp;quot;The square of {number} is {number * number}&amp;quot;);
+        });
+
+        routeBuilder.MapPost(&amp;quot;post&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Posting!&amp;quot;));
+
+        app.UseRouter(routeBuilder.Build());
+
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We created a basic web application and we defined and handled custom routes. We also saw how to manage &lt;code&gt;GET&lt;/code&gt; and &lt;code&gt;POST&lt;/code&gt; requests.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ASP .NET Core Startup</title>
+      <link>http://radu-matei.github.io/blog/aspnet-core-startup/</link>
+      <pubDate>Tue, 19 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/aspnet-core-startup/</guid>
+      <description>
+
+&lt;h1 id=&#34;the-startup-class&#34;&gt;The &lt;code&gt;Startup&lt;/code&gt; class&lt;/h1&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In the &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-getting-started.md&#34;&gt;previous article&lt;/a&gt; we built a very basic web application that for every request had a very basic response - &lt;code&gt;Hello, Universe&lt;/code&gt; with the server current time and date.&lt;/p&gt;
+
+&lt;p&gt;Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the &lt;code&gt;Startup&lt;/code&gt; class, which is also the entry point for any incoming HTTP request.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-anatomy-of-the-startup-class&#34;&gt;The anatomy of the &lt;code&gt;Startup&lt;/code&gt; class&lt;/h2&gt;
+
+&lt;p&gt;The &lt;code&gt;Startup&lt;/code&gt; class needs to have two methods:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Configure&lt;/code&gt; - this method will respond to each incoming HTTP request. In the following example, we will use it to have the same functionality as in our previous example - returning a message with the current server time.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/middleware.html&#34;&gt;middleware&lt;/a&gt; and added using extension methods on &lt;code&gt;IApplicationBuilder&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Your &lt;code&gt;Configure&lt;/code&gt; method must accept an &lt;a href=&#34;https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html&#34;&gt;&lt;code&gt;IApplicationBuilder&lt;/code&gt;&lt;/a&gt; parameter. Additional services, like &lt;code&gt;IHostingEnvironment&lt;/code&gt; and &lt;code&gt;ILoggerFactory&lt;/code&gt; may also be specified, in which case these services will be injected by the server if they are available.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ConfigureServices&lt;/code&gt; - this &lt;strong&gt;optional&lt;/strong&gt; method is used for configuring services used by the application and is called before the &lt;code&gt;Configure&lt;/code&gt; method.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;This is the place where we will start discussing dependency injection, which will be covered in a separate topic.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;building-the-hello-world-web-application-with-startup&#34;&gt;Building the &lt;code&gt;Hello, World&lt;/code&gt; web application with &lt;code&gt;Startup&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;We are going to build the same application that responds with &lt;code&gt;Hello, World&lt;/code&gt; and the current time, this time with a &lt;code&gt;Startup&lt;/code&gt; class.&lt;/p&gt;
+
+&lt;p&gt;First of all, if this is a new application (created using &lt;code&gt;dotnet new&lt;/code&gt;), you should add the dependency to the web server Kestrel in &lt;code&gt;project.json&lt;/code&gt;, which should look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+  &amp;quot;buildOptions&amp;quot;: {
+    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+    &amp;quot;emitEntryPoint&amp;quot;: true
+  },
+  &amp;quot;dependencies&amp;quot;: {},
+  &amp;quot;frameworks&amp;quot;: {
+    &amp;quot;netcoreapp1.0&amp;quot;: {
+      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;
+      },
+      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, add a new file called &lt;code&gt;Startup.cs&lt;/code&gt; and add the following code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+public class Startup
+{
+    public void Configure(IApplicationBuilder app)
+    {
+        app.Run(context =&amp;gt;
+        {
+            var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
+            return context.Response.WriteAsync(response);
+        });
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, the code in &lt;code&gt;Configure&lt;/code&gt; is the same as the code in &lt;code&gt;Main&lt;/code&gt; from the previous example.&lt;/p&gt;
+
+&lt;p&gt;Then, in the &lt;code&gt;Main&lt;/code&gt; method we simply indicate that we have a &lt;code&gt;Startup&lt;/code&gt; class we want to use.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseStartup&amp;lt;Startup&amp;gt;()
+                .Build();
+
+                host.Run();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now if we run the application (from the command line or from VS Code) and navigate to &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt;, we see the expected output.&lt;/p&gt;
+
+&lt;p&gt;From now on, we will use the &lt;code&gt;Startup&lt;/code&gt; class when building web applications with ASP .NET Core and we will add middleware and services in it.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ASP .NET Core Introduction</title>
+      <link>http://radu-matei.github.io/blog/aspnet-core-getting-started/</link>
+      <pubDate>Mon, 18 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/aspnet-core-getting-started/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#getting-started-with-asp-net-core-10&#34;&gt;Getting Started with ASP .NET Core 1.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#make-the-project-a-web-application&#34;&gt;Make the project a web application&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ASP.NET Core is a new open-source and cross-platform framework for building modern cloud based internet connected applications, such as web apps, IoT apps and mobile backends.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;ASP.NET Core apps can run on .NET Core or on the full .NET Framework. It was architected to provide an optimized development framework for apps that are deployed to the cloud or run on-premises. It consists of modular components with minimal overhead, so you retain flexibility while constructing your solutions. You can develop and run your ASP.NET Core apps cross-platform on Windows, Mac and Linux. ASP.NET Core is open source at GitHub.&lt;/p&gt;
+
+&lt;p&gt;The best way to understand what ASP.NET Core is and why it was built is the &lt;a href=&#34;https://docs.asp.net/en/latest/intro.html&#34;&gt;Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;ASP .NET Core is a complete re-write of the 4.6 framework that came out last year and comes with a completely new architecture based on .NET Core.&lt;/p&gt;
+
+&lt;p&gt;ASP .NET Core is no longer based on&lt;code&gt;System.Web&lt;/code&gt;. Instead, everything in the framework is modular and comes as NuGet packages which allows you to only include in your application the packages that you will use, resulting in a smaller application footprint and better performance.&lt;/p&gt;
+
+&lt;p&gt;It comes with integrated &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/dependency-injection.html&#34;&gt;dependency injection&lt;/a&gt;, a new request pipeline middleware and the ability to plug in your own web server (IIS - Windows only or Kestrel inside your own process in Windows, macOS and Linux) and run across operating systems with very similar development processes and tools.&lt;/p&gt;
+
+&lt;p&gt;Together with &lt;a href=&#34;https://www.typescriptlang.org/&#34;&gt;TypeScript&lt;/a&gt;, the client-side framework of your choice (Angular 2, React, Aurelia etc), familiar tools for web developers (that didn&amp;rsquo;t have very good support on Windows until very recently) like Grunt, Gulp or Bower and with a superior performance compared to Node, for example, Microsoft bets on ASP .NET Core to become one of the preferred frameworks when building modern web and cloud applications.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;For the complete section on client-side development with ASP .NET Core see &lt;a href=&#34;https://docs.asp.net/en/latest/client-side/index.html&#34;&gt;the Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The ASP .NET Core team made a priority building a great development experience for client-side frameworks and you can see the work-in-progress on the &lt;a href=&#34;https://github.com/aspnet/JavaScriptServices/&#34;&gt;JavaScriptServices repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;getting-started-with-asp-net-core-1-0&#34;&gt;Getting Started with ASP .NET Core 1.0&lt;/h2&gt;
+
+&lt;p&gt;The first step in beginning development is to install .NET Core. You should &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md&#34;&gt;follow this tutorial on how to get started with .NET Core and build a basic console application&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;After installing .NET Core, open a command-line prompt, create a new directory and add a &lt;code&gt;dotnet&lt;/code&gt; application.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir aspnet-core-tutorial
+cd aspnet-core-tutorial
+dotnet new
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-getting-started/powershell-dotnet-new.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The same commands work across Windows PowerShell and the macOS and Linux Terminal&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;To check if everything is in place, execute the following commands:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet restore
+dotnet run
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-getting-started/powershell-dotnet-restore-run.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md&#34;&gt;This tutorial&lt;/a&gt; explains all commands involved here.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md#installing-visual-studio-code&#34;&gt;Install Visual Studio Code&lt;/a&gt; and open the project you created.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;make-the-project-a-web-application&#34;&gt;Make the project a web application&lt;/h2&gt;
+
+&lt;p&gt;As we established earlier, every library in the new .NET Core is a package. So in order to use some packages, we will add them in &lt;code&gt;project.json&lt;/code&gt; and at compile time, the packages get downloaded from NuGet.&lt;/p&gt;
+
+&lt;p&gt;In order to host a web application, we need to have a dependency on the web server - Kestrel. After adding this dependency, the &lt;code&gt;project.json&lt;/code&gt; file should look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+  &amp;quot;buildOptions&amp;quot;: {
+    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+    &amp;quot;emitEntryPoint&amp;quot;: true
+  },
+  &amp;quot;dependencies&amp;quot;: {},
+  &amp;quot;frameworks&amp;quot;: {
+    &amp;quot;netcoreapp1.0&amp;quot;: {
+      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;
+      },
+      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;When running on Windows, we can choose between the classic IIS web server and the new web server Kestrel web server (based on &lt;a href=&#34;https://github.com/libuv/libuv&#34;&gt;libuv&lt;/a&gt;) that runs across operating systems.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In &lt;code&gt;Program.cs&lt;/code&gt; we add the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .Configure(app =&amp;gt; app.Run(context =&amp;gt; 
+                {
+                    var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
+                    return context.Response.WriteAsync(response);
+                }))
+                .Build();
+
+                host.Run();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In &lt;code&gt;Main&lt;/code&gt; we create an instance of &lt;code&gt;WebHostBuilder&lt;/code&gt;, which follows the &lt;a href=&#34;https://en.wikipedia.org/wiki/Builder_pattern&#34;&gt;builder pattern&lt;/a&gt; to create a web application host, which then is used to define which web server to use - &lt;code&gt;.UseKestrel()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;.Build()&lt;/code&gt; and &lt;code&gt;.Run()&lt;/code&gt; methods will start listening for HTTP requests.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Even if we create a web app, we started with a console application and added elements that allowed it to start listening for incoming HTTP requests.&lt;/p&gt;
+
+&lt;p&gt;The entry point for web applications in ASP .NET Core is also the &lt;code&gt;Main&lt;/code&gt; method.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is a very basic web application. For every request, it will simply respond with &lt;code&gt;Hello, Universe!&lt;/code&gt; and the current time of the server. It is the most simple application logic and in further examples we will examine handling more complex requests.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; .Configure(app =&amp;gt; app.Run(context =&amp;gt; 
+   {
+      var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
+      return context.Response.WriteAsync(response);
+    }))
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is the part that actually creates the response - it is a &lt;a href=&#34;https://msdn.microsoft.com/en-us/library/bb397687.aspx&#34;&gt;Lambda Expression&lt;/a&gt; that takes the &lt;code&gt;context&lt;/code&gt; as parameter and writes the response asynchrounously and is called a &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/middleware.html#what-is-middleware&#34;&gt;request delegate&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can either run the application from the command line (&lt;code&gt;dotnet run&lt;/code&gt;) or from VS Code.
+To run it from VS Code, go to the debugging pane (or press Ctrl/Cmd + Shift + D) and start the application.&lt;/p&gt;
+
+&lt;p&gt;After the application starts, open a browser and navigate to &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt;.
+If everything worked as expected, you should see the following:
+&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-getting-started//aspnet-core-hello-universe-browser.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We built a very basic web application starting from the console application template by adding the Kestrel dependency and by using &lt;code&gt;WebHostBuilder&lt;/code&gt; to create the application host.&lt;/p&gt;
+
+&lt;p&gt;We then, for each request we built the response containing a simple message and the current time of the server.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Getting Started with .NET Core and VS Code</title>
+      <link>http://radu-matei.github.io/blog/dot-net-core-getting-started/</link>
+      <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/dot-net-core-getting-started/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#getting-started-with-net-core&#34;&gt;Getting started with .NET Core&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-net-core&#34;&gt;Installing .NET Core&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#building-a-net-core-application-using-the-command-line-interface&#34;&gt;Building a .NET Core application using the command line interface&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-visual-studio-code&#34;&gt;Installing Visual Studio Code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#running-in-visual-studio-code&#34;&gt;Running in Visual Studio Code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#debugging-in-visual-studio-code&#34;&gt;Debugging in Visual Studio Code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-classes-and-navigating-through-code&#34;&gt;Adding classes and navigating through code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;getting-started-with-net-core&#34;&gt;Getting started with .NET Core&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://radu.microsoft.pub.ro/dot-net-core-introduction/&#34;&gt;In the previous article&lt;/a&gt;, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;This tutorial can be done using Windows, Linux or macOS..&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;installing-net-core&#34;&gt;Installing .NET Core&lt;/h2&gt;
+
+&lt;p&gt;Wether your OS is Windows, Linux or macOS, you can &lt;a href=&#34;https://www.microsoft.com/net/core&#34;&gt;go to this page and follow the instructions&lt;/a&gt; for getting .NET Core on your machine.&lt;/p&gt;
+
+&lt;p&gt;When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet&#34;&gt;&lt;code&gt;dotnet&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG&#34; alt=&#34;dotnet PowerShell&#34; /&gt;
+&amp;gt; Output for the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet&#34;&gt;&lt;code&gt;dotnet&lt;/code&gt;&lt;/a&gt; command in PowerShell. The output is similar for Linux and macOS.&lt;/p&gt;
+
+&lt;p&gt;At this point, you have successfully installed .NET Core and you can start building applications.&lt;/p&gt;
+
+&lt;h2 id=&#34;building-a-net-core-application-using-the-command-line-interface&#34;&gt;Building a .NET Core application using the command line interface&lt;/h2&gt;
+
+&lt;p&gt;In Windows PowerShell or the Linux / macOS Terminal, let&amp;rsquo;s create a new directory. I will call it &lt;code&gt;dot-net-tutorial&lt;/code&gt; and navigate to it and create a new console application here using the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new&#34;&gt;&lt;code&gt;dotnet new&lt;/code&gt;&lt;/a&gt; command.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir dot-net-tutorial
+cd dot-net-tutorial
+dotnet new
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is how it should look like after executing these commands.
+&lt;img src=&#34;https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG&#34; alt=&#34;enter image description here&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Notice how we got two files after creating the project&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Program.cs&lt;/code&gt;- C# file containing the entry point in the console application - the &lt;code&gt;Main&lt;/code&gt; method&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine(&amp;quot;Hello World!&amp;quot;);
+        }
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;This is a basic &lt;code&gt;Hello World&lt;/code&gt; example in C# and you can &lt;a href=&#34;https://radu.microsoft.pub.ro/csharp-fundamentals-01/&#34;&gt;find more information about everything in the code in this article&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;project.json&lt;/code&gt; - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.
+&lt;code&gt;
+{
+&amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+&amp;quot;buildOptions&amp;quot;: {
+&amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+&amp;quot;emitEntryPoint&amp;quot;: true
+},
+&amp;quot;dependencies&amp;quot;: {},
+&amp;quot;frameworks&amp;quot;: {
+&amp;quot;netcoreapp1.0&amp;quot;: {
+  &amp;quot;dependencies&amp;quot;: {
+    &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+      &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+      &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+    }
+  },
+  &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+}
+}
+}
+&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;In a future release, the &lt;code&gt;project&lt;/code&gt; file will return to a &lt;code&gt;.csproj&lt;/code&gt; extension in order to maitain compatibility with all Visual Studio and Xamarin projects.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Calling &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore&#34;&gt;&lt;code&gt;dotnet restore&lt;/code&gt;&lt;/a&gt;  will restore all dependencies of the application.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet restore
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore&#34;&gt;&lt;code&gt;dotnet restore&lt;/code&gt;&lt;/a&gt; calls into NuGet to restore the tree of dependencies. NuGet analyzes the &lt;code&gt;project.json&lt;/code&gt; file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the &lt;code&gt;project.lock.json&lt;/code&gt; file. The &lt;code&gt;project.lock.json&lt;/code&gt; file is necessary to be able to compile and run.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;project.lock.json&lt;/code&gt; file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/dotnet-restore.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;At this point, we can run the application and see if the output is the expected one using the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run&#34;&gt;&lt;code&gt;dotnet run&lt;/code&gt;&lt;/a&gt; command.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/dotnet-run.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is how you create, build and run a basic .NET Core application using the command line.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-visual-studio-code&#34;&gt;Installing Visual Studio Code&lt;/h2&gt;
+
+&lt;p&gt;We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - &lt;a href=&#34;https://code.visualstudio.com/&#34;&gt;Visual Studio Code&lt;/a&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://code.visualstudio.com/&#34;&gt;Install Visual Studio code from here&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs &lt;a href=&#34;omnisharp.net/&#34;&gt;OmniSharp&lt;/a&gt; for IntelliSense.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can do this in the command line by using &lt;code&gt;code .&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;running-in-visual-studio-code&#34;&gt;Running in Visual Studio Code&lt;/h2&gt;
+
+&lt;p&gt;In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-assets.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;This will add a &lt;code&gt;.vscode&lt;/code&gt; folder in the solution root with two &lt;code&gt;.json&lt;/code&gt; files - &lt;code&gt;tasks.json&lt;/code&gt; and &lt;code&gt;launch.json&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-run.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If everything goes well, you should be able to see the output in the debug console.&lt;/p&gt;
+
+&lt;h2 id=&#34;debugging-in-visual-studio-code&#34;&gt;Debugging in Visual Studio Code&lt;/h2&gt;
+
+&lt;p&gt;We saw how to run the application, not let&amp;rsquo;s add a method that adds two integers.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            int a = 7, b = 12;
+
+            Console.WriteLine(Add(a, b));
+        }
+
+        public static int Add(int a, int b)
+        {
+            int sum = a + b;
+            return sum;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If we add a breakpoint at the &lt;code&gt;return sum&lt;/code&gt; line and we run the application, we get the following output:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The execution stopped at the line with the breakpoint and we can see the state of our program at this point.&lt;/p&gt;
+
+&lt;h2 id=&#34;adding-classes-and-navigating-through-code&#34;&gt;Adding classes and navigating through code&lt;/h2&gt;
+
+&lt;p&gt;At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can see a &lt;a href=&#34;https://github.com/Microsoft/vscode-tips-and-tricks&#34;&gt;full list of VS Code tips and tricks on the official Microsoft GitHub organization here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We will add a very basic &lt;code&gt;Person&lt;/code&gt; class based on &lt;a href=&#34;https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes&#34;&gt;this project&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Person
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Age { get; set; }
+
+        public Person()
+        {
+        }
+
+        public Person(string firstName, string lastName, int age)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Age = age;
+        }
+
+        public void PrintPerson()
+        {
+            Console.WriteLine(&amp;quot;First Name: {0}, Last Name: {1}, Age: {2}&amp;quot;, FirstName, LastName, Age);
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is a very basic class with three properties, two constructors and a method that prints the information to the console.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can &lt;a href=&#34;https://github.com/microsoft-dx/csharp-fundamentals&#34;&gt;find all necessary materials to learn C# in this repository&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In the &lt;code&gt;Main&lt;/code&gt; method, we instantiate a new &lt;code&gt;Person&lt;/code&gt; object and use the &lt;code&gt;PrintPerson&lt;/code&gt; method to display the properties.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We saw how to install .NET Core and how to build and run a console application using the command line.&lt;/p&gt;
+
+&lt;p&gt;Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Introduction to .NET Core</title>
+      <link>http://radu-matei.github.io/blog/dot-net-core-introduction/</link>
+      <pubDate>Sat, 16 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/dot-net-core-introduction/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#what-is-net-core&#34;&gt;What is .NET Core?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#scenarios-for-net-core&#34;&gt;Scenarios for .NET Core&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#net-standard---one-library-to-rule-them-all&#34;&gt;.NET Standard - One library to rule them all&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#tools&#34;&gt;Tools&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;what-is-net-core&#34;&gt;What is .NET Core?&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;.NET Core is a general purpose development platform maintained by Microsoft and the .NET community on &lt;a href=&#34;https://github.com/dotnet&#34;&gt;GitHub&lt;/a&gt;. It is cross-platform, &lt;strong&gt;supporting Windows, macOS and Linux&lt;/strong&gt;, and can be used in device, cloud, and embedded/IoT scenarios.&lt;/p&gt;
+
+&lt;p&gt;The following characteristics best define .NET Core:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Flexible deployment: Can be included in your app or installed side-by-side user- or machine-wide.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Cross-platform: Runs on Windows, macOS and Linux; can be ported to other OSes. The supported Operating Systems (OS), CPUs and application scenarios will grow over time, provided by Microsoft, other companies, and individuals.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Command-line tools: All product scenarios can be exercised at the command-line.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Compatible: .NET Core is compatible with .NET Framework, Xamarin and Mono, via the .NET Standard Library.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Open source: The .NET Core platform is open source, using MIT an  Apache 2 licenses. Documentation is licensed under CC-BY. .NET Core is a .NET Foundation project.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Supported by Microsoft: .NET Core is supported by Microsoft, per .NET Core Support&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/index&#34;&gt;More on the Official .NET Core Documentation from Microsoft&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Basically, Microsoft built a version of .NET to allow developers to write cross-platform and cloud-optimized applications.&lt;/p&gt;
+
+&lt;p&gt;First, .NET is cross-platform. It runs on Windows, macOS and Linux, which allows the developer to share and run the exact same code between machines running different operating systems, with no changes in code and minimum or no changes in the deveopment process.
+(Watch out for OS specific APIs!)&lt;/p&gt;
+
+&lt;p&gt;But the true innovation in .NET came with the modularization in design and architecture.
+The compiler (&lt;a href=&#34;https://github.com/dotnet/roslyn&#34;&gt;Roslyn&lt;/a&gt;) and the runtime (&lt;a href=&#34;https://github.com/dotnet/coreclr&#34;&gt;CoreCLR&lt;/a&gt;) are separate components that allow you to use different implementations (or even write your own).&lt;/p&gt;
+
+&lt;p&gt;Every library comes as a NuGet package, so when you start a new project, you don&amp;rsquo;t have any libraries, but a project file (currently a &lt;code&gt;.json&lt;/code&gt;, in the future a &lt;code&gt;.csproj&lt;/code&gt; to maintain consistency with all .NET projects) and a &lt;code&gt;Program.cs&lt;/code&gt;.  As you develop your app, you add libraries as you need them, allowing you to minimize the size of your application.&lt;/p&gt;
+
+&lt;p&gt;.NET Core also allows you to have multiple versions installed at the same time without having apps / parts of the OS breaking when you update or install a newer version of the framework, and will even allow you to ship the framework / parts of the framework with the application (since the footprint of the framework si small enough).&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;.NET Core will favor performance with a standard library that minimizes allocations and the overall memory footprint of your system.
+&lt;a href=&#34;https://msdn.microsoft.com/en-us/magazine/mt694084.aspx&#34;&gt;The complete MSDN article.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;scenarios-for-net-core&#34;&gt;Scenarios for .NET Core&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://developer.microsoft.com/en-us/windows/develop/building-universal-windows-apps&#34;&gt;Universal Windows Apps&lt;/a&gt; that run on all various Windows versions (on laptops, tablets, phones, IoT devices, xBox, HoloLens)&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://www.xamarin.com/platform&#34;&gt;Xamarin Apps&lt;/a&gt; that run on Android, iOS and macOS using the same shared C# code&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/index&#34;&gt;.NET Core&lt;/a&gt; - cross-platform console applications and libraries&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://docs.asp.net/&#34;&gt;ASP .NET Core&lt;/a&gt; - cross-platform web applications that run on Windows (inside IIS and with the dedicated web server - Kestrel), macOS and Linux (with the dedicated web server - Kestrel) with &lt;a href=&#34;http://web.ageofascent.com/asp-net-core-exeeds-1-15-million-requests-12-6-gbps/&#34;&gt;superior performance&lt;/a&gt; compared to the standard ASP .NET 4.6 or to Node.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://gupaja.bn1301.livefilestore.com/y3mLAmG-73wdLvYRFdnmUwYciTpGlCYf5WdiTSlRQ2hWJOiK9XB1piAiuvT_9auvQTIwmi-LuhH3qsYoVXGq1rNJ05HLWEu4ifcT6qiiMmqb27g5yG-7PuV4Y7i8qFMkKijgxTAKYjCkOdEAlBqh2hfyFrkqrbagfm0Fvp4LLpl56s?width=1280&amp;amp;height=720&amp;amp;cropmode=none&#34; alt=&#34;Exciting times&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So right now, using C# and .NET you can build almost any type of application and target multiple frameworks.&lt;/p&gt;
+
+&lt;h2 id=&#34;net-standard-one-library-to-rule-them-all&#34;&gt;.NET Standard - One library to rule them all&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The .NET Standard Library is a formal specification of .NET APIs that are intended to be available on all .NET runtimes. The motivation behind the Standard Library is establishing greater uniformity in the .NET ecosystem. ECMA 335 continues to establish uniformity for .NET runtime behavior, but there is no similar spec for the .NET Base Class Libraries (BCL) for .NET library implementations.&lt;/p&gt;
+
+&lt;p&gt;The .NET Standard Library enables the following key scenarios:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Defines uniform set of BCL APIs for all .NET platforms to implement, independent of workload.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Enables developers to produce portable libraries that are usable across .NET runtimes, using this same set of APIs.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Reduces and hopefully eliminates conditional compilation of shared source due to .NET APIs, only for OS APIs.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;More on the .NET Standard Library on the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/standard/library&#34;&gt;Official Microsoft Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://tl4blw.bn1301.livefilestore.com/y3m6sNWtdUd2Htc9yvtCL6sEvqjaJaEHh-2uGizu_fLU3hH7DL23-0nW104ESwTFZ32v6KmBeekCkZLmPQZIh6RklD-zE2vG4fi5Zo1mnqIR_gWugP1Es97QkxhK74JazU8NFgWomXCkbvgO7jZd5nxThPRrMGdCfwwc4THeX7eqU4?width=1280&amp;amp;height=720&amp;amp;cropmode=none&#34; alt=&#34;.NET&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The goal of .NET Standard is to have a single, unified set of libraries that you target when building an application, regardless of the type - console, web or mobile - you simply target .NET Standard and you are guaranteed that libraries there will work when shared across all platforms.&lt;/p&gt;
+
+&lt;p&gt;This is the part of the framework most of the work will take place in the future and you can follow the progress or contribute in &lt;a href=&#34;https://github.com/dotnet/corefx&#34;&gt;this GitHub repository&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;tools&#34;&gt;Tools&lt;/h2&gt;
+
+&lt;p&gt;Historically, .NET developers didn&amp;rsquo;t have to (or couldn&amp;rsquo;t) use the command line so often. Visual Studio took care of most processes involved in building and running the applications.&lt;/p&gt;
+
+&lt;p&gt;But with the open-source of .NET Core, all development efforts became CLI-first, so everything involved in building, compiling or running .NET Core applications can be done using the command line.&lt;/p&gt;
+
+&lt;p&gt;In fact, all these things were built for the command line first and then were wrapped in the multiple tools available.&lt;/p&gt;
+
+&lt;p&gt;Regardless of the OS, you use the same command line interface (which is also &lt;a href=&#34;https://github.com/dotnet/cli&#34;&gt;open source and available on GitHub&lt;/a&gt;) to create new apps, build, or run.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://9o6coq.bn1301.livefilestore.com/y3m9rWnsOG_vk6tONR1SWQFdThTblC_-OgmT8LZKbysS2EONc3azyFoPROy9DRCaauouG9HlOUBqk29uFbPK9Q_OPFC7QEyG_KcihlQYolIjnzOwTyhm1m_vI9ck5FfypPYz5mYRUDXW2V_8_Dn8YrvP5vSD88fXwvHKou-pU1PzsA?width=1280&amp;amp;height=720&amp;amp;cropmode=none&#34; alt=&#34;Tools&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.visualstudio.com/en-us/products/code-vs.aspx&#34;&gt;Visual Studio Code&lt;/a&gt; is the cross-platform code editor for Linux, macOS and Windows. With VS Code you can build, debug and run web applications (ASP .NET Core, Node) or .NET Core console applications, with IntelliSense, code completion and Git integration.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Using &lt;a href=&#34;http://www.omnisharp.net/&#34;&gt;OmniSharp&lt;/a&gt; you can add IntelliSense to any of the following code editors - Atom, Brackets, Emacs, Sublime or Vim.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.xamarin.com/studio&#34;&gt;Xamarin Studio&lt;/a&gt; is the IDE for macOS that lets you build cross-platform mobile applications for iOS, Android or macOS, and even web applications.&lt;/p&gt;
+
+&lt;p&gt;With &lt;a href=&#34;https://www.visualstudio.com/products/visual-studio-community-vs&#34;&gt;Visual Studio Community&lt;/a&gt; you can build all types of applications on the .NET Framework, including Xamarin apps, Azure integration and source control support. For Windows, it is the best IDE for building .NET applications.&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.microsoft.com/net&#34;&gt;You can install .NET Core 1.0 on your system right now&lt;/a&gt; and start using the command line interface (&lt;code&gt;dotnet new&lt;/code&gt;, &lt;code&gt;dotnet restore&lt;/code&gt;, &lt;code&gt;dotnet build&lt;/code&gt;, &lt;code&gt;dotnet run&lt;/code&gt;) or install &lt;a href=&#34;https://www.visualstudio.com/en-us/products/code-vs.aspx&#34;&gt;Visual Studio Code&lt;/a&gt; with IntelliSense and debugging.&lt;/p&gt;
+
+&lt;p&gt;It is one of the most exciting times to be a .NET developer, being able to write code that runs across IoT devices, phones, tablets, laptops, desktops, holographic devices, servers or the cloud and share it across multiple operating systems, with familiar processes and tools.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

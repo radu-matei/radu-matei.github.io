@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>aspnet-core on Radu Matei - Developer Evangelist</title>
+    <link>http://radu-matei.github.io/categories/aspnet-core/</link>
+    <description>Recent content in aspnet-core on Radu Matei - Developer Evangelist</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 20 Jul 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://radu-matei.github.io/categories/aspnet-core/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>ASP .NET Core Routing</title>
+      <link>http://radu-matei.github.io/blog/aspnet-core-routing/</link>
+      <pubDate>Wed, 20 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/aspnet-core-routing/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#&#34;&gt;Routing&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-the-routing-package&#34;&gt;Installing the Routing package&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-the-routing-service-in-startup&#34;&gt;Adding the Routing Service in Startup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-and-handling-custom-routes&#34;&gt;Adding and handling custom routes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#the-full-startup-class&#34;&gt;The full Startup class&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;routing&#34;&gt;Routing&lt;/h1&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In the previous example we built a very simple web application that responded with &lt;code&gt;Hello, Universe&lt;/code&gt; and the current server time for every request.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;When the application is running and you navigate to &lt;a href=&#34;http://localhost5000&#34;&gt;http://localhost5000&lt;/a&gt;, regardless of the path followed (&lt;a href=&#34;http://localhost:5000/something/something-else/etc&#34;&gt;http://localhost:5000/something/something-else/etc&lt;/a&gt;), the response is the same.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The best place to start learning about Routing is the &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/routing.html&#34;&gt;Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Since we haven&amp;rsquo;t started talking about MVC, the routing discussed here will not include any MVC-specific routing on controllers, actions or parameters, but routing done using &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/routing.html#using-routing-middleware&#34;&gt;Routing Middleware&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;installing-the-routing-package&#34;&gt;Installing the &lt;code&gt;Routing&lt;/code&gt; package&lt;/h2&gt;
+
+&lt;p&gt;First of all, we need to add the &lt;code&gt;Microsoft.AspNetCore.Routing&lt;/code&gt; dependency from NuGet.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;,
+        &amp;quot;Microsoft.AspNetCore.Routing&amp;quot;: &amp;quot;1.0.0&amp;quot;
+      }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is how the &lt;code&gt;dependencies&lt;/code&gt; node of &lt;code&gt;project.json&lt;/code&gt; should look like.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The difference form the &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-startup.md#building-the-hello-world-web-application-with-startup&#34;&gt;previous example&lt;/a&gt; is just the addition of the &lt;code&gt;Routing&lt;/code&gt; package.&lt;/p&gt;
+
+&lt;p&gt;From now on, when adding a new dependency from NuGet the full &lt;code&gt;project.json&lt;/code&gt; will not be shown anymore, but only the new package added.&lt;/p&gt;
+
+&lt;p&gt;At the time of writing this article, the latest version for all ASP .NET Core libraries is &lt;code&gt;1.0.0&lt;/code&gt;. As newer versions are released, check the release notes to see if there are any breaking changes when updating packages.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;adding-the-routing-service-in-startup&#34;&gt;Adding the &lt;code&gt;Routing&lt;/code&gt; Service in &lt;code&gt;Startup&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;When we discussed &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-startup.md#the-anatomy-of-the-startup-class&#34;&gt;the anatomy of the &lt;code&gt;Startup&lt;/code&gt; class&lt;/a&gt;, besides the &lt;code&gt;Configure&lt;/code&gt; method we have used before, there was also a method called &lt;code&gt;ConfigureServices&lt;/code&gt; used for configuring services that our application needs.&lt;/p&gt;
+
+&lt;p&gt;Since we are going to use Routing, we should add it as a service in &lt;code&gt;Startup&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;adding-and-handling-custom-routes&#34;&gt;Adding and handling custom routes&lt;/h2&gt;
+
+&lt;p&gt;First of all, in the &lt;code&gt;Configure&lt;/code&gt; method from &lt;code&gt;Startup&lt;/code&gt; we need to instantiate a new instance of the &lt;code&gt;RouteBuilder&lt;/code&gt; class that will allow us to build custom routes and handle them.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var routeBuilder = new RouteBuilder(app);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We will then use this instance to map requests to to specific paths with our request handlers, allowing us to handle&lt;code&gt;GET&lt;/code&gt; and &lt;code&gt;POST&lt;/code&gt; requests from clients.&lt;/p&gt;
+
+&lt;p&gt;The way to map a &lt;code&gt;GET&lt;/code&gt; request is to use the &lt;code&gt;MapGet&lt;/code&gt; method from &lt;code&gt;RouteBuilder&lt;/code&gt;. Mapping the application root - &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt; is done through:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from root!&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Mapping specific paths for &lt;code&gt;GET&lt;/code&gt; - for example &lt;a href=&#34;http://localhost:5000/hello&#34;&gt;http://localhost:5000/hello&lt;/a&gt; is done in the following way.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;hello&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from /hello&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can create paths that contain multiple elements and we can extract the parameters entered when making the request. For example, when requesting on &lt;code&gt;hello/{name}&lt;/code&gt;, we can extract the parameter &lt;code&gt;{name}&lt;/code&gt; and use it when constructing the response:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;hello/{name}&amp;quot;, context =&amp;gt; context.Response
+                                                      .WriteAsync($&amp;quot;Hello, {context.GetRouteValue(&amp;quot;name&amp;quot;)}&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can also add constrains on the parameters. For example, let&amp;rsquo;s create a respond for requests coming to the path &lt;code&gt;/square/{number}&lt;/code&gt;, where &lt;code&gt;{number}&lt;/code&gt; is an &lt;code&gt;int&lt;/code&gt; and responds with the square of the number.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapGet(&amp;quot;square/{number:int}&amp;quot;, context =&amp;gt;
+        {
+            int number = Convert.ToInt32(context.GetRouteValue(&amp;quot;number&amp;quot;));
+            return context.Response.WriteAsync($&amp;quot;The square of {number} is {number * number}&amp;quot;);
+        });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;For a full list of parameter constraints, see this table from &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/routing.html#id7&#34;&gt;the Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In order to test wether the routing works properly, open a browser and navigate to your custom route and check if the output is the desired one.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can also place some breakpoint inside the custom route handlers and iterate through the handlers step-by-step, watching how the response is formed.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:5000
+http://localhost:5000/hello
+http://localhost:5000/hello/John
+http://localhost:5000/square/3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So far we only created routing mapped for the &lt;code&gt;GET&lt;/code&gt; method, so we can test the output from a browser tab.
+Now we will add routing for a &lt;code&gt;POST&lt;/code&gt; method (so we will not be able to test it by navigating to the URL in the browser).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;routeBuilder.MapPost(&amp;quot;post&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Posting!&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order to test this route, we need to use a tool that sends &lt;code&gt;HTTP&lt;/code&gt; requests to our application. We will use &lt;a href=&#34;https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop&#34;&gt;PostMan for Google Chrome&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-routing/routing-postman.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;If we try and change the method type in PostMan from &lt;code&gt;POST&lt;/code&gt; to &lt;code&gt;GET&lt;/code&gt;, we notice how the request fails.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;the-full-startup-class&#34;&gt;The full &lt;code&gt;Startup&lt;/code&gt; class&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void Configure(IApplicationBuilder app)
+    {
+        
+        var routeBuilder = new RouteBuilder(app);
+        
+        routeBuilder.MapGet(&amp;quot;&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from root!&amp;quot;));
+        routeBuilder.MapGet(&amp;quot;hello&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Hello from /hello&amp;quot;));
+        routeBuilder.MapGet(&amp;quot;hello/{name}&amp;quot;, context =&amp;gt; context.Response
+                                                              .WriteAsync($&amp;quot;Hello, {context.GetRouteValue(&amp;quot;name&amp;quot;)}&amp;quot;));
+
+        routeBuilder.MapGet(&amp;quot;square/{number:int}&amp;quot;, context =&amp;gt;
+        {
+            int number = Convert.ToInt32(context.GetRouteValue(&amp;quot;number&amp;quot;));
+            return context.Response.WriteAsync($&amp;quot;The square of {number} is {number * number}&amp;quot;);
+        });
+
+        routeBuilder.MapPost(&amp;quot;post&amp;quot;, context =&amp;gt; context.Response.WriteAsync(&amp;quot;Posting!&amp;quot;));
+
+        app.UseRouter(routeBuilder.Build());
+
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We created a basic web application and we defined and handled custom routes. We also saw how to manage &lt;code&gt;GET&lt;/code&gt; and &lt;code&gt;POST&lt;/code&gt; requests.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ASP .NET Core Startup</title>
+      <link>http://radu-matei.github.io/blog/aspnet-core-startup/</link>
+      <pubDate>Tue, 19 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/aspnet-core-startup/</guid>
+      <description>
+
+&lt;h1 id=&#34;the-startup-class&#34;&gt;The &lt;code&gt;Startup&lt;/code&gt; class&lt;/h1&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In the &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-getting-started.md&#34;&gt;previous article&lt;/a&gt; we built a very basic web application that for every request had a very basic response - &lt;code&gt;Hello, Universe&lt;/code&gt; with the server current time and date.&lt;/p&gt;
+
+&lt;p&gt;Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the &lt;code&gt;Startup&lt;/code&gt; class, which is also the entry point for any incoming HTTP request.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-anatomy-of-the-startup-class&#34;&gt;The anatomy of the &lt;code&gt;Startup&lt;/code&gt; class&lt;/h2&gt;
+
+&lt;p&gt;The &lt;code&gt;Startup&lt;/code&gt; class needs to have two methods:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Configure&lt;/code&gt; - this method will respond to each incoming HTTP request. In the following example, we will use it to have the same functionality as in our previous example - returning a message with the current server time.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/middleware.html&#34;&gt;middleware&lt;/a&gt; and added using extension methods on &lt;code&gt;IApplicationBuilder&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Your &lt;code&gt;Configure&lt;/code&gt; method must accept an &lt;a href=&#34;https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html&#34;&gt;&lt;code&gt;IApplicationBuilder&lt;/code&gt;&lt;/a&gt; parameter. Additional services, like &lt;code&gt;IHostingEnvironment&lt;/code&gt; and &lt;code&gt;ILoggerFactory&lt;/code&gt; may also be specified, in which case these services will be injected by the server if they are available.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ConfigureServices&lt;/code&gt; - this &lt;strong&gt;optional&lt;/strong&gt; method is used for configuring services used by the application and is called before the &lt;code&gt;Configure&lt;/code&gt; method.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;This is the place where we will start discussing dependency injection, which will be covered in a separate topic.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;building-the-hello-world-web-application-with-startup&#34;&gt;Building the &lt;code&gt;Hello, World&lt;/code&gt; web application with &lt;code&gt;Startup&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;We are going to build the same application that responds with &lt;code&gt;Hello, World&lt;/code&gt; and the current time, this time with a &lt;code&gt;Startup&lt;/code&gt; class.&lt;/p&gt;
+
+&lt;p&gt;First of all, if this is a new application (created using &lt;code&gt;dotnet new&lt;/code&gt;), you should add the dependency to the web server Kestrel in &lt;code&gt;project.json&lt;/code&gt;, which should look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+  &amp;quot;buildOptions&amp;quot;: {
+    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+    &amp;quot;emitEntryPoint&amp;quot;: true
+  },
+  &amp;quot;dependencies&amp;quot;: {},
+  &amp;quot;frameworks&amp;quot;: {
+    &amp;quot;netcoreapp1.0&amp;quot;: {
+      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;
+      },
+      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, add a new file called &lt;code&gt;Startup.cs&lt;/code&gt; and add the following code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+public class Startup
+{
+    public void Configure(IApplicationBuilder app)
+    {
+        app.Run(context =&amp;gt;
+        {
+            var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
+            return context.Response.WriteAsync(response);
+        });
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, the code in &lt;code&gt;Configure&lt;/code&gt; is the same as the code in &lt;code&gt;Main&lt;/code&gt; from the previous example.&lt;/p&gt;
+
+&lt;p&gt;Then, in the &lt;code&gt;Main&lt;/code&gt; method we simply indicate that we have a &lt;code&gt;Startup&lt;/code&gt; class we want to use.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseStartup&amp;lt;Startup&amp;gt;()
+                .Build();
+
+                host.Run();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now if we run the application (from the command line or from VS Code) and navigate to &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt;, we see the expected output.&lt;/p&gt;
+
+&lt;p&gt;From now on, we will use the &lt;code&gt;Startup&lt;/code&gt; class when building web applications with ASP .NET Core and we will add middleware and services in it.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ASP .NET Core Introduction</title>
+      <link>http://radu-matei.github.io/blog/aspnet-core-getting-started/</link>
+      <pubDate>Mon, 18 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/aspnet-core-getting-started/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#getting-started-with-asp-net-core-10&#34;&gt;Getting Started with ASP .NET Core 1.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#make-the-project-a-web-application&#34;&gt;Make the project a web application&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ASP.NET Core is a new open-source and cross-platform framework for building modern cloud based internet connected applications, such as web apps, IoT apps and mobile backends.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;ASP.NET Core apps can run on .NET Core or on the full .NET Framework. It was architected to provide an optimized development framework for apps that are deployed to the cloud or run on-premises. It consists of modular components with minimal overhead, so you retain flexibility while constructing your solutions. You can develop and run your ASP.NET Core apps cross-platform on Windows, Mac and Linux. ASP.NET Core is open source at GitHub.&lt;/p&gt;
+
+&lt;p&gt;The best way to understand what ASP.NET Core is and why it was built is the &lt;a href=&#34;https://docs.asp.net/en/latest/intro.html&#34;&gt;Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;ASP .NET Core is a complete re-write of the 4.6 framework that came out last year and comes with a completely new architecture based on .NET Core.&lt;/p&gt;
+
+&lt;p&gt;ASP .NET Core is no longer based on&lt;code&gt;System.Web&lt;/code&gt;. Instead, everything in the framework is modular and comes as NuGet packages which allows you to only include in your application the packages that you will use, resulting in a smaller application footprint and better performance.&lt;/p&gt;
+
+&lt;p&gt;It comes with integrated &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/dependency-injection.html&#34;&gt;dependency injection&lt;/a&gt;, a new request pipeline middleware and the ability to plug in your own web server (IIS - Windows only or Kestrel inside your own process in Windows, macOS and Linux) and run across operating systems with very similar development processes and tools.&lt;/p&gt;
+
+&lt;p&gt;Together with &lt;a href=&#34;https://www.typescriptlang.org/&#34;&gt;TypeScript&lt;/a&gt;, the client-side framework of your choice (Angular 2, React, Aurelia etc), familiar tools for web developers (that didn&amp;rsquo;t have very good support on Windows until very recently) like Grunt, Gulp or Bower and with a superior performance compared to Node, for example, Microsoft bets on ASP .NET Core to become one of the preferred frameworks when building modern web and cloud applications.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;For the complete section on client-side development with ASP .NET Core see &lt;a href=&#34;https://docs.asp.net/en/latest/client-side/index.html&#34;&gt;the Official ASP .NET Core Documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The ASP .NET Core team made a priority building a great development experience for client-side frameworks and you can see the work-in-progress on the &lt;a href=&#34;https://github.com/aspnet/JavaScriptServices/&#34;&gt;JavaScriptServices repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;getting-started-with-asp-net-core-1-0&#34;&gt;Getting Started with ASP .NET Core 1.0&lt;/h2&gt;
+
+&lt;p&gt;The first step in beginning development is to install .NET Core. You should &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md&#34;&gt;follow this tutorial on how to get started with .NET Core and build a basic console application&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;After installing .NET Core, open a command-line prompt, create a new directory and add a &lt;code&gt;dotnet&lt;/code&gt; application.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir aspnet-core-tutorial
+cd aspnet-core-tutorial
+dotnet new
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-getting-started/powershell-dotnet-new.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The same commands work across Windows PowerShell and the macOS and Linux Terminal&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;To check if everything is in place, execute the following commands:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dotnet restore
+dotnet run
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-getting-started/powershell-dotnet-restore-run.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md&#34;&gt;This tutorial&lt;/a&gt; explains all commands involved here.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md#installing-visual-studio-code&#34;&gt;Install Visual Studio Code&lt;/a&gt; and open the project you created.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;make-the-project-a-web-application&#34;&gt;Make the project a web application&lt;/h2&gt;
+
+&lt;p&gt;As we established earlier, every library in the new .NET Core is a package. So in order to use some packages, we will add them in &lt;code&gt;project.json&lt;/code&gt; and at compile time, the packages get downloaded from NuGet.&lt;/p&gt;
+
+&lt;p&gt;In order to host a web application, we need to have a dependency on the web server - Kestrel. After adding this dependency, the &lt;code&gt;project.json&lt;/code&gt; file should look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+  &amp;quot;buildOptions&amp;quot;: {
+    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+    &amp;quot;emitEntryPoint&amp;quot;: true
+  },
+  &amp;quot;dependencies&amp;quot;: {},
+  &amp;quot;frameworks&amp;quot;: {
+    &amp;quot;netcoreapp1.0&amp;quot;: {
+      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;
+      },
+      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;When running on Windows, we can choose between the classic IIS web server and the new web server Kestrel web server (based on &lt;a href=&#34;https://github.com/libuv/libuv&#34;&gt;libuv&lt;/a&gt;) that runs across operating systems.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In &lt;code&gt;Program.cs&lt;/code&gt; we add the following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .Configure(app =&amp;gt; app.Run(context =&amp;gt; 
+                {
+                    var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
+                    return context.Response.WriteAsync(response);
+                }))
+                .Build();
+
+                host.Run();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In &lt;code&gt;Main&lt;/code&gt; we create an instance of &lt;code&gt;WebHostBuilder&lt;/code&gt;, which follows the &lt;a href=&#34;https://en.wikipedia.org/wiki/Builder_pattern&#34;&gt;builder pattern&lt;/a&gt; to create a web application host, which then is used to define which web server to use - &lt;code&gt;.UseKestrel()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;.Build()&lt;/code&gt; and &lt;code&gt;.Run()&lt;/code&gt; methods will start listening for HTTP requests.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Even if we create a web app, we started with a console application and added elements that allowed it to start listening for incoming HTTP requests.&lt;/p&gt;
+
+&lt;p&gt;The entry point for web applications in ASP .NET Core is also the &lt;code&gt;Main&lt;/code&gt; method.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is a very basic web application. For every request, it will simply respond with &lt;code&gt;Hello, Universe!&lt;/code&gt; and the current time of the server. It is the most simple application logic and in further examples we will examine handling more complex requests.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; .Configure(app =&amp;gt; app.Run(context =&amp;gt; 
+   {
+      var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
+      return context.Response.WriteAsync(response);
+    }))
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is the part that actually creates the response - it is a &lt;a href=&#34;https://msdn.microsoft.com/en-us/library/bb397687.aspx&#34;&gt;Lambda Expression&lt;/a&gt; that takes the &lt;code&gt;context&lt;/code&gt; as parameter and writes the response asynchrounously and is called a &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/middleware.html#what-is-middleware&#34;&gt;request delegate&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can either run the application from the command line (&lt;code&gt;dotnet run&lt;/code&gt;) or from VS Code.
+To run it from VS Code, go to the debugging pane (or press Ctrl/Cmd + Shift + D) and start the application.&lt;/p&gt;
+
+&lt;p&gt;After the application starts, open a browser and navigate to &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt;.
+If everything worked as expected, you should see the following:
+&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/aspnet-core-getting-started//aspnet-core-hello-universe-browser.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We built a very basic web application starting from the console application template by adding the Kestrel dependency and by using &lt;code&gt;WebHostBuilder&lt;/code&gt; to create the application host.&lt;/p&gt;
+
+&lt;p&gt;We then, for each request we built the response containing a simple message and the current time of the server.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

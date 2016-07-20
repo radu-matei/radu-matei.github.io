@@ -1,0 +1,878 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>Introduction to .NET Core</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.16" />
+        
+
+
+        
+            <meta name="author" content="Radu Matei">
+        
+        
+            <meta name="description" content="What is .NET Core?">
+        
+
+        
+
+  <meta name="twitter:card" content="summary"/>
+
+
+
+<meta name="twitter:title" content="Introduction to .NET Core"/>
+<meta name="twitter:description" content="What is .NET Core?"/>
+<meta name="twitter:site" content="@Matei_Radu"/>
+
+
+        <meta property="og:title" content="Introduction to .NET Core" />
+<meta property="og:description" content="What is .NET Core?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://radu-matei.github.io/blog/dot-net-core-introduction/" />
+
+
+<meta property="og:updated_time" content="2016-07-16T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+        
+<meta itemprop="name" content="Introduction to .NET Core">
+<meta itemprop="description" content="What is .NET Core?">
+
+
+<meta itemprop="dateModified" content="2016-07-16T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1072">
+
+
+
+<meta itemprop="keywords" content="aspnet-core,dotnet-core," />
+
+        
+
+        
+
+        
+        
+            
+        
+
+        
+        
+
+        
+            
+                
+                    <link rel="stylesheet" href="/css/main.min.css" />
+                
+            
+        
+
+        
+        
+        
+            
+        
+    </head>
+    <body>
+
+        
+        <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+        <h2><a href="/">Radu Matei</i></a></h2>
+    
+
+    <nav class="links">
+        <ul>
+            
+                <li>
+                    <a href="/blog">
+                        
+                            <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/categories">
+                        Categories
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/about">
+                        About
+                    </a>
+                </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="q" value="site:http://radu-matei.github.io">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+        <section>
+            <form class="search" method="get" action="//google.com/search">
+                <input type="text" name="q" placeholder="Search" />
+                <input type="hidden" name="q" value="site:http://radu-matei.github.io">
+            </form>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                
+                    <li>
+                        <a href="/blog">
+                            <h3>
+                                
+                                    <i class="fa fa-newspaper-o">&nbsp;</i>
+                                
+                                Blog
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            <h3>
+                                
+                                Categories
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/about">
+                            <h3>
+                                
+                                About
+                            </h3>
+                        </a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-routing/"><p>ASP .NET Core Routing</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-startup/"><p>ASP .NET Core Startup</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-getting-started/"><p>ASP .NET Core Introduction</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/"><p>Getting Started with .NET Core and VS Code</p></a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        
+</section>
+
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&text=Introduction%20to%20.NET%20Core&via=Matei_Radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+    <header>
+    <div class="title">
+        
+            <h1><a href="http://radu-matei.github.io/blog/dot-net-core-introduction/">Introduction to .NET Core</a></h1>
+            
+        
+        
+            <p>What is .NET Core?</p>
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2016-07-16'>
+            July 16, 2016</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>6 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&text=Introduction%20to%20.NET%20Core&via=Matei_Radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
+    
+
+    
+
+
+    <div id="content">
+        
+
+<p><strong>Table of Contents</strong></p>
+
+<ul>
+<li><a href="#what-is-net-core">What is .NET Core?</a></li>
+<li><a href="#scenarios-for-net-core">Scenarios for .NET Core</a></li>
+<li><a href="#net-standard---one-library-to-rule-them-all">.NET Standard - One library to rule them all</a></li>
+<li><a href="#tools">Tools</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+<h2 id="what-is-net-core">What is .NET Core?</h2>
+
+<blockquote>
+<p>.NET Core is a general purpose development platform maintained by Microsoft and the .NET community on <a href="https://github.com/dotnet">GitHub</a>. It is cross-platform, <strong>supporting Windows, macOS and Linux</strong>, and can be used in device, cloud, and embedded/IoT scenarios.</p>
+
+<p>The following characteristics best define .NET Core:</p>
+
+<ul>
+<li><p>Flexible deployment: Can be included in your app or installed side-by-side user- or machine-wide.</p></li>
+
+<li><p>Cross-platform: Runs on Windows, macOS and Linux; can be ported to other OSes. The supported Operating Systems (OS), CPUs and application scenarios will grow over time, provided by Microsoft, other companies, and individuals.</p></li>
+
+<li><p>Command-line tools: All product scenarios can be exercised at the command-line.</p></li>
+
+<li><p>Compatible: .NET Core is compatible with .NET Framework, Xamarin and Mono, via the .NET Standard Library.</p></li>
+
+<li><p>Open source: The .NET Core platform is open source, using MIT an  Apache 2 licenses. Documentation is licensed under CC-BY. .NET Core is a .NET Foundation project.</p></li>
+
+<li><p>Supported by Microsoft: .NET Core is supported by Microsoft, per .NET Core Support</p></li>
+</ul>
+
+<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index">More on the Official .NET Core Documentation from Microsoft</a></p>
+</blockquote>
+
+<p>Basically, Microsoft built a version of .NET to allow developers to write cross-platform and cloud-optimized applications.</p>
+
+<p>First, .NET is cross-platform. It runs on Windows, macOS and Linux, which allows the developer to share and run the exact same code between machines running different operating systems, with no changes in code and minimum or no changes in the deveopment process.
+(Watch out for OS specific APIs!)</p>
+
+<p>But the true innovation in .NET came with the modularization in design and architecture.
+The compiler (<a href="https://github.com/dotnet/roslyn">Roslyn</a>) and the runtime (<a href="https://github.com/dotnet/coreclr">CoreCLR</a>) are separate components that allow you to use different implementations (or even write your own).</p>
+
+<p>Every library comes as a NuGet package, so when you start a new project, you don&rsquo;t have any libraries, but a project file (currently a <code>.json</code>, in the future a <code>.csproj</code> to maintain consistency with all .NET projects) and a <code>Program.cs</code>.  As you develop your app, you add libraries as you need them, allowing you to minimize the size of your application.</p>
+
+<p>.NET Core also allows you to have multiple versions installed at the same time without having apps / parts of the OS breaking when you update or install a newer version of the framework, and will even allow you to ship the framework / parts of the framework with the application (since the footprint of the framework si small enough).</p>
+
+<blockquote>
+<p>.NET Core will favor performance with a standard library that minimizes allocations and the overall memory footprint of your system.
+<a href="https://msdn.microsoft.com/en-us/magazine/mt694084.aspx">The complete MSDN article.</a></p>
+</blockquote>
+
+<h2 id="scenarios-for-net-core">Scenarios for .NET Core</h2>
+
+<ul>
+<li><p><a href="https://developer.microsoft.com/en-us/windows/develop/building-universal-windows-apps">Universal Windows Apps</a> that run on all various Windows versions (on laptops, tablets, phones, IoT devices, xBox, HoloLens)</p></li>
+
+<li><p><a href="https://www.xamarin.com/platform">Xamarin Apps</a> that run on Android, iOS and macOS using the same shared C# code</p></li>
+
+<li><p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index">.NET Core</a> - cross-platform console applications and libraries</p></li>
+
+<li><p><a href="https://docs.asp.net/">ASP .NET Core</a> - cross-platform web applications that run on Windows (inside IIS and with the dedicated web server - Kestrel), macOS and Linux (with the dedicated web server - Kestrel) with <a href="http://web.ageofascent.com/asp-net-core-exeeds-1-15-million-requests-12-6-gbps/">superior performance</a> compared to the standard ASP .NET 4.6 or to Node.</p></li>
+</ul>
+
+<p><img src="https://gupaja.bn1301.livefilestore.com/y3mLAmG-73wdLvYRFdnmUwYciTpGlCYf5WdiTSlRQ2hWJOiK9XB1piAiuvT_9auvQTIwmi-LuhH3qsYoVXGq1rNJ05HLWEu4ifcT6qiiMmqb27g5yG-7PuV4Y7i8qFMkKijgxTAKYjCkOdEAlBqh2hfyFrkqrbagfm0Fvp4LLpl56s?width=1280&amp;height=720&amp;cropmode=none" alt="Exciting times" /></p>
+
+<p>So right now, using C# and .NET you can build almost any type of application and target multiple frameworks.</p>
+
+<h2 id="net-standard-one-library-to-rule-them-all">.NET Standard - One library to rule them all</h2>
+
+<blockquote>
+<p>The .NET Standard Library is a formal specification of .NET APIs that are intended to be available on all .NET runtimes. The motivation behind the Standard Library is establishing greater uniformity in the .NET ecosystem. ECMA 335 continues to establish uniformity for .NET runtime behavior, but there is no similar spec for the .NET Base Class Libraries (BCL) for .NET library implementations.</p>
+
+<p>The .NET Standard Library enables the following key scenarios:</p>
+
+<ul>
+<li><p>Defines uniform set of BCL APIs for all .NET platforms to implement, independent of workload.</p></li>
+
+<li><p>Enables developers to produce portable libraries that are usable across .NET runtimes, using this same set of APIs.</p></li>
+
+<li><p>Reduces and hopefully eliminates conditional compilation of shared source due to .NET APIs, only for OS APIs.</p></li>
+</ul>
+
+<p>More on the .NET Standard Library on the <a href="https://docs.microsoft.com/en-us/dotnet/articles/standard/library">Official Microsoft Documentation</a>.</p>
+</blockquote>
+
+<p><img src="https://tl4blw.bn1301.livefilestore.com/y3m6sNWtdUd2Htc9yvtCL6sEvqjaJaEHh-2uGizu_fLU3hH7DL23-0nW104ESwTFZ32v6KmBeekCkZLmPQZIh6RklD-zE2vG4fi5Zo1mnqIR_gWugP1Es97QkxhK74JazU8NFgWomXCkbvgO7jZd5nxThPRrMGdCfwwc4THeX7eqU4?width=1280&amp;height=720&amp;cropmode=none" alt=".NET" /></p>
+
+<p>The goal of .NET Standard is to have a single, unified set of libraries that you target when building an application, regardless of the type - console, web or mobile - you simply target .NET Standard and you are guaranteed that libraries there will work when shared across all platforms.</p>
+
+<p>This is the part of the framework most of the work will take place in the future and you can follow the progress or contribute in <a href="https://github.com/dotnet/corefx">this GitHub repository</a>.</p>
+
+<h2 id="tools">Tools</h2>
+
+<p>Historically, .NET developers didn&rsquo;t have to (or couldn&rsquo;t) use the command line so often. Visual Studio took care of most processes involved in building and running the applications.</p>
+
+<p>But with the open-source of .NET Core, all development efforts became CLI-first, so everything involved in building, compiling or running .NET Core applications can be done using the command line.</p>
+
+<p>In fact, all these things were built for the command line first and then were wrapped in the multiple tools available.</p>
+
+<p>Regardless of the OS, you use the same command line interface (which is also <a href="https://github.com/dotnet/cli">open source and available on GitHub</a>) to create new apps, build, or run.</p>
+
+<p><img src="https://9o6coq.bn1301.livefilestore.com/y3m9rWnsOG_vk6tONR1SWQFdThTblC_-OgmT8LZKbysS2EONc3azyFoPROy9DRCaauouG9HlOUBqk29uFbPK9Q_OPFC7QEyG_KcihlQYolIjnzOwTyhm1m_vI9ck5FfypPYz5mYRUDXW2V_8_Dn8YrvP5vSD88fXwvHKou-pU1PzsA?width=1280&amp;height=720&amp;cropmode=none" alt="Tools" /></p>
+
+<p><a href="https://www.visualstudio.com/en-us/products/code-vs.aspx">Visual Studio Code</a> is the cross-platform code editor for Linux, macOS and Windows. With VS Code you can build, debug and run web applications (ASP .NET Core, Node) or .NET Core console applications, with IntelliSense, code completion and Git integration.</p>
+
+<blockquote>
+<p>Using <a href="http://www.omnisharp.net/">OmniSharp</a> you can add IntelliSense to any of the following code editors - Atom, Brackets, Emacs, Sublime or Vim.</p>
+</blockquote>
+
+<p><a href="https://www.xamarin.com/studio">Xamarin Studio</a> is the IDE for macOS that lets you build cross-platform mobile applications for iOS, Android or macOS, and even web applications.</p>
+
+<p>With <a href="https://www.visualstudio.com/products/visual-studio-community-vs">Visual Studio Community</a> you can build all types of applications on the .NET Framework, including Xamarin apps, Azure integration and source control support. For Windows, it is the best IDE for building .NET applications.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p><a href="https://www.microsoft.com/net">You can install .NET Core 1.0 on your system right now</a> and start using the command line interface (<code>dotnet new</code>, <code>dotnet restore</code>, <code>dotnet build</code>, <code>dotnet run</code>) or install <a href="https://www.visualstudio.com/en-us/products/code-vs.aspx">Visual Studio Code</a> with IntelliSense and debugging.</p>
+
+<p>It is one of the most exciting times to be a .NET developer, being able to write code that runs across IoT devices, phones, tablets, laptops, desktops, holographic devices, servers or the cloud and share it across multiple operating systems, with familiar processes and tools.</p>
+
+    </div>
+        
+    <footer>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+
+                    
+
+                    
+                        Category
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categoriesdotnet-core'>dotnet-core</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+<ul class="actions pagination">
+    
+
+    
+        <li><a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/"
+                class="button big next">Getting Started with .NET Core and VS Code</a></li>
+    
+</ul>
+
+
+
+<div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+
+                    (function() {
+                        
+
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        
+                        var disqus_shortname = 'radu-matei';
+                        var disqus_url = 'http://radu-matei.github.io';
+
+
+                        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+
+    </div>
+         
+    
+<section id="sidebar">
+
+    
+        <section id="intro">
+            
+            
+                
+                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                
+            
+            
+                <header>
+                   <a href="/"> <h2>Radu Matei</h2></a>
+                    <p>Software developer, Microsoft Technical Evangelist Intern, Computer Science Student, Microsoft Student Partner</p>
+                </header>
+            
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+<li><a href="//stackoverflow.com/users/3084239/radu-matei" target="_blank" title="Stack Overflow" class="fa fa-stack-overflow"></a></li>
+
+
+
+
+
+
+
+
+
+<li><a href="//facebook.com/matei.radu94" target="_blank" title="Facebook" class="fa fa-facebook"></a></li>
+
+
+
+<li><a href="//twitter.com/Matei_Radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <ul class="posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-routing/">ASP .NET Core Routing</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-20'>
+                                    July 20, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-startup/">ASP .NET Core Startup</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-19'>
+                                    July 19, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-getting-started/">ASP .NET Core Introduction</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-18'>
+                                    July 18, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/">Getting Started with .NET Core and VS Code</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-07-17'>
+                                    July 17, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+
+                
+                    <li>
+                        <ul class="actions">
+                            <li><a href=
+                            
+                                /blog/
+                            
+                            class="button">View more posts</a></li>
+                        </ul>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+    
+    
+    
+        <section id="categories">
+            <ul class="posts">
+                <header>
+                    <h3><a href="/categories/">Categories</a></h3>
+                </header>
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/aspnet-core/">aspnet-core</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dotnet-core/">dotnet-core</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+            </ul>
+        </section>
+    
+
+    
+        
+
+    
+        <section id="footer">
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+<li><a href="//stackoverflow.com/users/3084239/radu-matei" target="_blank" title="Stack Overflow" class="fa fa-stack-overflow"></a></li>
+
+
+
+
+
+
+
+
+
+<li><a href="//facebook.com/matei.radu94" target="_blank" title="Facebook" class="fa fa-facebook"></a></li>
+
+
+
+<li><a href="//twitter.com/Matei_Radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+
+            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a>. Ported by <a href="//github.com/jpescador" target="_blank">Julio Pescador</a>. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+        </section>
+
+</section>
+
+            </div>
+        <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+        
+        
+
+        
+        
+            
+        
+
+        
+        
+
+        
+            
+                
+                    <script src="/js/main.min.js"></script>
+                
+            
+        
+
+            
+            <script>hljs.initHighlightingOnLoad();</script>
+            
+
+            
+    </body>
+</html>
+
