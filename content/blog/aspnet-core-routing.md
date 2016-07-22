@@ -2,7 +2,7 @@
 author = "Radu Matei"
 categories = ["aspnet-core"]
 date = "2016-07-20"
-description = "Getting started with ASP .NET Core"
+description = "Introduction to ASP .NET Core Routing"
 featuredalt = ""
 featuredpath = "date"
 linktitle = ""
