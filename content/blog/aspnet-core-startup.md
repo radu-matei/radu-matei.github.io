@@ -2,7 +2,7 @@
 author = "Radu Matei"
 categories = ["aspnet-core"]
 date = "2016-07-19"
-description = "The ASP .NET Startup"
+description = "The ASP .NET Startup class"
 featuredalt = ""
 featuredpath = "date"
 linktitle = ""
