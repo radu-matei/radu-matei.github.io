@@ -9,6 +9,14 @@ type = "post"
 
 +++
 
+Table of Content
+----------------
+
+- [Introduction](#introduction)
+- [Using the ASP .NET Core JSON Configuration Provider](#using-the-asp-net-core-json-configuration-provider)
+- [Building the configurable Greeting service](#building-the-configurable-greeting-service)
+- [Making use of ASP .NET Core Dependency Injection](#making-use-of-asp-net-core-dependency-injection)
+- [Conclusion](#conclusion)
 
 Introduction
 ---------------
