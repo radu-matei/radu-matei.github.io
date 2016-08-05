@@ -9,11 +9,24 @@ type = "post"
 
 +++
 
+Table of Content
+----------------
+
+- [Introduction](#introduction)
+- [Adding the MVC services to our application](#adding-the-mvc-services-to-our-application)
+- [Adding the `Post` class](#adding-the-post-class)
+- [Creating an `IPostRepository` interface](#creating-an-ipostrepository-interface)
+- [Creating an in-memory implementation of `IPostRepository`](#creating-an-in-memory-implementation-of-ipostrepository)
+- [The `PostController` class](#the-postcontroller-class)
+- [Registering the repository service in `Startup`](#registering-the-repository-service-in-startup)
+- [`Startup.cs`](#startup-cs)
+- [Testing the application](#testing-the-application)
+- [Conclusion](#conclusion)
 
 Introduction
 ----------------
 
-Up to this point, we have been learning about .NET Core and VS Code, about ASP .NET Core, the `Startup` class, Routing and how to use JSON Configuration.
+Up to this point, we have been learning about [.NET Core](https://radu-matei.github.io/blog/dot-net-core-introduction/) and [VS Code](https://radu-matei.github.io/blog/dot-net-core-getting-started/), about [ASP .NET Core](https://radu-matei.github.io/blog/aspnet-core-getting-started/), the [`Startup` class](https://radu-matei.github.io/blog/aspnet-core-startup/), [Routing](https://radu-matei.github.io/blog/aspnet-core-routing/) and [how to use JSON Configuration](https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/).
 
 In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.
 
@@ -36,7 +49,9 @@ The first thing we have to do is add the `"Microsoft.AspNetCore.Mvc": "1.0.0"` d
 Now we have to register some routes for the incoming requests, in this case, any incoming requests that match `/api/{controller}/{action}/{id?}`.
 
 > `{controller}` - the name of the controller (for example, `TestController` - `/api/test`)
-> `{action}` - the name of the method from the controller 
+
+> `{action}` - the name of the method from the controller
+
 > `{id?}` - optional parameter passed to the method
 
 > So a request for `/api/test/hello/3` will be mapped to `TestController` in the `Hello` method which will have 3 as parameter for `id`.
@@ -68,14 +83,13 @@ public class PostsController : Controller
 	{
 		return "Hello from MVC!";
 	}
-
 }
 ```
 
 To run the application, execute `dotnet restore` and `dotnet run` in the root of the project and browse to `http://localhost:5000/api/Posts/Hello`. If everyting works, you should see the message received from the controller.
 
 Adding the `Post` class
-------------------------------------
+------------------------
 
 As we said earlier, each user that enters can publish a post containing his user name and a text, so our `Post` class only contains two properties for the `UserName` and `Text` of the post and an `Id`.
 
@@ -95,11 +109,12 @@ As we said earlier, each user that enters can publish a post containing his user
 
         public Post()
         {
-
         }
     }
 ```
 There is also a parameterless constructor and a constructor that takes arguments the three properties.
+
+> If you add a constructor in a C# class, the compiler will no longer create the default parameterless constructor, and JSON serialization needs a parameterless constructor when serializing and deserializing objects.
 
 Creating an `IPostRepository` interface
 -------------------------------------------------------------
