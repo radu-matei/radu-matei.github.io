@@ -55,7 +55,7 @@
 
 
 <meta itemprop="dateModified" content="2016-08-05T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1470">
+<meta itemprop="wordCount" content="1540">
 
 
 
@@ -314,7 +314,7 @@ ga('send', 'pageview');
             August 5, 2016</time>
         <span class="author">Radu Matei</span>
         
-            <p>7 minute read</p>
+            <p>8 minute read</p>
         
         
     </div>
@@ -374,9 +374,24 @@ ga('send', 'pageview');
     <div id="content">
         
 
+<h2 id="table-of-content">Table of Content</h2>
+
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#adding-the-mvc-services-to-our-application">Adding the MVC services to our application</a></li>
+<li><a href="#adding-the-post-class">Adding the <code>Post</code> class</a></li>
+<li><a href="#creating-an-ipostrepository-interface">Creating an <code>IPostRepository</code> interface</a></li>
+<li><a href="#creating-an-in-memory-implementation-of-ipostrepository">Creating an in-memory implementation of <code>IPostRepository</code></a></li>
+<li><a href="#the-postcontroller-class">The <code>PostController</code> class</a></li>
+<li><a href="#registering-the-repository-service-in-startup">Registering the repository service in <code>Startup</code></a></li>
+<li><a href="#startup-cs"><code>Startup.cs</code></a></li>
+<li><a href="#testing-the-application">Testing the application</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
 <h2 id="introduction">Introduction</h2>
 
-<p>Up to this point, we have been learning about .NET Core and VS Code, about ASP .NET Core, the <code>Startup</code> class, Routing and how to use JSON Configuration.</p>
+<p>Up to this point, we have been learning about <a href="https://radu-matei.github.io/blog/dot-net-core-introduction/">.NET Core</a> and <a href="https://radu-matei.github.io/blog/dot-net-core-getting-started/">VS Code</a>, about <a href="https://radu-matei.github.io/blog/aspnet-core-getting-started/">ASP .NET Core</a>, the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/"><code>Startup</code> class</a>, <a href="https://radu-matei.github.io/blog/aspnet-core-routing/">Routing</a> and <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">how to use JSON Configuration</a>.</p>
 
 <p>In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.</p>
 
@@ -397,9 +412,11 @@ ga('send', 'pageview');
 <p>Now we have to register some routes for the incoming requests, in this case, any incoming requests that match <code>/api/{controller}/{action}/{id?}</code>.</p>
 
 <blockquote>
-<p><code>{controller}</code> - the name of the controller (for example, <code>TestController</code> - <code>/api/test</code>)
-<code>{action}</code> - the name of the method from the controller
-<code>{id?}</code> - optional parameter passed to the method</p>
+<p><code>{controller}</code> - the name of the controller (for example, <code>TestController</code> - <code>/api/test</code>)</p>
+
+<p><code>{action}</code> - the name of the method from the controller</p>
+
+<p><code>{id?}</code> - optional parameter passed to the method</p>
 
 <p>So a request for <code>/api/test/hello/3</code> will be mapped to <code>TestController</code> in the <code>Hello</code> method which will have 3 as parameter for <code>id</code>.</p>
 </blockquote>
@@ -426,11 +443,10 @@ ga('send', 'pageview');
 
 public class PostsController : Controller
 {
-	public string Hello()
-	{
-		return &quot;Hello from MVC!&quot;;
-	}
-
+    public string Hello()
+    {
+        return &quot;Hello from MVC!&quot;;
+    }
 }
 </code></pre>
 
@@ -455,12 +471,15 @@ public class PostsController : Controller
 
         public Post()
         {
-
         }
     }
 </code></pre>
 
 <p>There is also a parameterless constructor and a constructor that takes arguments the three properties.</p>
+
+<blockquote>
+<p>If you add a constructor in a C# class, the compiler will no longer create the default parameterless constructor, and JSON serialization needs a parameterless constructor when serializing and deserializing objects.</p>
+</blockquote>
 
 <h2 id="creating-an-ipostrepository-interface">Creating an <code>IPostRepository</code> interface</h2>
 

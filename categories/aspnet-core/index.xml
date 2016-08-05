@@ -17,9 +17,24 @@
       <guid>http://radu-matei.github.io/blog/aspnet-core-api/</guid>
       <description>
 
+&lt;h2 id=&#34;table-of-content&#34;&gt;Table of Content&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-the-mvc-services-to-our-application&#34;&gt;Adding the MVC services to our application&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#adding-the-post-class&#34;&gt;Adding the &lt;code&gt;Post&lt;/code&gt; class&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#creating-an-ipostrepository-interface&#34;&gt;Creating an &lt;code&gt;IPostRepository&lt;/code&gt; interface&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#creating-an-in-memory-implementation-of-ipostrepository&#34;&gt;Creating an in-memory implementation of &lt;code&gt;IPostRepository&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#the-postcontroller-class&#34;&gt;The &lt;code&gt;PostController&lt;/code&gt; class&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#registering-the-repository-service-in-startup&#34;&gt;Registering the repository service in &lt;code&gt;Startup&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#startup-cs&#34;&gt;&lt;code&gt;Startup.cs&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#testing-the-application&#34;&gt;Testing the application&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
-&lt;p&gt;Up to this point, we have been learning about .NET Core and VS Code, about ASP .NET Core, the &lt;code&gt;Startup&lt;/code&gt; class, Routing and how to use JSON Configuration.&lt;/p&gt;
+&lt;p&gt;Up to this point, we have been learning about &lt;a href=&#34;https://radu-matei.github.io/blog/dot-net-core-introduction/&#34;&gt;.NET Core&lt;/a&gt; and &lt;a href=&#34;https://radu-matei.github.io/blog/dot-net-core-getting-started/&#34;&gt;VS Code&lt;/a&gt;, about &lt;a href=&#34;https://radu-matei.github.io/blog/aspnet-core-getting-started/&#34;&gt;ASP .NET Core&lt;/a&gt;, the &lt;a href=&#34;https://radu-matei.github.io/blog/aspnet-core-startup/&#34;&gt;&lt;code&gt;Startup&lt;/code&gt; class&lt;/a&gt;, &lt;a href=&#34;https://radu-matei.github.io/blog/aspnet-core-routing/&#34;&gt;Routing&lt;/a&gt; and &lt;a href=&#34;https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/&#34;&gt;how to use JSON Configuration&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.&lt;/p&gt;
 
@@ -40,9 +55,11 @@
 &lt;p&gt;Now we have to register some routes for the incoming requests, in this case, any incoming requests that match &lt;code&gt;/api/{controller}/{action}/{id?}&lt;/code&gt;.&lt;/p&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;{controller}&lt;/code&gt; - the name of the controller (for example, &lt;code&gt;TestController&lt;/code&gt; - &lt;code&gt;/api/test&lt;/code&gt;)
-&lt;code&gt;{action}&lt;/code&gt; - the name of the method from the controller
-&lt;code&gt;{id?}&lt;/code&gt; - optional parameter passed to the method&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;{controller}&lt;/code&gt; - the name of the controller (for example, &lt;code&gt;TestController&lt;/code&gt; - &lt;code&gt;/api/test&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;{action}&lt;/code&gt; - the name of the method from the controller&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;{id?}&lt;/code&gt; - optional parameter passed to the method&lt;/p&gt;
 
 &lt;p&gt;So a request for &lt;code&gt;/api/test/hello/3&lt;/code&gt; will be mapped to &lt;code&gt;TestController&lt;/code&gt; in the &lt;code&gt;Hello&lt;/code&gt; method which will have 3 as parameter for &lt;code&gt;id&lt;/code&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -69,11 +86,10 @@
 
 public class PostsController : Controller
 {
-	public string Hello()
-	{
-		return &amp;quot;Hello from MVC!&amp;quot;;
-	}
-
+    public string Hello()
+    {
+        return &amp;quot;Hello from MVC!&amp;quot;;
+    }
 }
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -98,12 +114,15 @@ public class PostsController : Controller
 
         public Post()
         {
-
         }
     }
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;There is also a parameterless constructor and a constructor that takes arguments the three properties.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;If you add a constructor in a C# class, the compiler will no longer create the default parameterless constructor, and JSON serialization needs a parameterless constructor when serializing and deserializing objects.&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;h2 id=&#34;creating-an-ipostrepository-interface&#34;&gt;Creating an &lt;code&gt;IPostRepository&lt;/code&gt; interface&lt;/h2&gt;
 
@@ -304,6 +323,16 @@ public class Startup
       
       <guid>http://radu-matei.github.io/blog/aspnet-core-configuration-greeting/</guid>
       <description>
+
+&lt;h2 id=&#34;table-of-content&#34;&gt;Table of Content&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#using-the-asp-net-core-json-configuration-provider&#34;&gt;Using the ASP .NET Core JSON Configuration Provider&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#building-the-configurable-greeting-service&#34;&gt;Building the configurable Greeting service&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#making-use-of-asp-net-core-dependency-injection&#34;&gt;Making use of ASP .NET Core Dependency Injection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
