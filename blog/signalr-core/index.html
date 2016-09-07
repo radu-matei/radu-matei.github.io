@@ -4,7 +4,7 @@
     <head>
         
             
-                <title>Getting Started with .NET Core and VS Code</title>
+                <title>Getting started with SignalR Core</title>
             
         
 
@@ -29,18 +29,18 @@
 
 
 
-<meta name="twitter:title" content="Getting Started with .NET Core and VS Code"/>
-<meta name="twitter:description" content="Table of Contents Getting started with .NET Core Installing .NET Core Building a .NET Core application using the command line interface Installing Visual Studio Code Running in Visual Studio Code Debugging in Visual Studio Code Adding classes and navigating through code Conclusion Getting started with .NET Core In the previous article, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code."/>
+<meta name="twitter:title" content="Getting started with SignalR Core"/>
+<meta name="twitter:description" content="Introduction ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data. The 1.0.0 version of ASP.NET Core didn&rsquo;t include a version of SignalR, so the team plans to release SignalR in the 1.2 iteration of the framework with some functionality that should make any SignalR developer happy: rewrite of the JavaScript client using TypeScript without the jQuery dependency, no more GlobalHost and integration with the dependency injection engine from ASP.NET Core, remove the forever frame transport completely or support binary transfer."/>
 <meta name="twitter:site" content="@Matei_Radu"/>
 
 
-        <meta property="og:title" content="Getting Started with .NET Core and VS Code" />
-<meta property="og:description" content="Table of Contents Getting started with .NET Core Installing .NET Core Building a .NET Core application using the command line interface Installing Visual Studio Code Running in Visual Studio Code Debugging in Visual Studio Code Adding classes and navigating through code Conclusion Getting started with .NET Core In the previous article, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code." />
+        <meta property="og:title" content="Getting started with SignalR Core" />
+<meta property="og:description" content="Introduction ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data. The 1.0.0 version of ASP.NET Core didn&rsquo;t include a version of SignalR, so the team plans to release SignalR in the 1.2 iteration of the framework with some functionality that should make any SignalR developer happy: rewrite of the JavaScript client using TypeScript without the jQuery dependency, no more GlobalHost and integration with the dependency injection engine from ASP.NET Core, remove the forever frame transport completely or support binary transfer." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://radu-matei.github.io/blog/dot-net-core-getting-started/" />
+<meta property="og:url" content="http://radu-matei.github.io/blog/signalr-core/" />
 
 
-<meta property="og:updated_time" content="2016-07-17T00:00:00&#43;00:00"/>
+<meta property="og:updated_time" content="2016-09-07T00:00:00&#43;00:00"/>
 
 
 
@@ -52,12 +52,12 @@
 
 
         
-<meta itemprop="name" content="Getting Started with .NET Core and VS Code">
-<meta itemprop="description" content="Table of Contents Getting started with .NET Core Installing .NET Core Building a .NET Core application using the command line interface Installing Visual Studio Code Running in Visual Studio Code Debugging in Visual Studio Code Adding classes and navigating through code Conclusion Getting started with .NET Core In the previous article, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.">
+<meta itemprop="name" content="Getting started with SignalR Core">
+<meta itemprop="description" content="Introduction ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data. The 1.0.0 version of ASP.NET Core didn&rsquo;t include a version of SignalR, so the team plans to release SignalR in the 1.2 iteration of the framework with some functionality that should make any SignalR developer happy: rewrite of the JavaScript client using TypeScript without the jQuery dependency, no more GlobalHost and integration with the dependency injection engine from ASP.NET Core, remove the forever frame transport completely or support binary transfer.">
 
 
-<meta itemprop="dateModified" content="2016-07-17T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1062">
+<meta itemprop="dateModified" content="2016-09-07T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="921">
 
 
 
@@ -246,43 +246,43 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&text=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&text=Getting%20started%20with%20SignalR%20Core&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
 
 
-<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn google-plus">
+<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f" target="_blank" class="share-btn google-plus">
     <i class="fa fa-google-plus"></i>
     <p>Google+</p>
 </a></li>
 
 
-<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn facebook">
+<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f" target="_blank" class="share-btn facebook">
     <i class="fa fa-facebook"></i>
     <p>Facebook</p>
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&title=Getting%20started%20with%20SignalR%20Core" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&title=Getting%20started%20with%20SignalR%20Core" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&title=Getting%20started%20with%20SignalR%20Core" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
 
 
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn email">
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f" target="_blank" class="share-btn email">
     <i class="fa fa-envelope"></i>
     <p>Email</p>
 </a></li>
@@ -299,7 +299,7 @@ ga('send', 'pageview');
     <header>
     <div class="title">
         
-            <h1><a href="http://radu-matei.github.io/blog/dot-net-core-getting-started/">Getting Started with .NET Core and VS Code</a></h1>
+            <h1><a href="http://radu-matei.github.io/blog/signalr-core/">Getting started with SignalR Core</a></h1>
             
         
         
@@ -310,8 +310,8 @@ ga('send', 'pageview');
         
 
         <time class="published"
-            datetime='2016-07-17'>
-            July 17, 2016</time>
+            datetime='2016-09-07'>
+            September 7, 2016</time>
         <span class="author">Radu Matei</span>
         
             <p>5 minute read</p>
@@ -326,43 +326,43 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&text=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&text=Getting%20started%20with%20SignalR%20Core&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
 
 
-<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn google-plus">
+<li><a href="//plus.google.com/share?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f" target="_blank" class="share-btn google-plus">
     <i class="fa fa-google-plus"></i>
     <p>Google+</p>
 </a></li>
 
 
-<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn facebook">
+<li><a href="//www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f" target="_blank" class="share-btn facebook">
     <i class="fa fa-facebook"></i>
     <p>Facebook</p>
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&title=Getting%20started%20with%20SignalR%20Core" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&title=Getting%20started%20with%20SignalR%20Core" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f&title=Getting%20Started%20with%20.NET%20Core%20and%20VS%20Code" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f&title=Getting%20started%20with%20SignalR%20Core" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
 
 
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fdot-net-core-getting-started%2f" target="_blank" class="share-btn email">
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=http%3a%2f%2fradu-matei.github.io%2fblog%2fsignalr-core%2f" target="_blank" class="share-btn email">
     <i class="fa fa-envelope"></i>
     <p>Email</p>
 </a></li>
@@ -370,248 +370,206 @@ ga('send', 'pageview');
         </ul>
     </section>
     
-    
-
-    
-
 
     <div id="content">
         
 
-<p><strong>Table of Contents</strong></p>
-
-<ul>
-<li><a href="#getting-started-with-net-core">Getting started with .NET Core</a>
-
-<ul>
-<li><a href="#installing-net-core">Installing .NET Core</a></li>
-<li><a href="#building-a-net-core-application-using-the-command-line-interface">Building a .NET Core application using the command line interface</a></li>
-<li><a href="#installing-visual-studio-code">Installing Visual Studio Code</a></li>
-<li><a href="#running-in-visual-studio-code">Running in Visual Studio Code</a></li>
-<li><a href="#debugging-in-visual-studio-code">Debugging in Visual Studio Code</a></li>
-<li><a href="#adding-classes-and-navigating-through-code">Adding classes and navigating through code</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul></li>
-</ul>
-
-<h1 id="getting-started-with-net-core">Getting started with .NET Core</h1>
-
-<p><a href="https://radu.microsoft.pub.ro/dot-net-core-introduction/">In the previous article</a>, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.</p>
+<h2 id="introduction">Introduction</h2>
 
 <blockquote>
-<p>This tutorial can be done using Windows, Linux or macOS..</p>
+<p>ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.</p>
 </blockquote>
 
-<h2 id="installing-net-core">Installing .NET Core</h2>
+<p>The 1.0.0 version of ASP.NET Core didn&rsquo;t include a version of SignalR, so the team plans to release SignalR in the 1.2 iteration of the framework with some functionality that should make any SignalR developer happy: rewrite of the JavaScript client using TypeScript without the jQuery dependency, no more <code>GlobalHost</code> and integration with the dependency injection engine from ASP.NET Core, remove the forever frame transport completely or support binary transfer.</p>
 
-<p>Wether your OS is Windows, Linux or macOS, you can <a href="https://www.microsoft.com/net/core">go to this page and follow the instructions</a> for getting .NET Core on your machine.</p>
+<blockquote>
+<p>For the complete discussion for the SignalR planning, <a href="https://github.com/aspnet/SignalR-Server/issues/196">see this issue on the GitHub repository</a>.</p>
+</blockquote>
 
-<p>When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet"><code>dotnet</code></a>.</p>
+<p>Since we are almost a year away from the official release of the framework, everything you are about to see is by no means production ready and will most likely suffer breaking changes over time. I will try to keep this article up-to-date with the various changes that will take place around SignalR over time.</p>
 
-<p><img src="/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG" alt="dotnet PowerShell" />
-&gt; Output for the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet"><code>dotnet</code></a> command in PowerShell. The output is similar for Linux and macOS.</p>
+<p>At this moment, there is a <code>0.2.0</code> alpha version of <a href="https://dotnet.myget.org/feed/aspnetcore-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server"><code>Microsoft.AspNetCore.SignalR.Server</code></a> that makes it possible to use SignalR with an ASP.NET Core application, but it doesn&rsquo;t implement the changes mentioned above just yet and you still use the same JavaScript client with the jQuery dependency.</p>
 
-<p>At this point, you have successfully installed .NET Core and you can start building applications.</p>
+<h2 id="adding-nuget-config">Adding NuGet.Config</h2>
 
-<h2 id="building-a-net-core-application-using-the-command-line-interface">Building a .NET Core application using the command line interface</h2>
+<p>In order to get access to the development packages of SignalR (of any package, really), we need to add a <code>NuGet.Config</code> file that allows NuGet to get packages from multiple sources, in our case from the ASP.NET continous integration server from MyGet.</p>
 
-<p>In Windows PowerShell or the Linux / macOS Terminal, let&rsquo;s create a new directory. I will call it <code>dot-net-tutorial</code> and navigate to it and create a new console application here using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new"><code>dotnet new</code></a> command.</p>
+<p>In the same folder as <code>Program.cs</code> and <code>Startup.cs</code>, add a <code>NuGet.Config</code> file with the following content:</p>
 
-<pre><code>mkdir dot-net-tutorial
-cd dot-net-tutorial
-dotnet new
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;packageSources&gt;
+        &lt;clear/&gt;
+            &lt;add key=&quot;aspnetcidev&quot; value=&quot;https://dotnet.myget.org/F/aspnetcore-ci-dev/api/v3/index.json&quot;/&gt;
+            &lt;add key=&quot;api.nuget.org&quot; value=&quot;https://api.nuget.org/v3/index.json&quot;/&gt;
+    &lt;/packageSources&gt;
+&lt;/configuration&gt;
 </code></pre>
 
-<p>This is how it should look like after executing these commands.
-<img src="https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG" alt="enter image description here" /></p>
+<h2 id="adding-the-required-packages">Adding the required packages</h2>
 
-<p>Notice how we got two files after creating the project</p>
+<p>We need to add the following packages:</p>
 
-<ul>
-<li><code>Program.cs</code>- C# file containing the entry point in the console application - the <code>Main</code> method</li>
-</ul>
+<pre><code>&quot;Microsoft.AspNetCore.Server.Kestrel&quot;:&quot;1.0.0&quot;,
+&quot;Microsoft.AspNetCore.StaticFiles&quot;: &quot;1.0.0&quot;,
+&quot;Microsoft.AspNetCore.SignalR.Server&quot;: &quot;0.2.0-*&quot;,
+&quot;Microsoft.AspNetCore.WebSockets&quot;: &quot;0.2.0-*&quot;
+</code></pre>
 
-<pre><code>using System;
+<h2 id="configure-the-application">Configure the application</h2>
 
-namespace ConsoleApplication
-{
-    public class Program
+<p>Besides the usual configuration needed for a web application, we also need to add support for serving static files. If we use the current directory, the framework will search for a directory called <code>wwwroot</code> and serve the file from there.</p>
+
+<pre><code>        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseStartup&lt;Startup&gt;()
+                .Build();
+
+            host.Run();
+        }
+</code></pre>
+
+<p>Next we need to add the required services in <code>Startup</code>. In the <code>ConfigureServices</code> method we need to <code>AddSignalR</code>, with support for detailed errors in the browser console.</p>
+
+<pre><code>    public void ConfigureServices(IServiceCollection services)
     {
-        public static void Main(string[] args)
+        services.AddSignalR(options =&gt; 
         {
-            Console.WriteLine(&quot;Hello World!&quot;);
-        }
+            options.Hubs.EnableDetailedErrors = true;
+        });
     }
-}
-
 </code></pre>
 
-<blockquote>
-<p>This is a basic <code>Hello World</code> example in C# and you can <a href="https://radu.microsoft.pub.ro/csharp-fundamentals-01/">find more information about everything in the code in this article</a>.</p>
-</blockquote>
+<p>Now, in the <code>Configure</code> method, we need to serve static files, use websockets and use SignalR:</p>
 
-<ul>
-<li><code>project.json</code> - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.
-<code>
-{
-&quot;version&quot;: &quot;1.0.0-*&quot;,
-&quot;buildOptions&quot;: {
-&quot;debugType&quot;: &quot;portable&quot;,
-&quot;emitEntryPoint&quot;: true
-},
-&quot;dependencies&quot;: {},
-&quot;frameworks&quot;: {
-&quot;netcoreapp1.0&quot;: {
-  &quot;dependencies&quot;: {
-    &quot;Microsoft.NETCore.App&quot;: {
-      &quot;type&quot;: &quot;platform&quot;,
-      &quot;version&quot;: &quot;1.0.0&quot;
-    }
-  },
-  &quot;imports&quot;: &quot;dnxcore50&quot;
-}
-}
-}
-</code></li>
-</ul>
-
-<blockquote>
-<p>In a future release, the <code>project</code> file will return to a <code>.csproj</code> extension in order to maitain compatibility with all Visual Studio and Xamarin projects.</p>
-</blockquote>
-
-<p>Calling <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore"><code>dotnet restore</code></a>  will restore all dependencies of the application.</p>
-
-<pre><code>dotnet restore
-</code></pre>
-
-<blockquote>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore"><code>dotnet restore</code></a> calls into NuGet to restore the tree of dependencies. NuGet analyzes the <code>project.json</code> file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the <code>project.lock.json</code> file. The <code>project.lock.json</code> file is necessary to be able to compile and run.</p>
-
-<p>The <code>project.lock.json</code> file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.</p>
-</blockquote>
-
-<p><img src="/img/article-photos/dot-net-getting-started/dotnet-restore.JPG" alt="" /></p>
-
-<p>At this point, we can run the application and see if the output is the expected one using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run"><code>dotnet run</code></a> command.</p>
-
-<p><img src="/img/article-photos/dot-net-getting-started/dotnet-run.JPG" alt="" /></p>
-
-<p>This is how you create, build and run a basic .NET Core application using the command line.</p>
-
-<h2 id="installing-visual-studio-code">Installing Visual Studio Code</h2>
-
-<p>We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</p>
-
-<blockquote>
-<p><a href="https://code.visualstudio.com/">Install Visual Studio code from here</a></p>
-</blockquote>
-
-<p>In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs <a href="omnisharp.net/">OmniSharp</a> for IntelliSense.</p>
-
-<p><img src="/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG" alt="" /></p>
-
-<p>After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.</p>
-
-<blockquote>
-<p>You can do this in the command line by using <code>code .</code></p>
-</blockquote>
-
-<h2 id="running-in-visual-studio-code">Running in Visual Studio Code</h2>
-
-<p>In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.</p>
-
-<p><img src="/img/article-photos/dot-net-getting-started/vs-code-assets.JPG" alt="" /></p>
-
-<blockquote>
-<p>This will add a <code>.vscode</code> folder in the solution root with two <code>.json</code> files - <code>tasks.json</code> and <code>launch.json</code></p>
-</blockquote>
-
-<p>We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).</p>
-
-<p><img src="/img/article-photos/dot-net-getting-started/vs-code-run.jpg" alt="" /></p>
-
-<p>If everything goes well, you should be able to see the output in the debug console.</p>
-
-<h2 id="debugging-in-visual-studio-code">Debugging in Visual Studio Code</h2>
-
-<p>We saw how to run the application, not let&rsquo;s add a method that adds two integers.</p>
-
-<pre><code>using System;
-
-namespace ConsoleApplication
-{
-    public class Program
+<pre><code>    public void Configure(IApplicationBuilder app)
     {
-        public static void Main(string[] args)
-        {
-            int a = 7, b = 12;
-
-            Console.WriteLine(Add(a, b));
-        }
-
-        public static int Add(int a, int b)
-        {
-            int sum = a + b;
-            return sum;
-        }
+        app.UseStaticFiles();
+        app.UseWebSockets();
+        app.UseSignalR();
     }
-}
 </code></pre>
 
-<p>If we add a breakpoint at the <code>return sum</code> line and we run the application, we get the following output:</p>
-
-<p><img src="/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg" alt="" /></p>
-
-<p>The execution stopped at the line with the breakpoint and we can see the state of our program at this point.</p>
-
-<h2 id="adding-classes-and-navigating-through-code">Adding classes and navigating through code</h2>
-
-<p>At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.</p>
-
 <blockquote>
-<p>You can see a <a href="https://github.com/Microsoft/vscode-tips-and-tricks">full list of VS Code tips and tricks on the official Microsoft GitHub organization here</a>.</p>
+<p>At this moment, in order to get the framework to use websockets, you need to add <code>app.UseWebSockets()</code>. If you don&rsquo;t add the websockets support in your application, the transport will fall back to the next available transport.</p>
+
+<p>According to <a href="https://github.com/aspnet/SignalR-Server/issues/220">this GitHub issue</a>, it is still not decided wether you will need to add the websockets reference as a separate operation or if it will be included in the <code>AddSignalR()</code> call.</p>
 </blockquote>
 
-<p>We will add a very basic <code>Person</code> class based on <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes">this project</a>.</p>
+<p>At this point, you can add <code>Hub</code> classes and JavaScript clients in exactly the same way as for <code>2.2.0</code> or <code>2.2.1</code>. Note that in future releases this will most likely be different, as changes in the client start appearing.</p>
 
-<pre><code>public class Person
+<h2 id="adding-a-hub-class">Adding a Hub class</h2>
+
+<p>The very simple example here, as it is very common in the case of SignalR, a chat :)</p>
+
+<p>We have a <code>Connect</code> method used to add a user to a connected users list and a <code>Send</code> method that sends a message.</p>
+
+<pre><code>public class ChatHub : Hub
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }
+        public static List&lt;string&gt; ConnectedUsers;
 
-        public Person()
+        public void Send(string originatorUser, string message)
         {
+            Clients.All.messageReceived(originatorUser, message);
         }
 
-        public Person(string firstName, string lastName, int age)
+        public void Connect(string newUser)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Age = age;
-        }
+            if (ConnectedUsers == null)
+                ConnectedUsers = new List&lt;string&gt;();
 
-        public void PrintPerson()
-        {
-            Console.WriteLine(&quot;First Name: {0}, Last Name: {1}, Age: {2}&quot;, FirstName, LastName, Age);
+            ConnectedUsers.Add(newUser);
+            Clients.Caller.getConnectedUsers(ConnectedUsers);
+            Clients.Others.newUserAdded(newUser);
         }
 </code></pre>
 
-<p>It is a very basic class with three properties, two constructors and a method that prints the information to the console.</p>
-
 <blockquote>
-<p>You can <a href="https://github.com/microsoft-dx/csharp-fundamentals">find all necessary materials to learn C# in this repository</a>.</p>
+<p>To keep things simple I didn&rsquo;t use the <code>OnConnected</code> override here.</p>
 </blockquote>
 
-<p>In the <code>Main</code> method, we instantiate a new <code>Person</code> object and use the <code>PrintPerson</code> method to display the properties.</p>
+<h2 id="adding-the-client">Adding the client</h2>
 
-<p><img src="/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG" alt="" /></p>
+<p>We will now create a <code>wwwroot</code> directory that will contain all of our static files.</p>
+
+<p>We add a new HTML file called <code>chat.html</code> that will simply have an unordered list for the messages, a text input and a button. As you can see, the SignalR script used here is the latest one, <code>2.2.1</code>.</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Awesome Chat Application&lt;/title&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;style type=&quot;text/css&quot;&gt;
+        .userListDiv{
+            float: right;
+        }
+    &lt;/style&gt;
+
+    &lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
+    &lt;input type=&quot;text&quot; id=&quot;messageBox&quot; /&gt;
+    &lt;input type=&quot;button&quot; id=&quot;sendMessage&quot; value=&quot;Send Message!&quot; /&gt;
+    &lt;div class=&quot;userListDiv&quot;&gt;
+        &lt;ul id=&quot;userList&quot;&gt; &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.0.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;signalr/hubs&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;chat.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>We also add a <code>chat.js</code> file that contains the SignalR connection and client methods:</p>
+
+<pre><code>var userName = prompt(&quot;Enter your name: &quot;);
+var chat = $.connection.chatHub;
+chat.client.messageReceived = function (originatorUser, message) {
+    $(&quot;#messages&quot;).append('&lt;li&gt;&lt;strong&gt;' + originatorUser + '&lt;/strong&gt;: ' + message);
+};
+
+chat.client.getConnectedUsers = function (userList) {
+    for (var i = 0; i &lt; userList.length; i++)
+        addUser(userList[i]);
+};
+
+chat.client.newUserAdded = function (newUser) {
+    addUser(newUser);
+}
+
+$(&quot;#messageBox&quot;).focus();
+
+$(&quot;#sendMessage&quot;).click(function () {
+    chat.server.send(userName, $(&quot;#messageBox&quot;).val());
+    $(&quot;#messageBox&quot;).val(&quot;&quot;);
+    $(&quot;#messageBox&quot;).focus();
+});
+
+$(&quot;#messageBox&quot;).keyup(function (event) {
+    if (event.keyCode == 13)
+        $(&quot;#sendMessage&quot;).click();
+});
+
+function addUser(user){
+    $(&quot;#userList&quot;).append('&lt;li&gt;' + user + '&lt;/li&gt;');
+}
+
+$.connection.hub.logging = true;
+$.connection.hub.start().done(function () {
+    chat.server.connect(userName);
+});
+</code></pre>
+
+<p>Basically, ask the user for a user name, define the client methods that display messages and users and define the behaviour when clicking the button (and for pressing Enter).</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>We saw how to install .NET Core and how to build and run a console application using the command line.</p>
-
-<p>Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.</p>
+<p>This is a very simple example of integrating a very early preview of SignalR Core into an ASP.NET Core application. As the framework evolves, I will try to keep this example up to date.</p>
 
     </div>
         
@@ -634,7 +592,7 @@ namespace ConsoleApplication
                     
 
                     
-                        Category
+                        Categories
                     
                 
             </li>
@@ -643,7 +601,9 @@ namespace ConsoleApplication
 
     
     
-        <li><a href='/categoriesdotnet-core'>dotnet-core</a></li>
+        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+    
+        <li><a href='/categoriessignalr'>signalr</a></li>
     
 </ul>
 
@@ -651,13 +611,10 @@ namespace ConsoleApplication
 </article>
 <ul class="actions pagination">
     
-        <li><a href="http://radu-matei.github.io/blog/dot-net-core-introduction/"
-                class="button big previous">Introduction to .NET Core</a></li>
+        <li><a href="http://radu-matei.github.io/blog/aspnet-core-json-dependency-injection/"
+                class="button big previous">Inject ASP.NET Core Dependencies from JSON files</a></li>
     
 
-    
-        <li><a href="http://radu-matei.github.io/blog/aspnet-core-getting-started/"
-                class="button big next">ASP .NET Core Introduction</a></li>
     
 </ul>
 
@@ -668,13 +625,13 @@ namespace ConsoleApplication
 
 <script type="text/javascript">
     var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "http://radu-matei.github.io/blog/dot-net-core-getting-started/";
-    var disqus_title = "Getting Started with .NET Core and VS Code";
-    var disqus_url = "Getting Started with .NET Core and VS Code";
+    var disqus_identifier = "http://radu-matei.github.io/blog/signalr-core/";
+    var disqus_title = "Getting started with SignalR Core";
+    var disqus_url = "Getting started with SignalR Core";
 
     var disqus_config = function () {
-        this.page.url = "http://radu-matei.github.io/blog/dot-net-core-getting-started/";  
-        this.page.identifier = "http://radu-matei.github.io/blog/dot-net-core-getting-started/"; 
+        this.page.url = "http://radu-matei.github.io/blog/signalr-core/";  
+        this.page.identifier = "http://radu-matei.github.io/blog/signalr-core/"; 
     };
 
     (function() {
