@@ -333,8 +333,7 @@ The `ConfigureServices` method
         {
             options.Hubs.EnableDetailedErrors = true;
         });
-
-        services.AddTransient<IConnectionManager, ConnectionManager>();
+        
         services.AddMvc();
     }
 ```
