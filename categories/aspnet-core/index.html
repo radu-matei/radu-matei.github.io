@@ -18,7 +18,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.16" />
+        <meta name="generator" content="Hugo 0.17" />
         
 
 
@@ -36,7 +36,7 @@
 <meta property="og:url" content="http://radu-matei.github.io/categories/aspnet-core/" />
 
 
-<meta property="og:updated_time" content="2016-09-09T00:00:00&#43;00:00"/>
+<meta property="og:updated_time" content="2016-11-26T00:00:00&#43;00:00"/>
 
 
 
@@ -198,6 +198,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="http://radu-matei.github.io/blog/aspnet-core-docker-azure/"><p>Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</p></a>
+                    </li>
+                
+                    <li>
                         <a href="http://radu-matei.github.io/blog/rpi-sensehat-telemetry/"><p>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</p></a>
                     </li>
                 
@@ -207,10 +211,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="http://radu-matei.github.io/blog/signalr-core/"><p>Getting started with SignalR Core</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="http://radu-matei.github.io/blog/aspnet-core-json-dependency-injection/"><p>Inject ASP.NET Core Dependencies from JSON files</p></a>
                     </li>
                 
             </ul>
@@ -224,6 +224,76 @@ ga('send', 'pageview');
     <div id="main">
         <h1>aspnet-core</h1>
         
+        
+            <article class="post">
+    <header>
+    <div class="title">
+        
+            <h2><a href="http://radu-matei.github.io/blog/aspnet-core-docker-azure/">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</a></h2>
+        
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2016-11-26'>
+            November 26, 2016</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>13 minute read</p>
+        
+        
+    </div>
+</header>
+
+    
+
+    <p>Introduction In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.
+If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, you might want to skip to the part we start creating the CI/CD workflow.</p>
+
+    <footer>
+        <ul class="actions">
+            <li><a href="http://radu-matei.github.io/blog/aspnet-core-docker-azure/" class="button big">Continue Reading</a></li>
+        </ul>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+
+                    
+
+                    
+                        Categories
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+    
+        <li><a href='/categoriesdocker'>docker</a></li>
+    
+        <li><a href='/categoriesazure'>azure</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+
         
             <article class="post">
     <header>
@@ -251,7 +321,8 @@ ga('send', 'pageview');
 
     
 
-    <p>Introduction In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is 0.2.0-alpha1-22107) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients. This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here.</p>
+    <p>Introduction In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is 0.2.0-alpha1-22107) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.
+ This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here.</p>
 
     <footer>
         <ul class="actions">
@@ -322,7 +393,8 @@ ga('send', 'pageview');
 
     
 
-    <p>Introduction ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data. The 1.0.0 version of ASP.NET Core didn&rsquo;t include a version of SignalR, so the team plans to release SignalR in the 1.2 iteration of the framework with some functionality that should make any SignalR developer happy: rewrite of the JavaScript client using TypeScript without the jQuery dependency, no more GlobalHost and integration with the dependency injection engine from ASP.NET Core, remove the forever frame transport completely or support binary transfer.</p>
+    <p>Introduction  ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.
+ The 1.0.0 version of ASP.NET Core didn&rsquo;t include a version of SignalR, so the team plans to release SignalR in the 1.</p>
 
     <footer>
         <ul class="actions">
@@ -389,7 +461,7 @@ ga('send', 'pageview');
 
     
 
-    <p>Table of Content Introduction The need for registering services through a JSON file Adding the required packages Creating a dummy service How to inject an &lsquo;ITest&rsquo; service The JSON file The Service class Adding the services Testing the application The Startup class Conclusion Introduction &ldquo;Back in the days&rdquo; of ASP.NET 4.x, each of the framework components (MVC, WebAPI, OWIN, SignalR) had its own dependency resolver and its own way of integrating with the framework.</p>
+    <p>Table of Content  Introduction The need for registering services through a JSON file Adding the required packages Creating a dummy service How to inject an &lsquo;ITest&rsquo; service The JSON file The Service class Adding the services Testing the application The Startup class Conclusion  Introduction &ldquo;Back in the days&rdquo; of ASP.NET 4.x, each of the framework components (MVC, WebAPI, OWIN, SignalR) had its own dependency resolver and its own way of integrating with the framework.</p>
 
     <footer>
         <ul class="actions">
@@ -458,7 +530,7 @@ ga('send', 'pageview');
 
     
 
-    <p>Table of Content Introduction Adding the MVC services to our application Adding the Post class Creating an IPostRepository interface Creating an in-memory implementation of IPostRepository The PostController class Registering the repository service in Startup Startup.cs Testing the application Conclusion Introduction Up to this point, we have been learning about .NET Core and VS Code, about ASP .NET Core, the Startup class, Routing and how to use JSON Configuration. In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.</p>
+    <p>Table of Content  Introduction Adding the MVC services to our application Adding the Post class Creating an IPostRepository interface Creating an in-memory implementation of IPostRepository The PostController class Registering the repository service in Startup Startup.cs Testing the application Conclusion  Introduction Up to this point, we have been learning about .NET Core and VS Code, about ASP .NET Core, the Startup class, Routing and how to use JSON Configuration.</p>
 
     <footer>
         <ul class="actions">
@@ -494,75 +566,6 @@ ga('send', 'pageview');
         <li><a href='/categoriesdependency-injection'>dependency-injection</a></li>
     
         <li><a href='/categoriesmvc'>mvc</a></li>
-    
-</ul>
-
-    </footer>
-</article>
-
-        
-            <article class="post">
-    <header>
-    <div class="title">
-        
-            <h2><a href="http://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">ASP .NET Core JSON Configuration and Dependency Injection</a></h2>
-        
-        
-            <p>Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection</p>
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2016-07-23'>
-            July 23, 2016</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>11 minute read</p>
-        
-        
-    </div>
-</header>
-
-    
-
-    <p>Table of Content Introduction Using the ASP .NET Core JSON Configuration Provider Building the configurable Greeting service Making use of ASP .NET Core Dependency Injection Conclusion Introduction In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in web.config (complete description of the old web.config file), or added in a separate XML file and referenced in web.config (for scenarios like database connection strings, or storing APIs access tokens).</p>
-
-    <footer>
-        <ul class="actions">
-            <li><a href="http://radu-matei.github.io/blog/aspnet-core-configuration-greeting/" class="button big">Continue Reading</a></li>
-        </ul>
-        <ul class="stats">
-    
-        
-
-        
-        
-            <li>
-                
-                
-                    
-
-                    
-
-                    
-
-                    
-                        Categories
-                    
-                
-            </li>
-        
-    
-
-    
-    
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
-    
-        <li><a href='/categoriesdependency-injection'>dependency-injection</a></li>
     
 </ul>
 
@@ -693,6 +696,20 @@ ga('send', 'pageview');
                     <li>
                         <article>
                             <header>
+                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-docker-azure/">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2016-11-26'>
+                                    November 26, 2016</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="http://radu-matei.github.io/blog/rpi-sensehat-telemetry/">Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</a></h3>
                                 
                                     
@@ -732,20 +749,6 @@ ga('send', 'pageview');
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-json-dependency-injection/">Inject ASP.NET Core Dependencies from JSON files</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2016-08-18'>
-                                    August 18, 2016</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -780,7 +783,7 @@ ga('send', 'pageview');
                         <article>
                             <header>
                                 <a href="/categories/aspnet-core/">aspnet-core</a>
-                                <span style="float:right;">8</span>
+                                <span style="float:right;">9</span>
                             </header>
                         </article>
                     </li>
@@ -790,6 +793,15 @@ ga('send', 'pageview');
                             <header>
                                 <a href="/categories/dependency-injection/">dependency-injection</a>
                                 <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/azure/">azure</a>
+                                <span style="float:right;">2</span>
                             </header>
                         </article>
                     </li>
@@ -824,7 +836,7 @@ ga('send', 'pageview');
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/azure/">azure</a>
+                                <a href="/categories/azure-iot/">azure-iot</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -833,7 +845,7 @@ ga('send', 'pageview');
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
+                                <a href="/categories/docker/">docker</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
