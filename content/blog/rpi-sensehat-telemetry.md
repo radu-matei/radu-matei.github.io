@@ -50,7 +50,7 @@ After carefully assembling the two boards (watching not to bend the pins of eith
 
 You can [follow the instructions here to install Windows IoT Core on your Raspberry Pi](https://developer.microsoft.com/en-us/windows/iot/docs/kitsetuprpi).
 
-Assuming you assembled the board and installed Windows on your Raspberry, we ready to get started.
+Assuming you assembled the board and installed Windows on your Raspberry, we are ready to get started.
 
 Creating a Windows Universal App that will run on the Raspberry
 ---------------------------------------------------------------

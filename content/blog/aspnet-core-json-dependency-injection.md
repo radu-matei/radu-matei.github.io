@@ -16,7 +16,7 @@ Table of Content
 - [The need for registering services through a JSON file](#the-need-for-registering-services-through-a-json-file)
 - [Adding the required packages](#adding-the-required-packages)
 - [Creating a dummy service](#creating-a-dummy-service)
-- [How to inject an 'ITest' service](#how-to-inject-an-itest-service)
+- [How to inject an `ITest` service](#how-to-inject-an-itest-service)
 - [The JSON file](#the-json-file)
 - [The `Service` class](#the-service-class)
 - [Adding the services](#adding-the-services)

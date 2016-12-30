@@ -77,6 +77,7 @@ namespace ConsoleApplication
         
     
 - `project.json` - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.
+
 ```
 {
   "version": "1.0.0-*",
