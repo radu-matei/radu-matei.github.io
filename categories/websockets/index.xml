@@ -9,12 +9,526 @@
     <atom:link href="http://radu-matei.github.io/categories/websockets/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Real-Time ASP .NET Core</title>
+      <link>http://radu-matei.github.io/blog/real-time-aspnet-core/</link>
+      <pubDate>Sat, 18 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/real-time-aspnet-core/</guid>
+      <description>
+
+&lt;h2 id=&#34;what-is-this&#34;&gt;What is this?&lt;/h2&gt;
+
+&lt;p&gt;This is an ASP .NET Core middleware for providing real-time functionality to your applications. To its core, this is a WebSockets middleware for ASP .NET Core applications with TypeScript / JavaScript and .NET clients.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;This is an &lt;a href=&#34;https://github.com/radu-matei/websocket-manager&#34;&gt;&lt;strong&gt;open-source library&lt;/strong&gt; available (for using and contributing) on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;why-wouldn-t-i-use-signalr-for-real-time&#34;&gt;Why wouldn&amp;rsquo;t I use SignalR for real-time?&lt;/h2&gt;
+
+&lt;p&gt;Well, the reason is quite simple: SignalR for ASP .NET Core is still in its very incipient stages. A preview is expected mid-2017, while a release near the end of 2017, so most probably it will be available for ASP .NET Core 2.0.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/real-time-aspnet-core/timeline.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The preview and release information, as well as the photo above were taken from &lt;a href=&#34;https://vimeo.com/204078084&#34;&gt;this talk by Damian Edwards and David Fowler, the guys in charge of ASP .NET Core and SignalR&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Basically, this offers a way to provide real-time functionality to your application right now if you don&amp;rsquo;t want to wait until mid-2017 for a SignalR preview.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;At this moment, booting up a simple SignalR sample cannot be done under ASP .NET Core 1.1, the latest stable release of the framework.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;so-wait-is-this-related-to-signalr&#34;&gt;So wait. Is this related to SignalR?&lt;/h2&gt;
+
+&lt;p&gt;Simple answer: &lt;strong&gt;NO. This is not an official release from Microsoft&lt;/strong&gt; and is not in any way related to the &lt;a href=&#34;https://github.com/aspnet/signalr&#34;&gt;SignalR project which is developed on GitHub in this repository&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;However, a lot of concepts were inspired from both the new and the old SignalR, so if you wrote SignalR in the past, a lot of the concepts will be familiar.&lt;/p&gt;
+
+&lt;p&gt;Because the release of SignalR for ASP .NET Core was delayed for so long, I decided to write a very basic, stripped down (compared to the original SignalR) that only supports WebSockets (is based on &lt;code&gt;Microsoft.AspNetCore.WebSockets&lt;/code&gt;) with server support, TypeScript and C# clients.&lt;/p&gt;
+
+&lt;p&gt;This started as a fun side project (and I am pretty sure it will stay this way once SignalR becomes ready for production).&lt;/p&gt;
+
+&lt;h2 id=&#34;high-level-overview&#34;&gt;High-level overview&lt;/h2&gt;
+
+&lt;p&gt;This library offers &lt;strong&gt;real-time functionality to ASP .NET Core applications&lt;/strong&gt;, using WebSockets. It also supports &lt;strong&gt;the client and the server calling each others&amp;rsquo; methods&lt;/strong&gt; (mainly like in the good old SignalR).&lt;/p&gt;
+
+&lt;p&gt;In order to get real-time functionality in your application, you need to create a class (called &lt;code&gt;Handler&lt;/code&gt;, which inherits &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager/WebSocketHandler.cs&#34;&gt;&lt;code&gt;WebSocketHandler&lt;/code&gt;&lt;/a&gt;), that is very similar to the &lt;code&gt;Hub&lt;/code&gt; class in SignalR.&lt;/p&gt;
+
+&lt;p&gt;Then, in this &lt;code&gt;Handler&lt;/code&gt; class you can create public methods that the (JavaScript and C#) clients can call, and can call client methods.&lt;/p&gt;
+
+&lt;p&gt;Another approach is for MVC applications, where you create the &lt;code&gt;Handler&lt;/code&gt; class without any public methods, but as a proxy, and provide notifications to the clients from a controller (again, very much like in SignalR).&lt;/p&gt;
+
+&lt;p&gt;The library uses a fire-and-forget approach both on the client and the server, meaning that it tells the server / client what method to call and that&amp;rsquo;s it, it doesn&amp;rsquo;t track the execution of that method.&lt;/p&gt;
+
+&lt;p&gt;Next, we will use at how to add this library to an ASP .NET Core application.&lt;/p&gt;
+
+&lt;h2 id=&#34;getting-started-with-websocket-manager&#34;&gt;Getting started with websocket-manager&lt;/h2&gt;
+
+&lt;p&gt;The easiest way to get started is to first clone / fork the project from GitHub.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/websocket-manager&#34;&gt;&lt;code&gt;git clone https://github.com/radu-matei/websocket-manager&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, in the &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/tree/master/samples&#34;&gt;&lt;code&gt;samples&lt;/code&gt;&lt;/a&gt; directory, make a new directory and create a new .NET Core application using the &lt;code&gt;dotnet new&lt;/code&gt; command. This will be our web application, and the reason we create it in the &lt;code&gt;samples&lt;/code&gt; folder is because we will need to add a reference to the &lt;code&gt;websocket-manager&lt;/code&gt; project (since the package is not yet on NuGet).&lt;/p&gt;
+
+&lt;p&gt;Create a new .NET Core application using the &lt;code&gt;dotnet new&lt;/code&gt; command, then open the folder in VS Code. First of all, we need to update &lt;code&gt;project.json&lt;/code&gt; to reference a few NuGet packages:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;:&amp;quot;1.1.0&amp;quot;&lt;/code&gt; (the Kestrel web server that makes this a web application)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;Microsoft.AspNetCore.StaticFiles&amp;quot;:&amp;quot;1.1.0&amp;quot;&lt;/code&gt; (package that allows us to server static files)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;Newtonsoft.Json&amp;quot;:&amp;quot;9.0.1&amp;quot;&lt;/code&gt; (we will not explicitly use Newtonsoft.Json, but this is a bug in the tooling where I also need to reference a package that I use in the library in the project using the library. This should not be necessary in future tooling releases.)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;WebSocketManager&amp;quot;: {
+      &amp;quot;target&amp;quot;: &amp;quot;project&amp;quot;
+    }&lt;/code&gt; - this is the reference to the &lt;code&gt;websocket-manager&lt;/code&gt; project in the &lt;code&gt;src&lt;/code&gt; folder&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is how &lt;code&gt;project.json&lt;/code&gt; looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+  &amp;quot;buildOptions&amp;quot;: {
+    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+    &amp;quot;emitEntryPoint&amp;quot;: true
+  },
+  &amp;quot;frameworks&amp;quot;: {
+    &amp;quot;netcoreapp1.1&amp;quot;: {
+      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.1.0&amp;quot;
+        },
+        &amp;quot;WebSocketManager&amp;quot;: {
+          &amp;quot;target&amp;quot;: &amp;quot;project&amp;quot;
+        },
+        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.1.0&amp;quot;,
+        &amp;quot;Microsoft.AspNetCore.StaticFiles&amp;quot;: &amp;quot;1.1.0&amp;quot;,
+        &amp;quot;Newtonsoft.Json&amp;quot;: &amp;quot;9.0.1&amp;quot;
+      },
+      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, we need to update our &lt;code&gt;Program.cs&lt;/code&gt; to make this a web application, including our &lt;code&gt;Startup&lt;/code&gt; class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseStartup&amp;lt;Startup&amp;gt;()
+                .Build();
+
+            host.Run();
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So far this looks just like all ASP .NET Core applications showcased on this blog before, just the bare minimum parts necessary.&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s add a &lt;code&gt;Startup&lt;/code&gt; class.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://radu-matei.github.io/blog/aspnet-core-startup/&#34;&gt;More on the &lt;code&gt;Startup&lt;/code&gt; class in this article.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;First of all, in the &lt;code&gt;ConfigureServices&lt;/code&gt; method we need to add the &lt;code&gt;WebSocketManager&lt;/code&gt; service that is used across &lt;code&gt;websocket-manager&lt;/code&gt;. This extension method adds &lt;code&gt;WebSocketConnectionManager&lt;/code&gt; to the &lt;code&gt;services&lt;/code&gt;, as well as all classes that inherit &lt;code&gt;WebSocketHandler&lt;/code&gt; (more on this later).&lt;/p&gt;
+
+&lt;p&gt;In the &lt;code&gt;Configure&lt;/code&gt; method, we need to use WebSockets and Static Files. (The full &lt;code&gt;Startup&lt;/code&gt; class will be here soon).&lt;/p&gt;
+
+&lt;h2 id=&#34;building-a-chat-application&#34;&gt;Building a chat application&lt;/h2&gt;
+
+&lt;p&gt;The all present example when talking about SignalR was a chat application, and I couldn&amp;rsquo;t think of a better example, so we will build an ASP .NET Core chat application, with a webpage and a console application that logs every message.&lt;/p&gt;
+
+&lt;p&gt;We will need to add a &lt;code&gt;Handler&lt;/code&gt; class that will allow the clients to connect to our application. This class needs to inherit the &lt;code&gt;WebSocketHandler&lt;/code&gt; class from the library.&lt;/p&gt;
+
+&lt;p&gt;Since this uses the ASP .NET Core built-in dependency injection, this class will have a constructor that passes all relevant components (in this case &lt;code&gt;WebSocketManager&lt;/code&gt; - that we will not use directly).&lt;/p&gt;
+
+&lt;p&gt;This class will handle clients connecting and disconecting, exposes public methods that clients directly call (invoke) and allows the invocation of client methods.&lt;/p&gt;
+
+&lt;p&gt;The library uses a&lt;a href=&#34;https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager.Common/Message.cs&#34;&gt; &lt;code&gt;Message&lt;/code&gt; class&lt;/a&gt; to pass messages between the server and clients, which contains a &lt;code&gt;MessageType&lt;/code&gt; (most likely this will be a method invocation) and a &lt;code&gt;Data&lt;/code&gt; field which can be used to hold any JSON-serialized object (since it is a &lt;code&gt;string&lt;/code&gt; field). This is how we will pass log messages to the clients.&lt;/p&gt;
+
+&lt;h2 id=&#34;connection-and-disconnection-events&#34;&gt;Connection and Disconnection events&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;        public override async Task OnConnected(WebSocket socket)
+        {
+            await base.OnConnected(socket);
+
+            var socketId = WebSocketConnectionManager.GetId(socket);
+
+            var message = new Message()
+            {
+                MessageType = MessageType.Text,
+                Data = $&amp;quot;{socketId} is now connected&amp;quot;
+            };
+
+            await SendMessageToAllAsync(message);
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;First of all, we need to call &lt;code&gt;await base.OnConnected&lt;/code&gt; so that the framework registers the connection. Then, we can retrieve the &lt;code&gt;ConnectionId&lt;/code&gt; from the &lt;code&gt;WebSocketConnectionManager&lt;/code&gt; so that we can send all clients (by using &lt;code&gt;SendMessageToAllAsync&lt;/code&gt;) a log about who connected.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The &lt;code&gt;SendMessageToAllAsync&lt;/code&gt; method will be mainly used to pass logs to the clients and will most likely be refactored to emphasise this aspect. But for now, you might want to send plain text messages to clients, rather than method invocations.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager/WebSocketHandler.cs#L70-L83&#34;&gt;&lt;code&gt;InvokeClientMethodAsync&lt;/code&gt; method&lt;/a&gt; also uses the &lt;code&gt;SendMessageAsync&lt;/code&gt; method, passing a serialized &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager.Common/InvocationDescriptor.cs&#34;&gt;&lt;code&gt;InvocationDescriptor&lt;/code&gt;&lt;/a&gt; for the &lt;code&gt;Data&lt;/code&gt; field.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In a similar manner we treat the disconnection event:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        public override async Task OnDisconnected(WebSocket socket)
+        {
+            var socketId = WebSocketConnectionManager.GetId(socket);
+            
+            await base.OnDisconnected(socket);
+
+            var message = new Message()
+            {
+                MessageType = MessageType.Text,
+                Data = $&amp;quot;{socketId} disconnected&amp;quot;
+            };
+            await SendMessageToAllAsync(message);
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The only notable difference here is that we retrieve the connection id before calling &lt;code&gt;base.OnDisconnected&lt;/code&gt;, since this method removes the connection id from the framework.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;creating-server-methods-and-invoking-client-mehtods&#34;&gt;Creating server methods and invoking client mehtods&lt;/h2&gt;
+
+&lt;p&gt;All &lt;code&gt;public&lt;/code&gt; methods in a &lt;code&gt;Handler&lt;/code&gt; class can be invoked by connected clients.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public async Task SendMessage(string socketId, string message)
+{
+    await InvokeClientMethodToAllAsync(&amp;quot;receiveMessage&amp;quot;, socketId, message);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is how such a method would look like. When a client calls the &lt;code&gt;SendMessage&lt;/code&gt; method on the server, the server will tell all connected clients to invoke the &lt;code&gt;receiveMessage&lt;/code&gt; method, with &lt;code&gt;socketId&lt;/code&gt; and &lt;code&gt;message&lt;/code&gt; as parameters.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-full-chathandler-class&#34;&gt;The full &lt;code&gt;ChatHandler&lt;/code&gt; class&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    public class ChatHandler : WebSocketHandler
+    {
+        public ChatHandler(WebSocketConnectionManager webSocketConnectionManager) 
+                                                    : base(webSocketConnectionManager)
+        {
+        }
+
+        public override async Task OnConnected(WebSocket socket)
+        {
+            await base.OnConnected(socket);
+
+            var socketId = WebSocketConnectionManager.GetId(socket);
+
+            var message = new Message()
+            {
+                MessageType = MessageType.Text,
+                Data = $&amp;quot;{socketId} is now connected&amp;quot;
+            };
+
+            await SendMessageToAllAsync(message);
+        }
+   
+        public async Task SendMessage(string socketId, string message)
+        {
+            await InvokeClientMethodToAllAsync(&amp;quot;receiveMessage&amp;quot;, socketId, message);
+        }
+
+        public override async Task OnDisconnected(WebSocket socket)
+        {
+            var socketId = WebSocketConnectionManager.GetId(socket);
+            
+            await base.OnDisconnected(socket);
+
+            var message = new Message()
+            {
+                MessageType = MessageType.Text,
+                Data = $&amp;quot;{socketId} disconnected&amp;quot;
+            };
+            await SendMessageToAllAsync(message);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;plugging-the-handler-in-startup&#34;&gt;Plugging the handler in Startup&lt;/h2&gt;
+
+&lt;p&gt;We created a &lt;code&gt;Handler&lt;/code&gt; class, but we need to register it in &lt;code&gt;Startup&lt;/code&gt; and map clients connecting to a specific path to this &lt;code&gt;ChatHandler&lt;/code&gt; class, since we can have multiple handlers in the same application.&lt;/p&gt;
+
+&lt;p&gt;In the &lt;code&gt;Configure&lt;/code&gt; method inside &lt;code&gt;Startup&lt;/code&gt;, we need to map all clients connecting to a path in our application (in this case &amp;ldquo;/chat&amp;rdquo;) to be handled by a &lt;code&gt;Handler&lt;/code&gt; class, in this case &lt;code&gt;ChatHandler&lt;/code&gt; (given by the service provider).&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;app.MapWebSocketManager(&amp;quot;/chat&amp;quot;, serviceProvider.GetService&amp;lt;ChatHandler&amp;gt;());&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This is the full &lt;code&gt;Configure&lt;/code&gt; method in &lt;code&gt;Startup&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+        {
+            app.UseWebSockets();
+            app.MapWebSocketManager(&amp;quot;/chat&amp;quot;, serviceProvider.GetService&amp;lt;ChatHandler&amp;gt;());
+
+            app.UseStaticFiles();
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is pretty much it on the server side. Next, we will create web and .NET clients.&lt;/p&gt;
+
+&lt;h2 id=&#34;creating-the-web-client&#34;&gt;Creating the web client&lt;/h2&gt;
+
+&lt;p&gt;So far we created the server part of our chat application. Now let&amp;rsquo;s look at creating the JavaScript part for connecting to our application.&lt;/p&gt;
+
+&lt;p&gt;First, we need to create a &lt;code&gt;wwwroot&lt;/code&gt; folder in the root of our web application, and in there create a new HTML file.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can take a look at the &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager.Client.TS/src/Connection.ts&#34;&gt;TypeScript client on GitHub.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In an HTML page we will use the JavaScript transpiled version of the TypeScript client. To use, simply &lt;a href=&#34;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&#34;&gt;include this script in your page that was generated by WebPack.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;After including the &lt;code&gt;WebSocketManager&lt;/code&gt; script in your page, in order to create a new connection write:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;var connection = new WebSocketManager.Connection(&amp;quot;ws://localhost:5000/chat&amp;quot;);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, create client methods that the server can invoke:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;            connection.clientMethods[&amp;quot;receiveMessage&amp;quot;] = (socketId, message) =&amp;gt; {
+                var messageText = socketId + &amp;quot; said: &amp;quot; + message;
+               
+                console.log(messageText);
+                // do something with the message
+            };
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, simply start the connection:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;connection.start();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;And this is pretty much it. You can configure logging and have custom functionality for connection and disconnection events, but all those are optional.&lt;/p&gt;
+
+&lt;p&gt;The following page has a text input area, a button and a message list - a very basic chat page.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the optional connection and disconnection methods.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html&amp;gt;
+
+&amp;lt;head&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+
+&amp;lt;body&amp;gt;
+	&amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
+	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
+	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+
+	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+
+
+	&amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+          
+            var connection = new WebSocketManager.Connection(&amp;quot;ws://localhost:5000/chat&amp;quot;);
+            connection.enableLogging = true;
+
+            connection.connectionMethods.onConnected = () =&amp;gt; {
+                //optional
+                console.log(&amp;quot;You are now connected! Connection ID: &amp;quot; + connection.connectionId);
+            }
+
+            connection.connectionMethods.onDisconnected = () =&amp;gt; {
+                //optional
+                console.log(&amp;quot;Disconnected!&amp;quot;);
+            }
+
+            connection.clientMethods[&amp;quot;receiveMessage&amp;quot;] = (socketId, message) =&amp;gt; {
+                var messageText = socketId + &amp;quot; said: &amp;quot; + message;
+               
+                console.log(messageText);
+                appendItem(list, messageText);
+            };
+
+            connection.start();
+
+            var list = document.getElementById(&amp;quot;messages&amp;quot;);
+            var button = document.getElementById(&amp;quot;sendButton&amp;quot;); 
+            button.addEventListener(&amp;quot;click&amp;quot;, function() {
+            
+                var input = document.getElementById(&amp;quot;textInput&amp;quot;);
+                connection.invoke(&amp;quot;SendMessage&amp;quot;, connection.connectionId, input.value);
+            
+                input.value = &amp;quot;&amp;quot;;
+            });
+            
+            function appendItem(list, message) {
+                var item = document.createElement(&amp;quot;li&amp;quot;);
+                item.appendChild(document.createTextNode(message));
+                list.appendChild(item);
+             }
+    &amp;lt;/script&amp;gt;
+&amp;lt;/body&amp;gt;
+
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is pretty much the entire chat application. You can find it on GitHub, as &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/tree/master/samples/ChatApplication&#34;&gt;the &lt;code&gt;ChatApplication&lt;/code&gt; sample in the repo.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;so-does-this-really-work&#34;&gt;So does this really work?&lt;/h2&gt;
+
+&lt;p&gt;Simply start the ASP .NET Core web application and navigate to &lt;code&gt;http://localhost:5000/client.html&lt;/code&gt; (if you run directly the sample in the GitHub repository).&lt;/p&gt;
+
+&lt;p&gt;Then, start another tab with the same page and check it out:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/real-time-aspnet-core/web-chat.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-net-client&#34;&gt;The .NET Client&lt;/h2&gt;
+
+&lt;p&gt;As I said earlier, there is also a C# client. Simply start a new .NET Core console application, reference the &lt;code&gt;WebsocketManager.Client&lt;/code&gt; project from the repository and start a new connection. First, let&amp;rsquo;s look at &lt;code&gt;project.json&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/websocket-manager/tree/master/samples/EchoConsoleClient&#34;&gt;The C# client is available on GitHub, under the &lt;code&gt;samples&lt;/code&gt; folder.&lt;/a&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
+  &amp;quot;buildOptions&amp;quot;: {
+    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
+    &amp;quot;emitEntryPoint&amp;quot;: true
+  },
+  &amp;quot;dependencies&amp;quot;: {},
+  &amp;quot;frameworks&amp;quot;: {
+    &amp;quot;netcoreapp1.1&amp;quot;: {
+      &amp;quot;dependencies&amp;quot;: {
+        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
+          &amp;quot;version&amp;quot;: &amp;quot;1.1.0&amp;quot;
+        },
+        &amp;quot;WebSocketManager.Client&amp;quot;: {
+          &amp;quot;target&amp;quot;: &amp;quot;project&amp;quot;
+        },
+        &amp;quot;WebSocketManager.Common&amp;quot;: {
+          &amp;quot;target&amp;quot;: &amp;quot;project&amp;quot;
+        }
+      },
+      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that I also had to include the &lt;code&gt;Common&lt;/code&gt; project - the same bug that made me include &lt;code&gt;Newtonsoft.Json&lt;/code&gt; in the web application - hopefully with the new tooling of .NET Core this will not be necessary.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Then, the program itself is rather simple:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Program 
+{
+    private static Connection _connection;
+    public static void Main(string[] args)
+    {
+        StartConnectionAsync();
+
+        _connection.On(&amp;quot;receiveMessage&amp;quot;, (arguments) =&amp;gt; 
+        {
+            Console.WriteLine($&amp;quot;{arguments[0]} said: {arguments[1]}&amp;quot;);
+        });
+
+        Console.ReadLine();
+        StopConnectionAsync();
+    }
+
+    public static async Task StartConnectionAsync()
+    {
+        _connection = new Connection();
+        await _connection.StartConnectionAsync(&amp;quot;ws://localhost:5000/chat&amp;quot;);
+    }
+
+    public static async Task StopConnectionAsync()
+    {
+        await _connection.StopConnectionAsync();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;While keeping the web application running, start this console application as well and the behavior should be similar to:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/real-time-aspnet-core/console-chat.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;integrating-this-in-an-mvc-application&#34;&gt;Integrating this in an MVC application&lt;/h2&gt;
+
+&lt;p&gt;Most applications are not chat applications. And in most ASP .NET Core applications MVC is used. This library can also be integrated with MVC, so you can have most of the traffic going through MVC and only the notifications going through WebSocketManager.&lt;/p&gt;
+
+&lt;p&gt;Since the client will not invoke &lt;code&gt;Handler&lt;/code&gt; methods directly, the &lt;code&gt;Handler&lt;/code&gt; class only contains the constructor:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    public class NotificationsMessageHandler : WebSocketHandler
+    {
+        public NotificationsMessageHandler(WebSocketConnectionManage webSocketConnectionManager) 
+                        : base(webSocketConnectionManager)
+        {
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, in the MVC Controller simply have a property of the &lt;code&gt;Handler&lt;/code&gt; type and use it to invoke client methods inside controller methods:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    public class MessagesController : Controller
+    {
+        private NotificationsMessageHandler _notificationsMessageHandler { get; set; }
+
+        public MessagesController(NotificationsMessageHandler notificationsMessageHandler)
+        {
+            _notificationsMessageHandler = notificationsMessageHandler;
+        }
+
+        [HttpGet]
+        public async Task SendMessage([FromQueryAttribute]string message)
+        {
+           await _notificationsMessageHandler.InvokeClientMethodToAllAsync(&amp;quot;receiveMessage&amp;quot;, message);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And this is pretty much it!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/real-time-aspnet-core/mvc.gif&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;As I stated many times so far, this started as a fun side project and will probably remain so. The new SignalR will bring awesome new features and I will surely enjoy working with it.&lt;/p&gt;
+
+&lt;p&gt;But until it is ready to play with, this brings an alternative to bringing real-time functionality to your ASP .NET Core applications.&lt;/p&gt;
+
+&lt;h2 id=&#34;contributing-to-this-project-https-github-com-radu-matei-websocket-manager&#34;&gt;&lt;a href=&#34;https://github.com/radu-matei/websocket-manager&#34;&gt;Contributing to this project&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/radu-matei/websocket-manager&#34;&gt;Contributions of any type are welcomed! Please visit the GitHub repository and create issues and pull requests.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;feedback-wanted&#34;&gt;Feedback wanted&lt;/h2&gt;
+
+&lt;p&gt;If you stumbled upon this article, please take a moment and provide some feedback both on the library itself and on the way the article is written. Any feedback is immensely appreciated, as well as questions and observations.&lt;/p&gt;
+
+&lt;h2 id=&#34;thanks-for-reading&#34;&gt;Thanks for reading :)&lt;/h2&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Creating a WebSockets middleware for ASP .NET Core</title>
       <link>http://radu-matei.github.io/blog/aspnet-core-websockets-middleware/</link>
       <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>http://radu-matei.github.io/blog/aspnet-core-websockets-middleware/</guid>
       <description>
+
+&lt;h2 id=&#34;update-february-2017&#34;&gt;UPDATE - February 2017&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://radu-matei.github.ioblog/real-time-aspnet-core/&#34;&gt;This article describes the latest development of websocket-manager and how to use it in your application&lt;/a&gt;.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;While the general aspects provided in this article about creating a websockets middleware for Asp .Net Core are still valid, the specific information about the websocket-manager project have changed, since I updated a lot of parts.&lt;/p&gt;
+
+&lt;p&gt;The version of the project described in this article can still be found in the &lt;a href=&#34;https://github.com/radu-matei/websocket-manager/tree/blog-article&#34;&gt;&lt;code&gt;blog-article&lt;/code&gt;&lt;/a&gt; branch on GitHub.&lt;/p&gt;
 
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
