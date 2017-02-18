@@ -9,6 +9,15 @@ type = "post"
 
 +++
 
+UPDATE - February 2017
+----------------------
+
+**[This article describes the latest development of websocket-manager and how to use it in your application](https://radu-matei.github.ioblog/real-time-aspnet-core/).**
+
+While the general aspects provided in this article about creating a websockets middleware for Asp .Net Core are still valid, the specific information about the websocket-manager project have changed, since I updated a lot of parts.
+
+The version of the project described in this article can still be found in the [`blog-article`](https://github.com/radu-matei/websocket-manager/tree/blog-article) branch on GitHub.
+
 Introduction
 ------------
 > WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection.
