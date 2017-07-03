@@ -67,7 +67,7 @@ The version of the project described in this article can still be found in the b
 
 
 
-<meta itemprop="keywords" content="aspnet-core,azure,azure-iot,dependency-injection,docker,dotnet-core,iot,jenkins,kubernetes,mvc,signalr,websockets," />
+<meta itemprop="keywords" content="aspnet-core,azure,azure-iot,dependency-injection,docker,dotnet-core,iot,jenkins,kubernetes,mvc,signalr,swarm,websockets,windows-containers," />
 
         
 
@@ -221,6 +221,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="http://radu-matei.github.io/blog/hybrid-swarmmode/"><p>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</p></a>
+                    </li>
+                
+                    <li>
                         <a href="http://radu-matei.github.io/blog/kubernetes-jenkins-azure/"><p>Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</p></a>
                     </li>
                 
@@ -230,10 +234,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="http://radu-matei.github.io/blog/aspnet-core-websockets-middleware/"><p>Creating a WebSockets middleware for ASP .NET Core</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="http://radu-matei.github.io/blog/aspnet-core-docker-azure/"><p>Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</p></a>
                     </li>
                 
             </ul>
@@ -821,18 +821,18 @@ namespace ChatApplication
 &lt;html&gt;
 
 &lt;head&gt;
-	&lt;meta charset=&quot;utf-8&quot; /&gt;
-	&lt;title&gt;Real-Time Notifications&lt;/title&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;title&gt;Real-Time Notifications&lt;/title&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
     &lt;h1&gt;This should be mapped to &quot;/ws&quot;&lt;/h1&gt;
-	&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
-	&lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
+    &lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
+    &lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
 
-	&lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
+    &lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
 
-    	&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
+        &lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
         var uri = &quot;ws://&quot; + window.location.host + &quot;/ws&quot;;
         function connect() {
             socket = new WebSocket(uri);
@@ -1294,6 +1294,20 @@ namespace EchoConsoleClient
                     <li>
                         <article>
                             <header>
+                                <h3><a href="http://radu-matei.github.io/blog/hybrid-swarmmode/">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-07-03'>
+                                    July 3, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="http://radu-matei.github.io/blog/kubernetes-jenkins-azure/">Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</a></h3>
                                 
                                     
@@ -1329,20 +1343,6 @@ namespace EchoConsoleClient
                                 <time class="published" datetime=
                                     '2016-12-30'>
                                     December 30, 2016</time>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="http://radu-matei.github.io/blog/aspnet-core-docker-azure/">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2016-11-26'>
-                                    November 26, 2016</time>
                             </header>
                         </article>
                     </li>
@@ -1389,7 +1389,7 @@ namespace EchoConsoleClient
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/signalr/">signalr</a>
+                                <a href="/categories/azure/">azure</a>
                                 <span style="float:right;">4</span>
                             </header>
                         </article>
@@ -1398,8 +1398,8 @@ namespace EchoConsoleClient
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/azure/">azure</a>
-                                <span style="float:right;">3</span>
+                                <a href="/categories/signalr/">signalr</a>
+                                <span style="float:right;">4</span>
                             </header>
                         </article>
                     </li>
@@ -1417,7 +1417,7 @@ namespace EchoConsoleClient
                         <article>
                             <header>
                                 <a href="/categories/docker/">docker</a>
-                                <span style="float:right;">2</span>
+                                <span style="float:right;">3</span>
                             </header>
                         </article>
                     </li>
@@ -1480,6 +1480,24 @@ namespace EchoConsoleClient
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/swarm/">swarm</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/windows-containers/">windows-containers</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>

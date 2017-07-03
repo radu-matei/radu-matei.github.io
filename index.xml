@@ -6,8 +6,241 @@
     <description>Recent content on Radu Matei - Developer Evangelist</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 11 Apr 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Jul 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://radu-matei.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</title>
+      <link>http://radu-matei.github.io/blog/hybrid-swarmmode/</link>
+      <pubDate>Mon, 03 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://radu-matei.github.io/blog/hybrid-swarmmode/</guid>
+      <description>
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;This is the first part in our (at least) two parts describing how to get started with a hybrid Docker Swarm Mode cluster. In this first part, we will focus on deploying a hybrid cluster on Azure.&lt;/p&gt;
+
+&lt;p&gt;Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.&lt;/p&gt;
+
+&lt;p&gt;Here is a list of resources you might want to get started with before diving into this article:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/engine/swarm/swarm-tutorial/&#34;&gt;Getting started with Swarm Mode and Linux Containers - Docker docs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode&#34;&gt;Getting started with Swarm Mode and Windows Containers - Microsoft docs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters&#34;&gt;Initializing a Linux+Windows mixed-os cluster - Microsoft docs&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;how-is-this-article-different-compared-to-the-docs-above&#34;&gt;How is this article different compared to the docs above?&lt;/h2&gt;
+
+&lt;p&gt;In this article we will focus on deploying the cluster on Azure programatically, using &lt;a href=&#34;https://github.com/Azure/acs-engine&#34;&gt;acs-engine&lt;/a&gt;, a tool that generates &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview&#34;&gt;ARM (Azure Resource Manager) templates&lt;/a&gt; for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.&lt;/p&gt;
+
+&lt;p&gt;While you can &lt;a href=&#34;https://github.com/Azure/acs-engine&#34;&gt;find more information about acs-engine on the GitHub repo&lt;/a&gt;, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the &lt;a href=&#34;https://azure.github.io/projects/clis/&#34;&gt;various Azure command-line interfaces&lt;/a&gt; like Azure CLI 2.0 or Azure PowerShell.&lt;/p&gt;
+
+&lt;h2 id=&#34;getting-started-prerequisites&#34;&gt;Getting started - prerequisites&lt;/h2&gt;
+
+&lt;p&gt;This article will continue under the assumption that you have an active Azure subscription. If you don&amp;rsquo;t, there are various ways to get a free subscription, like &lt;a href=&#34;https://www.visualstudio.com/dev-essentials/&#34;&gt;Visual Studio Dev Essentials&lt;/a&gt; (see &lt;a href=&#34;https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md&#34;&gt;this link on how to activate your free monthly $25&lt;/a&gt;), or a &lt;a href=&#34;https://azure.microsoft.com/en-us/free/&#34;&gt;free trial&lt;/a&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Before you get started, there is a &lt;a href=&#34;https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster&#34;&gt;great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster&lt;/a&gt; where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;understanding-all-types-of-containers&#34;&gt;Understanding all types of containers&lt;/h2&gt;
+
+&lt;p&gt;First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/journey.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/&#34;&gt;Photo credits to Bruno Terkaly, from this article&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Linux containers use the host kernel to run &amp;ldquo;containerized&amp;rdquo; workloads - that is execute the process inside the container using Linux kernel features like cgroups and namespaces. Of course, to run Linux containers you need a Linux kernel - this hasn&amp;rsquo;t changed and will not change any time soon.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/&#34;&gt;When we talk about the Windows ecosystem&lt;/a&gt;, we have Windows Server Containers and Hyper-V Containers.&lt;/p&gt;
+
+&lt;p&gt;Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &amp;ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&amp;rdquo; (&lt;a href=&#34;https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/&#34;&gt;source - Microsoft docs&lt;/a&gt;)&lt;/p&gt;
+
+&lt;p&gt;Hyper-V Containers - &amp;ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&amp;rdquo; (&lt;a href=&#34;https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/&#34;&gt;source - Microsoft docs&lt;/a&gt;)&lt;/p&gt;
+
+&lt;p&gt;However, there&amp;rsquo;s a twist: announced at DockerCon 2017, you will be able to run Linux containers on Windows hosts using Hyper-V Isolation&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/&#34;&gt;Image from The New Stack&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is all possible through the new &lt;a href=&#34;https://github.com/linuxkit/linuxkit&#34;&gt;LinuxKit project&lt;/a&gt;, but more on this on a separate article in the future.&lt;/p&gt;
+
+&lt;p&gt;After we deploy our cluster, we will be able to deploy all types of containers described above.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-acs-engine-cluster-definition&#34;&gt;The acs-engine cluster definition&lt;/h2&gt;
+
+&lt;p&gt;As said earlier, we will use a JSON cluster definition file to, well, define our cluster.&lt;/p&gt;
+
+&lt;script src=&#34;//gist.github.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;This is a pretty standard cluster definition file for acs-engine, except for the addition of &lt;code&gt;windowspool&lt;/code&gt;, a pool of Windows Server agents in our cluster.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You can find &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md&#34;&gt;in-depth documentation for the cluster definition on the acs-engine GitHub repo here.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;From the definition file, we see that we have a Swarm Mode cluster, with 3 Linux masters, 3 Linux agents and 3 Windows Server 2016 agents. Before we can use this definition file, we need to add the required values for &lt;code&gt;dnxPrefix&lt;/code&gt; for the masters, Linux and Windows agents.&lt;/p&gt;
+
+&lt;p&gt;You must also provide a username and public SSH key for the Linux VMs and a username and password for the Windows VMs, and you can change the default number of 3 for the agent and master count.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/acs-swarmmode.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Compared to the image above, there is an additional VM Scale Set with the Windows agents. All VMs are in the same VNET, with the masters on a private subnet. All VMs are fully accessible to each other.&lt;/p&gt;
+
+&lt;h2 id=&#34;deploying-the-cluster-to-azure&#34;&gt;Deploying the cluster to Azure&lt;/h2&gt;
+
+&lt;p&gt;So far we only have a cluster definition (with values for FQDN, usernames and passwords). Before we can actually deploy, we need to generate the ARM templates using acs-engine.&lt;/p&gt;
+
+&lt;p&gt;In order to do this, we will use the &lt;code&gt;acs-engine&lt;/code&gt; tool. After we have the ARM template, we will use the &lt;code&gt;az&lt;/code&gt; CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/cloud-shell/overview&#34;&gt;Azure Cloud Shell&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/cloud-shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;List of tools and languages supported in the Azure Cloud Shell&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Log into &lt;a href=&#34;https://portal.azure.com&#34;&gt;portal.azure.com&lt;/a&gt; and request a cloud shell. You should see something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/portal-shell.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now we should &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine&#34;&gt;follow the instructions in the acs-engine documentation&lt;/a&gt; and install acs-engine in the Azure Cloud Shell.&lt;/p&gt;
+
+&lt;p&gt;First, we need to create a new directory called &lt;code&gt;go&lt;/code&gt; and set it as &lt;code&gt;GOPATH&lt;/code&gt;: &lt;code&gt;mkdir go&lt;/code&gt; and &lt;code&gt;export GOPATH=/home/{yourusername}/go&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Then, we need to download the package for acs-engine: &lt;code&gt;go get github.com/Azure/acs-engine&lt;/code&gt;, then navigate to the source of the package and build it: &lt;code&gt;go build&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Then, we add the &lt;code&gt;bin&lt;/code&gt; folder from the &lt;code&gt;go&lt;/code&gt; directory in the path: &lt;code&gt;export PATH=$PATH:/home/{yourusername}/go/bin&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Now you should be able to execute &lt;code&gt;acs-engine&lt;/code&gt; from any directory:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/acs-engine.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or &lt;code&gt;wget&lt;/code&gt; the file:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;After you edit the file with your values, generate the ARM templates using &lt;code&gt;acs-engine generate swarmmode-hybrid.json&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/acs-engine-generate.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This will create an &lt;code&gt;_output&lt;/code&gt; directory that will contain the ARM template tht we will use for the deployment.&lt;/p&gt;
+
+&lt;p&gt;First of all, we will create a new resource group: &lt;code&gt;az group create --location westeurope --name your-resourcegroup-name&lt;/code&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that you should choose the region closest to your location.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Then, using the generated files &lt;code&gt;azuredeploy.json&lt;/code&gt; and &lt;code&gt;azuredeploy.parameters.json&lt;/code&gt;, create a new deployment using the &lt;code&gt;az&lt;/code&gt; command-line interface:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;az group deployment create --name hybrid-swarmmode-deployment --resource-group {your-resource-group} --template-file azuredeploy.json  --parameters azuredeploy.parameters.json&lt;/code&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that you can also use a local installation of &lt;code&gt;az&lt;/code&gt;, or in a container, or any method of deploying ARM templates.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;After the deployment started, here is how the resource group should look like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/rg.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Notice the resources created in the resource group:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;3 public IPs for masters, Linux agents and Windows agents&lt;/li&gt;
+&lt;li&gt;load balancers for masters, Linux agents and Windows agents&lt;/li&gt;
+&lt;li&gt;VM scale sets for the agents and availability sets&lt;/li&gt;
+&lt;li&gt;network interfaces and OS disks for the masters&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;connecting-to-the-cluster&#34;&gt;Connecting to the cluster&lt;/h2&gt;
+
+&lt;p&gt;After the deployment succeeds, you are now ready to connect to the master. You will SSH into the masters using the user and SSH key you setup in the cluster definition file. The 3 FQDNs will have the following template:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;{yourfqdnname}.{azurelocation}.cloudapp.azure.com&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Each master can be publicly accessed using the FQDN and one of the ports (2200..220x) (So you will access the first master on 2200, the second master on 2201 and so on.). For example, to SSH into the first master, use the following:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, if you list all nodes in the cluster you might first see this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/docker-node-ls.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This means we only see the 3 masters and the 3 Linux agents. This means that even though the Windows nodes were deployed, they did not join the swarm.&lt;/p&gt;
+
+&lt;p&gt;A very quick solution is to reimage the Windows agents. This means restoring them to the initial state and executing all scripts that were executed when initializing the cluster.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A very probable cause of this could be that &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1&#34;&gt;the script that joins the Windows agents to the cluster&lt;/a&gt; might get executed before the masters actually start.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;After reimaging or restarting the VMs, your cluster should look like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/node-ls-wc.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now you have a full hybrid Swarm Mode cluster, with some Windows agents, as well as Linux ones:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/node-inspect.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;deploying-services-to-the-cluster&#34;&gt;Deploying services to the cluster&lt;/h2&gt;
+
+&lt;p&gt;From now on, you can treat this cluster as any other Docker Swarm Mode cluster: with the single mention that you cannot run Linux containers on Windows and Windows containers on Linux. This means that when starting services, we need to put some restrictions in place.&lt;/p&gt;
+
+&lt;p&gt;We will deploy a simple Python web application on Linux that will use a Redis data store that we will run on Windows.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis&#34;&gt;The Python application can be found here&lt;/a&gt; and is very similar to the &lt;a href=&#34;https://docs.docker.com/compose/gettingstarted/&#34;&gt;Docker Compose one from the Official Docker Docs&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;script src=&#34;//gist.github.com/radu-matei/7543e906e3633075cd32231e46628bf1.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;The most important thing to notice in the stack file is the deployment constraint on the node operating system. As stated earlier, this is very important in the stack file as a Linux service will not run in a Windows host and vice-versa.&lt;/p&gt;
+
+&lt;p&gt;You can see that the &lt;code&gt;redis&lt;/code&gt; service is based on the Windows version of Redis (not something that you would use in production, here just for showcase) and is based on the Nano Server image.&lt;/p&gt;
+
+&lt;p&gt;To deploy this on the master, you need the file above. You can copy it, or &lt;code&gt;wget&lt;/code&gt; it directly: &lt;code&gt;wget https://gist.githubusercontent.com/radu-matei/7543e906e3633075cd32231e46628bf1/raw/f5e06e372c9a5c57f555e8580eee1c1a5ccb635e/hybrid-stack.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, you need to &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/stack_deploy/&#34;&gt;create a new stack deployment&lt;/a&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;docker stack deploy --compose-file hybrid-stack.yml python-redis&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/stack-deploy.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This will create two new services, the web and Redis ones, and a new network for them.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/service-ls.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://hub.docker.com/r/library/redis/&#34;&gt;Since the Nanoserver Redis image&lt;/a&gt; is around 340 MB, it will take a little to pull it, then start a container.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now since the application that exposes ports is the one running on a Linux node (the web application), we will access it on the port 80 (the one exposed) of the Linux agent FQDN:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/running.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;In this article we saw how to deploy a hybrid Swarm Mode cluster on Azure using acs-engine and how to deploy a mixed-OS containerized application on the cluster we created.&lt;/p&gt;
+
+&lt;h2 id=&#34;next-steps&#34;&gt;Next Steps&lt;/h2&gt;
+
+&lt;p&gt;Next, we will explore how to create a consistent CI/CD story with GitHub and Jenkins (with Linux and Windows slaves that are created dynamically for each build).&lt;/p&gt;
+
+&lt;h2 id=&#34;feedback&#34;&gt;Feedback&lt;/h2&gt;
+
+&lt;p&gt;If you think this article could be better, please provide your feedback in the comments below.&lt;/p&gt;
+
+&lt;h2 id=&#34;thanks-for-reading&#34;&gt;Thanks for reading :)&lt;/h2&gt;
+</description>
+    </item>
     
     <item>
       <title>Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</title>
@@ -716,21 +949,21 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
 &amp;lt;html&amp;gt;
 
 &amp;lt;head&amp;gt;
-	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
-	&amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
+    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+    &amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
 &amp;lt;/head&amp;gt;
 
 &amp;lt;body&amp;gt;
-	&amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
-	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
-	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+    &amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
+    &amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
+    &amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
 
-	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+    &amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
 
 
-	&amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+    &amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
 
-	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+    &amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
           
             var connection = new WebSocketManager.Connection(&amp;quot;ws://localhost:5000/chat&amp;quot;);
             connection.enableLogging = true;
@@ -1363,18 +1596,18 @@ namespace ChatApplication
 &amp;lt;html&amp;gt;
 
 &amp;lt;head&amp;gt;
-	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
-	&amp;lt;title&amp;gt;Real-Time Notifications&amp;lt;/title&amp;gt;
+    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+    &amp;lt;title&amp;gt;Real-Time Notifications&amp;lt;/title&amp;gt;
 &amp;lt;/head&amp;gt;
 
 &amp;lt;body&amp;gt;
     &amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/ws&amp;quot;&amp;lt;/h1&amp;gt;
-	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot;/&amp;gt;
-	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+    &amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot;/&amp;gt;
+    &amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
 
-	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+    &amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
 
-    	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+        &amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
         var uri = &amp;quot;ws://&amp;quot; + window.location.host + &amp;quot;/ws&amp;quot;;
         function connect() {
             socket = new WebSocket(uri);
@@ -2797,7 +3030,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;&amp;lt;/title&amp;gt;
-	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
@@ -3002,7 +3235,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;Awesome Chat Application&amp;lt;/title&amp;gt;
-	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
     &amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
@@ -3384,10 +3617,10 @@ public class Startup
 
 public class PostsController : Controller
 {
-	public string Hello()
-	{
-		return &amp;quot;Hello from MVC!&amp;quot;;
-	}
+    public string Hello()
+    {
+        return &amp;quot;Hello from MVC!&amp;quot;;
+    }
 }
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -4515,251 +4748,6 @@ If everything worked as expected, you should see the following:
 &lt;p&gt;We built a very basic web application starting from the console application template by adding the Kestrel dependency and by using &lt;code&gt;WebHostBuilder&lt;/code&gt; to create the application host.&lt;/p&gt;
 
 &lt;p&gt;We then, for each request we built the response containing a simple message and the current time of the server.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Getting Started with .NET Core and VS Code</title>
-      <link>http://radu-matei.github.io/blog/dot-net-core-getting-started/</link>
-      <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://radu-matei.github.io/blog/dot-net-core-getting-started/</guid>
-      <description>
-
-&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#getting-started-with-net-core&#34;&gt;Getting started with .NET Core&lt;/a&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#installing-net-core&#34;&gt;Installing .NET Core&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#building-a-net-core-application-using-the-command-line-interface&#34;&gt;Building a .NET Core application using the command line interface&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#installing-visual-studio-code&#34;&gt;Installing Visual Studio Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#running-in-visual-studio-code&#34;&gt;Running in Visual Studio Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#debugging-in-visual-studio-code&#34;&gt;Debugging in Visual Studio Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#adding-classes-and-navigating-through-code&#34;&gt;Adding classes and navigating through code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;getting-started-with-net-core&#34;&gt;Getting started with .NET Core&lt;/h1&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://radu.microsoft.pub.ro/dot-net-core-introduction/&#34;&gt;In the previous article&lt;/a&gt;, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This tutorial can be done using Windows, Linux or macOS..&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&#34;installing-net-core&#34;&gt;Installing .NET Core&lt;/h2&gt;
-
-&lt;p&gt;Wether your OS is Windows, Linux or macOS, you can &lt;a href=&#34;https://www.microsoft.com/net/core&#34;&gt;go to this page and follow the instructions&lt;/a&gt; for getting .NET Core on your machine.&lt;/p&gt;
-
-&lt;p&gt;When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet&#34;&gt;&lt;code&gt;dotnet&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG&#34; alt=&#34;dotnet PowerShell&#34; /&gt;
-&amp;gt; Output for the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet&#34;&gt;&lt;code&gt;dotnet&lt;/code&gt;&lt;/a&gt; command in PowerShell. The output is similar for Linux and macOS.&lt;/p&gt;
-
-&lt;p&gt;At this point, you have successfully installed .NET Core and you can start building applications.&lt;/p&gt;
-
-&lt;h2 id=&#34;building-a-net-core-application-using-the-command-line-interface&#34;&gt;Building a .NET Core application using the command line interface&lt;/h2&gt;
-
-&lt;p&gt;In Windows PowerShell or the Linux / macOS Terminal, let&amp;rsquo;s create a new directory. I will call it &lt;code&gt;dot-net-tutorial&lt;/code&gt; and navigate to it and create a new console application here using the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new&#34;&gt;&lt;code&gt;dotnet new&lt;/code&gt;&lt;/a&gt; command.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir dot-net-tutorial
-cd dot-net-tutorial
-dotnet new
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is how it should look like after executing these commands.
-&lt;img src=&#34;https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG&#34; alt=&#34;enter image description here&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Notice how we got two files after creating the project&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Program.cs&lt;/code&gt;- C# file containing the entry point in the console application - the &lt;code&gt;Main&lt;/code&gt; method&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;using System;
-
-namespace ConsoleApplication
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.WriteLine(&amp;quot;Hello World!&amp;quot;);
-        }
-    }
-}
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This is a basic &lt;code&gt;Hello World&lt;/code&gt; example in C# and you can &lt;a href=&#34;https://radu.microsoft.pub.ro/csharp-fundamentals-01/&#34;&gt;find more information about everything in the code in this article&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;project.json&lt;/code&gt; - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
-  &amp;quot;buildOptions&amp;quot;: {
-    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
-    &amp;quot;emitEntryPoint&amp;quot;: true
-  },
-  &amp;quot;dependencies&amp;quot;: {},
-  &amp;quot;frameworks&amp;quot;: {
-    &amp;quot;netcoreapp1.0&amp;quot;: {
-      &amp;quot;dependencies&amp;quot;: {
-        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
-          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
-          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
-        }
-      },
-      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;In a future release, the &lt;code&gt;project&lt;/code&gt; file will return to a &lt;code&gt;.csproj&lt;/code&gt; extension in order to maitain compatibility with all Visual Studio and Xamarin projects.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Calling &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore&#34;&gt;&lt;code&gt;dotnet restore&lt;/code&gt;&lt;/a&gt;  will restore all dependencies of the application.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;dotnet restore
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore&#34;&gt;&lt;code&gt;dotnet restore&lt;/code&gt;&lt;/a&gt; calls into NuGet to restore the tree of dependencies. NuGet analyzes the &lt;code&gt;project.json&lt;/code&gt; file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the &lt;code&gt;project.lock.json&lt;/code&gt; file. The &lt;code&gt;project.lock.json&lt;/code&gt; file is necessary to be able to compile and run.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;project.lock.json&lt;/code&gt; file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/dotnet-restore.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;At this point, we can run the application and see if the output is the expected one using the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run&#34;&gt;&lt;code&gt;dotnet run&lt;/code&gt;&lt;/a&gt; command.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/dotnet-run.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This is how you create, build and run a basic .NET Core application using the command line.&lt;/p&gt;
-
-&lt;h2 id=&#34;installing-visual-studio-code&#34;&gt;Installing Visual Studio Code&lt;/h2&gt;
-
-&lt;p&gt;We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - &lt;a href=&#34;https://code.visualstudio.com/&#34;&gt;Visual Studio Code&lt;/a&gt;.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://code.visualstudio.com/&#34;&gt;Install Visual Studio code from here&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs &lt;a href=&#34;omnisharp.net/&#34;&gt;OmniSharp&lt;/a&gt; for IntelliSense.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;You can do this in the command line by using &lt;code&gt;code .&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&#34;running-in-visual-studio-code&#34;&gt;Running in Visual Studio Code&lt;/h2&gt;
-
-&lt;p&gt;In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-assets.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This will add a &lt;code&gt;.vscode&lt;/code&gt; folder in the solution root with two &lt;code&gt;.json&lt;/code&gt; files - &lt;code&gt;tasks.json&lt;/code&gt; and &lt;code&gt;launch.json&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-run.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;If everything goes well, you should be able to see the output in the debug console.&lt;/p&gt;
-
-&lt;h2 id=&#34;debugging-in-visual-studio-code&#34;&gt;Debugging in Visual Studio Code&lt;/h2&gt;
-
-&lt;p&gt;We saw how to run the application, not let&amp;rsquo;s add a method that adds two integers.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;using System;
-
-namespace ConsoleApplication
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            int a = 7, b = 12;
-
-            Console.WriteLine(Add(a, b));
-        }
-
-        public static int Add(int a, int b)
-        {
-            int sum = a + b;
-            return sum;
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If we add a breakpoint at the &lt;code&gt;return sum&lt;/code&gt; line and we run the application, we get the following output:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The execution stopped at the line with the breakpoint and we can see the state of our program at this point.&lt;/p&gt;
-
-&lt;h2 id=&#34;adding-classes-and-navigating-through-code&#34;&gt;Adding classes and navigating through code&lt;/h2&gt;
-
-&lt;p&gt;At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;You can see a &lt;a href=&#34;https://github.com/Microsoft/vscode-tips-and-tricks&#34;&gt;full list of VS Code tips and tricks on the official Microsoft GitHub organization here&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;We will add a very basic &lt;code&gt;Person&lt;/code&gt; class based on &lt;a href=&#34;https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes&#34;&gt;this project&lt;/a&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public class Person
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }
-
-        public Person()
-        {
-        }
-
-        public Person(string firstName, string lastName, int age)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-            Age = age;
-        }
-
-        public void PrintPerson()
-        {
-            Console.WriteLine(&amp;quot;First Name: {0}, Last Name: {1}, Age: {2}&amp;quot;, FirstName, LastName, Age);
-        }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It is a very basic class with three properties, two constructors and a method that prints the information to the console.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;You can &lt;a href=&#34;https://github.com/microsoft-dx/csharp-fundamentals&#34;&gt;find all necessary materials to learn C# in this repository&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In the &lt;code&gt;Main&lt;/code&gt; method, we instantiate a new &lt;code&gt;Person&lt;/code&gt; object and use the &lt;code&gt;PrintPerson&lt;/code&gt; method to display the properties.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;We saw how to install .NET Core and how to build and run a console application using the command line.&lt;/p&gt;
-
-&lt;p&gt;Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.&lt;/p&gt;
 </description>
     </item>
     
