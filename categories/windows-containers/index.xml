@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Radu Matei - Developer Evangelist</title>
-    <link>http://radu-matei.github.io/categories/windows-containers/index.xml</link>
+    <link>https://radu-matei.com/categories/windows-containers/index.xml</link>
     <description>Recent content on Radu Matei - Developer Evangelist</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://radu-matei.github.io/categories/windows-containers/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://radu-matei.com/categories/windows-containers/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</title>
-      <link>http://radu-matei.github.io/blog/hybrid-swarmmode/</link>
+      <link>https://radu-matei.com/blog/hybrid-swarmmode/</link>
       <pubDate>Mon, 03 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>http://radu-matei.github.io/blog/hybrid-swarmmode/</guid>
+      <guid>https://radu-matei.com/blog/hybrid-swarmmode/</guid>
       <description>
 
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
@@ -48,7 +48,7 @@
 
 &lt;p&gt;First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/journey.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/journey.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/&#34;&gt;Photo credits to Bruno Terkaly, from this article&lt;/a&gt;&lt;/p&gt;
@@ -64,7 +64,7 @@
 
 &lt;p&gt;However, there&amp;rsquo;s a twist: announced at DockerCon 2017, you will be able to run Linux containers on Windows hosts using Hyper-V Isolation&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/&#34;&gt;Image from The New Stack&lt;/a&gt;&lt;/p&gt;
@@ -90,7 +90,7 @@
 
 &lt;p&gt;You must also provide a username and public SSH key for the Linux VMs and a username and password for the Windows VMs, and you can change the default number of 3 for the agent and master count.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/acs-swarmmode.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/acs-swarmmode.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Compared to the image above, there is an additional VM Scale Set with the Windows agents. All VMs are in the same VNET, with the masters on a private subnet. All VMs are fully accessible to each other.&lt;/p&gt;
 
@@ -100,7 +100,7 @@
 
 &lt;p&gt;In order to do this, we will use the &lt;code&gt;acs-engine&lt;/code&gt; tool. After we have the ARM template, we will use the &lt;code&gt;az&lt;/code&gt; CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/cloud-shell/overview&#34;&gt;Azure Cloud Shell&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/cloud-shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/cloud-shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;List of tools and languages supported in the Azure Cloud Shell&lt;/p&gt;
@@ -108,7 +108,7 @@
 
 &lt;p&gt;Log into &lt;a href=&#34;https://portal.azure.com&#34;&gt;portal.azure.com&lt;/a&gt; and request a cloud shell. You should see something like this:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/portal-shell.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/portal-shell.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Now we should &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine&#34;&gt;follow the instructions in the acs-engine documentation&lt;/a&gt; and install acs-engine in the Azure Cloud Shell.&lt;/p&gt;
 
@@ -120,7 +120,7 @@
 
 &lt;p&gt;Now you should be able to execute &lt;code&gt;acs-engine&lt;/code&gt; from any directory:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/acs-engine.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/acs-engine.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Now let&amp;rsquo;s create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or &lt;code&gt;wget&lt;/code&gt; the file:&lt;/p&gt;
 
@@ -128,7 +128,7 @@
 
 &lt;p&gt;After you edit the file with your values, generate the ARM templates using &lt;code&gt;acs-engine generate swarmmode-hybrid.json&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/acs-engine-generate.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/acs-engine-generate.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This will create an &lt;code&gt;_output&lt;/code&gt; directory that will contain the ARM template tht we will use for the deployment.&lt;/p&gt;
 
@@ -148,7 +148,7 @@
 
 &lt;p&gt;After the deployment started, here is how the resource group should look like:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/rg.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/rg.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Notice the resources created in the resource group:&lt;/p&gt;
 
@@ -171,7 +171,7 @@
 
 &lt;p&gt;Then, if you list all nodes in the cluster you might first see this:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/docker-node-ls.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/docker-node-ls.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This means we only see the 3 masters and the 3 Linux agents. This means that even though the Windows nodes were deployed, they did not join the swarm.&lt;/p&gt;
 
@@ -183,11 +183,11 @@
 
 &lt;p&gt;After reimaging or restarting the VMs, your cluster should look like this:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/node-ls-wc.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/node-ls-wc.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Now you have a full hybrid Swarm Mode cluster, with some Windows agents, as well as Linux ones:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/node-inspect.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/node-inspect.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;deploying-services-to-the-cluster&#34;&gt;Deploying services to the cluster&lt;/h2&gt;
 
@@ -211,11 +211,11 @@
 
 &lt;p&gt;&lt;code&gt;docker stack deploy --compose-file hybrid-stack.yml python-redis&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/stack-deploy.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/stack-deploy.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This will create two new services, the web and Redis ones, and a new network for them.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/service-ls.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/service-ls.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;https://hub.docker.com/r/library/redis/&#34;&gt;Since the Nanoserver Redis image&lt;/a&gt; is around 340 MB, it will take a little to pull it, then start a container.&lt;/p&gt;
@@ -223,7 +223,7 @@
 
 &lt;p&gt;Now since the application that exposes ports is the one running on a Linux node (the web application), we will access it on the port 80 (the one exposed) of the Linux agent FQDN:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://radu-matei.github.io/img/article-photos/hybrid-swarmmode/running.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/hybrid-swarmmode/running.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
 
