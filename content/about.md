@@ -1,24 +1,25 @@
 +++
 title = "About Me"
-date = "2016-07-20"
+date = "2017-09-05"
 +++
 
 Who am I?
 =========
 
-My name is Radu Matei, I'm an Automatic Control & Computer Science student from Bucharest, Romania, studying at the “Politehnica” University of Bucharest.
+I'm a container enthusiast and open-source software developer. I like to see myself as a "friendly geek who accelerates developers to build epic stuff", working as a Technical Evangelist @Microsoft. 
 
-I'm a Microsoft Technical Evangelist Intern and I've been a Microsoft Student Partner since my junior year.
+I am also the organizer of the [Bucharest Container Meetup](https://www.meetup.com/Bucharest-Container-Meetup/), so if you are anytime in Bucharest, Romania, be sure to check for events.
 
 What is this blog about?
 ========================
 
-This blog is about software development, mostly .NET, with Cloud, IoT and micro-services.
-I also enjoy giving technical presentations, so I will keep a record of the ones I've given.
+This blog is about containers, orchestrators, .NET Core and others.
+I enjoy speaking at confrences and meetups. You can [find my upcoming sesisons in the Speaking section](/speaking).
 
-The views presented here are my own and are not affiliated with any organization I am part of.
+
+*The views presented here are my own and are not affiliated with any organization I am part of.*
 
 
 How can you contact me?
 =======================
-On the sidebar in the left there is pretty much every place you can find me, including my email, so do not hesitate to comment or contact me.
+On the sidebar there is pretty much every place you can find me, including my email, so do not hesitate to comment or contact me.
