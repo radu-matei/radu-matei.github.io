@@ -23,77 +23,49 @@ Deploying orchestrator clusters in Azure
 
 There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to [deploy a Kubernetes cluster](https://radu-matei.com/blog/kubernetes-jenkins-azure/)). [Azure Container Service](https://azure.microsoft.com/en-us/services/container-service/) allows you to easily [deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the `az` command line](https://docs.microsoft.com/en-us/azure/container-service/). This is the way to go if you don't want to customize your cluster and you are ok with the default values that Azure provides for you.
 
-Then there is a tool called [acs-engine](https://github.com/azure/acs-engine). This is basically the "engine" that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.
+Then there is a tool called [`acs-engine`](https://github.com/azure/acs-engine). This is basically the "engine" that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.
 
-acs-engine takes a [cluster definition file](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md) where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates [ARM (Azure Resource Manager) templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates) that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).
+`acs-engine` takes a [cluster definition file](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md) where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates [ARM (Azure Resource Manager) templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates) that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).
 
-Because Kubernetes 1.8 has just been released, the [latest official stable release for acs-engine, v0.7](https://github.com/Azure/acs-engine/releases/tag/v0.7.0) doesn't support it yet, so will either have to build the binary yourself or use the one for Linux I already built (using the instructions below). 
 
-Please note that if you use the binary I built you can [do the entire process from your browser using Azure Cloud Shell. Steps below :)](#using-the-azure-cloud-shell)
+Kubernetes 1.8 has just been released, and together with it came [v0.8.0 of `acs-engine`](https://github.com/Azure/acs-engine/releases) with support for Kubernetes 1.8.
 
-Building acs-engine yourself using Docker
-=========================================
+You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).
 
-We will use [the official instructions on how to build acs-engine](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md), more specifically, the case when we have a Docker environment available.
 
-First of all, clone the acs-engine repository locally on your machine:
+Getting the `acs-engine` binary
+=============================
 
-![](/img/article-photos/k8s18-azure/clone-acs-engine.png)
+In this step all you need to do is download the the binary associated with v0.8.0 of `acs-engine` for your operating system. I will use the Azure Cloud Shell, but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.
 
-Then, you need to execute a script, `./scripts/devenv.sh` (for Linux and macOS) or `.\scripts\devenv.ps1` (for Windows) that will basically start a Linux container where you will build acs-engine. This step only has to be executed once.
+First you need to download the GitHub release archive for Linux:
 
-> Please note that this will start a priviledged container that will mount the `docker.sock` socket (among other things)!
-> [See the full script here](https://raw.githubusercontent.com/Azure/acs-engine/master/scripts/devenv.sh)
+`wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz`
 
-So basically just execute the script that works on your OS, and then you will be left in a command line where you will: `make bootstrap` and `make build`. 
+Then, you need to unarchive it:
 
-After this, you will have the binary in your repo, in the `bin` folder.
+`tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz`
 
-> Please note that the binary will not work on macOS or Windows (as the target OS from the build was Linux - since you can cross-compile go programs you can easily set the target for your operating system).
+This will create a folder called `acs-engine-v0.8.0-linux-amd64`, and inside it you will find (among the license and the readme) the `acs-engine` binary.
 
-> Note that you are still inside the container!
 
-![](/img/article-photos/k8s18-azure/docker-acs-engine.png)
+![](/img/article-photos/k8s18-azure/acs-engine-shell.png)
 
-Now you make the file executable and put in your path:
+Now you only need to put it in your path (or move it to a directory that is in your path) and you have the `acs-engine` binary accessible from anywhere.
 
-```
-chmod +x bin/acs-engine
-cp bin/acs-engine /gopath/bin/
-```
-
-![](/img/article-photos/k8s18-azure/path-acs-engine.png)
-
-Now you can either see how to get this into the Azure Cloud Shell, or skip to the part where you actually deploy the cluster from within the container you're in right now.
-
-> Note that using the instruction from GitHub you can [build acs-engine without Docker](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#building-on-windows-osx-and-linux).
-
-Using The Azure Cloud Shell
-===========================
-
-Using the exact same steps as presented earlier, I already [built the acs-engine binary and uploaded in a GitHub release inside this repo](https://github.com/radu-matei/acs-engine-k8s1dot8/releases/tag/0.1).
-
-At this point you can log into your Azure Cloud Shell, you can get this binary and make it executable:
-
-`wget https://github.com/radu-matei/acs-engine-k8s1dot8/releases/download/0.1/acs-engine`
-
-`chmod +x acs-engine`
-
-![](/img/article-photos/k8s18-azure/azure-acs-engine.png)
-
-> Please note that it is not recommended to `wget` things from unofficial sources and make them executable inside your Azure Cloud Shell and you should do it at your own risk! 
+We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.
 
 Deploy the cluster
 ==================
 
-Now all you need is a cluster definition file that acs-engine will use to deploy Kubernetes 1.8:
+This is how a typical cluster definition file looks for Kubernetes. Compared to [the example offered in the repo](https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json), this only adds the `orchestratorRelease` property and sets it to `1.8`.
 
 
 {{< gist radu-matei 7ba751e0074621313b997c12ccf28dbe >}}
 
-The great thing about this version of acs-engine is that you will only need one command to deploy this where you pass a few parameters:
+The great thing about this version of `acs-engine` is that you will only need one command to deploy this where you pass a few parameters (in older versions you would generate ARM templates using `acs-engine` and deploy them with the `az` command line):
 
-- an Azure subscription id
+- an Azure subscription id (you can find it using `az account show`)
 - a DNS prefix for your cluster
 - the location of your cluster
 - the cluster definition file from above
@@ -104,10 +76,8 @@ acs-engine deploy --subscription-id <your-subscription-id> \
     --auto-suffix --api-model kubernetes18.json
 ```
 
-Now simply execute this (be careful if the binary is not in the path - ./acs-engine), you will need to authenticate using the device login and that is about it.
-
-> Note the "orchestratorRelease" property in the JSON file set to 1.8!
-> Note that it automatically creates all assets for you includeing a service principal and a resource group.
+> Note the `orchestratorRelease` property in the JSON file set to `1.8`!
+> Note that it automatically creates all assets for you including a service principal and a resource group.
 
 ![](/img/article-photos/k8s18-azure/shell.png)
 
@@ -120,28 +90,24 @@ The output of the command above is an `_output` folder where you have your SSH k
 
 Now to access the cluster.
 
-> Note that if your are using the container from acs-engine, you should have kubectl (version 1.7)
-> If you are using Azure Cloud Shell (or want to upgrade your kubectl version), simply [follow the instructions here](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+> Depending on which version of `kubectl` you have installed, you might want to [upgrade to 1.8 as it is detailed here](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl).
 
 
 Now you need to point your `kubectl` to the `kubeconfig` file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:
 
-`export KUBECONFIG=_output/k8s1dot8-59d7bcf0/kubeconfig/kubeconfig.westeurope.json`
+`export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json`
+
+At this point you can use `kubectl` to get information about your cluster and your nodes:
 
 `kubectl get nodes`
 
-![](/img/article-photos/k8s18-azure/18.png)
+![](/img/article-photos/k8s18-azure/k8s18.png)
 
-Note that you have a Kubernetes 1.8 cluster on Azure and you can benefit from the awesome features 1.8 brings!
-
-And from the Azure Cloud Shell:
-![](/img/article-photos/k8s18-azure/shell.png)
-![](/img/article-photos/k8s18-azure/azure.png)
-
+> Note the `v1.8.0`!
 
 Conclusion, feedback wanted :)
 ===============================
 
-In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure by building acs-engine ourselves.
+In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using `acs-engine` and the Azure Cloud Shell.
 
 If you have any ideas, comments or feedback, please use the comments below :)
