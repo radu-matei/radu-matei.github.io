@@ -6,8 +6,131 @@
     <description>Recent content in Blog-rsses on Radu Matei - Developer Evangelist</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 03 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Oct 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://radu-matei.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Kubernetes 1.8 on Azure</title>
+      <link>https://radu-matei.com/blog/k8s18-azure/</link>
+      <pubDate>Fri, 06 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://radu-matei.com/blog/k8s18-azure/</guid>
+      <description>
+
+&lt;h1 id=&#34;table-of-content&#34;&gt;Table of Content&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploying-orchestrator-clusters-in-azure&#34;&gt;Deploying orchestrator clusters in Azure&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#getting-the-acs-engine-binary&#34;&gt;Getting the acs-engine binary&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploy-the-cluster&#34;&gt;Deploy the cluster&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion-feedback&#34;&gt;Conclusion and feedback&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. &lt;a href=&#34;http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html&#34;&gt;You can read the full blog post that announces the release here&lt;/a&gt; and you can see &lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0&#34;&gt;the release on GitHub&lt;/a&gt; and the &lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180&#34;&gt;associated changelog with all new features&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.&lt;/p&gt;
+
+&lt;p&gt;If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can &lt;a href=&#34;#getting-the-acs-engine-binary&#34;&gt;skip the following section and go directly to where the action actually starts.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;deploying-orchestrator-clusters-in-azure&#34;&gt;Deploying orchestrator clusters in Azure&lt;/h1&gt;
+
+&lt;p&gt;There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to &lt;a href=&#34;https://radu-matei.com/blog/kubernetes-jenkins-azure/&#34;&gt;deploy a Kubernetes cluster&lt;/a&gt;). &lt;a href=&#34;https://azure.microsoft.com/en-us/services/container-service/&#34;&gt;Azure Container Service&lt;/a&gt; allows you to easily &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/container-service/&#34;&gt;deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the &lt;code&gt;az&lt;/code&gt; command line&lt;/a&gt;. This is the way to go if you don&amp;rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.&lt;/p&gt;
+
+&lt;p&gt;Then there is a tool called &lt;a href=&#34;https://github.com/azure/acs-engine&#34;&gt;&lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt;. This is basically the &amp;ldquo;engine&amp;rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;acs-engine&lt;/code&gt; takes a &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md&#34;&gt;cluster definition file&lt;/a&gt; where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates&#34;&gt;ARM (Azure Resource Manager) templates&lt;/a&gt; that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).&lt;/p&gt;
+
+&lt;p&gt;Kubernetes 1.8 has just been released, and together with it came &lt;a href=&#34;https://github.com/Azure/acs-engine/releases&#34;&gt;v0.8.0 of &lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt; with support for Kubernetes 1.8.&lt;/p&gt;
+
+&lt;p&gt;You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).&lt;/p&gt;
+
+&lt;h1 id=&#34;getting-the-acs-engine-binary&#34;&gt;Getting the acs-engine binary&lt;/h1&gt;
+
+&lt;p&gt;In this step all you need to do is download the the binary associated with v0.8.0 of &lt;code&gt;acs-engine&lt;/code&gt; for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.&lt;/p&gt;
+
+&lt;p&gt;First you need to download the GitHub release archive for Linux:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, you need to unarchive it:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This will create a folder called &lt;code&gt;acs-engine-v0.8.0-linux-amd64&lt;/code&gt;, and inside it you will find (among the license and the readme) the &lt;code&gt;acs-engine&lt;/code&gt; binary.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/acs-engine-shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now you only need to put it in your path (or move it to a directory that is in your path) and you have the &lt;code&gt;acs-engine&lt;/code&gt; binary accessible from anywhere.&lt;/p&gt;
+
+&lt;p&gt;We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.&lt;/p&gt;
+
+&lt;h1 id=&#34;deploy-the-cluster&#34;&gt;Deploy the cluster&lt;/h1&gt;
+
+&lt;p&gt;This is how a typical cluster definition file looks for Kubernetes. Compared to &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json&#34;&gt;the example offered in the repo&lt;/a&gt;, this only adds the &lt;code&gt;orchestratorRelease&lt;/code&gt; property and sets it to &lt;code&gt;1.8&lt;/code&gt;.&lt;/p&gt;
+
+&lt;script src=&#34;//gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;The great thing about this version of &lt;code&gt;acs-engine&lt;/code&gt; is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using &lt;code&gt;acs-engine&lt;/code&gt; and deploy them with the &lt;code&gt;az&lt;/code&gt; command line):&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;an Azure subscription id (you can find it using &lt;code&gt;az account show&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;a DNS prefix for your cluster&lt;/li&gt;
+&lt;li&gt;the location of your cluster&lt;/li&gt;
+&lt;li&gt;the cluster definition file from above&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;acs-engine deploy --subscription-id &amp;lt;your-subscription-id&amp;gt; \
+    --dns-prefix &amp;lt;your-dns-prefix&amp;gt; --location westeurope \
+    --auto-suffix --api-model kubernetes18.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the &lt;code&gt;orchestratorRelease&lt;/code&gt; property in the JSON file set to &lt;code&gt;1.8&lt;/code&gt;!
+Note that it automatically creates all assets for you including a service principal and a resource group.&lt;/p&gt;
+
+&lt;p&gt;Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elswhere, the will be another step involved where you login to &lt;code&gt;aka.ms/devicelogin&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After the deployment succeeds, you should see a resource group in your subscription with all your Kubernetes assets:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/resource-group.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The output of the command above is an &lt;code&gt;_output&lt;/code&gt; folder where you have your SSH keys and the &lt;code&gt;kubeconfig&lt;/code&gt; to access the cluster.&lt;/p&gt;
+
+&lt;p&gt;Now to access the cluster.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Depending on which version of &lt;code&gt;kubectl&lt;/code&gt; you have installed, you might want to &lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl&#34;&gt;upgrade to 1.8 as it is detailed here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now you need to point your &lt;code&gt;kubectl&lt;/code&gt; to the &lt;code&gt;kubeconfig&lt;/code&gt; file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;At this point you can use &lt;code&gt;kubectl&lt;/code&gt; to get information about your cluster and your nodes:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl get nodes&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/k8s18.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the &lt;code&gt;v1.8.0&lt;/code&gt;!&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion-feedback&#34;&gt;Conclusion, feedback&lt;/h1&gt;
+
+&lt;p&gt;In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using &lt;code&gt;acs-engine&lt;/code&gt; and the Azure Cloud Shell.&lt;/p&gt;
+
+&lt;p&gt;If you have any ideas, comments or feedback, please use the comments below :)&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</title>
@@ -949,21 +1072,21 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
 &amp;lt;html&amp;gt;
 
 &amp;lt;head&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
-    &amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
 &amp;lt;/head&amp;gt;
 
 &amp;lt;body&amp;gt;
-    &amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
-    &amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
-    &amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+	&amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
+	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
+	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
 
-    &amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
 
 
-    &amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+	&amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
 
-    &amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
           
             var connection = new WebSocketManager.Connection(&amp;quot;ws://localhost:5000/chat&amp;quot;);
             connection.enableLogging = true;
@@ -1596,18 +1719,18 @@ namespace ChatApplication
 &amp;lt;html&amp;gt;
 
 &amp;lt;head&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
-    &amp;lt;title&amp;gt;Real-Time Notifications&amp;lt;/title&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;title&amp;gt;Real-Time Notifications&amp;lt;/title&amp;gt;
 &amp;lt;/head&amp;gt;
 
 &amp;lt;body&amp;gt;
     &amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/ws&amp;quot;&amp;lt;/h1&amp;gt;
-    &amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot;/&amp;gt;
-    &amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot;/&amp;gt;
+	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
 
-    &amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
 
-        &amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+    	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
         var uri = &amp;quot;ws://&amp;quot; + window.location.host + &amp;quot;/ws&amp;quot;;
         function connect() {
             socket = new WebSocket(uri);
@@ -3030,7 +3153,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;&amp;lt;/title&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
@@ -3235,7 +3358,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;Awesome Chat Application&amp;lt;/title&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
     &amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
@@ -3617,10 +3740,10 @@ public class Startup
 
 public class PostsController : Controller
 {
-    public string Hello()
-    {
-        return &amp;quot;Hello from MVC!&amp;quot;;
-    }
+	public string Hello()
+	{
+		return &amp;quot;Hello from MVC!&amp;quot;;
+	}
 }
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -4721,251 +4844,6 @@ If everything worked as expected, you should see the following:
 &lt;p&gt;We built a very basic web application starting from the console application template by adding the Kestrel dependency and by using &lt;code&gt;WebHostBuilder&lt;/code&gt; to create the application host.&lt;/p&gt;
 
 &lt;p&gt;We then, for each request we built the response containing a simple message and the current time of the server.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Getting Started with .NET Core and VS Code</title>
-      <link>https://radu-matei.com/blog/dot-net-core-getting-started/</link>
-      <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://radu-matei.com/blog/dot-net-core-getting-started/</guid>
-      <description>
-
-&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#getting-started-with-net-core&#34;&gt;Getting started with .NET Core&lt;/a&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#installing-net-core&#34;&gt;Installing .NET Core&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#building-a-net-core-application-using-the-command-line-interface&#34;&gt;Building a .NET Core application using the command line interface&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#installing-visual-studio-code&#34;&gt;Installing Visual Studio Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#running-in-visual-studio-code&#34;&gt;Running in Visual Studio Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#debugging-in-visual-studio-code&#34;&gt;Debugging in Visual Studio Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#adding-classes-and-navigating-through-code&#34;&gt;Adding classes and navigating through code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;getting-started-with-net-core&#34;&gt;Getting started with .NET Core&lt;/h1&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://radu.microsoft.pub.ro/dot-net-core-introduction/&#34;&gt;In the previous article&lt;/a&gt;, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This tutorial can be done using Windows, Linux or macOS..&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&#34;installing-net-core&#34;&gt;Installing .NET Core&lt;/h2&gt;
-
-&lt;p&gt;Wether your OS is Windows, Linux or macOS, you can &lt;a href=&#34;https://www.microsoft.com/net/core&#34;&gt;go to this page and follow the instructions&lt;/a&gt; for getting .NET Core on your machine.&lt;/p&gt;
-
-&lt;p&gt;When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet&#34;&gt;&lt;code&gt;dotnet&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG&#34; alt=&#34;dotnet PowerShell&#34; /&gt;
-&amp;gt; Output for the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet&#34;&gt;&lt;code&gt;dotnet&lt;/code&gt;&lt;/a&gt; command in PowerShell. The output is similar for Linux and macOS.&lt;/p&gt;
-
-&lt;p&gt;At this point, you have successfully installed .NET Core and you can start building applications.&lt;/p&gt;
-
-&lt;h2 id=&#34;building-a-net-core-application-using-the-command-line-interface&#34;&gt;Building a .NET Core application using the command line interface&lt;/h2&gt;
-
-&lt;p&gt;In Windows PowerShell or the Linux / macOS Terminal, let&amp;rsquo;s create a new directory. I will call it &lt;code&gt;dot-net-tutorial&lt;/code&gt; and navigate to it and create a new console application here using the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new&#34;&gt;&lt;code&gt;dotnet new&lt;/code&gt;&lt;/a&gt; command.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir dot-net-tutorial
-cd dot-net-tutorial
-dotnet new
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is how it should look like after executing these commands.
-&lt;img src=&#34;https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG&#34; alt=&#34;enter image description here&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Notice how we got two files after creating the project&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Program.cs&lt;/code&gt;- C# file containing the entry point in the console application - the &lt;code&gt;Main&lt;/code&gt; method&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;using System;
-
-namespace ConsoleApplication
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.WriteLine(&amp;quot;Hello World!&amp;quot;);
-        }
-    }
-}
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This is a basic &lt;code&gt;Hello World&lt;/code&gt; example in C# and you can &lt;a href=&#34;https://radu.microsoft.pub.ro/csharp-fundamentals-01/&#34;&gt;find more information about everything in the code in this article&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;project.json&lt;/code&gt; - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
-  &amp;quot;buildOptions&amp;quot;: {
-    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
-    &amp;quot;emitEntryPoint&amp;quot;: true
-  },
-  &amp;quot;dependencies&amp;quot;: {},
-  &amp;quot;frameworks&amp;quot;: {
-    &amp;quot;netcoreapp1.0&amp;quot;: {
-      &amp;quot;dependencies&amp;quot;: {
-        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
-          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
-          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
-        }
-      },
-      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;In a future release, the &lt;code&gt;project&lt;/code&gt; file will return to a &lt;code&gt;.csproj&lt;/code&gt; extension in order to maitain compatibility with all Visual Studio and Xamarin projects.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Calling &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore&#34;&gt;&lt;code&gt;dotnet restore&lt;/code&gt;&lt;/a&gt;  will restore all dependencies of the application.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;dotnet restore
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore&#34;&gt;&lt;code&gt;dotnet restore&lt;/code&gt;&lt;/a&gt; calls into NuGet to restore the tree of dependencies. NuGet analyzes the &lt;code&gt;project.json&lt;/code&gt; file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the &lt;code&gt;project.lock.json&lt;/code&gt; file. The &lt;code&gt;project.lock.json&lt;/code&gt; file is necessary to be able to compile and run.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;project.lock.json&lt;/code&gt; file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/dotnet-restore.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;At this point, we can run the application and see if the output is the expected one using the &lt;a href=&#34;https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run&#34;&gt;&lt;code&gt;dotnet run&lt;/code&gt;&lt;/a&gt; command.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/dotnet-run.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This is how you create, build and run a basic .NET Core application using the command line.&lt;/p&gt;
-
-&lt;h2 id=&#34;installing-visual-studio-code&#34;&gt;Installing Visual Studio Code&lt;/h2&gt;
-
-&lt;p&gt;We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - &lt;a href=&#34;https://code.visualstudio.com/&#34;&gt;Visual Studio Code&lt;/a&gt;.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://code.visualstudio.com/&#34;&gt;Install Visual Studio code from here&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs &lt;a href=&#34;omnisharp.net/&#34;&gt;OmniSharp&lt;/a&gt; for IntelliSense.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;You can do this in the command line by using &lt;code&gt;code .&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&#34;running-in-visual-studio-code&#34;&gt;Running in Visual Studio Code&lt;/h2&gt;
-
-&lt;p&gt;In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/vs-code-assets.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This will add a &lt;code&gt;.vscode&lt;/code&gt; folder in the solution root with two &lt;code&gt;.json&lt;/code&gt; files - &lt;code&gt;tasks.json&lt;/code&gt; and &lt;code&gt;launch.json&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/vs-code-run.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;If everything goes well, you should be able to see the output in the debug console.&lt;/p&gt;
-
-&lt;h2 id=&#34;debugging-in-visual-studio-code&#34;&gt;Debugging in Visual Studio Code&lt;/h2&gt;
-
-&lt;p&gt;We saw how to run the application, not let&amp;rsquo;s add a method that adds two integers.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;using System;
-
-namespace ConsoleApplication
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            int a = 7, b = 12;
-
-            Console.WriteLine(Add(a, b));
-        }
-
-        public static int Add(int a, int b)
-        {
-            int sum = a + b;
-            return sum;
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If we add a breakpoint at the &lt;code&gt;return sum&lt;/code&gt; line and we run the application, we get the following output:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The execution stopped at the line with the breakpoint and we can see the state of our program at this point.&lt;/p&gt;
-
-&lt;h2 id=&#34;adding-classes-and-navigating-through-code&#34;&gt;Adding classes and navigating through code&lt;/h2&gt;
-
-&lt;p&gt;At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;You can see a &lt;a href=&#34;https://github.com/Microsoft/vscode-tips-and-tricks&#34;&gt;full list of VS Code tips and tricks on the official Microsoft GitHub organization here&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;We will add a very basic &lt;code&gt;Person&lt;/code&gt; class based on &lt;a href=&#34;https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes&#34;&gt;this project&lt;/a&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public class Person
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }
-
-        public Person()
-        {
-        }
-
-        public Person(string firstName, string lastName, int age)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-            Age = age;
-        }
-
-        public void PrintPerson()
-        {
-            Console.WriteLine(&amp;quot;First Name: {0}, Last Name: {1}, Age: {2}&amp;quot;, FirstName, LastName, Age);
-        }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It is a very basic class with three properties, two constructors and a method that prints the information to the console.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;You can &lt;a href=&#34;https://github.com/microsoft-dx/csharp-fundamentals&#34;&gt;find all necessary materials to learn C# in this repository&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In the &lt;code&gt;Main&lt;/code&gt; method, we instantiate a new &lt;code&gt;Person&lt;/code&gt; object and use the &lt;code&gt;PrintPerson&lt;/code&gt; method to display the properties.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;We saw how to install .NET Core and how to build and run a console application using the command line.&lt;/p&gt;
-
-&lt;p&gt;Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.&lt;/p&gt;
 </description>
     </item>
     

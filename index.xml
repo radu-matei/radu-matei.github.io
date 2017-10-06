@@ -6,8 +6,131 @@
     <description>Recent content on Radu Matei - Developer Evangelist</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 Sep 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Oct 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://radu-matei.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Kubernetes 1.8 on Azure</title>
+      <link>https://radu-matei.com/blog/k8s18-azure/</link>
+      <pubDate>Fri, 06 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://radu-matei.com/blog/k8s18-azure/</guid>
+      <description>
+
+&lt;h1 id=&#34;table-of-content&#34;&gt;Table of Content&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploying-orchestrator-clusters-in-azure&#34;&gt;Deploying orchestrator clusters in Azure&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#getting-the-acs-engine-binary&#34;&gt;Getting the acs-engine binary&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploy-the-cluster&#34;&gt;Deploy the cluster&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion-feedback&#34;&gt;Conclusion and feedback&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. &lt;a href=&#34;http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html&#34;&gt;You can read the full blog post that announces the release here&lt;/a&gt; and you can see &lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0&#34;&gt;the release on GitHub&lt;/a&gt; and the &lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180&#34;&gt;associated changelog with all new features&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.&lt;/p&gt;
+
+&lt;p&gt;If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can &lt;a href=&#34;#getting-the-acs-engine-binary&#34;&gt;skip the following section and go directly to where the action actually starts.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;deploying-orchestrator-clusters-in-azure&#34;&gt;Deploying orchestrator clusters in Azure&lt;/h1&gt;
+
+&lt;p&gt;There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to &lt;a href=&#34;https://radu-matei.com/blog/kubernetes-jenkins-azure/&#34;&gt;deploy a Kubernetes cluster&lt;/a&gt;). &lt;a href=&#34;https://azure.microsoft.com/en-us/services/container-service/&#34;&gt;Azure Container Service&lt;/a&gt; allows you to easily &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/container-service/&#34;&gt;deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the &lt;code&gt;az&lt;/code&gt; command line&lt;/a&gt;. This is the way to go if you don&amp;rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.&lt;/p&gt;
+
+&lt;p&gt;Then there is a tool called &lt;a href=&#34;https://github.com/azure/acs-engine&#34;&gt;&lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt;. This is basically the &amp;ldquo;engine&amp;rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;acs-engine&lt;/code&gt; takes a &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md&#34;&gt;cluster definition file&lt;/a&gt; where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates&#34;&gt;ARM (Azure Resource Manager) templates&lt;/a&gt; that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).&lt;/p&gt;
+
+&lt;p&gt;Kubernetes 1.8 has just been released, and together with it came &lt;a href=&#34;https://github.com/Azure/acs-engine/releases&#34;&gt;v0.8.0 of &lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt; with support for Kubernetes 1.8.&lt;/p&gt;
+
+&lt;p&gt;You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).&lt;/p&gt;
+
+&lt;h1 id=&#34;getting-the-acs-engine-binary&#34;&gt;Getting the acs-engine binary&lt;/h1&gt;
+
+&lt;p&gt;In this step all you need to do is download the the binary associated with v0.8.0 of &lt;code&gt;acs-engine&lt;/code&gt; for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.&lt;/p&gt;
+
+&lt;p&gt;First you need to download the GitHub release archive for Linux:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, you need to unarchive it:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This will create a folder called &lt;code&gt;acs-engine-v0.8.0-linux-amd64&lt;/code&gt;, and inside it you will find (among the license and the readme) the &lt;code&gt;acs-engine&lt;/code&gt; binary.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/acs-engine-shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now you only need to put it in your path (or move it to a directory that is in your path) and you have the &lt;code&gt;acs-engine&lt;/code&gt; binary accessible from anywhere.&lt;/p&gt;
+
+&lt;p&gt;We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.&lt;/p&gt;
+
+&lt;h1 id=&#34;deploy-the-cluster&#34;&gt;Deploy the cluster&lt;/h1&gt;
+
+&lt;p&gt;This is how a typical cluster definition file looks for Kubernetes. Compared to &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json&#34;&gt;the example offered in the repo&lt;/a&gt;, this only adds the &lt;code&gt;orchestratorRelease&lt;/code&gt; property and sets it to &lt;code&gt;1.8&lt;/code&gt;.&lt;/p&gt;
+
+&lt;script src=&#34;//gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;The great thing about this version of &lt;code&gt;acs-engine&lt;/code&gt; is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using &lt;code&gt;acs-engine&lt;/code&gt; and deploy them with the &lt;code&gt;az&lt;/code&gt; command line):&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;an Azure subscription id (you can find it using &lt;code&gt;az account show&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;a DNS prefix for your cluster&lt;/li&gt;
+&lt;li&gt;the location of your cluster&lt;/li&gt;
+&lt;li&gt;the cluster definition file from above&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;acs-engine deploy --subscription-id &amp;lt;your-subscription-id&amp;gt; \
+    --dns-prefix &amp;lt;your-dns-prefix&amp;gt; --location westeurope \
+    --auto-suffix --api-model kubernetes18.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the &lt;code&gt;orchestratorRelease&lt;/code&gt; property in the JSON file set to &lt;code&gt;1.8&lt;/code&gt;!
+Note that it automatically creates all assets for you including a service principal and a resource group.&lt;/p&gt;
+
+&lt;p&gt;Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elswhere, the will be another step involved where you login to &lt;code&gt;aka.ms/devicelogin&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After the deployment succeeds, you should see a resource group in your subscription with all your Kubernetes assets:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/resource-group.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The output of the command above is an &lt;code&gt;_output&lt;/code&gt; folder where you have your SSH keys and the &lt;code&gt;kubeconfig&lt;/code&gt; to access the cluster.&lt;/p&gt;
+
+&lt;p&gt;Now to access the cluster.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Depending on which version of &lt;code&gt;kubectl&lt;/code&gt; you have installed, you might want to &lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl&#34;&gt;upgrade to 1.8 as it is detailed here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now you need to point your &lt;code&gt;kubectl&lt;/code&gt; to the &lt;code&gt;kubeconfig&lt;/code&gt; file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;At this point you can use &lt;code&gt;kubectl&lt;/code&gt; to get information about your cluster and your nodes:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl get nodes&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/k8s18.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the &lt;code&gt;v1.8.0&lt;/code&gt;!&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion-feedback&#34;&gt;Conclusion, feedback&lt;/h1&gt;
+
+&lt;p&gt;In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using &lt;code&gt;acs-engine&lt;/code&gt; and the Azure Cloud Shell.&lt;/p&gt;
+
+&lt;p&gt;If you have any ideas, comments or feedback, please use the comments below :)&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>About Me</title>
@@ -1026,21 +1149,21 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
 &amp;lt;html&amp;gt;
 
 &amp;lt;head&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
-    &amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;title&amp;gt;Test Page&amp;lt;/title&amp;gt;
 &amp;lt;/head&amp;gt;
 
 &amp;lt;body&amp;gt;
-    &amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
-    &amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
-    &amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+	&amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/chat&amp;quot;&amp;lt;/h1&amp;gt;
+	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot; /&amp;gt;
+	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
 
-    &amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
 
 
-    &amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+	&amp;lt;script data-main=&amp;quot;scripts/main&amp;quot; src=&amp;quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
 
-    &amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
           
             var connection = new WebSocketManager.Connection(&amp;quot;ws://localhost:5000/chat&amp;quot;);
             connection.enableLogging = true;
@@ -1673,18 +1796,18 @@ namespace ChatApplication
 &amp;lt;html&amp;gt;
 
 &amp;lt;head&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
-    &amp;lt;title&amp;gt;Real-Time Notifications&amp;lt;/title&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;title&amp;gt;Real-Time Notifications&amp;lt;/title&amp;gt;
 &amp;lt;/head&amp;gt;
 
 &amp;lt;body&amp;gt;
     &amp;lt;h1&amp;gt;This should be mapped to &amp;quot;/ws&amp;quot;&amp;lt;/h1&amp;gt;
-    &amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot;/&amp;gt;
-    &amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
+	&amp;lt;input type=text id=&amp;quot;textInput&amp;quot; placeholder=&amp;quot;Enter your text&amp;quot;/&amp;gt;
+	&amp;lt;button id=&amp;quot;sendButton&amp;quot;&amp;gt;Send&amp;lt;/button&amp;gt;
 
-    &amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
+	&amp;lt;ul id=&amp;quot;messages&amp;quot;&amp;gt;&amp;lt;/ul&amp;gt;
 
-        &amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+    	&amp;lt;script language=&amp;quot;javascript&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;
         var uri = &amp;quot;ws://&amp;quot; + window.location.host + &amp;quot;/ws&amp;quot;;
         function connect() {
             socket = new WebSocket(uri);
@@ -3107,7 +3230,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;&amp;lt;/title&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
@@ -3312,7 +3435,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;Awesome Chat Application&amp;lt;/title&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
     &amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
@@ -3694,10 +3817,10 @@ public class Startup
 
 public class PostsController : Controller
 {
-    public string Hello()
-    {
-        return &amp;quot;Hello from MVC!&amp;quot;;
-    }
+	public string Hello()
+	{
+		return &amp;quot;Hello from MVC!&amp;quot;;
+	}
 }
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -4516,119 +4639,6 @@ public class Startup
 &lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
 
 &lt;p&gt;We created a basic web application and we defined and handled custom routes. We also saw how to manage &lt;code&gt;GET&lt;/code&gt; and &lt;code&gt;POST&lt;/code&gt; requests.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>ASP .NET Core Startup</title>
-      <link>https://radu-matei.com/blog/aspnet-core-startup/</link>
-      <pubDate>Tue, 19 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://radu-matei.com/blog/aspnet-core-startup/</guid>
-      <description>
-
-&lt;h1 id=&#34;the-startup-class&#34;&gt;The &lt;code&gt;Startup&lt;/code&gt; class&lt;/h1&gt;
-
-&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-
-&lt;p&gt;In the &lt;a href=&#34;https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-getting-started.md&#34;&gt;previous article&lt;/a&gt; we built a very basic web application that for every request had a very basic response - &lt;code&gt;Hello, Universe&lt;/code&gt; with the server current time and date.&lt;/p&gt;
-
-&lt;p&gt;Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the &lt;code&gt;Startup&lt;/code&gt; class, which is also the entry point for any incoming HTTP request.&lt;/p&gt;
-
-&lt;h2 id=&#34;the-anatomy-of-the-startup-class&#34;&gt;The anatomy of the &lt;code&gt;Startup&lt;/code&gt; class&lt;/h2&gt;
-
-&lt;p&gt;The &lt;code&gt;Startup&lt;/code&gt; class needs to have two methods:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Configure&lt;/code&gt; - this method will respond to each incoming HTTP request. In the following example, we will use it to have the same functionality as in our previous example - returning a message with the current server time.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in &lt;a href=&#34;https://docs.asp.net/en/latest/fundamentals/middleware.html&#34;&gt;middleware&lt;/a&gt; and added using extension methods on &lt;code&gt;IApplicationBuilder&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Your &lt;code&gt;Configure&lt;/code&gt; method must accept an &lt;a href=&#34;https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html&#34;&gt;&lt;code&gt;IApplicationBuilder&lt;/code&gt;&lt;/a&gt; parameter. Additional services, like &lt;code&gt;IHostingEnvironment&lt;/code&gt; and &lt;code&gt;ILoggerFactory&lt;/code&gt; may also be specified, in which case these services will be injected by the server if they are available.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;ConfigureServices&lt;/code&gt; - this &lt;strong&gt;optional&lt;/strong&gt; method is used for configuring services used by the application and is called before the &lt;code&gt;Configure&lt;/code&gt; method.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;This is the place where we will start discussing dependency injection, which will be covered in a separate topic.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&#34;building-the-hello-world-web-application-with-startup&#34;&gt;Building the &lt;code&gt;Hello, World&lt;/code&gt; web application with &lt;code&gt;Startup&lt;/code&gt;&lt;/h2&gt;
-
-&lt;p&gt;We are going to build the same application that responds with &lt;code&gt;Hello, World&lt;/code&gt; and the current time, this time with a &lt;code&gt;Startup&lt;/code&gt; class.&lt;/p&gt;
-
-&lt;p&gt;First of all, if this is a new application (created using &lt;code&gt;dotnet new&lt;/code&gt;), you should add the dependency to the web server Kestrel in &lt;code&gt;project.json&lt;/code&gt;, which should look like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-  &amp;quot;version&amp;quot;: &amp;quot;1.0.0-*&amp;quot;,
-  &amp;quot;buildOptions&amp;quot;: {
-    &amp;quot;debugType&amp;quot;: &amp;quot;portable&amp;quot;,
-    &amp;quot;emitEntryPoint&amp;quot;: true
-  },
-  &amp;quot;dependencies&amp;quot;: {},
-  &amp;quot;frameworks&amp;quot;: {
-    &amp;quot;netcoreapp1.0&amp;quot;: {
-      &amp;quot;dependencies&amp;quot;: {
-        &amp;quot;Microsoft.NETCore.App&amp;quot;: {
-          &amp;quot;type&amp;quot;: &amp;quot;platform&amp;quot;,
-          &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;
-        },
-        &amp;quot;Microsoft.AspNetCore.Server.Kestrel&amp;quot;: &amp;quot;1.0.0&amp;quot;
-      },
-      &amp;quot;imports&amp;quot;: &amp;quot;dnxcore50&amp;quot;
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then, add a new file called &lt;code&gt;Startup.cs&lt;/code&gt; and add the following code:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-
-public class Startup
-{
-    public void Configure(IApplicationBuilder app)
-    {
-        app.Run(context =&amp;gt;
-        {
-            var response = String.Format(&amp;quot;Hello, Universe! It is {0}&amp;quot;, DateTime.Now);
-            return context.Response.WriteAsync(response);
-        });
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As you can see, the code in &lt;code&gt;Configure&lt;/code&gt; is the same as the code in &lt;code&gt;Main&lt;/code&gt; from the previous example.&lt;/p&gt;
-
-&lt;p&gt;Then, in the &lt;code&gt;Main&lt;/code&gt; method we simply indicate that we have a &lt;code&gt;Startup&lt;/code&gt; class we want to use.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
-
-namespace ConsoleApplication
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseStartup&amp;lt;Startup&amp;gt;()
-                .Build();
-
-                host.Run();
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now if we run the application (from the command line or from VS Code) and navigate to &lt;a href=&#34;http://localhost:5000&#34;&gt;http://localhost:5000&lt;/a&gt;, we see the expected output.&lt;/p&gt;
-
-&lt;p&gt;From now on, we will use the &lt;code&gt;Startup&lt;/code&gt; class when building web applications with ASP .NET Core and we will add middleware and services in it.&lt;/p&gt;
 </description>
     </item>
     

@@ -9,6 +9,129 @@
     <atom:link href="https://radu-matei.com/categories/azure/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Kubernetes 1.8 on Azure</title>
+      <link>https://radu-matei.com/blog/k8s18-azure/</link>
+      <pubDate>Fri, 06 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://radu-matei.com/blog/k8s18-azure/</guid>
+      <description>
+
+&lt;h1 id=&#34;table-of-content&#34;&gt;Table of Content&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploying-orchestrator-clusters-in-azure&#34;&gt;Deploying orchestrator clusters in Azure&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#getting-the-acs-engine-binary&#34;&gt;Getting the acs-engine binary&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploy-the-cluster&#34;&gt;Deploy the cluster&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion-feedback&#34;&gt;Conclusion and feedback&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. &lt;a href=&#34;http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html&#34;&gt;You can read the full blog post that announces the release here&lt;/a&gt; and you can see &lt;a href=&#34;https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0&#34;&gt;the release on GitHub&lt;/a&gt; and the &lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180&#34;&gt;associated changelog with all new features&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.&lt;/p&gt;
+
+&lt;p&gt;If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can &lt;a href=&#34;#getting-the-acs-engine-binary&#34;&gt;skip the following section and go directly to where the action actually starts.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;deploying-orchestrator-clusters-in-azure&#34;&gt;Deploying orchestrator clusters in Azure&lt;/h1&gt;
+
+&lt;p&gt;There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to &lt;a href=&#34;https://radu-matei.com/blog/kubernetes-jenkins-azure/&#34;&gt;deploy a Kubernetes cluster&lt;/a&gt;). &lt;a href=&#34;https://azure.microsoft.com/en-us/services/container-service/&#34;&gt;Azure Container Service&lt;/a&gt; allows you to easily &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/container-service/&#34;&gt;deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the &lt;code&gt;az&lt;/code&gt; command line&lt;/a&gt;. This is the way to go if you don&amp;rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.&lt;/p&gt;
+
+&lt;p&gt;Then there is a tool called &lt;a href=&#34;https://github.com/azure/acs-engine&#34;&gt;&lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt;. This is basically the &amp;ldquo;engine&amp;rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;acs-engine&lt;/code&gt; takes a &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md&#34;&gt;cluster definition file&lt;/a&gt; where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates&#34;&gt;ARM (Azure Resource Manager) templates&lt;/a&gt; that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).&lt;/p&gt;
+
+&lt;p&gt;Kubernetes 1.8 has just been released, and together with it came &lt;a href=&#34;https://github.com/Azure/acs-engine/releases&#34;&gt;v0.8.0 of &lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt; with support for Kubernetes 1.8.&lt;/p&gt;
+
+&lt;p&gt;You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).&lt;/p&gt;
+
+&lt;h1 id=&#34;getting-the-acs-engine-binary&#34;&gt;Getting the acs-engine binary&lt;/h1&gt;
+
+&lt;p&gt;In this step all you need to do is download the the binary associated with v0.8.0 of &lt;code&gt;acs-engine&lt;/code&gt; for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.&lt;/p&gt;
+
+&lt;p&gt;First you need to download the GitHub release archive for Linux:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, you need to unarchive it:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This will create a folder called &lt;code&gt;acs-engine-v0.8.0-linux-amd64&lt;/code&gt;, and inside it you will find (among the license and the readme) the &lt;code&gt;acs-engine&lt;/code&gt; binary.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/acs-engine-shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now you only need to put it in your path (or move it to a directory that is in your path) and you have the &lt;code&gt;acs-engine&lt;/code&gt; binary accessible from anywhere.&lt;/p&gt;
+
+&lt;p&gt;We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.&lt;/p&gt;
+
+&lt;h1 id=&#34;deploy-the-cluster&#34;&gt;Deploy the cluster&lt;/h1&gt;
+
+&lt;p&gt;This is how a typical cluster definition file looks for Kubernetes. Compared to &lt;a href=&#34;https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json&#34;&gt;the example offered in the repo&lt;/a&gt;, this only adds the &lt;code&gt;orchestratorRelease&lt;/code&gt; property and sets it to &lt;code&gt;1.8&lt;/code&gt;.&lt;/p&gt;
+
+&lt;script src=&#34;//gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;The great thing about this version of &lt;code&gt;acs-engine&lt;/code&gt; is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using &lt;code&gt;acs-engine&lt;/code&gt; and deploy them with the &lt;code&gt;az&lt;/code&gt; command line):&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;an Azure subscription id (you can find it using &lt;code&gt;az account show&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;a DNS prefix for your cluster&lt;/li&gt;
+&lt;li&gt;the location of your cluster&lt;/li&gt;
+&lt;li&gt;the cluster definition file from above&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;acs-engine deploy --subscription-id &amp;lt;your-subscription-id&amp;gt; \
+    --dns-prefix &amp;lt;your-dns-prefix&amp;gt; --location westeurope \
+    --auto-suffix --api-model kubernetes18.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the &lt;code&gt;orchestratorRelease&lt;/code&gt; property in the JSON file set to &lt;code&gt;1.8&lt;/code&gt;!
+Note that it automatically creates all assets for you including a service principal and a resource group.&lt;/p&gt;
+
+&lt;p&gt;Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elswhere, the will be another step involved where you login to &lt;code&gt;aka.ms/devicelogin&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/shell.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After the deployment succeeds, you should see a resource group in your subscription with all your Kubernetes assets:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/resource-group.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The output of the command above is an &lt;code&gt;_output&lt;/code&gt; folder where you have your SSH keys and the &lt;code&gt;kubeconfig&lt;/code&gt; to access the cluster.&lt;/p&gt;
+
+&lt;p&gt;Now to access the cluster.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Depending on which version of &lt;code&gt;kubectl&lt;/code&gt; you have installed, you might want to &lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl&#34;&gt;upgrade to 1.8 as it is detailed here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now you need to point your &lt;code&gt;kubectl&lt;/code&gt; to the &lt;code&gt;kubeconfig&lt;/code&gt; file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;At this point you can use &lt;code&gt;kubectl&lt;/code&gt; to get information about your cluster and your nodes:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl get nodes&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s18-azure/k8s18.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note the &lt;code&gt;v1.8.0&lt;/code&gt;!&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!&lt;/p&gt;
+
+&lt;h1 id=&#34;conclusion-feedback&#34;&gt;Conclusion, feedback&lt;/h1&gt;
+
+&lt;p&gt;In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using &lt;code&gt;acs-engine&lt;/code&gt; and the Azure Cloud Shell.&lt;/p&gt;
+
+&lt;p&gt;If you have any ideas, comments or feedback, please use the comments below :)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</title>
       <link>https://radu-matei.com/blog/hybrid-swarmmode/</link>
       <pubDate>Mon, 03 Jul 2017 00:00:00 +0000</pubDate>
@@ -1390,7 +1513,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;&amp;lt;/title&amp;gt;
-    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
