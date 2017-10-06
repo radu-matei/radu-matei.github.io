@@ -9,6 +9,15 @@ type = "post"
 
 +++
 
+Table of Content
+================
+
+- [Introduction](#introduction)
+- [Deploying orchestrator clusters in Azure](#deploying-orchestrator-clusters-in-azure)
+- [Getting the acs-engine binary](#getting-the-acs-engine-binary)
+- [Deploy the cluster](#deploy-the-cluster)
+- [Conclusion and feedback](#conclusion-feedback)
+
 Introduction
 ============
 
@@ -16,7 +25,7 @@ On September 28th, Kubernetes hit version 1.8 with improved support for Role Bas
 
 In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.
 
-If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy K8s 1.8, you can [skip the following section and go directly to where the action actually starts.](#deploy-the-cluster)
+If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can [skip the following section and go directly to where the action actually starts.](#getting-the-acs-engine-binary)
 
 Deploying orchestrator clusters in Azure
 ========================================
@@ -33,10 +42,10 @@ Kubernetes 1.8 has just been released, and together with it came [v0.8.0 of `acs
 You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).
 
 
-Getting the `acs-engine` binary
-=============================
+Getting the acs-engine binary
+===============================
 
-In this step all you need to do is download the the binary associated with v0.8.0 of `acs-engine` for your operating system. I will use the Azure Cloud Shell, but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.
+In this step all you need to do is download the the binary associated with v0.8.0 of `acs-engine` for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.
 
 First you need to download the GitHub release archive for Linux:
 
@@ -63,7 +72,7 @@ This is how a typical cluster definition file looks for Kubernetes. Compared to 
 
 {{< gist radu-matei 7ba751e0074621313b997c12ccf28dbe >}}
 
-The great thing about this version of `acs-engine` is that you will only need one command to deploy this where you pass a few parameters (in older versions you would generate ARM templates using `acs-engine` and deploy them with the `az` command line):
+The great thing about this version of `acs-engine` is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using `acs-engine` and deploy them with the `az` command line):
 
 - an Azure subscription id (you can find it using `az account show`)
 - a DNS prefix for your cluster
@@ -78,6 +87,8 @@ acs-engine deploy --subscription-id <your-subscription-id> \
 
 > Note the `orchestratorRelease` property in the JSON file set to `1.8`!
 > Note that it automatically creates all assets for you including a service principal and a resource group.
+
+> Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elswhere, the will be another step involved where you login to `aka.ms/devicelogin`.
 
 ![](/img/article-photos/k8s18-azure/shell.png)
 
@@ -105,8 +116,10 @@ At this point you can use `kubectl` to get information about your cluster and yo
 
 > Note the `v1.8.0`!
 
-Conclusion, feedback wanted :)
-===============================
+Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!
+
+Conclusion, feedback
+====================
 
 In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using `acs-engine` and the Azure Cloud Shell.
 
