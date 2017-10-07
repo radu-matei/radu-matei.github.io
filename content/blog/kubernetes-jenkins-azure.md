@@ -11,7 +11,15 @@ type = "post"
 
 Table of Contents
 ------------------
-
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Deploying Jenkins with Helm](#deploying-jenkins-with-helm)
+- [Create credentials for your image repository](#create-credentials-for-your-image-repository)
+- [The Jenkinsfile](#the-jenkinsfile)
+- [Using the Jenkinsfile](#using-the-jenkinsfile)
+- [Investigating what actually happens in the cluster](#investigating-what-actually-happens-in-the-cluster)
+- [Conclusion](#conclusion)
+- [Feedback](#feedback)
 
 Introduction
 -------------
