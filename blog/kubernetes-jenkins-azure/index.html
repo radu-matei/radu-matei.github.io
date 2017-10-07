@@ -4,7 +4,7 @@
     <head>
         
             
-                <title>Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</title>
+                <title>Jenkins declarative pipelines with Kubernetes </title>
             
         
 
@@ -18,9 +18,7 @@
             <meta name="author" content="Radu Matei">
         
         
-            
-                <meta name="description" content="Radu Matei - Friendly geek who accelerates developers to build epic stuff, @Microsoft Technical Evangelist, Software Developer, Container Enthusiast. Opinions are my own.">
-            
+            <meta name="description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods">
         
 
         
@@ -29,18 +27,18 @@
 
 
 
-<meta name="twitter:title" content="Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service"/>
-<meta name="twitter:description" content="Table of Contents  Introduction Deploying a Kubernetes cluster on Azure Container Service Installing and configuring the Kubernetes CLI Deploying a Jenkins master on the cluster Configuring Jenkins to work with Kubernetes Configuring Jenkins to dinamically spawn agents (Docker containers) for builds What is happening behind the scenes? The Docker image for the slaves Conclusion Next Steps Feedback  Introduction If you already know how to deploy a Kubernetes cluster, please jump ahead to creating the Jenkins service."/>
+<meta name="twitter:title" content="Jenkins declarative pipelines with Kubernetes "/>
+<meta name="twitter:description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods"/>
 <meta name="twitter:site" content="@Matei_Radu"/>
 
 
-        <meta property="og:title" content="Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service" />
-<meta property="og:description" content="Table of Contents  Introduction Deploying a Kubernetes cluster on Azure Container Service Installing and configuring the Kubernetes CLI Deploying a Jenkins master on the cluster Configuring Jenkins to work with Kubernetes Configuring Jenkins to dinamically spawn agents (Docker containers) for builds What is happening behind the scenes? The Docker image for the slaves Conclusion Next Steps Feedback  Introduction If you already know how to deploy a Kubernetes cluster, please jump ahead to creating the Jenkins service." />
+        <meta property="og:title" content="Jenkins declarative pipelines with Kubernetes " />
+<meta property="og:description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://radu-matei.com/blog/kubernetes-jenkins-azure/" />
 
 
-<meta property="og:updated_time" content="2017-04-11T00:00:00&#43;00:00"/>
+<meta property="og:updated_time" content="2017-10-08T00:00:00&#43;00:00"/>
 
 
 
@@ -52,12 +50,12 @@
 
 
         
-<meta itemprop="name" content="Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service">
-<meta itemprop="description" content="Table of Contents  Introduction Deploying a Kubernetes cluster on Azure Container Service Installing and configuring the Kubernetes CLI Deploying a Jenkins master on the cluster Configuring Jenkins to work with Kubernetes Configuring Jenkins to dinamically spawn agents (Docker containers) for builds What is happening behind the scenes? The Docker image for the slaves Conclusion Next Steps Feedback  Introduction If you already know how to deploy a Kubernetes cluster, please jump ahead to creating the Jenkins service.">
+<meta itemprop="name" content="Jenkins declarative pipelines with Kubernetes ">
+<meta itemprop="description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods">
 
 
-<meta itemprop="dateModified" content="2017-04-11T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2417">
+<meta itemprop="dateModified" content="2017-10-08T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1417">
 
 
 
@@ -239,6 +237,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/"><p>Jenkins declarative pipelines with Kubernetes </p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
                     </li>
                 
@@ -248,10 +250,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/hybrid-swarmmode/"><p>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/"><p>Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</p></a>
                     </li>
                 
             </ul>
@@ -270,7 +268,7 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&text=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&text=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
@@ -288,19 +286,19 @@ ga('send', 'pageview');
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
@@ -323,9 +321,11 @@ ga('send', 'pageview');
     <header>
     <div class="title">
         
-            <h1><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</a></h1>
+            <h1><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">Jenkins declarative pipelines with Kubernetes </a></h1>
             
         
+        
+            <p>Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods</p>
         
     </div>
     <div class="meta">
@@ -334,11 +334,11 @@ ga('send', 'pageview');
         
 
         <time class="published"
-            datetime='2017-04-11'>
-            April 11, 2017</time>
+            datetime='2017-10-08'>
+            October 8, 2017</time>
         <span class="author">Radu Matei</span>
         
-            <p>12 minute read</p>
+            <p>7 minute read</p>
         
         
     </div>
@@ -350,7 +350,7 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&text=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&text=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
@@ -368,19 +368,19 @@ ga('send', 'pageview');
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Creating%20a%20CI%2fCD%20workflow%20with%20Kubernetes%2c%20Jenkins%20and%20Azure%20Container%20Service" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
@@ -400,392 +400,180 @@ ga('send', 'pageview');
 
 <h2 id="table-of-contents">Table of Contents</h2>
 
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#deploying-a-kubernetes-cluster-on-azure-container-service">Deploying a Kubernetes cluster on Azure Container Service</a></li>
-<li><a href="#installing-and-configuring-the-kubernetes-cli">Installing and configuring the Kubernetes CLI</a></li>
-<li><a href="#deploying-a-jenkins-master-on-the-cluster">Deploying a Jenkins master on the cluster</a></li>
-<li><a href="#configuring-jenkins-to-work-with-kubernetes">Configuring Jenkins to work with Kubernetes</a></li>
-<li><a href="#configuring-jenkins-to-dinamically-spawn-agents-docker-containers-for-builds">Configuring Jenkins to dinamically spawn agents (Docker containers) for builds</a></li>
-<li><a href="#what-is-happening-behind-the-scenes">What is happening behind the scenes?</a></li>
-<li><a href="#the-docker-image-for-the-slaves">The Docker image for the slaves</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#next-steps">Next Steps</a></li>
-<li><a href="#feedback">Feedback</a></li>
-</ul>
-
 <h2 id="introduction">Introduction</h2>
 
-<p><a href="http://localhost:1313/blog/kubernetes-jenkins-azure/#deploying-a-jenkins-master-on-the-cluster">If you already know how to deploy a Kubernetes cluster, please jump ahead to creating the Jenkins service.</a></p>
+<p>In previous articles <a href="https://radu-matei.com/blog/k8s18-azure/">we deployed a Kubernetes 1.8 cluster to Azure using acs-engine</a>, then <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/">configured Helm and Draft to simplify testing applications</a>.</p>
 
-<p>The purpose of writing this article is to show how to deploy and configure a Kubernetes cluster on Azure Container Service and install the Jenkins master as a Kubernetes service that will spawn slaves to build your workloads.</p>
+<p>In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins declarative pipelines that build containers, push images to an image repository and update Kubernetes deployments.</p>
 
-<p>You can, of course, install Jenkins in a VM, but you loose all the flexibility that running Kubernetes gives you.</p>
+<h1 id="prerequisites">Prerequisites</h1>
 
-<p>Only the master will run continously to receive webhooks and to spawn (not sure if this is the right word :D) slaves (these will be also Docker containers) to build and deploy your updates.</p>
-
-<h2 id="deploying-a-kubernetes-cluster-on-azure-container-service">Deploying a Kubernetes cluster on Azure Container Service</h2>
-
-<p>The easiest way (in my opinion) to deploy a Kubernetes cluster is through <a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli">the new Azure CLI 2.0</a>.
-Since you are reading an article about Kubernetes, I will go ahead and assume you are familiar with Docker, so I will use the Docker option to use the Azure CLI:</p>
-
-<p><code>docker run -it -p 81:8080 azuresdk/azure-cli-python bash</code></p>
+<p>To follow along with this article, <em>you need a Kubernetes cluster</em> (we will use Kubernetes v1.8.0, but the instructions were also tested with v1.7.0) with Helm installed and a terminal with <code>kubectl</code> and <code>helm</code> installed and configured.</p>
 
 <blockquote>
-<p>The reason I also mapped port 81 on the host (you can choose any available port on your machine) to port 8080 on the container (again, your choice) is because later we will create a proxy that will allow us to see the Kubernetes Dashboard. More on this later.</p>
-
-<p>You can find <a href="https://github.com/Azure/azure-cli/blob/master/Dockerfile">the Dockerfile for this image here</a></p>
+<p><a href="https://radu-matei.com/blog/k8s-helm-draft-azure">This article picks up where the last one ended, so you will need a Kubernetes cluster with <code>helm</code> installed. Here you can find very simple instructions on how to achieve it.</a></p>
 </blockquote>
 
-<p>Now you have a container with the new <code>az</code> command line. First thing to do  - login to your Azure account using</p>
+<p>My cluster is deployed into Azure, West Europe, but you can do the exact same steps using the Google Container Engine or your on-prem cluster (note that you will not be given public IP addresses as is the case with Azure or GKE).</p>
 
-<p><code>az login</code></p>
+<p>Now to check that everything is configured, verify your cluster information and vesions. This is my starting point:</p>
 
-<p>After following the instructions in the command line (open a browser, go to <a href="http://aka.ms/devicelogin">http://aka.ms/devicelogin</a> and paste the code from the console), you are ready to explore your Azure resources from the command line.</p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/cluster-info.png" alt="" /></p>
 
-<p>In order to verify that the desired subscription is the default one (in case you have multpile subscriptions), you can execute</p>
+<h1 id="deploying-jenkins-with-helm">Deploying Jenkins with Helm</h1>
 
-<p><code>az account show</code></p>
-
-<p>If it is not, you can change it by using</p>
-
-<p><code>az account set --subscription {subscription-id}</code>.</p>
-
-<p>Now if you execute <code>az account show</code>, you will see the one you selected.</p>
-
-<p>The first thing you shoud do before actually deploying the Kubernetes cluster is create a <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview#resource-groups">resource group</a>. This is done by executing the following command:</p>
-
-<p><code>az group create --name kubernetes-jenkins --location westeurope</code></p>
+<p>Using Helm you can easily deploy well-know applications (like Hadoop, Grafana, MongoDB, Redis) easily on your Kubernetes cluster using charts.</p>
 
 <blockquote>
-<p>Note that you can select <a href="https://azure.microsoft.com/en-us/regions/">the closest Azure region</a> to you when passing the parameter to <code>--location</code>.</p>
+<p>Charts are curated application definitions for Kubernetes Helm.</p>
+
+<p>More information on <a href="https://github.com/kubernetes/helm">Helm</a> and <a href="https://github.com/kubernetes/charts">charts</a> on GitHub</p>
 </blockquote>
 
-<p>This is how it should look like if the deployment succeeded:</p>
+<p>If we search for <a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins">Jenkins in the list of stable charts</a>, we find very clear instructions on how to deploy it.</p>
 
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/az-group-show.png" alt="" /></p>
+<p>A chart is composed of some templates (Kubernetes deployment files) and a file that holds our specific values for Jenkins - Docker image for master and agents, plugins to install, persistent volumes - basically all configurable values we can get for our Jenkins deployment.</p>
 
-<p>At this point, you are ready to actually deploy the Kubernetes cluster:</p>
+<p>This is the only file we will need to edit ourselves. Below you can find the one I use.</p>
 
-<p><code>az acs create --orchestrator-type=kubernetes --resource-group=kubernetes-jenkins-ci --name=kubernetes-jenkins --dns-prefix=kubernetesci --generate-ssh-keys</code></p>
+<script src="//gist.github.com/radu-matei/466ae82b4b269d6bb762b088683bf9e6.js"></script>
 
 <blockquote>
-<p>Note that these instructions are also available on <a href="https://docs.microsoft.com/en-us/azure/container-service/container-service-kubernetes-walkthrough#create-your-kubernetes-cluster">the official documentation for Kubernetes on Azure Container Service</a>.</p>
+<p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
 </blockquote>
 
-<p>This will create a new Azure Container Service deployment in the resource group <code>kubernetes-jenkins</code> with the name <code>kubernetes-jenkins</code>, KLubernets as orchestrator and the DNS prefix of the master and nodes <code>kubernetesjenkins</code>.</p>
+<p>Note that this verison mounts the <code>/var/run/docker.sock</code> socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.</p>
 
 <blockquote>
-<p>Note that this command will take around 10 minutes to complete.</p>
+<p>This also installs other plugins - such as Jenkins Blue Ocean.</p>
+
+<p><a href="https://github.com/kubernetes/charts/blob/master/stable/jenkins/values.yaml">The default values for Jenkins (that you can find in this repo)</a> does not expose it, you can use that, but note that some features we will use later (basically <code>docker build</code> inside the worker pod) will not work.</p>
 </blockquote>
 
-<p>At this point, you can either see the deployed resources from the command line by executing</p>
+<p>Get this file locally, then execute:</p>
 
-<p><code>az acs show --resource-group kubernetes-jenkins --name kubernetes-jenkins</code></p>
+<p><code>helm install --name jenkins -f jenkins-values.yaml stable/jenkins</code></p>
 
-<p>Or by going to the <a href="https://portal.azure.com">Azure Portal</a> to the Container Services blade:</p>
+<p>After you deploy the chart, you will get instructions on how to get the initial admin password:</p>
 
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/acs-cluster-portal.png" alt="" /></p>
-
-<p>You can also see everything that got deployed for you (virtual machines, availability sets, storage accounts, network interfaces, network security groups, virtual networks, load balancers and route tables) by inspecting the resource group in the portal:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/resource-group.png" alt="" /></p>
-
-<h2 id="installing-and-configuring-the-kubernetes-cli">Installing and configuring the Kubernetes CLI</h2>
-
-<p>Next, you install the Kubernetes CLI, <a href="https://kubernetes.io/docs/user-guide/kubectl-overview/"><code>kubectl</code></a> by executing</p>
-
-<p><code>az acs kubernetes install-cli</code></p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/instructions.png" alt="" /></p>
 
 <blockquote>
-<p><a href="https://github.com/Azure/azure-cli/blob/master/src/command_modules/azure-cli-acs/azure/cli/command_modules/acs/custom.py#L273">Since the Azure CLI is developed openly on GitHub, you can see exactly how the Azure CLI downloads and installs <code>kubectl</code> here</a>.</p>
+<p>Note that the initial admin username is <code>admin</code> and you should probably change it :)</p>
 </blockquote>
 
-<p>Then, you get the credentials for the cluster:</p>
+<p>If you take a look at the state of your cluster, you can see that <code>helm</code> deployed <code>jenkins</code>, which resulted in two services in Kubernetes, one for the master and one for the agents.</p>
 
-<p><code>az acs kubernetes get-credentials --resource-group=kubernetes-jenkins --name=kubernetes-jenkins</code></p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/deployed.png" alt="" /></p>
+
+<p>Using the initial admin password (follow the instructions you had as output from Helm after deploying Jenkins), go to the public IP of your service and login.</p>
 
 <blockquote>
-<p>By deploying Kubernetes through Azure Container Service, the <code>az</code> utilitary can manage the cluster credentials for you, but you can also use the configuration file you can find in <code>~/.kube/config</code></p>
+<p>You can find the command I used to get the initial admin password, but note that it will vary in your case based on the name you provided and the namespace where you deployed Jenkins.</p>
+
+<p><code>printf $(kubectl get secret --namespace default jenkins-jenkins -o jsonpath=&quot;{.data.jenkins-admin-password}&quot; | base64 --decode);echo</code></p>
 </blockquote>
 
-<p>Now, you are ready to use <code>kubectl</code> as usual: <code>kubectl get nodes</code>.</p>
+<p>Now you have deployed an instance of Jenkins on your Kubernetes cluster using Helm, already configured with all plugins you specified in your <code>jenkins-values.yaml</code> file and with the ability to execute builds on your cluster.</p>
 
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/kubectl-get-nodes.png" alt="" /></p>
+<h1 id="create-credentials-for-your-image-repository">Create credentials for your image repository</h1>
+
+<p>The goal is to have end to end automatic deployment to our Kubernetes cluster. This means we need to push images to an image repository (like Docker Hub, Azure Container Repository, Google Container Repository) as part of our Jenkins build.</p>
+
+<p>Since all the repositories need some sort of authentication, we need to create a credential binding in Jenkins so that we don&rsquo;t keep credentials in source control</p>
 
 <blockquote>
-<p>For a more detailed walkthrough on creating the cluster and creating your first public services, make sure to <a href="https://docs.microsoft.com/en-us/azure/container-service/container-service-kubernetes-walkthrough">complete this tutorial</a>.</p>
+<p>Never, ever keep credentials in source control. Or connection strings, or any sort of sensitive information!</p>
+
+<p>We can keep them as Kuberentes secrets, or as Jenkins secrets. In this case we will use Jenkins secrets, and we will reference them in our Jenkinsfile.</p>
 </blockquote>
 
-<h2 id="deploying-a-jenkins-master-on-the-cluster">Deploying a Jenkins master on the cluster</h2>
-
-<p>First of all, you need a <code>jenkins-master.yml</code> file that describes the Jenkins service with persistent storage, public and private endpoints and resource limits. In order to get this file, simply execute the following command that will download the file from my Gist account:</p>
-
-<p><code>wget https://gist.githubusercontent.com/radu-matei/ccec29e108d0e01f50c8c1ea45a1dc58/raw/c32078736352dee3dbcf75e05f86fe801a4defe4/jenkins-master.yaml</code></p>
+<p>Now create new credentials in Jenkins:</p>
 
 <blockquote>
-<p>This file is based on the <a href="https://github.com/jenkinsci/kubernetes-plugin/blob/master/src/main/kubernetes/gke.yml">Jenkins documentation on deploying to Google Container Engine from GitHub</a>.</p>
+<p>Click the <strong>Credentials</strong> link in the sidebar</p>
+
+<p>Click on the <strong>Global credentials</strong> domain</p>
+
+<p>Click [<strong>Add Credential</strong>]</p>
+
+<p><a href="https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs">Full Cloudbees article that explains credentials and credential bindings in Jenkins</a></p>
 </blockquote>
 
-<p>This deployment will create a new namespace for the services, <code>kubernetes-plugin</code> and will create the Jenkins master service based on the <a href="https://hub.docker.com/r/jenkinsci/jenkins/">jenkins:latest</a> Docker image, and will expose ports 8080 (for the web interface) and 50000 (for communicating with the slaves), among with a persistent storage.</p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/credentials.png" alt="" /></p>
+
+<p>Now that you have the credentials in place (don&rsquo;t forget to also add an intuitive ID for your credentials in the place I left blank!), you can create a new pipeline.</p>
+
+<h1 id="the-jenkinsfile">The Jenkinsfile</h1>
+
+<p>The initial goal was to create declarative Jenkins pipelines that we can later store in source control. This pipeline describes our build process, and a usual process when we work with Kubernetes is to build a Docker image, push it to a image repository then to some work with <code>kubectl</code> (like update the image for a deployment), or with <code>helm</code> (update a chart, or deploy a new one).</p>
+
+<p>We will now look at how to write the simplest Jenkinsfile that will to exactly that: build and push an image to a repo and do work with <code>kubectl</code> and <code>helm</code>.</p>
 
 <blockquote>
-<p>Take care when using the <code>:latest</code> tag for images!</p>
+<p><a href="https://github.com/jenkinsci/kubernetes-plugin">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
 </blockquote>
 
-<p><code>kubectl create -f jenkins-master.yaml</code></p>
-
-<p>Besides the containers and services this <code>.yaml</code> file creates, there is also some persistent storage. If we look at the <code>jenkins-master.yaml</code> in the persistent storage part, we can see that at some point, the original <code>gke.yaml</code> creates a <a href="https://kubernetes.io/docs/concepts/storage/volumes/#gcepersistentdisk"><code>gcePersistentDisk</code></a>, which is Google Cloud Platform&rsquo;s specific storage. What happens here is that Jenkins needs some persistent storage in order to store configuration for the master, so that if the pod serving the master fails, it can recreate it based on the persistant volume.</p>
-
-<p>If we look at the <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">persistent volume claim</a>, we see that it created an Azure Storage Account and a <code>.vhd</code> where it deployed the storage.</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/pvc.png" alt="" /></p>
-
-<p>If we now go in the Azure Portal, to the resource group we created for the cluster, we can find this storage account:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/storage-account.png" alt="" />
-And if we open the blobs blade we can actually see the volume storage there:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/storage.png" alt="" /></p>
-
-<h2 id="configuring-jenkins-to-work-with-kubernetes">Configuring Jenkins to work with Kubernetes</h2>
-
-<p>At this point, if we go to the Kubernetes dashboard, in the Services part we should see Jenkins with a public IP (or external endpoints) configured:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/jenkins-endpoints.png" alt="" /></p>
+<script src="//gist.github.com/radu-matei/376f5a2b042b0df82d7d905c9c6cf8ff.js"></script>
 
 <blockquote>
-<p>In order to see the Kubernetes dashboard you need to execute <code>kubectl proxy  --port 8080 --address='0.0.0.0'</code></p>
+<p>Don&rsquo;t forget to use your credential ID in the Jenkinsfile!</p>
 </blockquote>
 
-<p>If we navigate to the HTTP endpoint of Jenkins (that is port 80), we should see the first-time installation view from Jenkins:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/jenkins-1st.png" alt="" /></p>
-
-<p>In order to login we need to get a password from the machine running the service - in this case a Docker container running inside a Kubernetes pod. To see the pods either go in the Kubernetes dashboard:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/pods.png" alt="" /></p>
-
-<p>Or you can see it from the command line, but first we need to set the CLI context to the newly created namespace:</p>
-
-<p><code>kubectl config set-context $(kubectl config current-context) --namespace=kubernetes-plugin</code></p>
-
-<p>Now we can see the running pods:</p>
-
-<p><code>kubectl get pods</code></p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/jenkins-pod.png" alt="" /></p>
-
-<p>Coming back to our previous task: retrieving the password that Jenkins set up at <code>/var/jenkins_home/secrets/initialAdminPassword</code>. We need to execute a command inside this pod to get the password:</p>
-
-<p><code>kubectl exec -it jenkins-cqn0z cat /var/jenkins_home/secrets/initialAdminPassword</code></p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/kubectl-get-password.png" alt="" /></p>
+<p>This Jenkinsfile makes use of having multiple containers in the same Kubernetes pod - we will have 3 containers - one based on a Docker image, one based on <code>kubectl</code> and the last based on <code>helm</code>.</p>
 
 <blockquote>
-<p>Note that you should replace <code>jenkins-cqn0z</code> from the <code>kubectl exec</code> with your own pod!</p>
+<p>You can create your own containers - in this case I used the official one for Docker and the images built by <a href="https://twitter.com/LachlanEvenson">Lachlan Evenson</a>, since are widely used on Docker Hub and I kind of trust Lachlan :)</p>
+
+<p>Use images from the Internet at your own risk!</p>
 </blockquote>
 
-<p>Now paste that string in the Jenkins setup page and you should be good to go.</p>
+<p>Note that we are mounting the Docker socket inside our pod so the Docker container has access to the Docker engine - this step is debatable for using in production (but it is arguably better than using Docker-in-Docker - <a href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/">read this article</a>).</p>
 
-<p>At this point, you would simply click on Install Suggested Plugins and it might work. It might also not work - <code>WARNING: No valid crumb was included in request</code>, as in the photo below:</p>
+<p>Since we are already running in the cluster, the other two containers are already authenticated.</p>
 
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/crumb.png" alt="" /></p>
+<p>You can test this Jenkinsfile by creating a simple Jenkins pipeline and pasting this Jenkinsfile directly there (ugly, but the easiest way to do it).</p>
 
-<p>Try a few more times until it works and we will get solve this by enabling proxy compatibility once we have access to the service&rsquo;s settings.</p>
+<p>This is part of the output for the Jenkinsfile above. Please note that from within this container you have access to the real cluster!
+You might want to take a look at the new 1.8 RBAC features in Kubernetes, but keep in mind that <em>with great power comes great responsibility!</em></p>
 
-<blockquote>
-<p>As starting point for this I used <a href="https://github.com/carlossg/jenkins-kubernetes-plugin">this repo from carlossg</a> and <a href="https://github.com/jenkinsci/kubernetes-plugin">the official documentation on the kubernetes-plugin from Jenkins</a>.</p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/real-cluster.png" alt="" /></p>
 
-<p>Of course it didn&rsquo;t really work without a lot of trial and error, hence the reason for writing this article.</p>
-</blockquote>
+<h1 id="using-the-jenkinsfile">Using the Jenkinsfile</h1>
 
-<p>After clicking <code>Start using Jenkins</code>, you are ready to Enable Proxy Compatibility from Configure Jenkins &ndash;&gt; Configure Global Security &ndash;&gt; Enable Proxy Compatibility - of course, not after a lot of tries and failure because <code>No valid crumb was included in request</code>.</p>
+<p>Basically, now all you need to do is replace the dummy steps I wrote for each step and you have yourself a fully functional Jenkins pipeline!</p>
 
-<h2 id="configuring-jenkins-to-dinamically-spawn-agents-docker-containers-for-builds">Configuring Jenkins to dinamically spawn agents (Docker containers) for builds</h2>
+<p>Put it side by side with your code in the repository and take care of it just as you would with your source code!</p>
 
-<p>Since we want to have dynamically spawned agents (or slaves), we will keep 0 executors (from node settings):</p>
+<h1 id="investigating-what-actually-happens-in-the-cluster">Investigating what actually happens in the cluster</h1>
 
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/executors.png" alt="" /></p>
+<p>We see that the steps in our Jenkinsfile are executed, but let&rsquo;s explore a bit where that really happens.</p>
 
-<p>Then, we need to install the <a href="https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin">Kubernetes Plugin for Jenkins</a> - Manage Jenkins &ndash;&gt; Manage Plugins &ndash;&gt; Available &ndash;&gt; Search for <code>kubernetes plugin</code>.</p>
+<p>Whenever there&rsquo;s a new build, the master will dynamically create agent pods based on your Jenkinsfile. There will always be a <code>jnlp</code> container there that knows how to connect to the master, among with whatever containers you specify.</p>
 
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/kubernetes-plugin.png" alt="" /></p>
+<p>Let&rsquo;s see that pod in action:</p>
 
-<p>Then restart Jenkins after installing the plugin.</p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/pod.png" alt="" /></p>
 
-<p>Now you need to configure the Kubernetes plugin: Manage Jenkins &ndash;&gt; Configure System, and all the way to the bottom &ndash;&gt; Add a new cloud.</p>
+<p>Here you can see all containers inside the pod (with their image, tag and environment variables).</p>
 
-<p>Add the credentials to your Kubernetes cluster as in the picture below:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/kubernetes-credentials.png" alt="" /></p>
-
-<p>Then add the Kubernetes master FQDN (Fully Qualified Domain Name) and test the connection:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/test-connection.png" alt="" /></p>
-
-<p>Then add the Jenkins URL (with http!) and the Jenkins tunnel (without http and with the 50000 port!) and set a resonable container cap (how many containers should run at the same time):</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/jenkins-url-tunnel.png" alt="" /></p>
-
-<blockquote>
-<p>The other settings in the picture I left untouched.</p>
-</blockquote>
-
-<p>Next we need to configure a container templat based on which Jenkins will spawn slaves to execute builds. This part is rather tricky and pretty undocumented, so it took me quite a lot. Here we go:</p>
-
-<p>We need to Add a Pod Template &ndash;&gt; Kubernetes Pod Template. The name of the template should be <code>jnlp</code>, otherwise this will not work.</p>
-
-<p>Next we need to add a container template. The name of the container should also be <code>jnlp</code>, or it will not work.</p>
-
-<h2 id="the-docker-image-for-the-slaves">The Docker image for the slaves</h2>
-
-<p><a href="https://github.com/jenkinsci/kubernetes-plugin">As the documentation states</a>, you need to use a <a href="https://hub.docker.com/r/jenkinsci/jnlp-slave/">jnlp-slave image from Docker Hub</a>. If we take a look at the Dockerfile for this image:</p>
-
-<pre><code>FROM jenkinsci/slave:alpine
-MAINTAINER Nicolas De Loof &lt;nicolas.deloof@gmail.com&gt;
-
-COPY jenkins-slave /usr/local/bin/jenkins-slave
-
-ENTRYPOINT [&quot;jenkins-slave&quot;]
-</code></pre>
-
-<p>This will surely work, but all this is going to do is give you a container based on the openjdk container (so with a Java SDK) and git.</p>
-
-<blockquote>
-<p><a href="https://hub.docker.com/r/jenkinsci/slave/~/dockerfile/">Dockerfile for the base image for the jnlp-slave</a></p>
-</blockquote>
-
-<p>But we might have more and diverse workloads - and since we can configure the slave container only globally, we might just install more frameworks in this container - Node, Ruby, .NET Core - but this is just against what containerization stands for. We want to be able to build any kind of containerized workload with our Jenkins instance.</p>
-
-<p>Here&rsquo;s what we want to do:</p>
-
-<pre><code>- be able to build any kind of workload on our Jenkins isntance
-- deploy the built images / applications back to Kubernetes
-</code></pre>
-
-<p>So clearly we need to update our Dockerfile by installing the Docker client and the kubectl CLI.</p>
-
-<p>Let&rsquo;s have a look at how the Dockerfile would look like:</p>
-
-<pre><code>FROM jenkinsci/slave:alpine
-
-USER root
-RUN apk add --no-cache \
-ca-certificates \
-curl \
-openssl
-
-ENV DOCKER_BUCKET get.docker.com
-ENV DOCKER_VERSION 17.04.0-ce
-ENV DOCKER_SHA256 c52cff62c4368a978b52e3d03819054d87bcd00d15514934ce2e0e09b99dd100
-
-RUN set -x \
-&amp;&amp; curl -fSL &quot;https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz&quot; -o docker.tgz \
-&amp;&amp; echo &quot;${DOCKER_SHA256} *docker.tgz&quot; | sha256sum -c - \
-&amp;&amp; tar -xzvf docker.tgz \
-&amp;&amp; mv docker/* /usr/local/bin/ \
-&amp;&amp; rmdir docker \
-&amp;&amp; rm docker.tgz \
-&amp;&amp; docker -v
-
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-
-RUN chmod +x ./kubectl
-RUN mv ./kubectl /usr/local/bin/kubectl
-
-COPY docker-entrypoint.sh /usr/local/bin/
-
-COPY jenkins-slave /usr/local/bin/jenkins-slave
-
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/jenkins-slave
-
-ENTRYPOINT docker-entrypoint.sh; jenkins-slave
-
-</code></pre>
-
-<p>It starts from the same base image as the Jenkins <code>jnlp-slave</code>, but it also adds Docker and kubectl. I built and pushed this image to <a href="https://hub.docker.com/r/radumatei/jenkins-slave-docker/">radumatei/jnlp-slave-docker:kubectl</a></p>
-
-<p>So we can use this as the base image for the slave containers.</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/settings.png" alt="" /></p>
-
-<p>Since we want to mount the <code>/var/run/docker.sock</code> from the host to the container so the containers can use the Docker engine installed on the node.</p>
-
-<blockquote>
-<p>The solution is <a href="http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/">based on this article from Jérôme Petazzoni</a></p>
-</blockquote>
-
-<p>Remember that in our Dockerfile we also installed kubectl. Since we need to actually modify deployments in the cluster using kubectl from inside the contaier, we need to authenticate the container in some way. Since the node that runs the slave pod that is doing the build is actually part of the cluster, this means at <code>/root/.kube</code> there should be the information about the cluster which would allow us to actually make a deployment against the cluster. So we also mount <code>/root/.kube</code> from the host to the container.</p>
-
-<p>This should be pretty much all setup involved. It might not sound much, but it is rather undocumented or not up to date.</p>
-
-<p>Before we setup the pipeline, let&rsquo;s create a public service on Kubernetes that we will update after a build.</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/public-service.png" alt="" /></p>
-
-<p>While configuring the pipeline, you also need the Docker Hub credentials:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/docker-hub-credentials.png" alt="" /></p>
-
-<p>So setup your own GitHub project (that has a Dockerfile at the root of the project) as a Jenkins pipeline with the following configuration:</p>
-
-<p>STEP 1:</p>
-
-<pre><code>docker build -t ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER} .
-docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
-</code></pre>
-
-<p>STEP 2:</p>
-
-<pre><code>kubectl set image deployment/dotnet-core-kubernetes dotnet-core-kubernetes=${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
-</code></pre>
-
-<p>Now if you configured the webhook correctly in GitHub, with every commit on the branches you specified should trigger a build for Jenkins:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/build.png" alt="" /></p>
-
-<p>Then, the kubectl command will actually update your application on the cluster.</p>
-
-<h2 id="what-is-happening-behind-the-scenes">What is happening behind the scenes?</h2>
-
-<p>With every initiated build, the Jenkins master will start a new pod in the Kubernetes cluster based on the Docker image you specified when configuring it (in this case <a href="https://hub.docker.com/r/radumatei/jenkins-slave-docker/">radumatei/jnlp-slave-docker:kubectl</a>):</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/creating.png" alt="" /></p>
-
-<p>It will pull that image and once the application starts, it will connect to port 50000 on the Jenkins service to register as available to serve builds.</p>
-
-<p>It will start the build steps on this container and you can see this in the logs from the build:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/build1.png" alt="" /></p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/build2.png" alt="" /></p>
-
-<p>After the build finishes (regardless of success or failure), the master will terminate the slave and all resources will be released:</p>
+<p>The cool thing about this plugin is you only see resources being used (CPU + memory) when there&rsquo;s a build in progress. Once that build is done, your resources are freed:</p>
 
 <p><img src="/img/article-photos/kubernetes-jenkins-azure/spike.png" alt="" /></p>
 
-<h2 id="conclusion">Conclusion</h2>
+<blockquote>
+<p>The short spike at the end corresponds to a build being executed</p>
+</blockquote>
 
-<p>In this article I tried to clearly show how to get started with a Jenkins master as a Kubernetes service that dynamically creates slaves to execute your build and then terminates them.</p>
+<h1 id="conclusion">Conclusion</h1>
 
-<p>The great advantage of this is that you only start containers once they have a task (in this case a build) to execute.</p>
+<p>We deployed Jenkins on our Kubernetes cluster using Helm (in a reproduceable way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles in a declarative way and have multiple containers in the agent pod.</p>
 
-<p>We managed to build a complete workflow with Kubernetes and Jenkins that will automatically build and integrate your updates to your application.</p>
+<h1 id="feedback">Feedback</h1>
 
-<h2 id="next-steps">Next steps</h2>
+<p>If you have a better aproach at any of the concepts presented in this article, or have any questions, please use the comments below.</p>
 
-<p>As a next step I will investigate <a href="https://github.com/kubernetes/helm">deploying Jenkins using Helm</a>, which I assume should be a much simpler task.</p>
-
-<h2 id="feedback">Feedback</h2>
-
-<p>If you stumbled upon this article, please take a minute to provide feedback to it - did it help, do you know a better or simpler way of achieving this?</p>
-
-<p>Your feedback is highly appreciated!</p>
-
-<h2 id="thanks-for-reading">Thanks for reading! :)</h2>
+<p>As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
     </div>
         
@@ -825,21 +613,16 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
     
         <li><a href='/categoriesjenkins'>jenkins</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
-    
 </ul>
 
     </footer>
 </article>
 <ul class="actions pagination">
     
-        <li><a href="https://radu-matei.com/blog/real-time-aspnet-core/"
-                class="button big previous">Real-Time ASP .NET Core</a></li>
+        <li><a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"
+                class="button big previous">Get started with Helm and Draft for Kubernetes</a></li>
     
 
-    
-        <li><a href="https://radu-matei.com/blog/hybrid-swarmmode/"
-                class="button big next">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</a></li>
     
 </ul>
 
@@ -851,8 +634,8 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
 <script type="text/javascript">
     var disqus_shortname = 'radu-matei';
     var disqus_identifier = "https://radu-matei.com/blog/kubernetes-jenkins-azure/";
-    var disqus_title = "Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service";
-    var disqus_url = "Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service";
+    var disqus_title = "Jenkins declarative pipelines with Kubernetes ";
+    var disqus_url = "Jenkins declarative pipelines with Kubernetes ";
 
     var disqus_config = function () {
         this.page.url = "https://radu-matei.com/blog/kubernetes-jenkins-azure/";  
@@ -975,6 +758,20 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">Jenkins declarative pipelines with Kubernetes </a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-08'>
+                                    October 8, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/k8s-helm-draft-azure/">Get started with Helm and Draft for Kubernetes</a></h3>
                                 
                                     
@@ -1010,20 +807,6 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
                                 <time class="published" datetime=
                                     '2017-07-03'>
                                     July 3, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">Creating a CI/CD workflow with Kubernetes, Jenkins and Azure Container Service</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-04-11'>
-                                    April 11, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1071,7 +854,7 @@ docker push ${DOCKER_HUB_USER}/dotnet-core-kubernetes:${BUILD_NUMBER}
                         <article>
                             <header>
                                 <a href="/categories/azure/">azure</a>
-                                <span style="float:right;">6</span>
+                                <span style="float:right;">5</span>
                             </header>
                         </article>
                     </li>
