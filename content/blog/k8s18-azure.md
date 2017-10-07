@@ -2,7 +2,7 @@
 author = "Radu Matei"
 categories = ["kubernetes", "azure"]
 date = "2017-10-06"
-description = "Deploy a Kubernetes 1.8 on Azure using acs-engine"
+description = "Deploy Kubernetes 1.8 on Azure using acs-engine"
 linktitle = ""
 title = "Kubernetes 1.8 on Azure"
 type = "post"
@@ -17,6 +17,20 @@ Table of Content
 - [Getting the acs-engine binary](#getting-the-acs-engine-binary)
 - [Deploy the cluster](#deploy-the-cluster)
 - [Conclusion and feedback](#conclusion-feedback)
+
+Prerequisites
+=============
+
+This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
+
+This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.
+
+> Note that the pricing will vary slightly based on the location where you deploy the VMs.
+
+> Cost estimation created using the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/)
+
+![](/img/article-photos/k8s18-azure/pricing.png)
+
 
 Introduction
 ============
@@ -117,6 +131,20 @@ At this point you can use `kubectl` to get information about your cluster and yo
 > Note the `v1.8.0`!
 
 Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!
+
+Configure `kubectl` from outisde the Azure Cloud Shell
+======================================================
+
+Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the `_output` directory from where you executed the `acs-engine deploy` command.
+You will want to have access to your cluster from outside the browser (for obvious reasons), so you will have to download the certificates and keys.
+
+After watching [this video on Channel9 explaining Azure Cloud Shell](https://channel9.msdn.com/Shows/Azure-Friday/Azure-Cloud-Shell), you simply need to put your files in `/home/<your-username>/clouddrive`. Then you will find them in the Azure Storage account (more specifically in the the File Share) associated with your Cloud Shell.
+
+> If you don't want to manually download each file (and you don't have to mount the share), simply make an archive of the entire folder download it.
+
+Then, point your local `kubectl` to the `kubeconfig.<azure-location>.json` file and you have access to your cluster.
+
+> Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, [as described in the Bitnami documentation](https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/).
 
 Conclusion, feedback
 ====================
