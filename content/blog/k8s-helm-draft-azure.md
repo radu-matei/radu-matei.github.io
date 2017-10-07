@@ -43,7 +43,7 @@ Introduction
 
 In the next post we will see how to integrate Jenkins with Azure Contaier Instances in this process, so stay tuned :)
 
-> If you don't have your `kubeconfig` and SSH keys to your cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell.
+> If you don't have your `kubeconfig` and SSH keys to your [cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article](https://radu-matei.com/blog/k8s18-azure/).
 
 
 Using kubectl, helm and draft
@@ -112,7 +112,9 @@ Configure Helm
 
 We now need to initialize `helm`. Since we are in a container, once we exit all config files written by `helm` and `draft` will be lost. That's why we have the `cluster` directory, which is mounted from the host.
 
-We will now need to point `helm` to write its config in `/cluster` and run `helm init`: `export HELM_HOME=/cluster/` and `helm init`.
+We will now need to point `helm` to write its config in `/cluster` and run `helm init`: 
+
+`export HELM_HOME=/cluster/` and `helm init`.
 
 ![](/img/article-photos/k8s-helm-draft-azure/helm-init.png)
 
@@ -142,7 +144,7 @@ Configure Draft
 
 
 
-Now we are going to use [a very cool feature of Draft called ingress](https://github.com/Azure/draft/blob/master/docs/ingress.md). Basically, this will allow us to use a base domain - *.draft.<yourdomain>.com to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard `A Record` pointing back to an nginx controller in your cluster.
+Now we are going to use [a very cool feature of Draft called ingress](https://github.com/Azure/draft/blob/master/docs/ingress.md). Basically, this will allow us to use a base domain - `*.draft.yourdomain.com` to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard `A Record` pointing back to an nginx controller in your cluster.
 
 You will use `helm` to deploy an nginx ingress controller with a public IP address (if you are on Azure or GKE this will be done automatically for you after a couple of minutes):
 
@@ -167,7 +169,7 @@ This will prompt you to enter your container registry credentials and the top le
 
 > Note that if you are using Docker Hub, the URL is: docker.io/username
 
-> Note that you need to specify the top level domain (without the wildcard)
+> Note that you need to specify the top level domain (without the wildcard, see image below)
 
 ![](/img/article-photos/k8s-helm-draft-azure/draft-init.png)
 
@@ -181,7 +183,7 @@ Now if we inspect our cluster we can see the `draftd` server, `tiller` and the i
 Creating an application
 =======================
 
-Remember earlier that we also mounted a local directory where we will write our application. This was to allow us to easily us VS Code to develop the application.
+Remember earlier that we also mounted a local directory where we will write our application. This was to allow us to easily use VS Code to develop the application.
 
 Now to the part where we actually create an application.
 
@@ -201,7 +203,7 @@ We will create a new app using `draft` by executing `draft create --app <name-fo
 
 ![](/img/article-photos/k8s-helm-draft-azure/draft-create.png)
 
-This command will detect the application language (in this case Go - that 6 digit certainty looks dubious though :D) and create some new files for us: a Dockerfile, a `draft.toml` file and a Helm chart.
+This command will detect the application language (that 6 digit certainty... :D) and create some new files for us: a Dockerfile, a `draft.toml` file and a Helm chart.
 
 ![](/img/article-photos/k8s-helm-draft-azure/new-files.png)
 
@@ -225,7 +227,7 @@ Executing `draft up` will automatically build the image and push it to the image
 
 Note that all the work is done inside a pod in your cluster! There is no `docker build` or `docker push` step executed locally.
 
-Then there is the release step, which will install the Helm chart of your application on the cluster, also configuring the public endpoint of your application as: http://<draft-app-name>.<A-Record>.<yourdomain.com>.
+Then there is the release step, which will install the Helm chart of your application on the cluster, also configuring the public endpoint of your application as: http:// draft-app-name.A-Record.yourdomain.com.
 
 
 ![](/img/article-photos/k8s-helm-draft-azure/build.png)
@@ -241,7 +243,7 @@ Note that for any update of your application (that is you modifying the app loca
 Investigating what actually happens
 ===================================
 
-Remember that you also exposed port 8080 from the container? Now it's time to start the proxy that will allow us to browser the Kubernetes dashboard locally:
+Remember that you also exposed port 8080 from the container? Now it's time to start the proxy that will allow us to browse the Kubernetes dashboard locally:
 
 `kubectl proxy --port 8080 --address 0.0.0.0`
 
@@ -267,6 +269,8 @@ Exiting the container
 When you are done working, simply exit the container - no global config was written, no context switching is necessary to change between different clusters - you simply have a directory with all config for your cluster - `kubeconfig` and config for `helm` and `draft`. 
 
 The next time you need to work with this cluster, either start this same container, or start a new one with the same command as above and mount the folder with the config. 
+
+Moreover, if you use multiple machines, you can keep the config folders in a file share (Azure Storage, Google Cloud Storage Bucket, S3) and start the container that has all the tools there. No more pasting SSH keys and cluster config files on Slack (guilty here...)
 
 You can also use the same container with a different config folder for another cluster. That easy :)
 

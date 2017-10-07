@@ -23,7 +23,7 @@ Prerequisites
 
 This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
 
-This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.
+This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.
 
 > Note that the pricing will vary slightly based on the location where you deploy the VMs.
 
