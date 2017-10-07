@@ -2,7 +2,7 @@
 author = "Radu Matei"
 categories = ["kubernetes", "azure", "helm", "draft"]
 date = "2017-10-07"
-description = "Easily get started with your Kubernetes 1.8 cluster"
+description = "Easy Kubernetes with Helm and Draft"
 linktitle = ""
 title = "Get started with Helm and Draft for Kubernetes"
 type = "post"
@@ -69,13 +69,8 @@ The image simply installs `kubectl`, `helm` and `draft` and exposes a port insid
 
 Now all you need to do is run a conainer based on the image you just built, and mount the cluster access certificates folder so we can point `kubectl` at.
 
-```
-docker run -it \
-	-v <path-to-cluster-certificates>:/cluster \
-	-v <path-to-your-source-code-directory--optional>:/go-code \
-	-p 8080:8080 \
-radumatei/kubectl-helm-draft
-```
+{{< gist radu-matei c3a8619208fdaab90ccb1a82785e1731 >}}
+
 
 ![](/img/article-photos/k8s-helm-draft-azure/initial-run.png)
 
