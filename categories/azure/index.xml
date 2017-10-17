@@ -9,6 +9,215 @@
     <atom:link href="https://radu-matei.com/categories/azure/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Best of Both worlds: Azure App Service and Kubernetes</title>
+      <link>https://radu-matei.com/blog/k8s-appsvc/</link>
+      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://radu-matei.com/blog/k8s-appsvc/</guid>
+      <description>
+
+&lt;h2 id=&#34;table-of-contents&#34;&gt;Table of Contents&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#introduction&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#why-not-just-expose-services-publicly&#34;&gt;Why not just expose services publicly?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#deploy-kubernetes-services-with-a-private-ip&#34;&gt;Deploy Kubernetes services with a private IP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#the-networking-settings&#34;&gt;The networking settings&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#testing-the-integration&#34;&gt;Testing the integration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#conclusion&#34;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#next-steps&#34;&gt;Next Steps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#feedback&#34;&gt;Feedback&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet.&lt;/p&gt;
+
+&lt;p&gt;There will be lots of situations when we want to use both the simplicity and features of a PaaS service (such as autoscaling, easy SSL, or any other cool feature) for a component and the flexibility of Kubernetes for others - in this article we will see how to achieve this without exposing services on the Internet.&lt;/p&gt;
+
+&lt;p&gt;We will start from a just-deployed Kubernetes cluster, will see how to expose services internally in an Azure VNet using an Azure Internal Load Balancer, then we will see how to connect an Azure App Service to that VNet, consuming services on the cluster from our App Service without exposing them on the public Internet.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that in order to deploy a Kubernetes cluster on Azure you can either &lt;a href=&#34;https://radu-matei.com/blog/k8s18-azure/&#34;&gt;use &lt;code&gt;acs-engine&lt;/code&gt; (a tool that deploys custom clusters on Azure) - here&amp;rsquo;s how to deploy Kubernetes 1.8 on Azure using &lt;code&gt;acs-engine&lt;/code&gt;&lt;/a&gt; or &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-walkthrough&#34;&gt;use the &lt;code&gt;az&lt;/code&gt; command line - here&amp;rsquo;s the official documentation.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+
+&lt;p&gt;This tutorial assumes you have a valid Azure subscription that you can use to deploy resorces. If you don&amp;rsquo;t have an Azure subscription you can &lt;a href=&#34;https://azure.microsoft.com/en-us/free/?v=17.39a&#34;&gt;create a free account and get $200 for 12 months&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;This tutorial uses a 4-node Kubernetes cluster (1 master + 3 agents) deployed on Azure. The machines are 4 D2_V2 VMs with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.&lt;/p&gt;
+
+&lt;p&gt;Besides the Kubernetes cluster, this article will also use an Azure App Service, with at least the Standard pricing tier (in order to support the VNet gateway feature, but more on this later), which in development starts at around  $1.5 / day.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/pricing.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note that the pricing will vary slightly based on the location where you deploy the VMs.&lt;/p&gt;
+
+&lt;p&gt;Cost estimation created using the &lt;a href=&#34;https://azure.microsoft.com/en-us/pricing/calculator/&#34;&gt;Azure Pricing Calculator&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This tutorial will also use an Azure VNet gateway that based on the throughput needed can go from less than $1/day (for 100 Mbps) to around $30/day (for 1.25 Gpbs).&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Here you can &lt;a href=&#34;https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/&#34;&gt;find out more about the Azure VPN Gateway&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;why-not-just-expose-services-publicly&#34;&gt;Why not just expose services publicly?&lt;/h2&gt;
+
+&lt;p&gt;The alternative to this entire article is simply exposing public services from Kubernetes with a public IP address and just use that public IP address from your App Service application.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s explore some of the reasons you might not want to do this:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;security risks and implications - it means that your services are exposed publicly and you need to deal with the risks associated&lt;/li&gt;
+&lt;li&gt;latency - you will go over the Internet to access your service, meaning you will get higher latency&lt;/li&gt;
+&lt;li&gt;networking cost - public IPs, outbound traffic (data going out of a datacenter) cost money&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Networking pricing is a complex topic in any cloud provider and I am by no means expert in Azure Networking - you can read more about Azure Networking &lt;a href=&#34;https://azure.microsoft.com/en-us/pricing/details/virtual-network/&#34;&gt;pricing for virtual networks&lt;/a&gt;, for &lt;a href=&#34;https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/&#34;&gt;VPN gateways&lt;/a&gt; and &lt;a href=&#34;https://azure.microsoft.com/en-us/pricing/details/bandwidth/&#34;&gt;bandwidth&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;deploy-kubernetes-services-with-a-private-ip&#34;&gt;Deploy Kubernetes services with a private IP&lt;/h2&gt;
+
+&lt;p&gt;When you deploy Kubernetes in Azure, all resources (network interfaces of VMs, load balancers) are deployed in a virtual network, and each VM gets a private IP inside that VNet.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/k8s-vnet.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;In the picture above you can see the internal IP of each node and subnet they belong to.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now when you deploy an internal service on the cluster (that is without exposing it through a load balancer or through a node port), Kubernetes will assign your service a &lt;em&gt;cluster IP&lt;/em&gt;. This IP (together with the hostname associated with it: &lt;code&gt;&amp;lt;service&amp;gt;.&amp;lt;namespace&amp;gt;&lt;/code&gt;) is only accessible to other services in the cluster - this means that another service in the same VNet, for example a VM that is not part of the cluster will &lt;em&gt;not be able to access that service.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;However, in order to access Kubernetes services from within that virtual network, you need to specify an internal load balancer using an annotation when you create the service.
+That being said, let&amp;rsquo;s see how a Kubernetes service that is internally exposed in the virtual network looks like:&lt;/p&gt;
+
+&lt;script src=&#34;//gist.github.com/radu-matei/4802dc126af06829b1904c49e4b97d57.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;The only notable thing is the annotation part of the service: &lt;code&gt;service.beta.kubernetes.io/azure-load-balancer-internal: &amp;quot;true&amp;quot;&lt;/code&gt; - this tells Kubernetes to ask Azure for an internal load balancer. So after we deploy this, we will see a private IP of this service, as well as a newly created internal load balancer in Azure:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/internal-lb.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now if we take a look at the Kubernetes services:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/kubectl-service.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And the IP address of the internal load balancer:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/private-ip.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-networking-settings&#34;&gt;The networking settings&lt;/h2&gt;
+
+&lt;p&gt;So we now have a Kubernetes service accessible from within our virtual network. We now need to integrate an App Service instance in that virtual network to consume the API we deployed.&lt;/p&gt;
+
+&lt;p&gt;By default, when deploying an App Service application, it is not connected to a virtual network. Now it&amp;rsquo;s worth mentioning that App Service comes in two forms:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The multi-tenant systems that support the full range of pricing plans - this is the most common and most used version&lt;/li&gt;
+&lt;li&gt;The &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/app-service/environment/intro&#34;&gt;App Service Environment (ASE)&lt;/a&gt; premium feature, which deploys into your VNet.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In this article we will focus on integrating a regular App Service with an Azure Virtual Network, and it is also worth mentioning some features, restrictions and limitations:&lt;/p&gt;
+
+&lt;p&gt;The VNet Integration feature:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;requires a Standard, Premium, or Isolated pricing plan&lt;/li&gt;
+&lt;li&gt;works with Classic or Resource Manager VNet&lt;/li&gt;
+&lt;li&gt;supports TCP and UDP&lt;/li&gt;
+&lt;li&gt;works with Web, Mobile, and API apps&lt;/li&gt;
+&lt;li&gt;enables an app to connect to only 1 VNet at a time&lt;/li&gt;
+&lt;li&gt;enables up to five VNets to be integrated with in an App Service Plan&lt;/li&gt;
+&lt;li&gt;allows the same VNet to be used by multiple apps in an App Service Plan&lt;/li&gt;
+&lt;li&gt;supports a 99.9% SLA due to the SLA on the VNet Gateway&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There are some things that VNet Integration does not support including:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;mounting a drive&lt;/li&gt;
+&lt;li&gt;AD integration&lt;/li&gt;
+&lt;li&gt;NetBios&lt;/li&gt;
+&lt;li&gt;private site access&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The previous information and more details can be found on &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet&#34;&gt;the official App Service Documentation here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Basically, there will be a point-to-site VPN to the VNet where Kuberentes is deployed, the point being our App Service instance.
+Now in order to create this, we first need to &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#enabling-vnet-integration&#34;&gt;enable the VNet integration, as described in this article&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you go to the Networking tab of your App Service and try to enable the VNet integration for your Kubernetes VNet, you will see the following message:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/no-gateway.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This means there is no &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways&#34;&gt;VPN Gateway&lt;/a&gt; configured in that private network.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A virtual network gateway is composed of two or more virtual machines that are deployed to a specific subnet called the GatewaySubnet. The VMs that are located in the GatewaySubnet are created when you create the virtual network gateway. Virtual network gateway VMs are configured to contain routing tables and gateway services specific to the gateway. You can&amp;rsquo;t directly configure the VMs that are part of the virtual network gateway and you should never deploy additional resources to the GatewaySubnet.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways&#34;&gt;More on VPN Gateways here&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;So you need to create a VPN Gateway on that virtual network (keeping in mind to configure it based on your needs), and also keeping in mind that it could take up to half an hour to configure it:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/create-gateway.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;30 minutes later we have a Virtual Network Gateway deployed in the same VNet as the Kubernetes cluster. Now if we go back and try to setup the App Service, we see that we haven&amp;rsquo;t configured point-to-site VPN for this network:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/no-pts.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the gateway menu in the portal configure point-to-site (with your own value for the client address pool). Note that you don&amp;rsquo;t need to setup certificates, these will be created automatically when you connect the App Service with the gateway.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/pts.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After you configure point-to-site in the network, you can go back to the App Service and configure the VNet access:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/setup.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;testing-the-integration&#34;&gt;Testing the integration&lt;/h2&gt;
+
+&lt;p&gt;Now to the moment of truth: I created a very simple .NET Core app (it can be Node, PHP, Java) that makes requests to a &lt;code&gt;PrivateAddress&lt;/code&gt; that you can configure in the App Settings in Azure Portal. You can &lt;a href=&#34;https://github.com/radu-matei/app-svc-vnet&#34;&gt;find the app on GitHub&lt;/a&gt;, but all it does is make an HTTP request and return the response.&lt;/p&gt;
+
+&lt;p&gt;Now if you fork the repo above and do a &lt;a href=&#34;https://blogs.msdn.microsoft.com/benjaminperkins/2017/05/10/deploy-github-source-code-repositories-to-an-azure-app-service/&#34;&gt;GitHub deployment directly to Azure App Service&lt;/a&gt;, then create an App Setting for &lt;code&gt;PrivateAddress&lt;/code&gt; with the private IP of your service in the virtual network:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/private-address.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, when you access &lt;code&gt;/api/privatestuff&lt;/code&gt; on your public web app, you can see that it actually makes requests inside your virtual network:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/access.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here you can see which pod actually responded to the request, and if you refresh, you can see the requests are load balanced.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://radu-matei.com/img/article-photos/k8s-appsvc/pods.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;current-known-limitations&#34;&gt;Current known limitations&lt;/h2&gt;
+
+&lt;p&gt;Right now you cannot use this article with a Web App on Containers or App Service on Linux, as the VNet integration does not currently support them.&lt;/p&gt;
+
+&lt;p&gt;Also, you currently cannot have &lt;a href=&#34;https://feedback.azure.com/forums/217313-networking/suggestions/16825357-add-dns-name-label-to-private-ips&#34;&gt;DNS name for the internal IP of the load balancer. This is known feature request on Azure Feedback, and according to the Azure Networking team, it represents a key item on the roadmap&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Now you have successfully deployed an application on App Service that uses private APIs from within a non-Internet routable network. You get the best of both worlds: the ease of deployment, autoscaling, SSL and other fun features of App Service, with the flexibility of Kubernetes, all in the same application.&lt;/p&gt;
+
+&lt;h2 id=&#34;next-steps&#34;&gt;Next Steps&lt;/h2&gt;
+
+&lt;p&gt;A next step would be creating deployment pipelines for both App Service and the Kubenetes apps - &lt;a href=&#34;https://github.com/azure-devops/movie-db-java-on-azure&#34;&gt;here is an example of a pipeline using Jenkins&lt;/a&gt; for a web app on App Service with the backend in Kubernetes.&lt;/p&gt;
+
+&lt;h2 id=&#34;feedback&#34;&gt;Feedback&lt;/h2&gt;
+
+&lt;p&gt;If you have a better aproach at any of the concepts presented in this article, or have any questions, please use the comments below.&lt;/p&gt;
+
+&lt;p&gt;As always, thanks for reading, and any feedback is highly appreciated :)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Get started with Helm and Draft for Kubernetes</title>
       <link>https://radu-matei.com/blog/k8s-helm-draft-azure/</link>
       <pubDate>Sat, 07 Oct 2017 00:00:00 +0000</pubDate>
@@ -1428,7 +1637,7 @@ public class PostsController : Controller
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;
     &amp;lt;title&amp;gt;&amp;lt;/title&amp;gt;
-	&amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
+    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot; /&amp;gt;
 
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
     &amp;lt;script src=&amp;quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
