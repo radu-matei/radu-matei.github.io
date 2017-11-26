@@ -9,6 +9,12 @@ type = "post"
 
 +++
 
+
+NOTICE
+------
+
+[**This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!** ](https://radu-matei.com/blog/signalr-core)
+
 Introduction
 ------------
 
