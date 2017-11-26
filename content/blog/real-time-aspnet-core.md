@@ -9,6 +9,12 @@ type = "post"
 
 +++
 
+NOTICE
+------
+
+[**If you're looking for SignalR, here you can find a blog post containing most common scenarios with the latest version of SignalR, alpha2 - streaming, binary protocols, Redis backplane and more** ](https://radu-matei.com/blog/signalr-core)
+
+
 What is this?
 -------------
 
