@@ -1,6 +1,6 @@
 +++
 title = "Speaking"
-description = "Here I will keep track of various talks I give around user groups, meetups and conferences"
+description = "Here I will keep track of various talks I give around user groups, meetups and conferences.\n If you want me to attend a conference you're organizing, please see the contact page and send me an email :)"
 date = "2017-11-25"
 +++
 
@@ -10,6 +10,7 @@ date = "2017-11-25"
 
 |  Date          |  Event/Conference                                             |  Talk                                                                  |
 | ---            | ---                                                           | ---                                                                    |
+|December 6        | [Hour of Code 2017](https://www.dcnews.ro/minecraft-la-hour-of-code-4000-de-tineri-au-dat-via-a-personajelor_570172.html)         |  STEM Education, Minecraft and Star Wars  |
 |November 28     |  [Romanian PowerShell User Group](https://www.meetup.com/Romanian-PowerShell-User-Group/events/245161172/)      |  Modernize your legacy apps and migrate to the Cloud with Windows Containers     |
 |November 22     |  [Voxxed Days](https://voxxeddays.com/romania/2017/11/01/easy-kubernetes-jenkins-helm-draft/)                     |  Easy Kubernetes with Jenkins, Helm and Draft     |
 |November 18     |  [JSTalks Sofia](http://www.jstalks.net/speakers#raduMatei)                     |  Kubernetes deployment for nodeJS apps with Jenkins, Helm and Draft     |
@@ -38,7 +39,7 @@ date = "2017-11-25"
 |  Date          |  Event/Conference                                             |  Talk                                                                  |
 | ---            | ---                                                           | ---                                                                    |
 |December 17        |  [Bucharest IoT](https://www.meetup.com/Bucharest-IoT-Meetup/)                    |  Hands on IoT Workshop with Microsoft Azure  |
-|December 10        |  [Hour of Code](http://www.techsoupeurope.org/hour-of-code-2016-with-asociatia-techsoup-and-microsoft-romania/)         |  STEM Education and Minecraft  |
+|December 10        |  [Hour of Code 2016](http://www.techsoupeurope.org/hour-of-code-2016-with-asociatia-techsoup-and-microsoft-romania/)         |  STEM Education and Minecraft  |
 |November 19        |  [CodeCamp Cluj](http://codecamp.ro/archive/Codecamp19nov2016/index.html)                    |  Dockerizing an ASP .NET Core app with VSTS, Docker Cloud and Azure   |
 |November 8         |  [Bucharest A.D.C.E.S. Meetup](http://www.adces.ro/event/sqlserver-tips-tricks-si-asp-net-core-configuration-routing-di/)   |  ASP.NET Core Configuration, Routing and Dependency Injection |
 |October 1           |  [Romanian Microsoft Student Partners](https://www.meetup.com/Romanian-Microsoft-Student-Partners/events/234142887/)   |  The Future of .NET is Open - .NET Core and ASP.NET Core   |
