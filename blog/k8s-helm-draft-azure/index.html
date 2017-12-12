@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -412,26 +416,26 @@ ga('send', 'pageview');
 
 <h1 id="prerequisites">Prerequisites</h1>
 
-<p><a href="https://radu-matei.com/blog/k8s18-azure/">In the previous tutorial</a> I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">create a free account and get $200 for 12 months</a>.</p>
+<p><a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">In the previous tutorial</a> I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank">create a free account and get $200 for 12 months</a>.</p>
 
 <p>I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2 in the cluster definition, and the cost will go down to $6 / day.</p>
 
 <blockquote>
 <p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p>
 
-<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/">Azure Pricing Calculator</a></p>
+<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank">Azure Pricing Calculator</a></p>
 </blockquote>
 
 <p><img src="/img/article-photos/k8s18-azure/pricing.png" alt="" /></p>
 
 <h1 id="introduction">Introduction</h1>
 
-<p><a href="https://radu-matei.com/blog/k8s18-azure/">In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell</a>. Now we will use that cluster to get started with Helm and Draft to simplify our development process.</p>
+<p><a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell</a>. Now we will use that cluster to get started with Helm and Draft to simplify our development process.</p>
 
 <p>In the next post we will see how to integrate Jenkins with Azure Contaier Instances in this process, so stay tuned :)</p>
 
 <blockquote>
-<p>If you don&rsquo;t have your <code>kubeconfig</code> and SSH keys to your <a href="https://radu-matei.com/blog/k8s18-azure/">cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article</a>.</p>
+<p>If you don&rsquo;t have your <code>kubeconfig</code> and SSH keys to your <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article</a>.</p>
 </blockquote>
 
 <h1 id="using-kubectl-helm-and-draft">Using kubectl, helm and draft</h1>
@@ -441,7 +445,7 @@ ga('send', 'pageview');
 <script src="//gist.github.com/radu-matei/dba91743ae04784076f31485a5a521a2.js"></script>
 
 <blockquote>
-<p>You can find <a href="https://github.com/radu-matei/kubectl-helm-draft">the repository on GitHub here</a> and <a href="https://hub.docker.com/r/radumatei/kubectl-helm-draft/">the image on Docker Hub</a>.</p>
+<p>You can find <a href="https://github.com/radu-matei/kubectl-helm-draft" target="_blank">the repository on GitHub here</a> and <a href="https://hub.docker.com/r/radumatei/kubectl-helm-draft/" target="_blank">the image on Docker Hub</a>.</p>
 
 <p>Please note that at the time of writing this article, the lastest versions are: <code>v1.8.0</code> for <code>kubectl</code>, <code>v2.6.2</code> for <code>helm</code> and <code>v0.7.0</code> for <code>draft</code>.</p>
 
@@ -461,7 +465,7 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/k8s-helm-draft-azure/initial-run.png" alt="" /></p>
 
 <blockquote>
-<p>If you don&rsquo;t know where those certificates came from, <a href="https://radu-matei.com/blog/k8s18-azure/">check out this article</a> and modify the path to match your own.</p>
+<p>If you don&rsquo;t know where those certificates came from, <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">check out this article</a> and modify the path to match your own.</p>
 
 <p>I also mounted a local directory so I can later create an application from outside the container and exposed port 8080 (you can choose another one) to access the dashboard.</p>
 </blockquote>
@@ -493,7 +497,7 @@ ga('send', 'pageview');
 
 <p>Charts can be stored on disk, or fetched from remote chart repositories (like Debian or RedHat packages)</p>
 
-<p>More on <a href="https://github.com/kubernetes/helm">the GitHub repo for Helm</a></p>
+<p>More on <a href="https://github.com/kubernetes/helm" target="_blank">the GitHub repo for Helm</a></p>
 </blockquote>
 
 <p>We now need to initialize <code>helm</code>. Since we are in a container, once we exit all config files written by <code>helm</code> and <code>draft</code> will be lost. That&rsquo;s why we have the <code>cluster</code> directory, which is mounted from the host.</p>
@@ -528,10 +532,10 @@ ga('send', 'pageview');
 
 <p>Once the developer is happy with changes made via Draft, they commit and push to version control, after which a continuous integration (CI) system takes over. Draft builds upon Kubernetes Helm and the Kubernetes Chart format, making it easy to construct CI pipelines from Draft-enabled applications.</p>
 
-<p>More on <a href="https://github.com/azure/draft">the GitHub repo for Draft</a></p>
+<p>More on <a href="https://github.com/azure/draft" target="_blank">the GitHub repo for Draft</a></p>
 </blockquote>
 
-<p>Now we are going to use <a href="https://github.com/Azure/draft/blob/master/docs/ingress.md">a very cool feature of Draft called ingress</a>. Basically, this will allow us to use a base domain - <code>*.draft.yourdomain.com</code> to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard <code>A Record</code> pointing back to an nginx controller in your cluster.</p>
+<p>Now we are going to use <a href="https://github.com/Azure/draft/blob/master/docs/ingress.md" target="_blank">a very cool feature of Draft called ingress</a>. Basically, this will allow us to use a base domain - <code>*.draft.yourdomain.com</code> to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard <code>A Record</code> pointing back to an nginx controller in your cluster.</p>
 
 <p>You will use <code>helm</code> to deploy an nginx ingress controller with a public IP address (if you are on Azure or GKE this will be done automatically for you after a couple of minutes):</p>
 
@@ -568,7 +572,7 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/k8s-helm-draft-azure/inspect.png" alt="" /></p>
 
 <blockquote>
-<p><a href="https://github.com/Azure/draft/blob/master/docs/ingress.md#i-dont-manage-a-domain">If you don&rsquo;t manage a domain, please see the instructions here</a>.</p>
+<p><a href="https://github.com/Azure/draft/blob/master/docs/ingress.md#i-dont-manage-a-domain" target="_blank">If you don&rsquo;t manage a domain, please see the instructions here</a>.</p>
 </blockquote>
 
 <h1 id="creating-an-application">Creating an application</h1>
@@ -578,12 +582,12 @@ ga('send', 'pageview');
 <p>Now to the part where we actually create an application.</p>
 
 <blockquote>
-<p>You can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md">find a getting started guide at the GitHub repo for Draft</a>.</p>
+<p>You can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank">find a getting started guide at the GitHub repo for Draft</a>.</p>
 </blockquote>
 
-<p><a href="https://github.com/Azure/draft/blob/master/docs/packs.md">Draft already has packs</a> that can autodetect your application and deploy it to your cluster for you.</p>
+<p><a href="https://github.com/Azure/draft/blob/master/docs/packs.md" target="_blank">Draft already has packs</a> that can autodetect your application and deploy it to your cluster for you.</p>
 
-<p>The packs are basically <code>helm</code> chart templates for <a href="https://github.com/Azure/draft/tree/master/packs">various programming languages and frameworks</a>, and you can easily write your own pack.</p>
+<p>The packs are basically <code>helm</code> chart templates for <a href="https://github.com/Azure/draft/tree/master/packs" target="_blank">various programming languages and frameworks</a>, and you can easily write your own pack.</p>
 
 <p>This is the application we will use, a very simple Go web app:</p>
 
@@ -622,7 +626,7 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/k8s-helm-draft-azure/build.png" alt="" />
 <img src="/img/article-photos/k8s-helm-draft-azure/app.png" alt="" /></p>
 
-<p>In my case, the public endpoint of my application will be: <a href="http://simple-go.draft.k8s.radu-matei.com">http://simple-go.draft.k8s.radu-matei.com</a> :</p>
+<p>In my case, the public endpoint of my application will be: <a href="http://simple-go.draft.k8s.radu-matei.com" target="_blank">http://simple-go.draft.k8s.radu-matei.com</a> :</p>
 
 <p><img src="/img/article-photos/k8s-helm-draft-azure/public-app.png" alt="" /></p>
 
@@ -634,7 +638,7 @@ ga('send', 'pageview');
 
 <p><code>kubectl proxy --port 8080 --address 0.0.0.0</code></p>
 
-<p>Then, if you also exposed port 8080 on your host can access: <a href="http://localhost:8080/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/node?namespace=_all">http://localhost:8080/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/node?namespace=_all</a></p>
+<p>Then, if you also exposed port 8080 on your host can access: <a href="http://localhost:8080/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/node?namespace=_all" target="_blank">http://localhost:8080/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/node?namespace=_all</a></p>
 
 <p>If you go to all your pods, you will see a pod called <code>draftd-&lt;some-random-id&gt;</code>:
 <img src="/img/article-photos/k8s-helm-draft-azure/draftd-pod.png" alt="" /></p>
@@ -686,12 +690,6 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -701,13 +699,9 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
     
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
-    
-        <li><a href='/categorieshelm'>helm</a></li>
-    
-        <li><a href='/categoriesdraft'>draft</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -759,7 +753,7 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -832,7 +826,7 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -906,6 +900,20 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1006,44 +1014,8 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1061,15 +1033,6 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1157,13 +1120,13 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

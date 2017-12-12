@@ -13,12 +13,12 @@
 <html>
     <head>
         
-            <title>Blog - Radu Matei - Developer Evangelist</title>
+            <title>Blog - Radu Matei&#39;s Blog</title>
         
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -114,13 +114,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -131,6 +124,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -180,17 +180,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -208,6 +197,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -240,6 +240,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -283,8 +287,7 @@ ga('send', 'pageview');
 
     
 
-    <p>NOTICE This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!
-Introduction In this article we will take a look at how to integrate ASP.</p>
+    <p>In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!</p>
 
     <footer>
         <ul class="actions">
@@ -302,12 +305,6 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -317,13 +314,11 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
-        <li><a href='/categoriesmvc'>mvc</a></li>
-    
-        <li><a href='/categoriessignalr'>signalr</a></li>
+        <li><a href='/categories/signalr'>signalr</a></li>
     
 </ul>
 
@@ -357,7 +352,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
 
-    <p>Table of Content  Introduction The need for registering services through a JSON file Adding the required packages Creating a dummy service How to inject an ITest service The JSON file The Service class Adding the services Testing the application The Startup class Conclusion  Introduction &ldquo;Back in the days&rdquo; of ASP.NET 4.x, each of the framework components (MVC, WebAPI, OWIN, SignalR) had its own dependency resolver and its own way of integrating with the framework.</p>
+    <p>Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code.</p>
 
     <footer>
         <ul class="actions">
@@ -375,12 +370,6 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -390,9 +379,9 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesdependency-injection'>dependency-injection</a></li>
+        <li><a href='/categories/dependency-injection'>dependency-injection</a></li>
     
 </ul>
 
@@ -428,7 +417,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
 
-    <p>Table of Content  Introduction Adding the MVC services to our application Adding the Post class Creating an IPostRepository interface Creating an in-memory implementation of IPostRepository The PostController class Registering the repository service in Startup Startup.cs Testing the application Conclusion  Introduction Up to this point, we have been learning about .NET Core and VS Code, about ASP .NET Core, the Startup class, Routing and how to use JSON Configuration.</p>
+    <p>In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop. We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data.</p>
 
     <footer>
         <ul class="actions">
@@ -446,12 +435,6 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -461,11 +444,9 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesdependency-injection'>dependency-injection</a></li>
-    
-        <li><a href='/categoriesmvc'>mvc</a></li>
+        <li><a href='/categories/dependency-injection'>dependency-injection</a></li>
     
 </ul>
 
@@ -501,7 +482,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
 
-    <p>Table of Content  Introduction Using the ASP .NET Core JSON Configuration Provider Building the configurable Greeting service Making use of ASP .NET Core Dependency Injection Conclusion  Introduction In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in web.config (complete description of the old web.config file), or added in a separate XML file and referenced in web.config (for scenarios like database connection strings, or storing APIs access tokens).</p>
+    <p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to create your custom configuration provider. Let&rsquo;s assume that in our application we want the response messages not to be hardcoded in Startup anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.</p>
 
     <footer>
         <ul class="actions">
@@ -519,12 +500,6 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -534,9 +509,9 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesdependency-injection'>dependency-injection</a></li>
+        <li><a href='/categories/dependency-injection'>dependency-injection</a></li>
     
 </ul>
 
@@ -576,9 +551,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
     
 
 
-    <p>Table of Contents
- Routing  Introduction Installing the Routing package Adding the Routing Service in Startup Adding and handling custom routes The full Startup class Conclusion   Routing Introduction In the previous example we built a very simple web application that responded with Hello, Universe and the current server time for every request.
- When the application is running and you navigate to <a href="http://localhost5000">http://localhost5000</a>, regardless of the path followed (<a href="http://localhost:5000/something/something-else/etc">http://localhost:5000/something/something-else/etc</a>), the response is the same.</p>
+    <p>So far we built simple web applications that responded with the same message for each request. However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI - we will explore the low-level Routing API.</p>
 
     <footer>
         <ul class="actions">
@@ -596,12 +569,6 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Category
                     
                 
@@ -611,7 +578,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
 </ul>
 
@@ -642,7 +609,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -718,7 +685,7 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -792,6 +759,20 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -892,44 +873,8 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -947,15 +892,6 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1046,13 +982,13 @@ Introduction In this article we will take a look at how to integrate ASP.</p>
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

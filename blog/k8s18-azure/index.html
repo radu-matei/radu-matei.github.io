@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -408,21 +412,21 @@ ga('send', 'pageview');
 
 <h1 id="prerequisites">Prerequisites</h1>
 
-<p>This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">create a free account and get $200 for 12 months</a>.</p>
+<p>This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank">create a free account and get $200 for 12 months</a>.</p>
 
 <p>This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.</p>
 
 <blockquote>
 <p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p>
 
-<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/">Azure Pricing Calculator</a></p>
+<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank">Azure Pricing Calculator</a></p>
 </blockquote>
 
 <p><img src="/img/article-photos/k8s18-azure/pricing.png" alt="" /></p>
 
 <h1 id="introduction">Introduction</h1>
 
-<p>On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. <a href="http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html">You can read the full blog post that announces the release here</a> and you can see <a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0">the release on GitHub</a> and the <a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180">associated changelog with all new features</a>.</p>
+<p>On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. <a href="http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html" target="_blank">You can read the full blog post that announces the release here</a> and you can see <a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0" target="_blank">the release on GitHub</a> and the <a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180" target="_blank">associated changelog with all new features</a>.</p>
 
 <p>In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.</p>
 
@@ -430,13 +434,13 @@ ga('send', 'pageview');
 
 <h1 id="deploying-orchestrator-clusters-in-azure">Deploying orchestrator clusters in Azure</h1>
 
-<p>There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">deploy a Kubernetes cluster</a>). <a href="https://azure.microsoft.com/en-us/services/container-service/">Azure Container Service</a> allows you to easily <a href="https://docs.microsoft.com/en-us/azure/container-service/">deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the <code>az</code> command line</a>. This is the way to go if you don&rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.</p>
+<p>There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/" target="_blank">deploy a Kubernetes cluster</a>). <a href="https://azure.microsoft.com/en-us/services/container-service/" target="_blank">Azure Container Service</a> allows you to easily <a href="https://docs.microsoft.com/en-us/azure/container-service/" target="_blank">deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the <code>az</code> command line</a>. This is the way to go if you don&rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.</p>
 
-<p>Then there is a tool called <a href="https://github.com/azure/acs-engine"><code>acs-engine</code></a>. This is basically the &ldquo;engine&rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.</p>
+<p>Then there is a tool called <a href="https://github.com/azure/acs-engine" target="_blank"><code>acs-engine</code></a>. This is basically the &ldquo;engine&rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.</p>
 
-<p><code>acs-engine</code> takes a <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md">cluster definition file</a> where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates">ARM (Azure Resource Manager) templates</a> that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).</p>
+<p><code>acs-engine</code> takes a <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md" target="_blank">cluster definition file</a> where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates" target="_blank">ARM (Azure Resource Manager) templates</a> that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).</p>
 
-<p>Kubernetes 1.8 has just been released, and together with it came <a href="https://github.com/Azure/acs-engine/releases">v0.8.0 of <code>acs-engine</code></a> with support for Kubernetes 1.8.</p>
+<p>Kubernetes 1.8 has just been released, and together with it came <a href="https://github.com/Azure/acs-engine/releases" target="_blank">v0.8.0 of <code>acs-engine</code></a> with support for Kubernetes 1.8.</p>
 
 <p>You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).</p>
 
@@ -462,7 +466,7 @@ ga('send', 'pageview');
 
 <h1 id="deploy-the-cluster">Deploy the cluster</h1>
 
-<p>This is how a typical cluster definition file looks for Kubernetes. Compared to <a href="https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json">the example offered in the repo</a>, this only adds the <code>orchestratorRelease</code> property and sets it to <code>1.8</code>.</p>
+<p>This is how a typical cluster definition file looks for Kubernetes. Compared to <a href="https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json" target="_blank">the example offered in the repo</a>, this only adds the <code>orchestratorRelease</code> property and sets it to <code>1.8</code>.</p>
 
 <script src="//gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js"></script>
 
@@ -498,7 +502,7 @@ Note that it automatically creates all assets for you including a service princi
 <p>Now to access the cluster.</p>
 
 <blockquote>
-<p>Depending on which version of <code>kubectl</code> you have installed, you might want to <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl">upgrade to 1.8 as it is detailed here</a>.</p>
+<p>Depending on which version of <code>kubectl</code> you have installed, you might want to <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl" target="_blank">upgrade to 1.8 as it is detailed here</a>.</p>
 </blockquote>
 
 <p>Now you need to point your <code>kubectl</code> to the <code>kubeconfig</code> file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:</p>
@@ -522,7 +526,7 @@ Note that it automatically creates all assets for you including a service princi
 <p>Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the <code>_output</code> directory from where you executed the <code>acs-engine deploy</code> command.
 You will want to have access to your cluster from outside the browser (for obvious reasons), so you will have to download the certificates and keys.</p>
 
-<p>After watching <a href="https://channel9.msdn.com/Shows/Azure-Friday/Azure-Cloud-Shell">this video on Channel9 explaining Azure Cloud Shell</a>, you simply need to put your files in <code>/home/&lt;your-username&gt;/clouddrive</code>. Then you will find them in the Azure Storage account (more specifically in the the File Share) associated with your Cloud Shell.</p>
+<p>After watching <a href="https://channel9.msdn.com/Shows/Azure-Friday/Azure-Cloud-Shell" target="_blank">this video on Channel9 explaining Azure Cloud Shell</a>, you simply need to put your files in <code>/home/&lt;your-username&gt;/clouddrive</code>. Then you will find them in the Azure Storage account (more specifically in the the File Share) associated with your Cloud Shell.</p>
 
 <blockquote>
 <p>If you don&rsquo;t want to manually download each file (and you don&rsquo;t have to mount the share), simply make an archive of the entire folder download it.</p>
@@ -531,7 +535,7 @@ You will want to have access to your cluster from outside the browser (for obvio
 <p>Then, point your local <code>kubectl</code> to the <code>kubeconfig.&lt;azure-location&gt;.json</code> file and you have access to your cluster.</p>
 
 <blockquote>
-<p>Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, <a href="https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/">as described in the Bitnami documentation</a>.</p>
+<p>Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, <a href="https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/" target="_blank">as described in the Bitnami documentation</a>.</p>
 </blockquote>
 
 <h1 id="conclusion-feedback">Conclusion, feedback</h1>
@@ -557,12 +561,6 @@ You will want to have access to your cluster from outside the browser (for obvio
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -572,9 +570,9 @@ You will want to have access to your cluster from outside the browser (for obvio
 
     
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -626,7 +624,7 @@ You will want to have access to your cluster from outside the browser (for obvio
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -699,7 +697,7 @@ You will want to have access to your cluster from outside the browser (for obvio
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -773,6 +771,20 @@ You will want to have access to your cluster from outside the browser (for obvio
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -873,44 +885,8 @@ You will want to have access to your cluster from outside the browser (for obvio
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -928,15 +904,6 @@ You will want to have access to your cluster from outside the browser (for obvio
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1024,13 +991,13 @@ You will want to have access to your cluster from outside the browser (for obvio
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

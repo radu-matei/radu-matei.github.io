@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -123,13 +123,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -140,6 +133,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -193,17 +193,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -221,6 +210,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -253,6 +253,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -403,7 +407,7 @@ ga('send', 'pageview');
 
 <p>In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.</p>
 
-<p>If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, <a href="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">you might want to skip to the part we start creating the CI/CD workflow.</a></p>
+<p>If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, <a href="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" target="_blank">you might want to skip to the part we start creating the CI/CD workflow.</a></p>
 
 <h2 id="moving-parts-and-used-components">Moving parts and used components</h2>
 
@@ -420,19 +424,19 @@ ga('send', 'pageview');
 <blockquote>
 <p>Docker Hub is a cloud-based registry service which allows you to link to code repositories, build your images and test them, stores manually pushed images, and links to Docker Cloud so you can deploy images to your hosts. It provides a centralized resource for container image discovery, distribution and change management, user and team collaboration, and workflow automation throughout the development pipeline.</p>
 
-<p>More information about Docker Hub on <a href="https://docs.docker.com/docker-hub/">the Official Docker Documentation</a>.</p>
+<p>More information about Docker Hub on <a href="https://docs.docker.com/docker-hub/" target="_blank">the Official Docker Documentation</a>.</p>
 </blockquote>
 
 <p>Then, we will configure an Azure VM to be a node for Docker Cloud and Docker Cloud will automatically publish containers to that VM. Then, every time there are changes in the GitHub repository, Docker Cloud will build the image and publish the container again automatically.</p>
 
 <blockquote>
-<p>More information about Docker Cloud on <a href="https://docs.docker.com/docker-cloud/overview/">the Official Docker Documentation</a>.</p>
+<p>More information about Docker Cloud on <a href="https://docs.docker.com/docker-cloud/overview/" target="_blank">the Official Docker Documentation</a>.</p>
 </blockquote>
 
 <p><img src="/img/article-photos/aspnet-core-docker-azure/ci-cd-workflow.png" alt="" /></p>
 
 <blockquote>
-<p><a href="https://blog.docker.com/2016/04/cicd-with-docker-cloud/">Photo source on the Docker Blog</a></p>
+<p><a href="https://blog.docker.com/2016/04/cicd-with-docker-cloud/" target="_blank">Photo source on the Docker Blog</a></p>
 </blockquote>
 
 <h2 id="create-a-github-repository">Create a GitHub repository</h2>
@@ -456,10 +460,10 @@ ga('send', 'pageview');
 <p>This will be the part with the least focus in this article, since we have covered building ASP.NET Core applications for a while now and you can find a lot resources on this topic, including some on this site.</p>
 
 <blockquote>
-<p>For ASP.NET Core tutorials, you can <a href="https://radu-matei.github.io/categories/aspnet-core/">take a look at some resources on this blog</a>, consult the <a href="https://docs.microsoft.com/en-us/aspnet/core/">official documentation</a>, or you can watch this <a href="https://mva.microsoft.com/en-US/training-courses/introduction-to-aspnet-core-10-16841">Microsoft Virtual Academy course presented by Scott Hanselman and Maria Naggaga</a>.</p>
+<p>For ASP.NET Core tutorials, you can <a href="https://radu-matei.github.io/categories/aspnet-core/" target="_blank">take a look at some resources on this blog</a>, consult the <a href="https://docs.microsoft.com/en-us/aspnet/core/" target="_blank">official documentation</a>, or you can watch this <a href="https://mva.microsoft.com/en-US/training-courses/introduction-to-aspnet-core-10-16841" target="_blank">Microsoft Virtual Academy course presented by Scott Hanselman and Maria Naggaga</a>.</p>
 </blockquote>
 
-<p>Basically, we will create the same application as explained in <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">this blog post</a>, but we will build it against .NET Core 1.0.1 (which is the latest stable version at the moment of writing this article).</p>
+<p>Basically, we will create the same application as explained in <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank">this blog post</a>, but we will build it against .NET Core 1.0.1 (which is the latest stable version at the moment of writing this article).</p>
 
 <blockquote>
 <p>While .NET Core 1.0.1 is the latest version at the moment of writing this article, you can also use other versions, since the Docker images are available on Docker Hub.</p>
@@ -506,12 +510,12 @@ ga('send', 'pageview');
 <blockquote>
 <p>Docker can build images automatically by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image. Using docker build users can create an automated build that executes several command-line instructions in succession.</p>
 
-<p><a href="https://docs.docker.com/engine/reference/builder/">More information on the Dockerfile on the Official Docker Documentation</a></p>
+<p><a href="https://docs.docker.com/engine/reference/builder/" target="_blank">More information on the Dockerfile on the Official Docker Documentation</a></p>
 </blockquote>
 
 <p>Basically, the Dockerfile is like a recipe for building container images. It is a script composed of multiple commands executed succesively to create images based on other images.</p>
 
-<p>You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you <a href="https://code.visualstudio.com/Docs/languages/dockerfile">install the VS Code Docker extension</a>, press F1 and search for Docker, you should see something similar to:</p>
+<p>You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you <a href="https://code.visualstudio.com/Docs/languages/dockerfile" target="_blank">install the VS Code Docker extension</a>, press F1 and search for Docker, you should see something similar to:</p>
 
 <p><img src="/img/article-photos/aspnet-core-docker-azure/vscode-docker.png" alt="" /></p>
 
@@ -618,7 +622,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 
 <p><img src="/img/article-photos/aspnet-core-docker-azure/azure-create-vm-1.png" alt="" /></p>
 
-<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal">In this article you can see the detalied process on how to open ports for Azure VMs.</a></p>
+<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal" target="_blank">In this article you can see the detalied process on how to open ports for Azure VMs.</a></p>
 
 <blockquote>
 <p><strong>We recommend you open incoming port 2375 in your firewall for Docker Cloud to communicate with the Docker daemon running in the node. For the overlay network to work, you must open port 6783/tcp and 6783/udp.</strong></p>
@@ -713,7 +717,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <li>Set Environment variables Set the edit environment variables and link your service to other existing services in Docker Cloud.</li>
 </ol>
 
-<p>More on Docker Cloud services on <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/">the Official Docker Documentation</a>.</p>
+<p>More on Docker Cloud services on <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/" target="_blank">the Official Docker Documentation</a>.</p>
 </blockquote>
 
 <p>We will create a service based on the image we just created.</p>
@@ -787,12 +791,6 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -802,11 +800,11 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesdocker'>docker</a></li>
+        <li><a href='/categories/docker'>docker</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -858,7 +856,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -931,7 +929,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1005,6 +1003,20 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1105,44 +1117,8 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1160,15 +1136,6 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1256,13 +1223,13 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

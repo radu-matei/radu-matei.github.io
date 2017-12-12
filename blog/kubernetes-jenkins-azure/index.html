@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -412,7 +416,7 @@ ga('send', 'pageview');
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In previous articles <a href="https://radu-matei.com/blog/k8s18-azure/">we deployed a Kubernetes 1.8 cluster to Azure using acs-engine</a>, then <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/">configured Helm and Draft to simplify testing applications</a>.</p>
+<p>In previous articles <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">we deployed a Kubernetes 1.8 cluster to Azure using acs-engine</a>, then <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/" target="_blank">configured Helm and Draft to simplify testing applications</a>.</p>
 
 <p>In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins declarative pipelines that build containers, push images to an image repository and update Kubernetes deployments.</p>
 
@@ -421,7 +425,7 @@ ga('send', 'pageview');
 <p>To follow along with this article, <em>you need a Kubernetes cluster</em> (we will use Kubernetes v1.8.0, but the instructions were also tested with v1.7.0) with Helm installed and a terminal with <code>kubectl</code> and <code>helm</code> installed and configured.</p>
 
 <blockquote>
-<p><a href="https://radu-matei.com/blog/k8s-helm-draft-azure">This article picks up where the last one ended, so you will need a Kubernetes cluster with <code>helm</code> installed. Here you can find very simple instructions on how to achieve it.</a></p>
+<p><a href="https://radu-matei.com/blog/k8s-helm-draft-azure" target="_blank">This article picks up where the last one ended, so you will need a Kubernetes cluster with <code>helm</code> installed. Here you can find very simple instructions on how to achieve it.</a></p>
 </blockquote>
 
 <p>My cluster is deployed into Azure, West Europe, but you can do the exact same steps using the Google Container Engine or your on-prem cluster (note that you will not be given public IP addresses as is the case with Azure or GKE).</p>
@@ -437,10 +441,10 @@ ga('send', 'pageview');
 <blockquote>
 <p>Charts are curated application definitions for Kubernetes Helm.</p>
 
-<p>More information on <a href="https://github.com/kubernetes/helm">Helm</a> and <a href="https://github.com/kubernetes/charts">charts</a> on GitHub</p>
+<p>More information on <a href="https://github.com/kubernetes/helm" target="_blank">Helm</a> and <a href="https://github.com/kubernetes/charts" target="_blank">charts</a> on GitHub</p>
 </blockquote>
 
-<p>If we search for <a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins">Jenkins in the list of stable charts</a>, we find very clear instructions on how to deploy it.</p>
+<p>If we search for <a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Jenkins in the list of stable charts</a>, we find very clear instructions on how to deploy it.</p>
 
 <p>A chart is composed of some templates (Kubernetes deployment files) and a file that holds our specific values for Jenkins - Docker image for master and agents, plugins to install, persistent volumes - basically all configurable values we can get for our Jenkins deployment.</p>
 
@@ -449,7 +453,7 @@ ga('send', 'pageview');
 <script src="//gist.github.com/radu-matei/466ae82b4b269d6bb762b088683bf9e6.js"></script>
 
 <blockquote>
-<p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
+<p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
 </blockquote>
 
 <p>Note that this verison mounts the <code>/var/run/docker.sock</code> socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.</p>
@@ -457,7 +461,7 @@ ga('send', 'pageview');
 <blockquote>
 <p>This also installs other plugins - such as Jenkins Blue Ocean.</p>
 
-<p><a href="https://github.com/kubernetes/charts/blob/master/stable/jenkins/values.yaml">The default values for Jenkins (that you can find in this repo)</a> does not expose it, you can use that, but note that some features we will use later (basically <code>docker build</code> inside the worker pod) will not work.</p>
+<p><a href="https://github.com/kubernetes/charts/blob/master/stable/jenkins/values.yaml" target="_blank">The default values for Jenkins (that you can find in this repo)</a> does not expose it, you can use that, but note that some features we will use later (basically <code>docker build</code> inside the worker pod) will not work.</p>
 </blockquote>
 
 <p>Get this file locally, then execute:</p>
@@ -507,7 +511,7 @@ ga('send', 'pageview');
 
 <p>Click [<strong>Add Credential</strong>]</p>
 
-<p><a href="https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs">Full Cloudbees article that explains credentials and credential bindings in Jenkins</a></p>
+<p><a href="https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs" target="_blank">Full Cloudbees article that explains credentials and credential bindings in Jenkins</a></p>
 </blockquote>
 
 <p><img src="/img/article-photos/kubernetes-jenkins-azure/credentials.png" alt="" /></p>
@@ -521,7 +525,7 @@ ga('send', 'pageview');
 <p>We will now look at how to write the simplest Jenkinsfile that will to exactly that: build and push an image to a repo and do work with <code>kubectl</code> and <code>helm</code>.</p>
 
 <blockquote>
-<p><a href="https://github.com/jenkinsci/kubernetes-plugin">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
+<p><a href="https://github.com/jenkinsci/kubernetes-plugin" target="_blank">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
 </blockquote>
 
 <script src="//gist.github.com/radu-matei/376f5a2b042b0df82d7d905c9c6cf8ff.js"></script>
@@ -533,12 +537,12 @@ ga('send', 'pageview');
 <p>This Jenkinsfile makes use of having multiple containers in the same Kubernetes pod - we will have 3 containers - one based on a Docker image, one based on <code>kubectl</code> and the last based on <code>helm</code>.</p>
 
 <blockquote>
-<p>You can create your own containers - in this case I used the official one for Docker and the images built by <a href="https://twitter.com/LachlanEvenson">Lachlan Evenson</a>, since are widely used on Docker Hub and I kind of trust Lachlan :)</p>
+<p>You can create your own containers - in this case I used the official one for Docker and the images built by <a href="https://twitter.com/LachlanEvenson" target="_blank">Lachlan Evenson</a>, since are widely used on Docker Hub and I kind of trust Lachlan :)</p>
 
 <p>Use images from the Internet at your own risk!</p>
 </blockquote>
 
-<p>Note that we are mounting the Docker socket inside our pod so the Docker container has access to the Docker engine - this step is debatable for using in production (but it is arguably better than using Docker-in-Docker - <a href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/">read this article</a>).</p>
+<p>Note that we are mounting the Docker socket inside our pod so the Docker container has access to the Docker engine - this step is debatable for using in production (but it is arguably better than using Docker-in-Docker - <a href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/" target="_blank">read this article</a>).</p>
 
 <p>Since we are already running in the cluster, the other two containers are already authenticated.</p>
 
@@ -602,12 +606,6 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -617,11 +615,11 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
     
     
-        <li><a href='/categoriesdocker'>docker</a></li>
+        <li><a href='/categories/docker'>docker</a></li>
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesjenkins'>jenkins</a></li>
+        <li><a href='/categories/jenkins'>jenkins</a></li>
     
 </ul>
 
@@ -673,7 +671,7 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -746,7 +744,7 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -820,6 +818,20 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -920,44 +932,8 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -975,15 +951,6 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1071,13 +1038,13 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

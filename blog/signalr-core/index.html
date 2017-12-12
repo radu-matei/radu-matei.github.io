@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -120,13 +120,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -137,6 +130,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -190,17 +190,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -218,6 +207,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -250,6 +250,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -415,27 +419,27 @@ ga('send', 'pageview');
 <blockquote>
 <p>ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.</p>
 
-<p>You can <a href="https://github.com/aspnet/signalr">follow the developent of SignalR on GitHub</a></p>
+<p>You can <a href="https://github.com/aspnet/signalr" target="_blank">follow the developent of SignalR on GitHub</a></p>
 </blockquote>
 
-<p>While ASP.NET hit version 2.0, SignalR has been in development for the better part of the last couple if years - and if you want to get an insight on new things, <a href="https://vimeo.com/204078084">I recommend watching this talk by David Fowler and Damian Edwards, the people in charge of SignalR (and the creators of it)</a>.</p>
+<p>While ASP.NET hit version 2.0, SignalR has been in development for the better part of the last couple if years - and if you want to get an insight on new things, <a href="https://vimeo.com/204078084" target="_blank">I recommend watching this talk by David Fowler and Damian Edwards, the people in charge of SignalR (and the creators of it)</a>.</p>
 
-<p>In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 - you can <a href="https://blogs.msdn.microsoft.com/webdev/2017/10/09/announcing-signalr-for-asp-net-core-alpha-2/">read the announcement blog post on MSDN</a>, but here are some of the of the news in case you haven&rsquo;t followed SignalR for a while:</p>
+<p>In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 - you can <a href="https://blogs.msdn.microsoft.com/webdev/2017/10/09/announcing-signalr-for-asp-net-core-alpha-2/" target="_blank">read the announcement blog post on MSDN</a>, but here are some of the of the news in case you haven&rsquo;t followed SignalR for a while:</p>
 
 <ul>
 <li>new JavaScript and TypeScript clients</li>
-<li>JSON and binary messages based on <a href="https://msgpack.org/">MessagePack</a> - and while <a href="https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#protocol-buffers-protobuf-encoding">ProtoBuf is not yet implemented</a>, there are some <a href="- https://github.com/aspnet/SignalR/blob/357f5f85bbc7b794f95bcb63799f98bc1dcee68e/samples/SocialWeather/Protobuf/WeatherReport.proto">samples available</a> and I hope it will be one of the officially supported protocols</li>
+<li>JSON and binary messages based on <a href="https://msgpack.org/" target="_blank">MessagePack</a> - and while <a href="https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#protocol-buffers-protobuf-encoding" target="_blank">ProtoBuf is not yet implemented</a>, there are some <a href="- https://github.com/aspnet/SignalR/blob/357f5f85bbc7b794f95bcb63799f98bc1dcee68e/samples/SocialWeather/Protobuf/WeatherReport.proto" target="_blank">samples available</a> and I hope it will be one of the officially supported protocols</li>
 <li>streaming support (this is incredibly exciting!)</li>
 <li>no more automatic reconnection</li>
 <li>single hub per connection</li>
 </ul>
 
-<p>In this blog post we will explore how to get started with some of the most common scenarios for SignalR, and in order to follow along you need version 2.0.0 of .NET Core installed on your machine - <a href="https://www.microsoft.com/net/download/">you can get started here</a></p>
+<p>In this blog post we will explore how to get started with some of the most common scenarios for SignalR, and in order to follow along you need version 2.0.0 of .NET Core installed on your machine - <a href="https://www.microsoft.com/net/download/" target="_blank">you can get started here</a></p>
 
 <h2 id="chat-of-course">Chat, of course</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/simple-chat">find the chat sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/simple-chat" target="_blank">find the chat sample on GitHub</a></p>
 </blockquote>
 
 <p>Every article, talk or piece of documentation on SignalR needs to include a chat sample - this has been the standard ever since the beginning, and I will also include a sample here - it will be a very simple sample, just enough to make sure you have everything configured correctly and to understand the basic concepts of SignalR.</p>
@@ -473,7 +477,7 @@ ga('send', 'pageview');
 
 <script src="//gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js"></script>
 
-<p>Now to the client: we need to create a simple HTML page that can send messages. It will use the SignalR JavaScript client, which you can either download using <code>npm</code>: <code>npm install @aspnet/signalr-client</code>, or <a href="https://gist.github.com/radu-matei/84f12b835fbd0fbe3cbe165a70e13e34">use the gist from here</a>.</p>
+<p>Now to the client: we need to create a simple HTML page that can send messages. It will use the SignalR JavaScript client, which you can either download using <code>npm</code>: <code>npm install @aspnet/signalr-client</code>, or <a href="https://gist.github.com/radu-matei/84f12b835fbd0fbe3cbe165a70e13e34" target="_blank">use the gist from here</a>.</p>
 
 <p>Here&rsquo;s a breakdown on what&rsquo;s happening in the web page:</p>
 
@@ -523,13 +527,13 @@ ga('send', 'pageview');
 <p>At this point, you successfully created a very simple SignalR chat application - you now know how to create hub methods and client methods, and how to connect a web app using the JavaScript client.</p>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/simple-chat">find the chat sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/simple-chat" target="_blank">find the chat sample on GitHub</a></p>
 </blockquote>
 
 <h2 id="adding-a-c-console-client">Adding a C# console client</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client">find the full implementation of the console client on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client" target="_blank">find the full implementation of the console client on GitHub</a></p>
 </blockquote>
 
 <p>Now if we want to connect a C#-based client, we only need to add the <code>Microsoft.AspNetCore.SignalR.Client</code> package to a <code>dotnet new console</code> newly created app, specifically <code>&lt;PackageReference Include=&quot;Microsoft.AspNetCore.SignalR.Client&quot; Version=&quot;1.0.0-alpha2-final&quot; /&gt;</code></p>
@@ -566,7 +570,7 @@ ga('send', 'pageview');
 <script src="//gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client">find the full implementation of the console client on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client" target="_blank">find the full implementation of the console client on GitHub</a></p>
 </blockquote>
 
 <p>Let&rsquo;s see how it works:</p>
@@ -600,7 +604,7 @@ ga('send', 'pageview');
 <h2 id="working-with-an-mvc-webapi-application">Working with an MVC/WebApi application</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc">find the MVC sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc" target="_blank">find the MVC sample on GitHub</a></p>
 </blockquote>
 
 <p>Another popular situation of using SignalR is to provide notifications through an MVC or WebAPI application, more specifically through a controller method. This means the initial point of interaction will not by directly calling a hub method, but after one client making a REST request to a controller - then, from the controller method, we need to send an update to all connected clients.</p>
@@ -622,7 +626,7 @@ ga('send', 'pageview');
 <script src="//gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js"></script>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc">find the MVC sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc" target="_blank">find the MVC sample on GitHub</a></p>
 </blockquote>
 
 <ul>
@@ -634,11 +638,11 @@ ga('send', 'pageview');
 <h2 id="streaming">Streaming</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming">find the streaming sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming" target="_blank">find the streaming sample on GitHub</a></p>
 
-<p>To get up to date with the observable pattern, you can <a href="https://docs.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern">read this article from the docs</a></p>
+<p>To get up to date with the observable pattern, you can <a href="https://docs.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern" target="_blank">read this article from the docs</a></p>
 
-<p>We will not get into details on how the streaming actually works, you can <a href="https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#streaming">read the specification int the SignalR repo</a></p>
+<p>We will not get into details on how the streaming actually works, you can <a href="https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#streaming" target="_blank">read the specification int the SignalR repo</a></p>
 </blockquote>
 
 <p>We will start again from a <code>dotnet new web</code> empty application and add SignalR as in the first example and add a <code>StreamingHub</code> class, and we will add a new streaming method in our hub. Let&rsquo;s see what&rsquo;s happening here:</p>
@@ -713,7 +717,7 @@ function onStreamReceived(data){
 </ul>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming">find the streaming sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming" target="_blank">find the streaming sample on GitHub</a></p>
 </blockquote>
 
 <pre><code class="language-csharp">public async static Task StartStreaming()
@@ -734,13 +738,13 @@ function onStreamReceived(data){
 <p><img src="/img/article-photos/signalr/gif3.gif" alt="" /></p>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming">find the streaming sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming" target="_blank">find the streaming sample on GitHub</a></p>
 </blockquote>
 
 <h2 id="sending-binary-data">Sending binary data</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary">find the sample for the binary protocol on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary" target="_blank">find the sample for the binary protocol on GitHub</a></p>
 </blockquote>
 
 <p>So far we only saw how to use the JSON protocol to send data. One of the awesome features of the new SignalR version is the ability to send binary encoded data. We will explore how to set the clients to use the binary format protocols.</p>
@@ -767,7 +771,7 @@ function onStreamReceived(data){
 var connection = new signalR.HubConnection(`http://${document.location.host}/chat`, { transport: transport, protocol: protocol });
 </code></pre>
 
-<p>And that&rsquo;s pretty much it - you can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary">find a full example for the chat app and console client that use the binary protocol on GitHub</a>.</p>
+<p>And that&rsquo;s pretty much it - you can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary" target="_blank">find a full example for the chat app and console client that use the binary protocol on GitHub</a>.</p>
 
 <p>If we run the binary samples, we can see that the protocol is set in both cases to <code>messsagepack</code>.</p>
 
@@ -776,13 +780,13 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 <p>So far we saw how to create a simple chat, to inject the hub context into a controller, stream data for JavaScript and C# clients and set the protocol to binary. Now we&rsquo;ll take a look at another common use case - Redis scaleout.</p>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary">find the sample for the binary protocol on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary" target="_blank">find the sample for the binary protocol on GitHub</a></p>
 </blockquote>
 
 <h2 id="redis-scaleout">Redis scaleout</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout">find the Redis scaleout sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout" target="_blank">find the Redis scaleout sample on GitHub</a></p>
 </blockquote>
 
 <p>For each connected client, SignalR will keep its connection ID in memory - this means that if we ever need to scale our app to multiple instances, sending a message to all connected clients will simply not work anymore, since each instance will hold only a portion of all connected clients.</p>
@@ -806,7 +810,7 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 <p><img src="/img/article-photos/signalr/gif5.gif" alt="" /></p>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout">find the Redis scaleout sample on GitHub</a></p>
+<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout" target="_blank">find the Redis scaleout sample on GitHub</a></p>
 </blockquote>
 
 <h2 id="conclusion">Conclusion</h2>
@@ -834,12 +838,6 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -849,9 +847,9 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriessignalr'>signalr</a></li>
+        <li><a href='/categories/signalr'>signalr</a></li>
     
 </ul>
 
@@ -900,7 +898,7 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -973,7 +971,7 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1047,6 +1045,20 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1147,44 +1159,8 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1202,15 +1178,6 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1298,13 +1265,13 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

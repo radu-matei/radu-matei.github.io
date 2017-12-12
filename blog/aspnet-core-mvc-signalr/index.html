@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -123,13 +123,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -140,6 +133,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -193,17 +193,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -221,6 +210,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -253,6 +253,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -401,19 +405,19 @@ ga('send', 'pageview');
 
 <h2 id="notice">NOTICE</h2>
 
-<p><a href="https://radu-matei.com/blog/signalr-core"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
+<p><a href="https://radu-matei.com/blog/signalr-core" target="_blank"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
+<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server" target="_blank"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
 
 <blockquote>
-<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
+<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
 
-<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/">take a look at this article</a>.</p>
+<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/" target="_blank">take a look at this article</a>.</p>
 </blockquote>
 
-<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/">this application</a> and add real time functionality to it.</p>
+<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank">this application</a> and add real time functionality to it.</p>
 
 <p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p>
 
@@ -460,7 +464,7 @@ ga('send', 'pageview');
 
 <h2 id="post-ipostrepository-and-postrepository"><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2>
 
-<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
+<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank">This article</a> explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
 
 <pre><code>public class Post
 {
@@ -591,7 +595,7 @@ public class PostsHub : Hub
 
 <p>This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse metods across the JavaScript client, thing we cannot tolerate.</p>
 
-<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
+<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751" target="_blank">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
 
 <h2 id="add-a-custom-contract-resolvers">Add a custom contract resolvers</h2>
 
@@ -849,12 +853,6 @@ public class PostsController : Controller
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -864,13 +862,11 @@ public class PostsController : Controller
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
-        <li><a href='/categoriesmvc'>mvc</a></li>
-    
-        <li><a href='/categoriessignalr'>signalr</a></li>
+        <li><a href='/categories/signalr'>signalr</a></li>
     
 </ul>
 
@@ -922,7 +918,7 @@ public class PostsController : Controller
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -995,7 +991,7 @@ public class PostsController : Controller
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1069,6 +1065,20 @@ public class PostsController : Controller
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1169,44 +1179,8 @@ public class PostsController : Controller
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1224,15 +1198,6 @@ public class PostsController : Controller
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1320,13 +1285,13 @@ public class PostsController : Controller
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

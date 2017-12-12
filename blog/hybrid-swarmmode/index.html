@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -53,7 +53,7 @@
 
 <meta itemprop="datePublished" content="2017-07-03T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2017-07-03T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1831">
+<meta itemprop="wordCount" content="1794">
 
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -398,30 +402,28 @@ ga('send', 'pageview');
 
 <h2 id="introduction">Introduction</h2>
 
-<p>This is the first part in our (at least) two parts describing how to get started with a hybrid Docker Swarm Mode cluster. In this first part, we will focus on deploying a hybrid cluster on Azure.</p>
-
 <p>Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.</p>
 
 <p>Here is a list of resources you might want to get started with before diving into this article:</p>
 
 <ul>
-<li><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/">Getting started with Swarm Mode and Linux Containers - Docker docs</a></li>
-<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode">Getting started with Swarm Mode and Windows Containers - Microsoft docs</a></li>
-<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a></li>
+<li><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/" target="_blank">Getting started with Swarm Mode and Linux Containers - Docker docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode" target="_blank">Getting started with Swarm Mode and Windows Containers - Microsoft docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters" target="_blank">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a></li>
 </ul>
 
 <h2 id="how-is-this-article-different-compared-to-the-docs-above">How is this article different compared to the docs above?</h2>
 
-<p>In this article we will focus on deploying the cluster on Azure programatically, using <a href="https://github.com/Azure/acs-engine">acs-engine</a>, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview">ARM (Azure Resource Manager) templates</a> for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
+<p>In this article we will focus on deploying the cluster on Azure programatically, using <a href="https://github.com/Azure/acs-engine" target="_blank">acs-engine</a>, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview" target="_blank">ARM (Azure Resource Manager) templates</a> for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
 
-<p>While you can <a href="https://github.com/Azure/acs-engine">find more information about acs-engine on the GitHub repo</a>, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/">various Azure command-line interfaces</a> like Azure CLI 2.0 or Azure PowerShell.</p>
+<p>While you can <a href="https://github.com/Azure/acs-engine" target="_blank">find more information about acs-engine on the GitHub repo</a>, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/" target="_blank">various Azure command-line interfaces</a> like Azure CLI 2.0 or Azure PowerShell.</p>
 
 <h2 id="getting-started-prerequisites">Getting started - prerequisites</h2>
 
-<p>This article will continue under the assumption that you have an active Azure subscription. If you don&rsquo;t, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/">Visual Studio Dev Essentials</a> (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md">this link on how to activate your free monthly $25</a>), or a <a href="https://azure.microsoft.com/en-us/free/">free trial</a>.</p>
+<p>This article will continue under the assumption that you have an active Azure subscription. If you don&rsquo;t, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/" target="_blank">Visual Studio Dev Essentials</a> (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md" target="_blank">this link on how to activate your free monthly $25</a>), or a <a href="https://azure.microsoft.com/en-us/free/" target="_blank">free trial</a>.</p>
 
 <blockquote>
-<p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a> where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
+<p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster" target="_blank">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a> where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
 </blockquote>
 
 <h2 id="understanding-all-types-of-containers">Understanding all types of containers</h2>
@@ -431,26 +433,26 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/hybrid-swarmmode/journey.png" alt="" /></p>
 
 <blockquote>
-<p><a href="https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/">Photo credits to Bruno Terkaly, from this article</a></p>
+<p><a href="https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/" target="_blank">Photo credits to Bruno Terkaly, from this article</a></p>
 </blockquote>
 
 <p>Linux containers use the host kernel to run &ldquo;containerized&rdquo; workloads - that is execute the process inside the container using Linux kernel features like cgroups and namespaces. Of course, to run Linux containers you need a Linux kernel - this hasn&rsquo;t changed and will not change any time soon.</p>
 
-<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">When we talk about the Windows ecosystem</a>, we have Windows Server Containers and Hyper-V Containers.</p>
+<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank">When we talk about the Windows ecosystem</a>, we have Windows Server Containers and Hyper-V Containers.</p>
 
-<p>Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">source - Microsoft docs</a>)</p>
+<p>Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank">source - Microsoft docs</a>)</p>
 
-<p>Hyper-V Containers - &ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">source - Microsoft docs</a>)</p>
+<p>Hyper-V Containers - &ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank">source - Microsoft docs</a>)</p>
 
 <p>However, there&rsquo;s a twist: announced at DockerCon 2017, you will be able to run Linux containers on Windows hosts using Hyper-V Isolation</p>
 
 <p><img src="/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg" alt="" /></p>
 
 <blockquote>
-<p><a href="https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/">Image from The New Stack</a></p>
+<p><a href="https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/" target="_blank">Image from The New Stack</a></p>
 </blockquote>
 
-<p>This is all possible through the new <a href="https://github.com/linuxkit/linuxkit">LinuxKit project</a>, but more on this on a separate article in the future.</p>
+<p>This is all possible through the new <a href="https://github.com/linuxkit/linuxkit" target="_blank">LinuxKit project</a>, but more on this on a separate article in the future.</p>
 
 <p>After we deploy our cluster, we will be able to deploy all types of containers described above.</p>
 
@@ -463,7 +465,7 @@ ga('send', 'pageview');
 <p>This is a pretty standard cluster definition file for acs-engine, except for the addition of <code>windowspool</code>, a pool of Windows Server agents in our cluster.</p>
 
 <blockquote>
-<p>You can find <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md">in-depth documentation for the cluster definition on the acs-engine GitHub repo here.</a></p>
+<p>You can find <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md" target="_blank">in-depth documentation for the cluster definition on the acs-engine GitHub repo here.</a></p>
 </blockquote>
 
 <p>From the definition file, we see that we have a Swarm Mode cluster, with 3 Linux masters, 3 Linux agents and 3 Windows Server 2016 agents. Before we can use this definition file, we need to add the required values for <code>dnxPrefix</code> for the masters, Linux and Windows agents.</p>
@@ -478,7 +480,7 @@ ga('send', 'pageview');
 
 <p>So far we only have a cluster definition (with values for FQDN, usernames and passwords). Before we can actually deploy, we need to generate the ARM templates using acs-engine.</p>
 
-<p>In order to do this, we will use the <code>acs-engine</code> tool. After we have the ARM template, we will use the <code>az</code> CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the <a href="https://docs.microsoft.com/en-us/azure/cloud-shell/overview">Azure Cloud Shell</a>.</p>
+<p>In order to do this, we will use the <code>acs-engine</code> tool. After we have the ARM template, we will use the <code>az</code> CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the <a href="https://docs.microsoft.com/en-us/azure/cloud-shell/overview" target="_blank">Azure Cloud Shell</a>.</p>
 
 <p><img src="/img/article-photos/hybrid-swarmmode/cloud-shell.png" alt="" /></p>
 
@@ -486,11 +488,11 @@ ga('send', 'pageview');
 <p>List of tools and languages supported in the Azure Cloud Shell</p>
 </blockquote>
 
-<p>Log into <a href="https://portal.azure.com">portal.azure.com</a> and request a cloud shell. You should see something like this:</p>
+<p>Log into <a href="https://portal.azure.com" target="_blank">portal.azure.com</a> and request a cloud shell. You should see something like this:</p>
 
 <p><img src="/img/article-photos/hybrid-swarmmode/portal-shell.PNG" alt="" /></p>
 
-<p>Now we should <a href="https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine">follow the instructions in the acs-engine documentation</a> and install acs-engine in the Azure Cloud Shell.</p>
+<p>Now we should <a href="https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine" target="_blank">follow the instructions in the acs-engine documentation</a> and install acs-engine in the Azure Cloud Shell.</p>
 
 <p>First, we need to create a new directory called <code>go</code> and set it as <code>GOPATH</code>: <code>mkdir go</code> and <code>export GOPATH=/home/{yourusername}/go</code>.</p>
 
@@ -558,7 +560,7 @@ ga('send', 'pageview');
 <p>A very quick solution is to reimage the Windows agents. This means restoring them to the initial state and executing all scripts that were executed when initializing the cluster.</p>
 
 <blockquote>
-<p>A very probable cause of this could be that <a href="https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1">the script that joins the Windows agents to the cluster</a> might get executed before the masters actually start.</p>
+<p>A very probable cause of this could be that <a href="https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1" target="_blank">the script that joins the Windows agents to the cluster</a> might get executed before the masters actually start.</p>
 </blockquote>
 
 <p>After reimaging or restarting the VMs, your cluster should look like this:</p>
@@ -576,7 +578,7 @@ ga('send', 'pageview');
 <p>We will deploy a simple Python web application on Linux that will use a Redis data store that we will run on Windows.</p>
 
 <blockquote>
-<p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis">The Python application can be found here</a> and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/">Docker Compose one from the Official Docker Docs</a></p>
+<p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis" target="_blank">The Python application can be found here</a> and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/" target="_blank">Docker Compose one from the Official Docker Docs</a></p>
 </blockquote>
 
 <script src="//gist.github.com/radu-matei/7543e906e3633075cd32231e46628bf1.js"></script>
@@ -587,7 +589,7 @@ ga('send', 'pageview');
 
 <p>To deploy this on the master, you need the file above. You can copy it, or <code>wget</code> it directly: <code>wget https://gist.githubusercontent.com/radu-matei/7543e906e3633075cd32231e46628bf1/raw/f5e06e372c9a5c57f555e8580eee1c1a5ccb635e/hybrid-stack.yml</code></p>
 
-<p>Then, you need to <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/">create a new stack deployment</a>:</p>
+<p>Then, you need to <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/" target="_blank">create a new stack deployment</a>:</p>
 
 <p><code>docker stack deploy --compose-file hybrid-stack.yml python-redis</code></p>
 
@@ -598,7 +600,7 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/hybrid-swarmmode/service-ls.PNG" alt="" /></p>
 
 <blockquote>
-<p><a href="https://hub.docker.com/r/library/redis/">Since the Nanoserver Redis image</a> is around 340 MB, it will take a little to pull it, then start a container.</p>
+<p><a href="https://hub.docker.com/r/library/redis/" target="_blank">Since the Nanoserver Redis image</a> is around 340 MB, it will take a little to pull it, then start a container.</p>
 </blockquote>
 
 <p>Now since the application that exposes ports is the one running on a Linux node (the web application), we will access it on the port 80 (the one exposed) of the Linux agent FQDN:</p>
@@ -636,12 +638,6 @@ ga('send', 'pageview');
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -651,13 +647,11 @@ ga('send', 'pageview');
 
     
     
-        <li><a href='/categoriesdocker'>docker</a></li>
+        <li><a href='/categories/docker'>docker</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
-        <li><a href='/categoriesswarm'>swarm</a></li>
-    
-        <li><a href='/categorieswindows-containers'>windows-containers</a></li>
+        <li><a href='/categories/windows-containers'>windows-containers</a></li>
     
 </ul>
 
@@ -709,7 +703,7 @@ ga('send', 'pageview');
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -782,7 +776,7 @@ ga('send', 'pageview');
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -856,6 +850,20 @@ ga('send', 'pageview');
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -956,44 +964,8 @@ ga('send', 'pageview');
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1011,15 +983,6 @@ ga('send', 'pageview');
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1107,13 +1070,13 @@ ga('send', 'pageview');
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

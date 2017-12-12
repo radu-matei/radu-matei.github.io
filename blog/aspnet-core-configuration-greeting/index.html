@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -408,18 +412,18 @@ ga('send', 'pageview');
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in <code>web.config</code> <a href="http://www.codeproject.com/Articles/301726/Web-config-File-ASP-NET">(complete description of the old <code>web.config</code> file)</a>, or added in a separate XML file and referenced in <code>web.config</code> (for scenarios like database connection strings, or storing APIs access tokens).</p>
+<p>In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in <code>web.config</code> <a href="http://www.codeproject.com/Articles/301726/Web-config-File-ASP-NET" target="_blank">(complete description of the old <code>web.config</code> file)</a>, or added in a separate XML file and referenced in <code>web.config</code> (for scenarios like database connection strings, or storing APIs access tokens).</p>
 
-<p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers">create your custom configuration provider</a>.</p>
+<p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers" target="_blank">create your custom configuration provider</a>.</p>
 
 <blockquote>
-<p>For a detailed view of ASP .NET Core Configuration system, read the <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html">Official ASP .NET Documentation</a>.</p>
+<p>For a detailed view of ASP .NET Core Configuration system, read the <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html" target="_blank">Official ASP .NET Documentation</a>.</p>
 </blockquote>
 
-<p><a href="https://radu-matei.github.io/blog/aspnet-core-routing/">In the tutorial about Routing</a>, we created a very simple web application that used the Routing service to respond to some requests, but they were hardcoded and if we wanted to change the response message, we would have had to recompile the entire application.</p>
+<p><a href="https://radu-matei.github.io/blog/aspnet-core-routing/" target="_blank">In the tutorial about Routing</a>, we created a very simple web application that used the Routing service to respond to some requests, but they were hardcoded and if we wanted to change the response message, we would have had to recompile the entire application.</p>
 
 <blockquote>
-<p>For more information about Routing, check the <a href="https://radu-matei.github.io/blog/aspnet-core-routing/">ASP .NET Core Routing Tutorial</a>.</p>
+<p>For more information about Routing, check the <a href="https://radu-matei.github.io/blog/aspnet-core-routing/" target="_blank">ASP .NET Core Routing Tutorial</a>.</p>
 </blockquote>
 
 <p>Let&rsquo;s assume that in our application we want the response messages not to be hardcoded in <code>Startup</code> anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.</p>
@@ -443,7 +447,7 @@ ga('send', 'pageview');
 <p>As we said earlier, the new ASP .NET implements a JSON configuration provider that allows us to read and use configurations from JSON files (and not only), and we can have strong typing (where we define classes for our configuration settings) or we can access them using directly their key.</p>
 
 <blockquote>
-<p>For a complete article on creating <a href="https://weblog.west-wind.com/posts/2016/May/23/Strongly-Typed-Configuration-Settings-in-ASPNET-Core">Strongly Typed Configuration Settings in ASP .NET Core, see this article by Rick Strahl</a>.</p>
+<p>For a complete article on creating <a href="https://weblog.west-wind.com/posts/2016/May/23/Strongly-Typed-Configuration-Settings-in-ASPNET-Core" target="_blank">Strongly Typed Configuration Settings in ASP .NET Core, see this article by Rick Strahl</a>.</p>
 </blockquote>
 
 <p>To use configuration settings in ASP .NET Core, simply instantiate a <code>Configuration</code> object (using a <code>ConfigurationBuilder</code>)  and indicate the source of the JSON file. Then, we can add multiple sources and types of sources that populate our application&rsquo;s configuration.</p>
@@ -453,14 +457,14 @@ ga('send', 'pageview');
 
 <p>Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.</p>
 
-<p><a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#using-the-built-in-sources">The Official ASP .NET Core Documentation</a></p>
+<p><a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#using-the-built-in-sources" target="_blank">The Official ASP .NET Core Documentation</a></p>
 </blockquote>
 
 <p>Because at the time when we write the application we can&rsquo;t know the exact paths, we will not create stronyly-typed configurations but we will take the path from our application an check to see wether that path exists in our configuration file.</p>
 
 <h2 id="building-the-configurable-greeting-service">Building the configurable Greeting service</h2>
 
-<p>First of all, <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">follow all the steps in order to create an ASP .NET Core application with a <code>Startup</code> class from this tutorial</a>, that means:</p>
+<p>First of all, <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank">follow all the steps in order to create an ASP .NET Core application with a <code>Startup</code> class from this tutorial</a>, that means:</p>
 
 <ul>
 <li>create new app using <code>dotnet new</code></li>
@@ -547,7 +551,7 @@ After this, we set our <code>Configuration</code> property to what the <code>con
     }
 </code></pre>
 
-<p>We create a new <code>RouteBuilder</code> and map a new GET <code>route</code> in <a href="https://radu-matei.github.io/blog/aspnet-core-routing/">the same way as in this article</a>.</p>
+<p>We create a new <code>RouteBuilder</code> and map a new GET <code>route</code> in <a href="https://radu-matei.github.io/blog/aspnet-core-routing/" target="_blank">the same way as in this article</a>.</p>
 
 <pre><code>            var routeMessage = Configuration.AsEnumerable()
                 .FirstOrDefault(r =&gt; r.Key == context.GetRouteValue(&quot;route&quot;)
@@ -558,7 +562,7 @@ After this, we set our <code>Configuration</code> property to what the <code>con
 <p>We know that our configuration is now accessible through the <code>Configuration</code> property that we populated in the <code>Startup</code> constructor, and the configuration settings are an <code>IEnumerable&lt;KeyValuePair&lt;string, string&gt;&gt;</code>, that is a collection of key-value pairs of strings, so we can use Linq to search for the key-value pair in our file that has the same key as our path and take the value from that pair.</p>
 
 <blockquote>
-<p>For some examples of using Linq with lambdas <a href="http://www.codemag.com/article/1001051">check this article from Code Magazine</a>.</p>
+<p>For some examples of using Linq with lambdas <a href="http://www.codemag.com/article/1001051" target="_blank">check this article from Code Magazine</a>.</p>
 </blockquote>
 
 <p>We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard respone.</p>
@@ -641,9 +645,9 @@ This example will be about dependency injection, something we haven&rsquo;t disc
 
 <p>The reason for doing this is to show how to build a still very simple application, but one that is a lot more configurable.</p>
 
-<p>Martin Fowler has written an extensive article on <a href="http://martinfowler.com/articles/injection.html">Inversion of Control Containers and the Dependency Injection Pattern</a>. Microsoft Patterns and Practices also has a great description of <a href="https://msdn.microsoft.com/en-us/library/dn178469(v=pandp.30).aspx">Dependency Injection</a>.</p>
+<p>Martin Fowler has written an extensive article on <a href="http://martinfowler.com/articles/injection.html" target="_blank">Inversion of Control Containers and the Dependency Injection Pattern</a>. Microsoft Patterns and Practices also has a great description of <a href="https://msdn.microsoft.com/en-us/library/dn178469(v=pandp.30).aspx" target="_blank">Dependency Injection</a>.</p>
 
-<p>For a more detailed view of dependency injection in ASP .NET Core applications, <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html">read the article from the Official ASP .NET Core Documentation</a>.</p>
+<p>For a more detailed view of dependency injection in ASP .NET Core applications, <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html" target="_blank">read the article from the Official ASP .NET Core Documentation</a>.</p>
 </blockquote>
 
 <p>Our application works, but there is a lot of logic code in <code>Startup</code>, a place for configuration.</p>
@@ -655,7 +659,7 @@ This example will be about dependency injection, something we haven&rsquo;t disc
 <p>In order to make dependency injection work, we will make use of interfaces. Meaning we will build an interface for the greeting service, <code>IGreetingService</code>.</p>
 
 <blockquote>
-<p>To see an example with interfaces, <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp09%20-%20Interfaces">check this tutorial</a>.</p>
+<p>To see an example with interfaces, <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp09%20-%20Interfaces" target="_blank">check this tutorial</a>.</p>
 </blockquote>
 
 <p>Let&rsquo;s create a new file, <code>IGreetingService.cs</code>:</p>
@@ -812,12 +816,6 @@ public class Startup
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -827,9 +825,9 @@ public class Startup
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriesdependency-injection'>dependency-injection</a></li>
+        <li><a href='/categories/dependency-injection'>dependency-injection</a></li>
     
 </ul>
 
@@ -881,7 +879,7 @@ public class Startup
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -954,7 +952,7 @@ public class Startup
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1028,6 +1026,20 @@ public class Startup
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1128,44 +1140,8 @@ public class Startup
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1183,15 +1159,6 @@ public class Startup
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1279,13 +1246,13 @@ public class Startup
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

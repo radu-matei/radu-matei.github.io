@@ -13,12 +13,12 @@
 <html>
     <head>
         
-            <title>Kubernetes Posts - Radu Matei - Developer Evangelist</title>
+            <title>Kubernetes Posts - Radu Matei&#39;s Blog</title>
         
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -114,13 +114,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -131,6 +124,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -180,17 +180,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -208,6 +197,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -240,6 +240,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -282,8 +286,7 @@ ga('send', 'pageview');
 
     
 
-    <p>Table of Contents  Introduction Prerequisites Why not just expose services publicly? Deploy Kubernetes services with a private IP The networking settings Testing the integration Conclusion Next Steps Feedback  Introduction In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet.
-There will be lots of situations when we want to use both the simplicity and features of a PaaS service (such as autoscaling, easy SSL, or any other cool feature) for a component and the flexibility of Kubernetes for others - in this article we will see how to achieve this without exposing services on the Internet.</p>
+    <p>In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet. There will be lots of situations when we want to use both the simplicity and features of a PaaS service (such as autoscaling, easy SSL, or any other cool feature) for a component and the flexibility of Kubernetes for others - in this article we will see how to achieve this without exposing services on the Internet.</p>
 
     <footer>
         <ul class="actions">
@@ -301,12 +304,6 @@ There will be lots of situations when we want to use both the simplicity and fea
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -316,9 +313,9 @@ There will be lots of situations when we want to use both the simplicity and fea
 
     
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -354,8 +351,7 @@ There will be lots of situations when we want to use both the simplicity and fea
 
     
 
-    <p>Table of Contents  Introduction Prerequisites Deploying Jenkins with Helm Create credentials for your image repository The Jenkinsfile Using the Jenkinsfile Investigating what actually happens in the cluster Conclusion Feedback  Introduction In previous articles we deployed a Kubernetes 1.8 cluster to Azure using acs-engine, then configured Helm and Draft to simplify testing applications.
-In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins declarative pipelines that build containers, push images to an image repository and update Kubernetes deployments.</p>
+    <p>The goal of this article is to show you how to deploy Jenkins to your Kuberentes cluster using Helm and write Jenkins declarative pipelines that execute builds within pods in your cluster - all of this while replicating your Jenkins configuration and persisting everything with Kubernetes persistent storage.</p>
 
     <footer>
         <ul class="actions">
@@ -373,12 +369,6 @@ In this article we will explore how to deploy Jenkins using Helm and how to conf
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -388,11 +378,11 @@ In this article we will explore how to deploy Jenkins using Helm and how to conf
 
     
     
-        <li><a href='/categoriesdocker'>docker</a></li>
+        <li><a href='/categories/docker'>docker</a></li>
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesjenkins'>jenkins</a></li>
+        <li><a href='/categories/jenkins'>jenkins</a></li>
     
 </ul>
 
@@ -428,8 +418,7 @@ In this article we will explore how to deploy Jenkins using Helm and how to conf
 
     
 
-    <p>Table of contents  Introduction Using kubectl, helm and draft Configure Helm Configure Draft Creating an application Investigating what actually happens Exiting the container Conclusion Feedback  Prerequisites In the previous tutorial I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can create a free account and get $200 for 12 months.
-I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2 in the cluster definition, and the cost will go down to $6 / day.</p>
+    <p>This post shows you how to automatize and simplify working with multiple Kubernetes clusters and multiple tools such as kubectl, helm or draft - creating a container image with your desired version of the tools and mounting the config files to the container</p>
 
     <footer>
         <ul class="actions">
@@ -447,12 +436,6 @@ I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximat
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -462,13 +445,9 @@ I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximat
 
     
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
-    
-        <li><a href='/categorieshelm'>helm</a></li>
-    
-        <li><a href='/categoriesdraft'>draft</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -504,8 +483,7 @@ I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximat
 
     
 
-    <p>Table of Content  Introduction Deploying orchestrator clusters in Azure Getting the acs-engine binary Deploy the cluster Conclusion and feedback  Prerequisites This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can create a free account and get $200 for 12 months.
-This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.</p>
+    <p>In this post you&rsquo;ll see how to deploy Kubernetes 1.8 and later on Azure using ACS Engine, an open-source tool that creates the entire configuration for your orchestration cluster and deploys it on Azure Container Service.</p>
 
     <footer>
         <ul class="actions">
@@ -523,12 +501,6 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -538,9 +510,9 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
 
     
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -569,7 +541,7 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -645,7 +617,7 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -719,6 +691,20 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -819,44 +805,8 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -874,15 +824,6 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -973,13 +914,13 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

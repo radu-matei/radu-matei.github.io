@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -126,13 +126,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -143,6 +136,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -196,17 +196,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -224,6 +213,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -256,6 +256,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -404,11 +408,11 @@ ga('send', 'pageview');
 
 <h2 id="update-february-2017">UPDATE - February 2017</h2>
 
-<p><strong><a href="https://radu-matei.github.ioblog/real-time-aspnet-core/">This article describes the latest development of websocket-manager and how to use it in your application</a>.</strong></p>
+<p><strong><a href="https://radu-matei.github.ioblog/real-time-aspnet-core/" target="_blank">This article describes the latest development of websocket-manager and how to use it in your application</a>.</strong></p>
 
 <p>While the general aspects provided in this article about creating a websockets middleware for Asp .Net Core are still valid, the specific information about the websocket-manager project have changed, since I updated a lot of parts.</p>
 
-<p>The version of the project described in this article can still be found in the <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article"><code>blog-article</code></a> branch on GitHub.</p>
+<p>The version of the project described in this article can still be found in the <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article" target="_blank"><code>blog-article</code></a> branch on GitHub.</p>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -417,7 +421,7 @@ ga('send', 'pageview');
 
 <p>WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol.</p>
 
-<p>More from <a href="https://en.wikipedia.org/wiki/WebSocket">Wikipedia on WebSockets</a></p>
+<p>More from <a href="https://en.wikipedia.org/wiki/WebSocket" target="_blank">Wikipedia on WebSockets</a></p>
 </blockquote>
 
 <p>In the traditional paradigm of the web, the client was the one responsible for initiating the communication with a server, and the server could not send data back unless it had been previously requested by the client.</p>
@@ -429,7 +433,7 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/aspnet-core-websockets-middleware/sockets.png" alt="" /></p>
 
 <blockquote>
-<p><a href="https://www.pubnub.com/wp-content/uploads/2014/09/WebSockets-Diagram.png">Image from pubnub.com</a></p>
+<p><a href="https://www.pubnub.com/wp-content/uploads/2014/09/WebSockets-Diagram.png" target="_blank">Image from pubnub.com</a></p>
 </blockquote>
 
 <h2 id="what-is-this-article-about">What is this article about?</h2>
@@ -437,12 +441,12 @@ ga('send', 'pageview');
 <p>This article is about WebSockets in ASP.NET Core. We will learn how to use them in a simple web application by building a middleware that manages WebSocket connections and sends messages to multiple clients.</p>
 
 <blockquote>
-<p>You can find a <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article">repository containing the source code of this article on GitHub</a>.</p>
+<p>You can find a <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article" target="_blank">repository containing the source code of this article on GitHub</a>.</p>
 
 <p>I created a branch for this article since I will most likely update things in the future. For the latest version, check the <code>master</code> or <code>dev</code> branches.</p>
 </blockquote>
 
-<p>For the past few months I&rsquo;ve been meaning to write a middleware for ASP .NET Core but never quite got the right idea for it. <a href="https://radu-matei.github.io/categories/signalr/">I have also been playing with the old SignalR on ASP .NET Core</a> (which by the way, got discontinued and <a href="https://github.com/aspnet/signalr">work is being done in a new repo here</a>), so I was aware of the WebSockets package but didn&rsquo;t have the chance to play with it.</p>
+<p>For the past few months I&rsquo;ve been meaning to write a middleware for ASP .NET Core but never quite got the right idea for it. <a href="https://radu-matei.github.io/categories/signalr/" target="_blank">I have also been playing with the old SignalR on ASP .NET Core</a> (which by the way, got discontinued and <a href="https://github.com/aspnet/signalr" target="_blank">work is being done in a new repo here</a>), so I was aware of the WebSockets package but didn&rsquo;t have the chance to play with it.</p>
 
 <p>Then I decided that for a side project I would need some real-time functionality, and since I was on ASP .NET Core and SignalR was not yet ready to be played with, I decided to write a simple middleware to manage WebSocket connections.</p>
 
@@ -457,9 +461,9 @@ ga('send', 'pageview');
 <p>There is no point in writing a &ldquo;WebSockets 101&rdquo; article since there are a few that explain very well what you need in order to get started and I will list the articles I used when getting started:</p>
 
 <ul>
-<li><a href="https://github.com/aspnet/websockets">the WebSockets repository on GitHub contains all source code for this package</a> and it really helps you to understand how everything works</li>
-<li><a href="http://zbrad.github.io/tools/wscore/">article from Brad Merrill that also contains GitHub repository</a></li>
-<li><a href="http://dotnetthoughts.net/using-websockets-in-aspnet-core/">article by Anuraj P from dotnetthoughts</a></li>
+<li><a href="https://github.com/aspnet/websockets" target="_blank">the WebSockets repository on GitHub contains all source code for this package</a> and it really helps you to understand how everything works</li>
+<li><a href="http://zbrad.github.io/tools/wscore/" target="_blank">article from Brad Merrill that also contains GitHub repository</a></li>
+<li><a href="http://dotnetthoughts.net/using-websockets-in-aspnet-core/" target="_blank">article by Anuraj P from dotnetthoughts</a></li>
 </ul>
 
 <p>Basically, you need to:</p>
@@ -473,12 +477,12 @@ ga('send', 'pageview');
 <blockquote>
 <p>Both articles referenced above contain step-by-step examples on how to get this working</p>
 
-<p><a href="https://github.com/aspnet/WebSockets/tree/dev/samples/EchoApp">In the official WebSockets repository on GitHub you can find a sample of a full application that echoes all messages received</a>.</p>
+<p><a href="https://github.com/aspnet/WebSockets/tree/dev/samples/EchoApp" target="_blank">In the official WebSockets repository on GitHub you can find a sample of a full application that echoes all messages received</a>.</p>
 </blockquote>
 
 <h2 id="asp-net-core-middleware">ASP .NET Core Middleware</h2>
 
-<p>First of all, it is important to understand what middleware is and how the new request pipeline works in ASP .NET Core, and there is a <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware">great article on that from the Official ASP .NET Core Documentation</a>.</p>
+<p>First of all, it is important to understand what middleware is and how the new request pipeline works in ASP .NET Core, and there is a <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware" target="_blank">great article on that from the Official ASP .NET Core Documentation</a>.</p>
 
 <blockquote>
 <p>Middleware are software components that are assembled into an application pipeline to handle requests and responses. Each component chooses whether to pass the request on to the next component in the pipeline, and can perform certain actions before and after the next component is invoked in the pipeline. Request delegates are used to build the request pipeline. The request delegates handle each HTTP request.</p>
@@ -487,7 +491,7 @@ ga('send', 'pageview');
 <p><img src="/img/article-photos/aspnet-core-websockets-middleware/request-pipeline.png" alt="" /></p>
 
 <blockquote>
-<p><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/_static/request-delegate-pipeline.png">Image from the Official ASP .NET Core Documentation</a></p>
+<p><a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/_static/request-delegate-pipeline.png" target="_blank">Image from the Official ASP .NET Core Documentation</a></p>
 </blockquote>
 
 <p>The new pipeline consists of a series of <code>RequestDelegate</code> objects being called one after the next, and each component can perform operations before and after the next delegate, or can short-cirtuit the pipeline, handle the request itself and not pass the context further.</p>
@@ -754,7 +758,7 @@ namespace WebSocketManager
 <h2 id="scenario-1-client-sending-messages-through-websockets">Scenario 1 - Client Sending messages through WebSockets</h2>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/ChatApplication">find the working application and the source code on GitHub here</a>.</p>
+<p>You can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/ChatApplication" target="_blank">find the working application and the source code on GitHub here</a>.</p>
 </blockquote>
 
 <p>Using the middleware we just created we will build a chat application (I know, everybody demoes chat applications when playing around with WebSockets).</p>
@@ -903,7 +907,7 @@ namespace ChatApplication
 <p>We can see that messages are passed real-time to all connected clients. Let&rsquo;s add another page that connects to a different path - &ldquo;/test&rdquo; and pass another handler, <code>TestMessageHandler</code> and another client, <code>test.html</code>.</p>
 
 <blockquote>
-<p>Remember that you can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/ChatApplication">find the full working sample on GitHub here</a>.</p>
+<p>Remember that you can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/ChatApplication" target="_blank">find the full working sample on GitHub here</a>.</p>
 </blockquote>
 
 <p>Let&rsquo;s see what happens now:</p>
@@ -919,10 +923,10 @@ namespace ChatApplication
 <p>This time we will build an MVC application and have client send data through the MVC pipeline. Then, the notifications would get fired from within the controller.</p>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/MvcSample">find the sample on GitHub, in the <code>MvcSample</code> folder</a>.</p>
+<p>You can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/MvcSample" target="_blank">find the sample on GitHub, in the <code>MvcSample</code> folder</a>.</p>
 </blockquote>
 
-<p>We will build a standard MVC application and we will add the <code>WebSocketManagerMiddleware</code> we created. <a href="https://github.com/radu-matei/websocket-manager/blob/blog-article/samples/MvcSample/Startup.cs">Here&rsquo;s the <code>Startup</code> class of this application</a>:</p>
+<p>We will build a standard MVC application and we will add the <code>WebSocketManagerMiddleware</code> we created. <a href="https://github.com/radu-matei/websocket-manager/blob/blog-article/samples/MvcSample/Startup.cs" target="_blank">Here&rsquo;s the <code>Startup</code> class of this application</a>:</p>
 
 <pre><code>    public class Startup
     {
@@ -1013,9 +1017,9 @@ namespace ChatApplication
 <p>You can also use a C# console client to connect to the application we created.</p>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/websocket-manager/blob/blog-article/samples/EchoConsoleClient/Program.cs">find the source code of this sample on GitHub here</a></p>
+<p>You can <a href="https://github.com/radu-matei/websocket-manager/blob/blog-article/samples/EchoConsoleClient/Program.cs" target="_blank">find the source code of this sample on GitHub here</a></p>
 
-<p>Note that this console client is pretty much <a href="https://github.com/aspnet/SignalR/blob/dev/samples/WebSocketSample/Program.cs">a clone of a WebSocket sample from the SignalR repository</a></p>
+<p>Note that this console client is pretty much <a href="https://github.com/aspnet/SignalR/blob/dev/samples/WebSocketSample/Program.cs" target="_blank">a clone of a WebSocket sample from the SignalR repository</a></p>
 </blockquote>
 
 <p>This sample uses the <code>System.Net.WebSockets</code> namespace which contains the <code>ClientWebSocket</code> class (pretty weird name if you ask me).</p>
@@ -1098,7 +1102,7 @@ namespace EchoConsoleClient
 
 <p>In the first place, I should investigate why Kestrel throws an exception when this is the last middleware in the pipeline (maybe it is the intended behaviour?). Then, I should also decide wether I have to create a class that wraps the socket ID and the socket itself in a single object (not sure wether I need this or not).</p>
 
-<p>Another thing I want to do is to see if there is a way to know wether a middleware has been added to the pipeline (so I place <code>app.UseWebSockets()</code> in the extension method and not have the user add it). I know that <a href="https://github.com/aspnet/HttpAbstractions/blob/master/src/Microsoft.AspNetCore.Http/Internal/ApplicationBuilder.cs/#L16">there is a private field on <code>ApplicationBuilder</code> called <code>_components</code> that holds all added middleware, but it is not accessible from <code>app</code></a>, and also understand what happens if you add the same middleware twice.</p>
+<p>Another thing I want to do is to see if there is a way to know wether a middleware has been added to the pipeline (so I place <code>app.UseWebSockets()</code> in the extension method and not have the user add it). I know that <a href="https://github.com/aspnet/HttpAbstractions/blob/master/src/Microsoft.AspNetCore.Http/Internal/ApplicationBuilder.cs/#L16" target="_blank">there is a private field on <code>ApplicationBuilder</code> called <code>_components</code> that holds all added middleware, but it is not accessible from <code>app</code></a>, and also understand what happens if you add the same middleware twice.</p>
 
 <p>This started as a fun side project (and I am pretty sure it will stay this way once SignalR becomes ready for production). Still, if I found the time, I would love to <strong>implement the client and server calling each others&rsquo; methods bit from SignalR</strong>. I find it to be really cool and think there are some cool things to learn from there.</p>
 
@@ -1128,7 +1132,7 @@ namespace EchoConsoleClient
 
 <p>If you stumbled upon this article, please take a moment and provide some feedback both on the middleware itself and on the way the article is written. Any feedback is immensely appreciated, as well as questions and observations.</p>
 
-<p>Also, if you want to <a href="https://github.com/radu-matei/websocket-manager">contribute to this middleware, you can find the repository on GitHub</a>. Any contribution is greatly appreciated.</p>
+<p>Also, if you want to <a href="https://github.com/radu-matei/websocket-manager" target="_blank">contribute to this middleware, you can find the repository on GitHub</a>. Any contribution is greatly appreciated.</p>
 
 <h2 id="thanks-for-reading">Thanks for reading! :)</h2>
 
@@ -1149,12 +1153,6 @@ namespace EchoConsoleClient
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -1164,11 +1162,11 @@ namespace EchoConsoleClient
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
-        <li><a href='/categoriessignalr'>signalr</a></li>
+        <li><a href='/categories/signalr'>signalr</a></li>
     
-        <li><a href='/categorieswebsockets'>websockets</a></li>
+        <li><a href='/categories/websockets'>websockets</a></li>
     
 </ul>
 
@@ -1220,7 +1218,7 @@ namespace EchoConsoleClient
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -1293,7 +1291,7 @@ namespace EchoConsoleClient
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1367,6 +1365,20 @@ namespace EchoConsoleClient
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1467,44 +1479,8 @@ namespace EchoConsoleClient
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1522,15 +1498,6 @@ namespace EchoConsoleClient
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1618,13 +1585,13 @@ namespace EchoConsoleClient
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

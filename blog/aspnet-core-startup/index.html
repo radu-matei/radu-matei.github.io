@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -404,7 +408,7 @@ ga('send', 'pageview');
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In the <a href="https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-getting-started.md">previous article</a> we built a very basic web application that for every request had a very basic response - <code>Hello, Universe</code> with the server current time and date.</p>
+<p>In the <a href="https://github.com/radu-matei/blog-content/blob/master/articles/aspnet-core-getting-started.md" target="_blank">previous article</a> we built a very basic web application that for every request had a very basic response - <code>Hello, Universe</code> with the server current time and date.</p>
 
 <p>Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the <code>Startup</code> class, which is also the entry point for any incoming HTTP request.</p>
 
@@ -417,9 +421,9 @@ ga('send', 'pageview');
 </ul>
 
 <blockquote>
-<p>However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html">middleware</a> and added using extension methods on <code>IApplicationBuilder</code>.</p>
+<p>However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html" target="_blank">middleware</a> and added using extension methods on <code>IApplicationBuilder</code>.</p>
 
-<p>Your <code>Configure</code> method must accept an <a href="https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html"><code>IApplicationBuilder</code></a> parameter. Additional services, like <code>IHostingEnvironment</code> and <code>ILoggerFactory</code> may also be specified, in which case these services will be injected by the server if they are available.</p>
+<p>Your <code>Configure</code> method must accept an <a href="https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html" target="_blank"><code>IApplicationBuilder</code></a> parameter. Additional services, like <code>IHostingEnvironment</code> and <code>ILoggerFactory</code> may also be specified, in which case these services will be injected by the server if they are available.</p>
 </blockquote>
 
 <ul>
@@ -499,7 +503,7 @@ namespace ConsoleApplication
 }
 </code></pre>
 
-<p>Now if we run the application (from the command line or from VS Code) and navigate to <a href="http://localhost:5000">http://localhost:5000</a>, we see the expected output.</p>
+<p>Now if we run the application (from the command line or from VS Code) and navigate to <a href="http://localhost:5000" target="_blank">http://localhost:5000</a>, we see the expected output.</p>
 
 <p>From now on, we will use the <code>Startup</code> class when building web applications with ASP .NET Core and we will add middleware and services in it.</p>
 
@@ -520,12 +524,6 @@ namespace ConsoleApplication
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Category
                     
                 
@@ -535,7 +533,7 @@ namespace ConsoleApplication
 
     
     
-        <li><a href='/categoriesaspnet-core'>aspnet-core</a></li>
+        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
     
 </ul>
 
@@ -587,7 +585,7 @@ namespace ConsoleApplication
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -660,7 +658,7 @@ namespace ConsoleApplication
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -734,6 +732,20 @@ namespace ConsoleApplication
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -834,44 +846,8 @@ namespace ConsoleApplication
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -889,15 +865,6 @@ namespace ConsoleApplication
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -985,13 +952,13 @@ namespace ConsoleApplication
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

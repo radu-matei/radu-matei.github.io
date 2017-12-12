@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -118,13 +118,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -135,6 +128,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -188,17 +188,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -216,6 +205,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -248,6 +248,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -419,12 +423,12 @@ ga('send', 'pageview');
 <p>We will start from a just-deployed Kubernetes cluster, will see how to expose services internally in an Azure VNet using an Azure Internal Load Balancer, then we will see how to connect an Azure App Service to that VNet, consuming services on the cluster from our App Service without exposing them on the public Internet.</p>
 
 <blockquote>
-<p>Note that in order to deploy a Kubernetes cluster on Azure you can either <a href="https://radu-matei.com/blog/k8s18-azure/">use <code>acs-engine</code> (a tool that deploys custom clusters on Azure) - here&rsquo;s how to deploy Kubernetes 1.8 on Azure using <code>acs-engine</code></a> or <a href="https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-walkthrough">use the <code>az</code> command line - here&rsquo;s the official documentation.</a></p>
+<p>Note that in order to deploy a Kubernetes cluster on Azure you can either <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">use <code>acs-engine</code> (a tool that deploys custom clusters on Azure) - here&rsquo;s how to deploy Kubernetes 1.8 on Azure using <code>acs-engine</code></a> or <a href="https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-walkthrough" target="_blank">use the <code>az</code> command line - here&rsquo;s the official documentation.</a></p>
 </blockquote>
 
 <h2 id="prerequisites">Prerequisites</h2>
 
-<p>This tutorial assumes you have a valid Azure subscription that you can use to deploy resorces. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">create a free account and get $200 for 12 months</a>.</p>
+<p>This tutorial assumes you have a valid Azure subscription that you can use to deploy resorces. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank">create a free account and get $200 for 12 months</a>.</p>
 
 <p>This tutorial uses a 4-node Kubernetes cluster (1 master + 3 agents) deployed on Azure. The machines are 4 D2_V2 VMs with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.</p>
 
@@ -435,13 +439,13 @@ ga('send', 'pageview');
 <blockquote>
 <p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p>
 
-<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/">Azure Pricing Calculator</a></p>
+<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank">Azure Pricing Calculator</a></p>
 </blockquote>
 
 <p>This tutorial will also use an Azure VNet gateway that based on the throughput needed can go from less than $1/day (for 100 Mbps) to around $30/day (for 1.25 Gpbs).</p>
 
 <blockquote>
-<p>Here you can <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/">find out more about the Azure VPN Gateway</a></p>
+<p>Here you can <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/" target="_blank">find out more about the Azure VPN Gateway</a></p>
 </blockquote>
 
 <h2 id="why-not-just-expose-services-publicly">Why not just expose services publicly?</h2>
@@ -457,7 +461,7 @@ ga('send', 'pageview');
 </ul>
 
 <blockquote>
-<p>Networking pricing is a complex topic in any cloud provider and I am by no means expert in Azure Networking - you can read more about Azure Networking <a href="https://azure.microsoft.com/en-us/pricing/details/virtual-network/">pricing for virtual networks</a>, for <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/">VPN gateways</a> and <a href="https://azure.microsoft.com/en-us/pricing/details/bandwidth/">bandwidth</a>.</p>
+<p>Networking pricing is a complex topic in any cloud provider and I am by no means expert in Azure Networking - you can read more about Azure Networking <a href="https://azure.microsoft.com/en-us/pricing/details/virtual-network/" target="_blank">pricing for virtual networks</a>, for <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/" target="_blank">VPN gateways</a> and <a href="https://azure.microsoft.com/en-us/pricing/details/bandwidth/" target="_blank">bandwidth</a>.</p>
 </blockquote>
 
 <h2 id="deploy-kubernetes-services-with-a-private-ip">Deploy Kubernetes services with a private IP</h2>
@@ -497,7 +501,7 @@ That being said, let&rsquo;s see how a Kubernetes service that is internally exp
 
 <ul>
 <li>The multi-tenant systems that support the full range of pricing plans - this is the most common and most used version</li>
-<li>The <a href="https://docs.microsoft.com/en-us/azure/app-service/environment/intro">App Service Environment (ASE)</a> premium feature, which deploys into your VNet.</li>
+<li>The <a href="https://docs.microsoft.com/en-us/azure/app-service/environment/intro" target="_blank">App Service Environment (ASE)</a> premium feature, which deploys into your VNet.</li>
 </ul>
 
 <p>In this article we will focus on integrating a regular App Service with an Azure Virtual Network, and it is also worth mentioning some features, restrictions and limitations:</p>
@@ -525,22 +529,22 @@ That being said, let&rsquo;s see how a Kubernetes service that is internally exp
 </ul>
 
 <blockquote>
-<p>The previous information and more details can be found on <a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet">the official App Service Documentation here</a>.</p>
+<p>The previous information and more details can be found on <a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet" target="_blank">the official App Service Documentation here</a>.</p>
 </blockquote>
 
 <p>Basically, there will be a point-to-site VPN to the VNet where Kuberentes is deployed, the point being our App Service instance.
-Now in order to create this, we first need to <a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#enabling-vnet-integration">enable the VNet integration, as described in this article</a>.</p>
+Now in order to create this, we first need to <a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#enabling-vnet-integration" target="_blank">enable the VNet integration, as described in this article</a>.</p>
 
 <p>If you go to the Networking tab of your App Service and try to enable the VNet integration for your Kubernetes VNet, you will see the following message:</p>
 
 <p><img src="/img/article-photos/k8s-appsvc/no-gateway.PNG" alt="" /></p>
 
-<p>This means there is no <a href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways">VPN Gateway</a> configured in that private network.</p>
+<p>This means there is no <a href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways" target="_blank">VPN Gateway</a> configured in that private network.</p>
 
 <blockquote>
 <p>A virtual network gateway is composed of two or more virtual machines that are deployed to a specific subnet called the GatewaySubnet. The VMs that are located in the GatewaySubnet are created when you create the virtual network gateway. Virtual network gateway VMs are configured to contain routing tables and gateway services specific to the gateway. You can&rsquo;t directly configure the VMs that are part of the virtual network gateway and you should never deploy additional resources to the GatewaySubnet.</p>
 
-<p><a href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways">More on VPN Gateways here</a></p>
+<p><a href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways" target="_blank">More on VPN Gateways here</a></p>
 </blockquote>
 
 <p>So you need to create a VPN Gateway on that virtual network (keeping in mind to configure it based on your needs), and also keeping in mind that it could take up to half an hour to configure it:</p>
@@ -561,9 +565,9 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 <h2 id="testing-the-integration">Testing the integration</h2>
 
-<p>Now to the moment of truth: I created a very simple .NET Core app (it can be Node, PHP, Java) that makes requests to a <code>PrivateAddress</code> that you can configure in the App Settings in Azure Portal. You can <a href="https://github.com/radu-matei/app-svc-vnet">find the app on GitHub</a>, but all it does is make an HTTP request and return the response.</p>
+<p>Now to the moment of truth: I created a very simple .NET Core app (it can be Node, PHP, Java) that makes requests to a <code>PrivateAddress</code> that you can configure in the App Settings in Azure Portal. You can <a href="https://github.com/radu-matei/app-svc-vnet" target="_blank">find the app on GitHub</a>, but all it does is make an HTTP request and return the response.</p>
 
-<p>Now if you fork the repo above and do a <a href="https://blogs.msdn.microsoft.com/benjaminperkins/2017/05/10/deploy-github-source-code-repositories-to-an-azure-app-service/">GitHub deployment directly to Azure App Service</a>, then create an App Setting for <code>PrivateAddress</code> with the private IP of your service in the virtual network:</p>
+<p>Now if you fork the repo above and do a <a href="https://blogs.msdn.microsoft.com/benjaminperkins/2017/05/10/deploy-github-source-code-repositories-to-an-azure-app-service/" target="_blank">GitHub deployment directly to Azure App Service</a>, then create an App Setting for <code>PrivateAddress</code> with the private IP of your service in the virtual network:</p>
 
 <p><img src="/img/article-photos/k8s-appsvc/private-address.PNG" alt="" /></p>
 
@@ -579,7 +583,7 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 <p>Right now you cannot use this article with a Web App on Containers or App Service on Linux, as the VNet integration does not currently support them.</p>
 
-<p>Also, you currently cannot have <a href="https://feedback.azure.com/forums/217313-networking/suggestions/16825357-add-dns-name-label-to-private-ips">DNS name for the internal IP of the load balancer. This is known feature request on Azure Feedback, and according to the Azure Networking team, it represents a key item on the roadmap</a></p>
+<p>Also, you currently cannot have <a href="https://feedback.azure.com/forums/217313-networking/suggestions/16825357-add-dns-name-label-to-private-ips" target="_blank">DNS name for the internal IP of the load balancer. This is known feature request on Azure Feedback, and according to the Azure Networking team, it represents a key item on the roadmap</a></p>
 
 <h2 id="conclusion">Conclusion</h2>
 
@@ -587,7 +591,7 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 <h2 id="next-steps">Next Steps</h2>
 
-<p>A next step would be creating deployment pipelines for both App Service and the Kubenetes apps - <a href="https://github.com/azure-devops/movie-db-java-on-azure">here is an example of a pipeline using Jenkins</a> for a web app on App Service with the backend in Kubernetes.</p>
+<p>A next step would be creating deployment pipelines for both App Service and the Kubenetes apps - <a href="https://github.com/azure-devops/movie-db-java-on-azure" target="_blank">here is an example of a pipeline using Jenkins</a> for a web app on App Service with the backend in Kubernetes.</p>
 
 <h2 id="feedback">Feedback</h2>
 
@@ -612,12 +616,6 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
                         Categories
                     
                 
@@ -627,9 +625,9 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
     
     
-        <li><a href='/categorieskubernetes'>kubernetes</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
-        <li><a href='/categoriesazure'>azure</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
 </ul>
 
@@ -681,7 +679,7 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -754,7 +752,7 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -828,6 +826,20 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -928,44 +940,8 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -983,15 +959,6 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1079,13 +1046,13 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>

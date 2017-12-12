@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.31" />
+        <meta name="generator" content="Hugo 0.32-DEV" />
         
 
 
@@ -126,13 +126,6 @@ ga('send', 'pageview');
                 </li>
             
                 <li>
-                    <a href="/categories">
-                        
-                            <i class="fa fa-list">&nbsp;</i>Categories
-                    </a>
-                </li>
-            
-                <li>
                     <a href="/about">
                         
                             <i class="fa fa-smile-o">&nbsp;</i>About
@@ -143,6 +136,13 @@ ga('send', 'pageview');
                     <a href="/speaking">
                         
                             <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
                     </a>
                 </li>
             
@@ -196,17 +196,6 @@ ga('send', 'pageview');
                     </li>
                 
                     <li>
-                        <a href="/categories">
-                            <h3>
-                                
-                                    <i class="fa fa-list">&nbsp;</i>
-                                
-                                Categories
-                            </h3>
-                        </a>
-                    </li>
-                
-                    <li>
                         <a href="/about">
                             <h3>
                                 
@@ -224,6 +213,17 @@ ga('send', 'pageview');
                                     <i class="fa fa-comments-o">&nbsp;</i>
                                 
                                 Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
                             </h3>
                         </a>
                     </li>
@@ -256,6 +256,10 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"><p>Get started with Helm and Draft for Kubernetes</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s18-azure/"><p>Kubernetes 1.8 on Azure</p></a>
                     </li>
                 
             </ul>
@@ -403,12 +407,12 @@ ga('send', 'pageview');
         
 
 <blockquote>
-<p>You can check <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry">the GitHub repository of this project for the full source code</a></p>
+<p>You can check <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry" target="_blank">the GitHub repository of this project for the full source code</a></p>
 </blockquote>
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In this blog post, we will get started with the <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/">Raspberry Pi3</a>, the <a href="https://www.raspberrypi.org/products/sense-hat/">Sense HAT</a> and Azure IoT Suite.
+<p>In this blog post, we will get started with the <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/" target="_blank">Raspberry Pi3</a>, the <a href="https://www.raspberrypi.org/products/sense-hat/" target="_blank">Sense HAT</a> and Azure IoT Suite.
 More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, which we will detail a little later.</p>
 
 <p>The end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications).</p>
@@ -416,7 +420,7 @@ More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics,
 <h2 id="what-is-sense-hat">What is Sense HAT?</h2>
 
 <blockquote>
-<p>The Sense HAT is an add-on board for Raspberry Pi, made espacially for the <a href="https://astro-pi.org/">Astro Pi</a> mission to go in Space.
+<p>The Sense HAT is an add-on board for Raspberry Pi, made espacially for the <a href="https://astro-pi.org/" target="_blank">Astro Pi</a> mission to go in Space.
 The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the following sensors:</p>
 
 <ul>
@@ -431,7 +435,7 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 <p><img src="https://www.raspberrypi.org/wp-content/uploads/2015/06/astro-pi-hat.png" alt="Sense HAT" /></p>
 
 <blockquote>
-<p>The Sense HAT - image from <a href="https://www.raspberrypi.org/products/sense-hat/">the official Raspberry Pi website</a></p>
+<p>The Sense HAT - image from <a href="https://www.raspberrypi.org/products/sense-hat/" target="_blank">the official Raspberry Pi website</a></p>
 </blockquote>
 
 <p>Basically, the Sense HAT is a board that has integrated sensors and a joystick, with an additional 8x8 LED matrix. It is a very fun board to play with and I recommend it if you don&rsquo;t want (or know, for that matter) to get tangled in wires and in calculating resistances.</p>
@@ -443,38 +447,38 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 <p><img src="https://raw.githubusercontent.com/raspberrypilearning/astro-pi-guide/3ca15fd5e2a44121f0ac9bbcaf64f3c2f0b51a54/images/sense-hat-assembly.png" alt="" /></p>
 
 <blockquote>
-<p>Image from <a href="https://www.raspberrypi.org/learning/astro-pi-guide/assemble.md">the official Raspberry Pi website</a></p>
+<p>Image from <a href="https://www.raspberrypi.org/learning/astro-pi-guide/assemble.md" target="_blank">the official Raspberry Pi website</a></p>
 </blockquote>
 
 <p>After carefully assembling the two boards (watching not to bend the pins of either boards) and putting the screws and the hexagonal stand-offs in place, you are ready to go. If successful, the end result should look similar to this:</p>
 
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/rpi-sensehat-assembly.jpg" alt="" /></p>
 
-<p>You can <a href="https://developer.microsoft.com/en-us/windows/iot/docs/kitsetuprpi">follow the instructions here to install Windows IoT Core on your Raspberry Pi</a>.</p>
+<p>You can <a href="https://developer.microsoft.com/en-us/windows/iot/docs/kitsetuprpi" target="_blank">follow the instructions here to install Windows IoT Core on your Raspberry Pi</a>.</p>
 
 <p>Assuming you assembled the board and installed Windows on your Raspberry, we are ready to get started.</p>
 
 <h2 id="creating-a-windows-universal-app-that-will-run-on-the-raspberry">Creating a Windows Universal App that will run on the Raspberry</h2>
 
 <blockquote>
-<p>At this moment there is no official .NET library to work with the Sense HAT. There is an official Python library and you <a href="http://pythonhosted.org/sense-hat/">can get started with it here.</a></p>
+<p>At this moment there is no official .NET library to work with the Sense HAT. There is an official Python library and you <a href="http://pythonhosted.org/sense-hat/" target="_blank">can get started with it here.</a></p>
 </blockquote>
 
-<p>While there is no official .NET library, there is a library developed by <a href="http://www.laserbrain.se/">Mattias Larsson</a> which provides exactly the functionality we need. You can <a href="https://github.com/emmellsoft">find the source code on GitHub</a> and <a href="https://www.nuget.org/packages/Emmellsoft.IoT.RPi.SenseHat/">the package on NuGet</a>.</p>
+<p>While there is no official .NET library, there is a library developed by <a href="http://www.laserbrain.se/" target="_blank">Mattias Larsson</a> which provides exactly the functionality we need. You can <a href="https://github.com/emmellsoft" target="_blank">find the source code on GitHub</a> and <a href="https://www.nuget.org/packages/Emmellsoft.IoT.RPi.SenseHat/" target="_blank">the package on NuGet</a>.</p>
 
 <p>If you are a complete beginner with Windows IoT Core and the Raspberry Pi3, I strongly recommend you go through this step-by-step tutorial on how to get started with the installing, configuring and writing your first app on the Raspberry Pi3 with Windows IoT Core:</p>
 
 <ul>
-<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/GetStartedStep1.htm">Step 1 of 4: Get the Tools</a></li>
-<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep2">Step 2 of 4: Set up your device</a></li>
-<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep3">Step 3 of 4: Set up Visual Studio</a></li>
-<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep4">Step 4 of 4: Write your first app</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/GetStartedStep1.htm" target="_blank">Step 1 of 4: Get the Tools</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep2" target="_blank">Step 2 of 4: Set up your device</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep3" target="_blank">Step 3 of 4: Set up Visual Studio</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep4" target="_blank">Step 4 of 4: Write your first app</a></li>
 </ul>
 
-<p>After this, you can find multiple examples with various hardware components and software services, from the <a href="https://developer.microsoft.com/en-us/windows/iot">Windows IoT developer website</a> or from <a href="http://microsoft.hackster.io">Hackster</a>.</p>
+<p>After this, you can find multiple examples with various hardware components and software services, from the <a href="https://developer.microsoft.com/en-us/windows/iot" target="_blank">Windows IoT developer website</a> or from <a href="http://microsoft.hackster.io" target="_blank">Hackster</a>.</p>
 
 <blockquote>
-<p><a href="https://msdn.microsoft.com/en-us/windows/uwp/get-started/create-a-hello-world-app-xaml-universal">Here you can find a very brief introduction to creating UWP apps and a Hello, World example.</a></p>
+<p><a href="https://msdn.microsoft.com/en-us/windows/uwp/get-started/create-a-hello-world-app-xaml-universal" target="_blank">Here you can find a very brief introduction to creating UWP apps and a Hello, World example.</a></p>
 </blockquote>
 
 <h2 id="creating-the-app-architecture">Creating the app architecture</h2>
@@ -486,7 +490,7 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 <li>create separate (and reusable) class library projects that can be referenced from the UWP application</li>
 </ul>
 
-<p>For this project, we will go with the second approach (and you can already <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry">review the source code on GitHub</a>).</p>
+<p>For this project, we will go with the second approach (and you can already <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry" target="_blank">review the source code on GitHub</a>).</p>
 
 <blockquote>
 <p>In this case, I went with the following naming conventions for the solution and the projects:</p>
@@ -516,10 +520,10 @@ Since we plan on taking more telemetry than temperature (and use these classes i
 
 <p>Right now, we need to have specific functionality for communicating with the Sense HAT. In a new class library project (in this case called: <code>RPiSenseHatTelemetry.SenseHatCommunication</code>), add the NuGet package for the Sense HAT: <code>Install-Package Emmellsoft.IoT.RPi.SenseHat</code>. This will add a bunch of files and folders to your project (mainly for demo and testing purposes) that we will not use, all we need is the reference to the <code>Emmellsoft.IoT.RPi.SenseHat</code> dll.</p>
 
-<p>The main thing that we will use from this library is exposed through the <code>ISenseHat</code> interface, which you can find in <a href="https://github.com/emmellsoft/RPi.SenseHat/blob/master/RPi.SenseHat/Rpi.SenseHat/ISenseHat.cs">the library&rsquo;s GitHub repository</a>.</p>
+<p>The main thing that we will use from this library is exposed through the <code>ISenseHat</code> interface, which you can find in <a href="https://github.com/emmellsoft/RPi.SenseHat/blob/master/RPi.SenseHat/Rpi.SenseHat/ISenseHat.cs" target="_blank">the library&rsquo;s GitHub repository</a>.</p>
 
 <blockquote>
-<p>The best place to learn how to use this library is <a href="https://github.com/emmellsoft/RPi.SenseHat/tree/master/RPi.SenseHat/RPi.SenseHat.Demo/Demos">the demo section of the repository</a>. There you can find how to create a compass, how to make disco lights from the 8x8 LED matrix or write the temperature on the LED matrix.</p>
+<p>The best place to learn how to use this library is <a href="https://github.com/emmellsoft/RPi.SenseHat/tree/master/RPi.SenseHat/RPi.SenseHat.Demo/Demos" target="_blank">the demo section of the repository</a>. There you can find how to create a compass, how to make disco lights from the 8x8 LED matrix or write the temperature on the LED matrix.</p>
 </blockquote>
 
 <p>We will create a new class that will only expose funtionality related with the temperature telemetry, but you can expand this class to do all the things you want.</p>
@@ -625,11 +629,11 @@ In the <code>Activate</code> method, we get the reference to the <code>ISenseHat
 
 <h2 id="communicating-with-the-cloud-azure-iot-hub">Communicating with the Cloud - Azure IoT Hub</h2>
 
-<p>First of all, we need to create an Azure IoT Hub. To do this, simply <a href="https://azure.microsoft.com/en-gb/documentation/articles/iot-hub-csharp-csharp-getstarted/#create-an-iot-hub">follow the instructions here</a>.</p>
+<p>First of all, we need to create an Azure IoT Hub. To do this, simply <a href="https://azure.microsoft.com/en-gb/documentation/articles/iot-hub-csharp-csharp-getstarted/#create-an-iot-hub" target="_blank">follow the instructions here</a>.</p>
 
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/iot-hub.JPG" alt="" /></p>
 
-<p>At this point, you can <a href="https://github.com/Azure/azure-iot-sdks/blob/master/tools/DeviceExplorer/doc/how_to_use_device_explorer.md">start using the Device Explorer</a> - a small application that you can use to see the IoT Hubs from Azure and their connected devices.
+<p>At this point, you can <a href="https://github.com/Azure/azure-iot-sdks/blob/master/tools/DeviceExplorer/doc/how_to_use_device_explorer.md" target="_blank">start using the Device Explorer</a> - a small application that you can use to see the IoT Hubs from Azure and their connected devices.
 From here, you can add devices that are authorized to send data to the IoT Hub and see the messages that arrive on the IoT Hub in real-time, while also having the ability to send messages to the device.</p>
 
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/device-explorer.JPG" alt="" /></p>
@@ -689,7 +693,7 @@ using Microsoft.Azure.Devices.Client;
 <p>Basically, the methods we will use are <code>SendEventAsync</code>, which sends an event asynchronously and <code>ReceiveEventAsync</code> which receives and event asynchronously.</p>
 
 <blockquote>
-<p>You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. <a href="https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97">Here you can find a tutorial on how to start publising events from a UWP app with Azure IoT Hub</a>.</p>
+<p>You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. <a href="https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97" target="_blank">Here you can find a tutorial on how to start publising events from a UWP app with Azure IoT Hub</a>.</p>
 </blockquote>
 
 <h2 id="adding-cloud-communication-to-the-uwp-app">Adding cloud communication to the UWP app</h2>
@@ -711,14 +715,14 @@ using Microsoft.Azure.Devices.Client;
 <h2 id="sending-the-data-from-iot-hub-to-stream-analytics">Sending the data from IoT Hub to Stream Analytics</h2>
 
 <blockquote>
-<p>You can <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-introduction/">get started on what is Stream Analytics here</a>.
-This is an <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-build-an-iot-solution-using-stream-analytics/">introduction on building IoT solutions with Stream Analytics</a>.</p>
+<p>You can <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-introduction/" target="_blank">get started on what is Stream Analytics here</a>.
+This is an <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-build-an-iot-solution-using-stream-analytics/" target="_blank">introduction on building IoT solutions with Stream Analytics</a>.</p>
 </blockquote>
 
 <p>Right now we have data going from the Raspberry Pi to the IoT Hub, but nothing more happens with that data. At first, we will send the data to an Azure SQL database.</p>
 
 <blockquote>
-<p>This is a <a href="https://azure.microsoft.com/en-us/documentation/articles/sql-database-get-started/">step-by-step tutorial on how to create an Azure SQL database.</a></p>
+<p>This is a <a href="https://azure.microsoft.com/en-us/documentation/articles/sql-database-get-started/" target="_blank">step-by-step tutorial on how to create an Azure SQL database.</a></p>
 </blockquote>
 
 <p>After creating the Stream Analytics service in Azure, we need to add input data, in this case from the IoT Hub:</p>
@@ -774,7 +778,7 @@ FROM
 
 <blockquote>
 <p>The query above is made through PowerShell, through a custom script I made for querying and making commands to a SQL database without the SQL Server Management Studio.
-You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/PowerShell%20Scripts/Execute-SqlStatement.ps1">find the script here with demo usage</a>.</p>
+You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/PowerShell%20Scripts/Execute-SqlStatement.ps1" target="_blank">find the script here with demo usage</a>.</p>
 </blockquote>
 
 <h2 id="next-steps">Next steps</h2>
@@ -802,13 +806,7 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
                     
 
                     
-
-                    
-                        <i class="fa fa-list">&nbsp;</i>
-                    
-
-                    
-                        Categories
+                        Category
                     
                 
             </li>
@@ -817,9 +815,7 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
 
     
     
-        <li><a href='/categoriesiot'>iot</a></li>
-    
-        <li><a href='/categoriesazure-iot'>azure-iot</a></li>
+        <li><a href='/categories/iot'>iot</a></li>
     
 </ul>
 
@@ -871,7 +867,7 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
             
             
                 
-                    <img src="/img/main/avatar.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
                 
             
             
@@ -944,7 +940,7 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1018,6 +1014,20 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
                                 <time class="published" datetime=
                                     '2017-10-07'>
                                     October 7, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-06'>
+                                    October 6, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1118,44 +1128,8 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/mvc/">mvc</a>
-                                <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/azure-iot/">azure-iot</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
-                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1173,15 +1147,6 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/swarm/">swarm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1269,13 +1234,13 @@ You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/
 
 
 
-<li><a href="mailto:matei.radu94@gmail.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
             </ul>
 
-            <p class="copyright">&copy; Radu Matei - Developer Evangelist. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
         </section>
 
 </section>
