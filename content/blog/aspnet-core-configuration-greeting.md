@@ -6,7 +6,7 @@ description = "Creating a configurable Greeting service with ASP .NET Core, usin
 linktitle = ""
 title = "ASP .NET Core JSON Configuration and Dependency Injection"
 type = "post"
-
+summary = "The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to create your custom configuration provider. Let's assume that in our application we want the response messages not to be hardcoded in Startup anymore, but stored in a configuration file so we don't have to stop, modify or recompile our application every time the messages or the routes change."
 +++
 
 Table of Content

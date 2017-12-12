@@ -8,7 +8,7 @@ featuredpath = "date"
 linktitle = ""
 title = "ASP .NET Core Startup"
 type = "post"
-
+summary = "Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the `Startup` class, which is also the entry point for any incoming HTTP request."
 +++
 
 

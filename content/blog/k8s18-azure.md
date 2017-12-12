@@ -6,7 +6,7 @@ description = "Deploy Kubernetes 1.8 on Azure using acs-engine"
 linktitle = ""
 title = "Kubernetes 1.8 on Azure"
 type = "post"
-
+summary = "In this post you'll see how to deploy Kubernetes 1.8 and later on Azure using ACS Engine, an open-source tool that creates the entire configuration for your orchestration cluster and deploys it on Azure Container Service."
 +++
 
 Table of Content

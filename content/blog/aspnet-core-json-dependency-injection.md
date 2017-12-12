@@ -7,6 +7,7 @@ linktitle = ""
 title = "Inject ASP.NET Core Dependencies from JSON files"
 type = "post"
 
+summary = "Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code. "
 +++
 
 Table of Content

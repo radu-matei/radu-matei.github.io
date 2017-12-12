@@ -8,7 +8,7 @@ featuredpath = "date"
 linktitle = ""
 title = "ASP .NET Core Routing"
 type = "post"
-
+summary = "So far we built simple web applications that responded with the same message for each request. However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI - we will explore the low-level Routing API."
 +++
 
 **Table of Contents** 

@@ -6,7 +6,7 @@ description = "Getting started with ASP .NET Core"
 linktitle = ""
 title = "ASP .NET Core Introduction"
 type = "post"
-
+summary = "ASP.NET Core is a new open-source and cross-platform framework for building modern cloud based internet connected applications, such as web apps, IoT apps and mobile backends and a complete re-write of the 4.6 framework that came out last year and comes with a completely new architecture based on .NET Core. In this article we will see how to get started with ASP.NET Core."
 +++
 
 **Table of Contents**

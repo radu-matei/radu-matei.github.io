@@ -6,6 +6,7 @@ description = ""
 linktitle = ""
 title = "Getting started with SignalR Alpha 2"
 type = "post"
+summary = "In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"
 
 +++
 

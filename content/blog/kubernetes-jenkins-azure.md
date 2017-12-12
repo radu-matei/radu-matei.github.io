@@ -6,7 +6,7 @@ description = "Deploy Jenkins using Helm, create Jenkins declarative pipelines a
 linktitle = ""
 title = "Jenkins declarative pipelines with Kubernetes "
 type = "post"
-
+summary = "The goal of this article is to show you how to deploy Jenkins to your Kuberentes cluster using Helm and write Jenkins declarative pipelines that execute builds within pods in your cluster - all of this while replicating your Jenkins configuration and persisting everything with Kubernetes persistent storage."
 +++
 
 Table of Contents

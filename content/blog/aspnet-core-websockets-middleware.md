@@ -6,7 +6,7 @@ description = ""
 linktitle = ""
 title = "Creating a WebSockets middleware for ASP .NET Core"
 type = "post"
-
+summary = "We'll explore the low-level websockets API in .NET Core, understand the Middleware concept and finally write together a websocket manager middleware that handles communication between various clients and your ASP.NET Core application."
 +++
 
 UPDATE - February 2017

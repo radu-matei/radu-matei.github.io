@@ -1,18 +1,16 @@
 +++
 author = "Radu Matei"
-categories = ["docker", "azure", "swarm", "windows-containers"]
+categories = ["docker", "azure", "windows-containers"]
 date = "2017-07-03"
 description = "Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"
 linktitle = ""
 title = "The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine"
 type = "post"
-
+summary = "We'll explore how to create a hybrid Docker Swarm Mode cluster with Linux and Windows agents, deploy it on Azure Container Service using ACS Engine, see how to connect to the cluster and manage it and finally how to deploy hybrid services with both Linux and Windows Server containers."
 +++
 
 Introduction
 ------------
-
-This is the first part in our (at least) two parts describing how to get started with a hybrid Docker Swarm Mode cluster. In this first part, we will focus on deploying a hybrid cluster on Azure.
 
 Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.
 

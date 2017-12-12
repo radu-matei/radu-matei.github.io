@@ -1,12 +1,12 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "azure", "helm", "draft"]
+categories = ["kubernetes", "azure"]
 date = "2017-10-07"
 description = "Easy Kubernetes with Helm and Draft"
 linktitle = ""
 title = "Get started with Helm and Draft for Kubernetes"
 type = "post"
-
+summary = "This post shows you how to automatize and simplify working with multiple Kubernetes clusters and multiple tools such as kubectl, helm or draft - creating a container image with your desired version of the tools and mounting the config files to the container"
 +++
 
 Table of contents

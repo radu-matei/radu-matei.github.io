@@ -8,7 +8,7 @@ featuredpath = "date"
 linktitle = ""
 title = "Getting Started with .NET Core and VS Code"
 type = "post"
-
+summary = "We will see how to get started with VS Code and .NET Core"
 +++
 
 **Table of Contents**

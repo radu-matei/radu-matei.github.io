@@ -1,12 +1,12 @@
 +++
 author = "Radu Matei"
-categories = ["iot", "azure-iot"]
+categories = ["iot"]
 date = "2016-10-10"
 description = ""
 linktitle = ""
 title = "Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite"
 type = "post"
-
+summary = "In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)."
 +++
 
 > You can check [the GitHub repository of this project for the full source code](https://github.com/radu-matei/rpi-sensehat-cloud-telemetry)

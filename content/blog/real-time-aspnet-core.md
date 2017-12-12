@@ -6,7 +6,7 @@ description = "websocket-manager library for real-time ASP .NET Core"
 linktitle = ""
 title = "Real-Time ASP .NET Core"
 type = "post"
-
+summary = "We will write an ASP.NET Core middleware for providing real-time functionality to your applications. To its core, this is a WebSockets middleware for ASP .NET Core applications with TypeScript / JavaScript and .NET clients - all this wile exploring the inner workings of ASP.NET Core middleware."
 +++
 
 NOTICE

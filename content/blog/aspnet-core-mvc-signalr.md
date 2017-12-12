@@ -1,11 +1,12 @@
 +++
 author = "Radu Matei"
-categories = ["aspnet-core", "azure", "mvc", "signalr"]
+categories = ["aspnet-core", "azure", "signalr"]
 date = "2016-09-09"
 description = ""
 linktitle = ""
 title = "ASP.NET Core MVC and SignalR Core"
 type = "post"
+summary = "In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"
 
 +++
 

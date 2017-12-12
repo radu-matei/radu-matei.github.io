@@ -6,6 +6,7 @@ description = ""
 linktitle = ""
 title = "Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure"
 type = "post"
+summary = "In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud."
 
 +++
 

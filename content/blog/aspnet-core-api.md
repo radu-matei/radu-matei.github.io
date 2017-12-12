@@ -1,12 +1,12 @@
 +++
 author = "Radu Matei"
-categories = ["aspnet-core", "dependency-injection", "mvc"]
+categories = ["aspnet-core", "dependency-injection"]
 date = "2016-08-05"
 description = "Create an ASP .NET Core MVC API"
 linktitle = ""
 title = "Introduction to ASP .NET Core MVC API"
 type = "post"
-
+summary = "In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop. We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data."
 +++
 
 Table of Content

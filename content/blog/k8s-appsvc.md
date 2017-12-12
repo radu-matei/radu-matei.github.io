@@ -6,7 +6,7 @@ description = "Consuming a private API built with Kubernetes from Azure App Serv
 linktitle = ""
 title = "Best of Both worlds: Azure App Service and Kubernetes"
 type = "post"
-
+summary = "In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet. There will be lots of situations when we want to use both the simplicity and features of a PaaS service (such as autoscaling, easy SSL, or any other cool feature) for a component and the flexibility of Kubernetes for others - in this article we will see how to achieve this without exposing services on the Internet."
 +++
 
 Table of Contents
