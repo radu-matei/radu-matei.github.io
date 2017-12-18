@@ -4,7 +4,7 @@
     <head>
         
             
-                <title>Jenkins declarative pipelines with Kubernetes </title>
+                <title>Adding native Go in Azure Functions</title>
             
         
 
@@ -18,23 +18,23 @@
             <meta name="author" content="Radu Matei">
         
         
-            <meta name="description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods">
+            <meta name="description" content="Journey to adding native Go in Azure Functions">
         
 
-        <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Jenkins declarative pipelines with Kubernetes "/>
-<meta name="twitter:description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods"/>
+        <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Adding native Go in Azure Functions"/>
+<meta name="twitter:description" content="Journey to adding native Go in Azure Functions"/>
 <meta name="twitter:site" content="@Matei_Radu"/>
 
-        <meta property="og:title" content="Jenkins declarative pipelines with Kubernetes " />
-<meta property="og:description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods" />
+        <meta property="og:title" content="Adding native Go in Azure Functions" />
+<meta property="og:description" content="Journey to adding native Go in Azure Functions" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/kubernetes-jenkins-azure/" />
+<meta property="og:url" content="https://radu-matei.com/blog/golang-azure-functions/" />
 
 
 
-<meta property="article:published_time" content="2017-10-08T00:00:00&#43;00:00"/>
+<meta property="article:published_time" content="2017-12-14T00:00:00&#43;00:00"/>
 
-<meta property="article:modified_time" content="2017-10-08T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-12-14T00:00:00&#43;00:00"/>
 
 
 
@@ -47,13 +47,13 @@
 
 
         
-<meta itemprop="name" content="Jenkins declarative pipelines with Kubernetes ">
-<meta itemprop="description" content="Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods">
+<meta itemprop="name" content="Adding native Go in Azure Functions">
+<meta itemprop="description" content="Journey to adding native Go in Azure Functions">
 
 
-<meta itemprop="datePublished" content="2017-10-08T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2017-10-08T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1443">
+<meta itemprop="datePublished" content="2017-12-14T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-12-14T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="177">
 
 
 
@@ -270,43 +270,43 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&text=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&text=Adding%20native%20Go%20in%20Azure%20Functions&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
 
 
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f" target="_blank" class="share-btn google-plus">
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f" target="_blank" class="share-btn google-plus">
     <i class="fa fa-google-plus"></i>
     <p>Google+</p>
 </a></li>
 
 
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f" target="_blank" class="share-btn facebook">
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f" target="_blank" class="share-btn facebook">
     <i class="fa fa-facebook"></i>
     <p>Facebook</p>
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&title=Adding%20native%20Go%20in%20Azure%20Functions" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&title=Adding%20native%20Go%20in%20Azure%20Functions" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&title=Adding%20native%20Go%20in%20Azure%20Functions" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
 
 
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f" target="_blank" class="share-btn email">
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f" target="_blank" class="share-btn email">
     <i class="fa fa-envelope"></i>
     <p>Email</p>
 </a></li>
@@ -323,11 +323,11 @@ ga('send', 'pageview');
     <header>
     <div class="title">
         
-            <h1><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">Jenkins declarative pipelines with Kubernetes </a></h1>
+            <h1><a href="https://radu-matei.com/blog/golang-azure-functions/">Adding native Go in Azure Functions</a></h1>
             
         
         
-            <p>Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods</p>
+            <p>Journey to adding native Go in Azure Functions</p>
         
     </div>
     <div class="meta">
@@ -336,11 +336,11 @@ ga('send', 'pageview');
         
 
         <time class="published"
-            datetime='2017-10-08'>
-            October 8, 2017</time>
+            datetime='2017-12-14'>
+            December 14, 2017</time>
         <span class="author">Radu Matei</span>
         
-            <p>7 minute read</p>
+            <p>1 minute read</p>
         
         
     </div>
@@ -352,43 +352,43 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&text=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&text=Adding%20native%20Go%20in%20Azure%20Functions&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
 
 
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f" target="_blank" class="share-btn google-plus">
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f" target="_blank" class="share-btn google-plus">
     <i class="fa fa-google-plus"></i>
     <p>Google+</p>
 </a></li>
 
 
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f" target="_blank" class="share-btn facebook">
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f" target="_blank" class="share-btn facebook">
     <i class="fa fa-facebook"></i>
     <p>Facebook</p>
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&title=Adding%20native%20Go%20in%20Azure%20Functions" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&title=Adding%20native%20Go%20in%20Azure%20Functions" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f&title=Jenkins%20declarative%20pipelines%20with%20Kubernetes%20" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f&title=Adding%20native%20Go%20in%20Azure%20Functions" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
 
 
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-jenkins-azure%2f" target="_blank" class="share-btn email">
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fgolang-azure-functions%2f" target="_blank" class="share-btn email">
     <i class="fa fa-envelope"></i>
     <p>Email</p>
 </a></li>
@@ -404,190 +404,22 @@ ga('send', 'pageview');
 
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#deploying-jenkins-with-helm">Deploying Jenkins with Helm</a></li>
-<li><a href="#create-credentials-for-your-image-repository">Create credentials for your image repository</a></li>
-<li><a href="#the-jenkinsfile">The Jenkinsfile</a></li>
-<li><a href="#using-the-jenkinsfile">Using the Jenkinsfile</a></li>
-<li><a href="#investigating-what-actually-happens-in-the-cluster">Investigating what actually happens in the cluster</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#feedback">Feedback</a></li>
 </ul>
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In previous articles <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">we deployed a Kubernetes 1.8 cluster to Azure using acs-engine</a>, then <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/" target="_blank">configured Helm and Draft to simplify testing applications</a>.</p>
+<p>Fall 2017 came with the <a href="https://azure.microsoft.com/en-us/blog/serverless-for-all-developers-bringing-azure-functions-to-linux-mac-planet-scale-nosql-real-time-analytics-and-productivity-apps/" target="_blank">announcement of Azure Functions on Linux and Mac</a> and the ability to <a href="https://blogs.msdn.microsoft.com/appserviceteam/2017/11/15/functions-on-linux-preview/" target="_blank">add the Azure Functions runtime in a container</a>.</p>
 
-<p>In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins declarative pipelines that build containers, push images to an image repository and update Kubernetes deployments.</p>
+<p>Besides that, <a href="https://github.com/Azure/azure-webjobs-sdk-script/wiki/Language-Extensibility" target="_blank">the runtime has been split between a host (which manages function events) and language worker processes (which runs user functions for a given language). These two pieces communicate using gRPC as a messaging layer.</a> - essentially, this allows you to add support for Azure Functions to any language you want - you only have to create a gRPC implementation in your language of choice and accept incoming requests from the runtime host.</p>
 
-<h1 id="prerequisites">Prerequisites</h1>
+<p>This is how the <a href="https://github.com/Azure/azure-functions-java-worker" target="_blank">Java</a> and <a href="https://github.com/Azure/azure-functions-nodejs-worker" target="_blank">nodeJS</a> workers in Azure Functions preview are implemented, and the moment I heard about this, I wanted to create the Golang implementation.</p>
 
-<p>To follow along with this article, <em>you need a Kubernetes cluster</em> (we will use Kubernetes v1.8.0, but the instructions were also tested with v1.7.0) with Helm installed and a terminal with <code>kubectl</code> and <code>helm</code> installed and configured.</p>
+<p><strong>Now it is important to understand that this is not an officially supported Microsoft product!</strong>
+That being said, let&rsquo;s have some fun with Go and Azure Functions!</p>
 
-<blockquote>
-<p><a href="https://radu-matei.com/blog/k8s-helm-draft-azure" target="_blank">This article picks up where the last one ended, so you will need a Kubernetes cluster with <code>helm</code> installed. Here you can find very simple instructions on how to achieve it.</a></p>
-</blockquote>
+<p>At this point in the implementation</p>
 
-<p>My cluster is deployed into Azure, West Europe, but you can do the exact same steps using the Google Container Engine or your on-prem cluster (note that you will not be given public IP addresses as is the case with Azure or GKE).</p>
-
-<p>Now to check that everything is configured, verify your cluster information and vesions. This is my starting point:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/cluster-info.png" alt="" /></p>
-
-<h1 id="deploying-jenkins-with-helm">Deploying Jenkins with Helm</h1>
-
-<p>Using Helm you can easily deploy well-know applications (like Hadoop, Grafana, MongoDB, Redis) easily on your Kubernetes cluster using charts.</p>
-
-<blockquote>
-<p>Charts are curated application definitions for Kubernetes Helm.</p>
-
-<p>More information on <a href="https://github.com/kubernetes/helm" target="_blank">Helm</a> and <a href="https://github.com/kubernetes/charts" target="_blank">charts</a> on GitHub</p>
-</blockquote>
-
-<p>If we search for <a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Jenkins in the list of stable charts</a>, we find very clear instructions on how to deploy it.</p>
-
-<p>A chart is composed of some templates (Kubernetes deployment files) and a file that holds our specific values for Jenkins - Docker image for master and agents, plugins to install, persistent volumes - basically all configurable values we can get for our Jenkins deployment.</p>
-
-<p>This is the only file we will need to edit ourselves. Below you can find the one I use.</p>
-
-<script src="//gist.github.com/radu-matei/466ae82b4b269d6bb762b088683bf9e6.js"></script>
-
-<blockquote>
-<p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
-</blockquote>
-
-<p>Note that this verison mounts the <code>/var/run/docker.sock</code> socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.</p>
-
-<blockquote>
-<p>This also installs other plugins - such as Jenkins Blue Ocean.</p>
-
-<p><a href="https://github.com/kubernetes/charts/blob/master/stable/jenkins/values.yaml" target="_blank">The default values for Jenkins (that you can find in this repo)</a> does not expose it, you can use that, but note that some features we will use later (basically <code>docker build</code> inside the worker pod) will not work.</p>
-</blockquote>
-
-<p>Get this file locally, then execute:</p>
-
-<p><code>helm install --name jenkins -f jenkins-values.yaml stable/jenkins</code></p>
-
-<p>After you deploy the chart, you will get instructions on how to get the initial admin password:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/instructions.png" alt="" /></p>
-
-<blockquote>
-<p>Note that the initial admin username is <code>admin</code> and you should probably change it :)</p>
-</blockquote>
-
-<p>If you take a look at the state of your cluster, you can see that <code>helm</code> deployed <code>jenkins</code>, which resulted in two services in Kubernetes, one for the master and one for the agents.</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/deployed.png" alt="" /></p>
-
-<p>Using the initial admin password (follow the instructions you had as output from Helm after deploying Jenkins), go to the public IP of your service and login.</p>
-
-<blockquote>
-<p>You can find the command I used to get the initial admin password, but note that it will vary in your case based on the name you provided and the namespace where you deployed Jenkins.</p>
-
-<p><code>printf $(kubectl get secret --namespace default jenkins-jenkins -o jsonpath=&quot;{.data.jenkins-admin-password}&quot; | base64 --decode);echo</code></p>
-</blockquote>
-
-<p>Now you have deployed an instance of Jenkins on your Kubernetes cluster using Helm, already configured with all plugins you specified in your <code>jenkins-values.yaml</code> file and with the ability to execute builds on your cluster.</p>
-
-<h1 id="create-credentials-for-your-image-repository">Create credentials for your image repository</h1>
-
-<p>The goal is to have end to end automatic deployment to our Kubernetes cluster. This means we need to push images to an image repository (like Docker Hub, Azure Container Repository, Google Container Repository) as part of our Jenkins build.</p>
-
-<p>Since all the repositories need some sort of authentication, we need to create a credential binding in Jenkins so that we don&rsquo;t keep credentials in source control</p>
-
-<blockquote>
-<p>Never, ever keep credentials in source control. Or connection strings, or any sort of sensitive information!</p>
-
-<p>We can keep them as Kuberentes secrets, or as Jenkins secrets. In this case we will use Jenkins secrets, and we will reference them in our Jenkinsfile.</p>
-</blockquote>
-
-<p>Now create new credentials in Jenkins:</p>
-
-<blockquote>
-<p>Click the <strong>Credentials</strong> link in the sidebar</p>
-
-<p>Click on the <strong>Global credentials</strong> domain</p>
-
-<p>Click [<strong>Add Credential</strong>]</p>
-
-<p><a href="https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs" target="_blank">Full Cloudbees article that explains credentials and credential bindings in Jenkins</a></p>
-</blockquote>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/credentials.png" alt="" /></p>
-
-<p>Now that you have the credentials in place (don&rsquo;t forget to also add an intuitive ID for your credentials in the place I left blank!), you can create a new pipeline.</p>
-
-<h1 id="the-jenkinsfile">The Jenkinsfile</h1>
-
-<p>The initial goal was to create declarative Jenkins pipelines that we can later store in source control. This pipeline describes our build process, and a usual process when we work with Kubernetes is to build a Docker image, push it to a image repository then to some work with <code>kubectl</code> (like update the image for a deployment), or with <code>helm</code> (update a chart, or deploy a new one).</p>
-
-<p>We will now look at how to write the simplest Jenkinsfile that will to exactly that: build and push an image to a repo and do work with <code>kubectl</code> and <code>helm</code>.</p>
-
-<blockquote>
-<p><a href="https://github.com/jenkinsci/kubernetes-plugin" target="_blank">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
-</blockquote>
-
-<script src="//gist.github.com/radu-matei/376f5a2b042b0df82d7d905c9c6cf8ff.js"></script>
-
-<blockquote>
-<p>Don&rsquo;t forget to use your credential ID in the Jenkinsfile!</p>
-</blockquote>
-
-<p>This Jenkinsfile makes use of having multiple containers in the same Kubernetes pod - we will have 3 containers - one based on a Docker image, one based on <code>kubectl</code> and the last based on <code>helm</code>.</p>
-
-<blockquote>
-<p>You can create your own containers - in this case I used the official one for Docker and the images built by <a href="https://twitter.com/LachlanEvenson" target="_blank">Lachlan Evenson</a>, since are widely used on Docker Hub and I kind of trust Lachlan :)</p>
-
-<p>Use images from the Internet at your own risk!</p>
-</blockquote>
-
-<p>Note that we are mounting the Docker socket inside our pod so the Docker container has access to the Docker engine - this step is debatable for using in production (but it is arguably better than using Docker-in-Docker - <a href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/" target="_blank">read this article</a>).</p>
-
-<p>Since we are already running in the cluster, the other two containers are already authenticated.</p>
-
-<p>You can test this Jenkinsfile by creating a simple Jenkins pipeline and pasting this Jenkinsfile directly there (ugly, but the easiest way to do it).</p>
-
-<p>This is part of the output for the Jenkinsfile above. Please note that from within this container you have access to the real cluster!
-You might want to take a look at the new 1.8 RBAC features in Kubernetes, but keep in mind that <em>with great power comes great responsibility!</em></p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/real-cluster.png" alt="" /></p>
-
-<h1 id="using-the-jenkinsfile">Using the Jenkinsfile</h1>
-
-<p>Basically, now all you need to do is replace the dummy steps I wrote for each step and you have yourself a fully functional Jenkins pipeline!</p>
-
-<p>Put it side by side with your code in the repository and take care of it just as you would with your source code!</p>
-
-<h1 id="investigating-what-actually-happens-in-the-cluster">Investigating what actually happens in the cluster</h1>
-
-<p>We see that the steps in our Jenkinsfile are executed, but let&rsquo;s explore a bit where that really happens.</p>
-
-<p>Whenever there&rsquo;s a new build, the master will dynamically create agent pods based on your Jenkinsfile. There will always be a <code>jnlp</code> container there that knows how to connect to the master, among with whatever containers you specify.</p>
-
-<p>Let&rsquo;s see that pod in action:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/pod.png" alt="" /></p>
-
-<p>Here you can see all containers inside the pod (with their image, tag and environment variables).</p>
-
-<p>The cool thing about this plugin is you only see resources being used (CPU + memory) when there&rsquo;s a build in progress. Once that build is done, your resources are freed:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/spike.png" alt="" /></p>
-
-<blockquote>
-<p>The short spike at the end corresponds to a build being executed</p>
-</blockquote>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p>We deployed Jenkins on our Kubernetes cluster using Helm (in a reproduceable way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles in a declarative way and have multiple containers in the agent pod.</p>
-
-<h1 id="feedback">Feedback</h1>
-
-<p>If you have a better aproach at any of the concepts presented in this article, or have any questions, please use the comments below.</p>
-
-<p>As always, thanks for reading, and any feedback is highly appreciated :)</p>
+<p>Now the great thing about Azure Functions is, besides the ability to</p>
 
     </div>
         
@@ -615,11 +447,11 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
     
     
-        <li><a href='/categories/docker'>docker</a></li>
+        <li><a href='/categories/azure'>azure</a></li>
     
-        <li><a href='/categories/kubernetes'>kubernetes</a></li>
+        <li><a href='/categories/golang'>golang</a></li>
     
-        <li><a href='/categories/jenkins'>jenkins</a></li>
+        <li><a href='/categories/grpc'>grpc</a></li>
     
 </ul>
 
@@ -627,13 +459,13 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 </article>
 <ul class="actions pagination">
     
-        <li><a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"
-                class="button big previous">Get started with Helm and Draft for Kubernetes</a></li>
+        <li><a href="https://radu-matei.com/blog/aci-update/"
+                class="button big previous">Update Azure Container Instances with Docker Hub webhooks</a></li>
     
 
     
-        <li><a href="https://radu-matei.com/blog/k8s-appsvc/"
-                class="button big next">Best of Both worlds: Azure App Service and Kubernetes</a></li>
+        <li><a href="https://radu-matei.com/blog/kube-toolkit/"
+                class="button big next">kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</a></li>
     
 </ul>
 
@@ -644,13 +476,13 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 <script type="text/javascript">
     var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/kubernetes-jenkins-azure/";
-    var disqus_title = "Jenkins declarative pipelines with Kubernetes ";
-    var disqus_url = "Jenkins declarative pipelines with Kubernetes ";
+    var disqus_identifier = "https://radu-matei.com/blog/golang-azure-functions/";
+    var disqus_title = "Adding native Go in Azure Functions";
+    var disqus_url = "Adding native Go in Azure Functions";
 
     var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/kubernetes-jenkins-azure/";  
-        this.page.identifier = "https://radu-matei.com/blog/kubernetes-jenkins-azure/"; 
+        this.page.url = "https://radu-matei.com/blog/golang-azure-functions/";  
+        this.page.identifier = "https://radu-matei.com/blog/golang-azure-functions/"; 
     };
 
     (function() {
