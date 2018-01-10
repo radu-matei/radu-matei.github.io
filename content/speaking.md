@@ -4,6 +4,13 @@ description = "Here I will keep track of various talks I give around user groups
 date = "2017-11-25"
 +++
 
+Easy Kubernetes with Jenkins, Helm and Draft
+---------------------------------------------
+
+Here's a video of [me speaking at Voxxed Days in Cluj](https://voxxeddays.com/romania/2017/11/01/easy-kubernetes-jenkins-helm-draft/).
+
+{{< youtube KpAgNwRKcJA >}}
+
 
 2017
 ====
