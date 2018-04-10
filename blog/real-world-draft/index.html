@@ -1,0 +1,1265 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.38.2" />
+        
+
+
+        
+            <meta name="author" content="Radu Matei">
+        
+        
+            <meta name="description" content="Using Draft to simplify your cloud-native application development.">
+        
+
+        <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging."/>
+<meta name="twitter:description" content="Using Draft to simplify your cloud-native application development."/>
+<meta name="twitter:site" content="@Matei_Radu"/>
+
+        <meta property="og:title" content="Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging." />
+<meta property="og:description" content="Using Draft to simplify your cloud-native application development." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/real-world-draft/" />
+
+
+
+<meta property="article:published_time" content="2018-04-10T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2018-04-10T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+        
+<meta itemprop="name" content="Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.">
+<meta itemprop="description" content="Using Draft to simplify your cloud-native application development.">
+
+
+<meta itemprop="datePublished" content="2018-04-10T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2018-04-10T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2289">
+
+
+
+<meta itemprop="keywords" content="" />
+
+        
+
+        
+
+        
+        
+            
+        
+
+        
+        
+            <link rel="stylesheet" href="/css/google-font.css" />
+            <link rel="stylesheet" href="/css/font-awesome.min.css" />
+            <link rel="stylesheet" href="/css/main.css" />
+            <link rel="stylesheet" href="/css/add-on.css" />
+            <link rel="stylesheet" href="/css/monokai-sublime.css">
+        
+
+        
+
+        
+        
+        
+            
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-81142224-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+        
+    </head>
+    <body>
+
+        
+        <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+        <h2><a href="/">Radu Matei</i></a></h2>
+    
+
+    <nav class="links">
+        <ul>
+            
+                <li>
+                    <a href="/blog">
+                        
+                            <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/about">
+                        
+                            <i class="fa fa-smile-o">&nbsp;</i>About
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/speaking">
+                        
+                            <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/contact">
+                        
+                            <i class="fa fa-envelope-o">&nbsp;</i>Contact
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="https://github.com/radu-matei">
+                        
+                            <i class="fa fa-github">&nbsp;</i>Open Source
+                    </a>
+                </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="q" value="site:https://radu-matei.com">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+        <section>
+            <form class="search" method="get" action="//google.com/search">
+                <input type="text" name="q" placeholder="Search" />
+                <input type="hidden" name="q" value="site:https://radu-matei.com">
+            </form>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                
+                    <li>
+                        <a href="/blog">
+                            <h3>
+                                
+                                    <i class="fa fa-newspaper-o">&nbsp;</i>
+                                
+                                Blog
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/about">
+                            <h3>
+                                
+                                    <i class="fa fa-smile-o">&nbsp;</i>
+                                
+                                About
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/speaking">
+                            <h3>
+                                
+                                    <i class="fa fa-comments-o">&nbsp;</i>
+                                
+                                Speaking
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/contact">
+                            <h3>
+                                
+                                    <i class="fa fa-envelope-o">&nbsp;</i>
+                                
+                                Contact
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="https://github.com/radu-matei">
+                            <h3>
+                                
+                                    <i class="fa fa-github">&nbsp;</i>
+                                
+                                Open Source
+                            </h3>
+                        </a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/real-world-draft/"><p>Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/kube-toolkit/"><p>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/aci-update/"><p>Update Azure Container Instances with Docker Hub webhooks</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/signalr-core/"><p>Getting started with SignalR Alpha 2</p></a>
+                    </li>
+                
+                    <li>
+                        <a href="https://radu-matei.com/blog/k8s-appsvc/"><p>Best of Both worlds: Azure App Service and Kubernetes</p></a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        
+</section>
+
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&text=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging.&via=Matei_Radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&title=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging." target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&title=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging." target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&title=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging." target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+    <header>
+    <div class="title">
+        
+            <h1><a href="https://radu-matei.com/blog/real-world-draft/">Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</a></h1>
+            
+        
+        
+            <p>Using Draft to simplify your cloud-native application development.</p>
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2018-04-10'>
+            April 10, 2018</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>11 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&text=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging.&via=Matei_Radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&title=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging." target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&title=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging." target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f&title=Using%20Draft%20to%20develop%20front-end%20%2b%20back-end%20applications.%20Experimenting%20with%20Draft%2c%20VS%20Code%20and%20remote%20debugging." target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2freal-world-draft%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
+    
+
+    
+        
+        
+
+
+
+
+    
+
+
+        
+
+        <a href="https://radu-matei.com/blog/real-world-draft/" class="image featured">
+            <img src="/img/article-photos/real-world-draft//draft-logo.png" alt="" />
+        </a>
+    
+
+
+    <div id="content">
+        
+
+<h3 id="introduction">Introduction</h3>
+
+<blockquote>
+<p>Application containers have skyrocketed in popularity over the last few years. In recent months, Kubernetes has emerged as a popular solution for orchestrating these containers. While many turn to Kubernetes for its extensible architecture and vibrant open-source community, some still view Kubernetes as <a href="https://www.youtube.com/watch?v=aOQwyN0bTk4" target="_blank">too difficult to use</a>. - <em>Taken from <a href="https://azure.microsoft.com/en-us/blog/streamlining-kubernetes-development-with-draft/" target="_blank">the Draft announcement blog post.</a></em></p>
+</blockquote>
+
+<p><a href="https://github.com/azure/draft" target="_blank">Draft</a> is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.</p>
+
+<p>To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank">follow the official Draft documentation</a> and watch a short episode on Azure Friday:</p>
+
+
+<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/DvaT3H8Wyf8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
+ </div>
+
+
+<p>If you ever developed an application that you later deployed on Kubernetes, you know that this is not a trivial task: you need to write a Dockerfile, push it to a container registry, then create Kubernetes manifest files for the deployment and the service and then apply them using <code>kubectl</code>, <code>helm</code> or other deployment tools - <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/" target="_blank">and we haven&rsquo;t even started to think about continuous integration and deployment</a>.</p>
+
+<p>And the steps above become even more painful when you&rsquo;re making small changes to your application and redeploying it - you have to rebuild and push your image, then remember to update your deployment manifest with the new image tag (<a href="https://kubernetes.io/docs/concepts/configuration/overview/#container-images" target="_blank">you should <em>really</em> avoid using <code>latest</code> as your image tag</a>).</p>
+
+<p>And this is where Draft comes in - it is a command-line application that:</p>
+
+<ul>
+<li>builds your container image</li>
+<li>pushes your container image to <em>any</em> container registry</li>
+<li>pushes the application to <em>any</em> Kubernetes cluster using a Helm chart</li>
+</ul>
+
+<p>Essentially, deploying a new Draft application boils down to two simple commands: <code>draft create</code> and <code>draft up</code>.</p>
+
+<blockquote>
+<ul>
+<li>Draft comes with <a href="https://github.com/Azure/draft/tree/master/packs" target="_blank">a set of existing <em>packs</em> for some common programming languages and development frameworks</a> - essentially, these are just templates consisting of a Dockerfile and a Helm chart for your application that eliminates the part where you have to actually write your Dockerfile and Kubernetes manifest files - here you can <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-003.md" target="_blank">read all about the Draft pack format</a>.</li>
+<li>Draft also comes with <a href="https://github.com/Azure/draft/tree/master/examples" target="_blank">a set of example applications for those packs</a> that you can easily deploy on your cluster using <code>draft create</code> and <code>draft up</code>.</li>
+<li>You can either start working from an existing pack and customize it to your needs (changes to Dockerfile and the Helm chart), or you can <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-004.md" target="_blank">create your own pack repository</a> for you and your team to use.</li>
+<li>Draft will inject values specific to your current iteration in the Helm chart (like the name, image tag and build ID), so you don&rsquo;t have to update them manually.</li>
+<li>After deploying your application on the cluster, you can use <code>draft connect</code> to forward the ports exposed by the application locally - this enables developing the front-end of the applications locally, forwarding the connection to the back-end through <code>localhost</code> ports. More on this later.</li>
+</ul>
+</blockquote>
+
+<h1 id="prerequisites">Prerequisites</h1>
+
+<p>In order to follow along with this article, you will need:</p>
+
+<ul>
+<li>a Kubernetes cluster - you can use <em>any</em> existing Kubernetes cluster, locally or on your cloud provider
+
+<ul>
+<li>you can <a href="https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster" target="_blank">deploy a managed AKS Kubernetes cluster on Azure</a>, or you can <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-container-cluster" target="_blank">deploy a managed GKE Kubernetes cluster on Google Cloud Platform</a></li>
+<li>you can <a href="https://github.com/kubernetes/minikube" target="_blank">use Minikube to run Kubernetes locally</a>, or create a single-node cluster <a href="https://docs.docker.com/docker-for-mac/kubernetes/" target="_blank">using Docker for Mac</a> or <a href="https://docs.docker.com/docker-for-windows/kubernetes/" target="_blank">Docker for Windows</a></li>
+</ul></li>
+<li>Helm installed on your cluster - here&rsquo;s <a href="https://docs.helm.sh/using_helm/#installing-helm" target="_blank">the official documentation on installing and configuring Helm</a></li>
+<li>Docker running locally</li>
+<li>access to a container registry (like <a href="https://hub.docker.com/" target="_blank">Docker Hub</a>, <a href="https://azure.microsoft.com/en-us/services/container-registry/" target="_blank">Azure Container Registry</a>, <a href="https://cloud.google.com/container-registry/" target="_blank">Google Container Registry</a> or <a href="https://aws.amazon.com/ecr/" target="_blank">Amazon Elastic Container registry</a>) - if you&rsquo;re using Minikube, <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md#configure-docker" target="_blank">you can skip pushing to a registry</a></li>
+<li>the Draft client
+
+<ul>
+<li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-cloud.md" target="_blank">configure Draft with a Kubernetes cluster in the coud</a></li>
+<li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md" target="_blank">configure Draft with Minikube</a></li>
+</ul></li>
+</ul>
+
+<p>Those were the requirements to start using Draft right away. Additionally, to work on the sample provided with this article, you should also configure:</p>
+
+<ul>
+<li>NodeJS and <a href="https://github.com/angular/angular-cli#installation" target="_blank">Angular CLI</a></li>
+<li><a href="https://code.visualstudio.com/docs/setup/setup-overview" target="_blank">VS Code</a> - we will only truly use VS Code for the debugging part - until then, you can use any text editor you are familiar with.</li>
+</ul>
+
+<h1 id="develop-deploy-and-debug-front-end-back-end-apps-on-kubernetes">Develop, deploy and debug front-end + back-end apps on Kubernetes</h1>
+
+<p>Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don&rsquo;t want to replicate locally - those can be databses we don&rsquo;t have access to, queues we need to use, or multiple microservices we simply cannot run locally.</p>
+
+<p>We will use Draft to easily iterate through changes in our back-end, and use the port-forwarding functionality to test our front-end locally, before deploying it in the cluster. We will also see how to use VS Code to experiment with the remote debugging of the NodeJS application deployed to Kubernetes.</p>
+
+<blockquote>
+<p>While this article uses Angular and NodeJS, the same tools and thinking can be applied to any front-end + back-end configuration you might have.</p>
+</blockquote>
+
+<p><a href="https://github.com/radu-matei/angular-todo-app" target="_blank">Our starting point is a GitHub repository containing both projects.</a></p>
+
+<blockquote>
+<p>Credits for the Angular application go to <a href="https://www.sitepoint.com/angular-rxjs-create-api-service-rest-backend/" target="_blank">this SitePoint article</a> which explains how to get started with Angular and RxJS - while we will not get into details, it is a great source if you&rsquo;re getting started with Angular.</p>
+</blockquote>
+
+<p>Clone the repository and navigate to the folder containing the solution:</p>
+
+<pre><code class="language-shell">$ git clone https://github.com/radu-matei/angular-todo-app
+$ cd angular-todo-app
+</code></pre>
+
+<h3 id="deploy-the-node-back-end">Deploy the Node back-end</h3>
+
+<p>Earlier we were talking about Draft packs, and how to get started with an exisiting application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.</p>
+
+<blockquote>
+<p>You can find <a href="https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug" target="_blank">the pack used for this application in my packs repositopry</a> - the only difference compared to <a href="https://github.com/Azure/draft/tree/master/packs/javascript" target="_blank">the official Draft pack for NodeJS</a> is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.</p>
+</blockquote>
+
+<p>Navigate to the <code>node-backend</code> folder, and if everything is setup correctly, you should be able to:</p>
+
+<pre><code class="language-shell">$ draft up
+Draft Up Started: 'todos-api'
+todos-api: Building Docker Image: SUCCESS ⚓  (1.0020s)
+todos-api: Pushing Docker Image: SUCCESS ⚓  (9.0293s)
+todos-api: Releasing Application: SUCCESS ⚓  (0.6775s)
+todos-api: Build ID: 01CAQQR0K8BH4MES9WFQS0S5RT
+Inspect the logs with `draft logs 01CAQQR0K8BH4MES9WFQS0S5RT`
+</code></pre>
+
+<p>Within around 10 seconds, Draft built and pushed my container image, then deployed my application to the Kubernetes cluster. Let&rsquo;s see what our cluster looks like after this operation.</p>
+
+<blockquote>
+<p>Note that the first time you build and push the image it might take a little more - this is because Docker doesn&rsquo;t have any layers cached locally.</p>
+</blockquote>
+
+<p>Under the hood, after pushing the container image, Draft used Helm to deploy the chart:</p>
+
+<pre><code class="language-shell">$ helm ls
+NAME         REVISION     UPDATED                      STATUS       CHART                NAMESPACE
+todos-api    1            Tue Apr 10 15:16:14 2018     DEPLOYED     node-debug-v0.1.0    default
+</code></pre>
+
+<p>This resulted in one pod:</p>
+
+<pre><code class="language-shell">$ kubectl get pods
+NAME                                    READY     STATUS    RESTARTS   AGE
+todos-api-node-debug-2786020832-qv0pf   1/1       Running   0          2m
+</code></pre>
+
+<p>A deployment:</p>
+
+<pre><code class="language-shell">$ kubectl get deployments
+NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+todos-api-node-debug   1         1         1            1           4m
+</code></pre>
+
+<p>And a <code>ClusterIP</code> type service:</p>
+
+<pre><code class="language-shell">$ kubectl get services
+NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
+kubernetes             ClusterIP   10.0.0.1      &lt;none&gt;        443/TCP    20d
+todos-api-node-debug   ClusterIP   10.0.202.58   &lt;none&gt;        8080/TCP   5m
+</code></pre>
+
+<blockquote>
+<p>All the values, cluster types and container ports can be configured in <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/charts/node-debug/values.yaml" target="_blank"><code>/charts/values.yml</code></a> and in <a href="https://github.com/radu-matei/angular-todo-app/tree/draft-app/node-backend/charts/node-debug/templates" target="_blank"><code>/charts/templates</code></a>.</p>
+</blockquote>
+
+<p>Now we can start forwarding the ports exposed by our application locally, and access it as if it were running in a local process:</p>
+
+<pre><code class="language-shell">$ draft connect
+Connect to node-debug:8080 on localhost:8080
+Connect to node-debug:9229 on localhost:9229
+[node-debug]: &gt; node --inspect index.js
+[node-debug]:
+[node-debug]: Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
+[node-debug]: For help see https://nodejs.org/en/docs/inspector
+[node-debug]: Express server listening on port 8080
+</code></pre>
+
+<p>The logs you see come from the Kubernetes pod we just deployed:</p>
+
+<pre><code class="language-shell">$ kubectl logs todos-api-node-debug-2786020832-qv0pf
+&gt; todo-api@0.0.1 start /usr/src/app&gt; node --inspect index.js
+Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
+For help see https://nodejs.org/en/docs/inspector
+Express server listening on port 8080
+</code></pre>
+
+<p>Now if you browse to <a href="http://localhost:8080/todos" target="_blank"><code>http://localhost:8080/todos</code></a> you should be able to navigate through the API we just deployed to Kubernetes.</p>
+
+<p><img src="/img/article-photos/real-world-draft/localhost.png" alt="" /></p>
+
+<blockquote>
+<p>You can find settings related to the ports used by <code>draft connect</code> in the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/draft.toml" target="_blank"><code>draft.toml</code> file from the root of the directory</a>, and you can customize on what local ports you want to expose your application.</p>
+
+<p>Here you can find <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-007.md" target="_blank">information about connecting to your application</a>.</p>
+</blockquote>
+
+<h3 id="exploring-the-angular-front-end">Exploring the Angular front-end</h3>
+
+<p>Now if we navigate to the <code>angular-frontend</code> folder and execute <code>npm install</code> and <code>npm start</code>:</p>
+
+<pre><code class="language-shell">$ npm install
+$ npm start
+&gt; todo-app@0.0.0 start /Users/radu/go/src/github.com/radu-matei/angular-todo-app/angular-client
+&gt; ng serve
+
+** NG Live Development Server is running on http://localhost:4200 **
+Hash: 6c27ad3a7fc35b2f2fa0
+Time: 6869ms
+chunk    {0} polyfills.bundle.js, polyfills.bundle.js.map (polyfills) 195 kB {4} [initial] [rendered]
+chunk    {1} main.bundle.js, main.bundle.js.map (main) 21.2 kB {3} [initial] [rendered]
+chunk    {2} styles.bundle.js, styles.bundle.js.map (styles) 21.6 kB {4} [initial] [rendered]
+chunk    {3} vendor.bundle.js, vendor.bundle.js.map (vendor) 2.52 MB [initial] [rendered]
+chunk    {4} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry] [rendered]
+webpack: Compiled successfully.
+</code></pre>
+
+<p>The front-end is already configured to talk to the back-end on <code>localhost:8080</code>, so at this point we can navigate to <a href="http://localhost:4200" target="_blank"><code>http://localhost:4200</code></a> and start playing around with our application:</p>
+
+<p><img src="/img/article-photos/real-world-draft/app.png" alt="" /></p>
+
+<blockquote>
+<p>You will surely find bugs with the front-end application, as I modified it to work with my back-end, and my front-end skills are non-existent. For starters, the counter is broken - feel free to open pull-requests for any problems you find :)</p>
+</blockquote>
+
+<p>You can now modify the Angular application, and the live development server will recompile the application.</p>
+
+<p>But what if you want to make changes to your back-end?</p>
+
+<h3 id="updating-the-back-end">Updating the back-end</h3>
+
+<p>At this point, without Draft, making a change to your back-end would require: manually re-building and pushing the container image, then updating the the Kubernetes manifests with the new image tag, then waiting for your pod to be up and manually forward the port so you can test your front-end again - and if you&rsquo;re rapidly iterating and making small changes, this becomes an incredibly annoying and repetitive task.</p>
+
+<p>Let&rsquo;s make a change to our back-end - if we go to <code>index.js</code>, we can see where our <code>ToDo</code> items are coming from, and we can add a new entry:</p>
+
+<pre><code class="language-javascript">const inMemoryTodoDB = [
+    { id: 0, title: 'Learn Kubernetes', complete: true },
+    { id: 1, title: 'Learn Draft', complete: true },
+    { id: 2, title: 'Learn Helm', complete: false },
+    { id: 3, title: 'Remote debugging is awesome!', complete: false },
+    { id: 4, title: 'It is incredibly easy to update your application', complete: true },
+];
+</code></pre>
+
+<p>Now we simply save the file and execute <code>draft up --auto-connect</code>:</p>
+
+<pre><code class="language-shell">$ draft up --auto-connect
+Draft Up Started: 'todos-api'
+todos-api: Building Docker Image: SUCCESS ⚓  (4.0053s)
+todos-api: Pushing Docker Image: SUCCESS ⚓  (16.0338s)
+todos-api: Releasing Application: SUCCESS ⚓  (1.2102s)
+todos-api: Build ID: 01CAQTGH3JNWB7GQQZFVNR5SFE
+Inspect the logs with `draft logs 01CAQTGH3JNWB7GQQZFVNR5SFE`
+Connect to node-debug:8080 on localhost:8080
+Connect to node-debug:9229 on localhost:9229
+[node-debug]:
+[node-debug]: &gt; todo-api@0.0.1 start /usr/src/app
+[node-debug]: &gt; node --inspect index.js
+[node-debug]:
+[node-debug]: Debugger listening on ws://127.0.0.1:9229/501876bb-eda4-47b1-8f8c-f4c4dfaf648e
+[node-debug]: For help see https://nodejs.org/en/docs/inspector
+[node-debug]: Express server listening on port 8080
+</code></pre>
+
+<p>This command executed the <code>draft up</code> cycle again (build and push the container image, then update the application in your Kubernetes cluster), then exposed the application ports locally - now simply refresh your application page:</p>
+
+<p><img src="/img/article-photos/real-world-draft/updated-app.png" alt="" /></p>
+
+<p>It is this easy to iterate through changes in your application - all you have to do is execute <code>draft up</code>.</p>
+
+<p>So far, all the features we saw are stable and already used by developers to simplify their development cycle when using Kubernetes. But regardless of what tool you use today, one thing that is either missing, not working correctly or incomplete is debugging the application you deployed to the cluster. In the next section we will experiment with VS Code and remotely debug the back-end we just deployed.</p>
+
+<h3 id="experimenting-with-vs-code-and-remote-debugging">Experimenting with VS Code and remote debugging</h3>
+
+<blockquote>
+<p>The features you are about to see are experimental and their development is in progress.</p>
+
+<p>You can <a href="https://github.com/Azure/vscode-kubernetes-tools/pull/160" target="_blank">follow along and start contributing to these features on GitHub</a>.</p>
+
+<p>If you want to try the debugging experience right now, you have to debug or <a href="https://github.com/Microsoft/vscode-go/wiki/Building,-Debugging-and-Sideloading-the-extension-in-Visual-Studio-Code#sideloading-the-extension" target="_blank">side-load the extension from the branch above using these instructions</a>.</p>
+</blockquote>
+
+<p>In the <code>node-backend</code> folder you can find the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/.vscode/launch.json" target="_blank"><code>.vscode/launch.json</code></a> file - this contains the configuration we will use to remote debug our application using Draft and VS Code. With the extension above activated (in debug or side-loaded), open the <code>node-backend</code> directory in a new VS Code window and hit <code>F5</code>, or start debugging:</p>
+
+
+<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/AO8nRmAN7ys" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
+ </div>
+
+
+<blockquote>
+<p>The video was <strong>not</strong> modified in any way - this is the debugging experience in real-time.</p>
+
+<p>The cluster used in the video above is an Azure AKS cluster in West Europe, while my debug session takes place in Bucharest, Romania - around 1800 kilometers (~1100 miles).</p>
+</blockquote>
+
+<p>Let&rsquo;s take a step back and rewind what we are doing: when we hit <code>F5</code>, Draft is building and pushing a container image, then upgrading the application in a Kubernetes cluster, exposing the application ports locally. We are then using the NodeJS remote debugger from VS Code to attach to the back-end deployed in Kubernetes, then we do breakpoint debugging <em>as if we are doing everything locally!</em></p>
+
+<p>This is just a taste of what you will be able to do with Draft and the <a href="https://github.com/Azure/vscode-kubernetes-tools" target="_blank">Kubernetes extension for VS Code</a>.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>In this article we briefly looked at how Draft can simplify your Kubernetes application development. We also began experimenting with VS Code and remote debugging of your applications deployed with Draft.</p>
+
+<p>Stay tuned to find out more about how to simplify your development of applications on Kubernetes.</p>
+
+<p>As always, <strong>thanks for reading</strong> - and let me know if you&rsquo;re interested in remote debugging and what you are using today - I would love to hear your thoughts in the comments below!</p>
+
+    </div>
+        
+
+        
+    <footer>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+                        Categories
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
+    
+        <li><a href='/categories/draft'>draft</a></li>
+    
+        <li><a href='/categories/helm'>helm</a></li>
+    
+        <li><a href='/categories/vscode'>vscode</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+<ul class="actions pagination">
+    
+        <li><a href="https://radu-matei.com/blog/kube-toolkit/"
+                class="button big previous">kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</a></li>
+    
+
+    
+</ul>
+
+
+<article class="post">
+    <div id="disqus_thread"></div>
+
+
+<script type="text/javascript">
+    var disqus_shortname = 'radu-matei';
+    var disqus_identifier = "https://radu-matei.com/blog/real-world-draft/";
+    var disqus_title = "Using Draft to develop front-end + back-end applications. Experimenting with Draft, VS Code and remote debugging.";
+    var disqus_url = "Using Draft to develop front-end + back-end applications. Experimenting with Draft, VS Code and remote debugging.";
+
+    var disqus_config = function () {
+        this.page.url = "https://radu-matei.com/blog/real-world-draft/";  
+        this.page.identifier = "https://radu-matei.com/blog/real-world-draft/"; 
+    };
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</article>
+    </div>
+         
+    
+<section id="sidebar">
+
+    
+        <section id="intro">
+            
+            
+                
+                    <img src="/img/main/radu-matei-profile.jpg" class="intro-circle" width="100" alt="Radu Matei" />
+                
+            
+            
+                <header>
+                   <a href="/"> <h2>Radu Matei</h2></a>
+                    <p>Friendly geek who accelerates developers to build epic stuff, @Microsoft Technical Evangelist, Software Developer, Container Enthusiast. Opinions are my own.</p>
+                </header>
+            
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+<li><a href="//stackoverflow.com/users/3084239/radu-matei" target="_blank" title="Stack Overflow" class="fa fa-stack-overflow"></a></li>
+
+
+
+
+
+
+
+
+
+<li><a href="//facebook.com/matei.radu94" target="_blank" title="Facebook" class="fa fa-facebook"></a></li>
+
+
+
+<li><a href="//twitter.com/Matei_Radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <ul class="posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/real-world-draft/">Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-04-10'>
+                                    April 10, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kube-toolkit/">kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-12-18'>
+                                    December 18, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/aci-update/">Update Azure Container Instances with Docker Hub webhooks</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-12-14'>
+                                    December 14, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/signalr-core/">Getting started with SignalR Alpha 2</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-11-26'>
+                                    November 26, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/k8s-appsvc/">Best of Both worlds: Azure App Service and Kubernetes</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2017-10-17'>
+                                    October 17, 2017</time>
+                            </header>
+                        </article>
+                    </li>
+                
+
+                
+                    <li>
+                        <ul class="actions">
+                            <li><a href=
+                            
+                                /blog/
+                            
+                            class="button">View more posts</a></li>
+                        </ul>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+    
+    
+    
+        <section id="categories">
+            <ul class="posts">
+                <header>
+                    <h3><a href="/categories/">Categories</a></h3>
+                </header>
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/aspnet-core/">aspnet-core</a>
+                                <span style="float:right;">11</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/azure/">azure</a>
+                                <span style="float:right;">7</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/kubernetes/">kubernetes</a>
+                                <span style="float:right;">6</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/docker/">docker</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/signalr/">signalr</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dependency-injection/">dependency-injection</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dotnet-core/">dotnet-core</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/websockets/">websockets</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/grpc/">grpc</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/iot/">iot</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/jenkins/">jenkins</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/windows-containers/">windows-containers</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+            </ul>
+        </section>
+    
+
+    
+        
+
+    
+        <section id="footer">
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+<li><a href="//stackoverflow.com/users/3084239/radu-matei" target="_blank" title="Stack Overflow" class="fa fa-stack-overflow"></a></li>
+
+
+
+
+
+
+
+
+
+<li><a href="//facebook.com/matei.radu94" target="_blank" title="Facebook" class="fa fa-facebook"></a></li>
+
+
+
+<li><a href="//twitter.com/Matei_Radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+        </section>
+
+</section>
+
+            </div>
+        <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+        
+        
+
+        
+        
+            
+        
+
+        
+        
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/skel.min.js"></script>
+            <script src="/js/util.js"></script>
+            <script src="/js/main.js"></script>
+            <script src="/js/backToTop.js"></script>
+            <script src="/js/highlight.pack.js"></script>
+        
+
+        
+
+            
+            <script>hljs.initHighlightingOnLoad();</script>
+            
+
+            
+    </body>
+</html>
+
