@@ -2,11 +2,11 @@
 author = "Radu Matei"
 categories = ["docker", "kubernetes", "jenkins"]
 date = "2017-10-08"
-description = "Deploy Jenkins using Helm, create Jenkins declarative pipelines and execute builds in Kubernetes pods"
+description = "Deploy Jenkins using Helm, create Jenkins pipelines and execute builds in Kubernetes pods"
 linktitle = ""
-title = "Jenkins declarative pipelines with Kubernetes "
+title = "Jenkins pipelines with Kubernetes "
 type = "post"
-summary = "The goal of this article is to show you how to deploy Jenkins to your Kuberentes cluster using Helm and write Jenkins declarative pipelines that execute builds within pods in your cluster - all of this while replicating your Jenkins configuration and persisting everything with Kubernetes persistent storage."
+summary = "The goal of this article is to show you how to deploy Jenkins to your Kuberentes cluster using Helm and write Jenkins pipelines that execute builds within pods in your cluster - all of this while replicating your Jenkins configuration and persisting everything with Kubernetes persistent storage."
 +++
 
 Table of Contents
@@ -26,7 +26,7 @@ Introduction
 
 In previous articles [we deployed a Kubernetes 1.8 cluster to Azure using acs-engine](https://radu-matei.com/blog/k8s18-azure/), then [configured Helm and Draft to simplify testing applications](https://radu-matei.com/blog/k8s-helm-draft-azure/).
 
-In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins declarative pipelines that build containers, push images to an image repository and update Kubernetes deployments.
+In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins pipelines that build containers, push images to an image repository and update Kubernetes deployments.
 
 Prerequisites
 =============
@@ -117,7 +117,7 @@ Now that you have the credentials in place (don't forget to also add an intuitiv
 The Jenkinsfile
 ================
 
-The initial goal was to create declarative Jenkins pipelines that we can later store in source control. This pipeline describes our build process, and a usual process when we work with Kubernetes is to build a Docker image, push it to a image repository then to some work with `kubectl` (like update the image for a deployment), or with `helm` (update a chart, or deploy a new one).
+The initial goal was to create Jenkins pipelines that we can later store in source control. This pipeline describes our build process, and a usual process when we work with Kubernetes is to build a Docker image, push it to a image repository then to some work with `kubectl` (like update the image for a deployment), or with `helm` (update a chart, or deploy a new one).
 
 We will now look at how to write the simplest Jenkinsfile that will to exactly that: build and push an image to a repo and do work with `kubectl` and `helm`.
 
@@ -176,7 +176,7 @@ The cool thing about this plugin is you only see resources being used (CPU + mem
 Conclusion
 ==========
 
-We deployed Jenkins on our Kubernetes cluster using Helm (in a reproduceable way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles in a declarative way and have multiple containers in the agent pod.
+We deployed Jenkins on our Kubernetes cluster using Helm (in a reproduceable way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles pipelines.
 
 
 Feedback
