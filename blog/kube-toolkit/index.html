@@ -254,6 +254,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/debgg-helm-tiller/"><p>Debug Helm and Tiller using VS Code and Draft</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/real-world-draft/"><p>Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</p></a>
                     </li>
                 
@@ -267,10 +271,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/signalr-core/"><p>Getting started with SignalR Alpha 2</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/k8s-appsvc/"><p>Best of Both worlds: Azure App Service and Kubernetes</p></a>
                     </li>
                 
             </ul>
@@ -434,7 +434,7 @@ ga('send', 'pageview');
 
 <h2 id="introduction">Introduction</h2>
 
-<p>If you ever used <a href="https://github.com/kubernetes/helm" target="_blank">Helm</a> or <a href="https://github.com/azure/draft" target="_blank">Draft</a>, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side componend (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p>
+<p>If you ever used <a href="https://github.com/kubernetes/helm" target="_blank">Helm</a> or <a href="https://github.com/azure/draft" target="_blank">Draft</a>, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p>
 
 <p><a href="https://github.com/radu-matei/kube-toolkit" target="_blank"><code>kube-toolkit</code></a> aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.</p>
 
@@ -459,7 +459,7 @@ ga('send', 'pageview');
 <p>Please note that there are still lots of things left to add, such as SSL, RBAC support or state management - you are more than welcome to contribute in any way to the project!</p>
 </blockquote>
 
-<p>As stated earliner, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.</p>
+<p>As stated earlier, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.</p>
 
 <p>Now for the actual implementation and how you can get started, and the first issue I bumped in was gathering the correct dependencies for Kubernetes 1.8:</p>
 
@@ -473,12 +473,12 @@ ga('send', 'pageview');
 
 <p>Essentially, during a 4 hour period (is was probably much more than that&hellip;), I was in the process of swapping git commit hashes and plugging them into <code>dep</code>, then trying to compile the project&hellip; Word of advice - check various release branches when working with vendored dependencies of Kubernetes!</p>
 
-<p>After finally getting it to work, <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml" target="_blank">I ended up with a  Gopkg.toml you can find here</a> and I simply included the <code>vendor</code> folder in the repo to ensure reproduceable builds.</p>
+<p>After finally getting it to work, <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml" target="_blank">I ended up with a  Gopkg.toml you can find here</a> and I simply included the <code>vendor</code> folder in the repo to ensure reproducible builds.</p>
 
 <blockquote>
 <p>Please note that this setup is for Kubernetes release 1.8 - you are more than welcome to port the dependencies to release 1.9!</p>
 
-<p>Having the <code>vendor</code> folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproduceable builds - you can put it in <code>.gitignore</code> if you want to.</p>
+<p>Having the <code>vendor</code> folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproducible builds - you can put it in <code>.gitignore</code> if you want to.</p>
 </blockquote>
 
 <h2 id="defining-and-using-grpc-services">Defining and using gRPC services</h2>
@@ -757,7 +757,7 @@ func (cmd *startCmd) run() error {
 <blockquote>
 <p>Notice there is not port exposed!</p>
 
-<p>You can easiliy do this using <code>kubectl</code></p>
+<p>You can easily do this using <code>kubectl</code></p>
 </blockquote>
 
 <p>Then, we need to build our client: <code>make ktk</code>, then, passing the <code>kubeconfig</code> file, attempt to get the version:</p>
@@ -958,6 +958,20 @@ func (cmd *startCmd) run() error {
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/debgg-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-04-29'>
+                                    April 29, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/real-world-draft/">Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</a></h3>
                                 
                                     
@@ -1007,20 +1021,6 @@ func (cmd *startCmd) run() error {
                                 <time class="published" datetime=
                                     '2017-11-26'>
                                     November 26, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/k8s-appsvc/">Best of Both worlds: Azure App Service and Kubernetes</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-10-17'>
-                                    October 17, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1077,7 +1077,7 @@ func (cmd *startCmd) run() error {
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">6</span>
+                                <span style="float:right;">7</span>
                             </header>
                         </article>
                     </li>
@@ -1121,7 +1121,34 @@ func (cmd *startCmd) run() error {
                     <li>
                         <article>
                             <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
                                 <span style="float:right;">2</span>
                             </header>
                         </article>
@@ -1139,25 +1166,7 @@ func (cmd *startCmd) run() error {
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/grpc/">grpc</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1176,15 +1185,6 @@ func (cmd *startCmd) run() error {
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/vscode/">vscode</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>

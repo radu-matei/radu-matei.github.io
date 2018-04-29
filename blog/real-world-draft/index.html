@@ -54,7 +54,7 @@
 
 <meta itemprop="datePublished" content="2018-04-10T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-04-10T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2289">
+<meta itemprop="wordCount" content="2320">
 
 
 
@@ -254,6 +254,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/debgg-helm-tiller/"><p>Debug Helm and Tiller using VS Code and Draft</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/real-world-draft/"><p>Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</p></a>
                     </li>
                 
@@ -267,10 +271,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/signalr-core/"><p>Getting started with SignalR Alpha 2</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/k8s-appsvc/"><p>Best of Both worlds: Azure App Service and Kubernetes</p></a>
                     </li>
                 
             </ul>
@@ -438,6 +438,20 @@ ga('send', 'pageview');
     <div id="content">
         
 
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#develop-deploy-and-debug-front-end-back-end-apps-on-kubernetes">Develop, deploy and debug front-end + back-end apps on Kubernetes</a>
+
+<ul>
+<li><a href="#deploy-the-node-back-end">Deploy the Node back-end</a></li>
+<li><a href="#exploring-the-angular-front-end">Exploring the Angular front-end</a></li>
+<li><a href="#updating-the-back-end">Updating the back-end</a></li>
+<li><a href="#experimenting-with-vs-code-and-remote-debugging">Experimenting with VS Code and remote debugging</a></li>
+</ul></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
 <h3 id="introduction">Introduction</h3>
 
 <blockquote>
@@ -495,7 +509,7 @@ ga('send', 'pageview');
 <li>the Draft client
 
 <ul>
-<li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-cloud.md" target="_blank">configure Draft with a Kubernetes cluster in the coud</a></li>
+<li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-cloud.md" target="_blank">configure Draft with a Kubernetes cluster in the cloud</a></li>
 <li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md" target="_blank">configure Draft with Minikube</a></li>
 </ul></li>
 </ul>
@@ -509,7 +523,7 @@ ga('send', 'pageview');
 
 <h1 id="develop-deploy-and-debug-front-end-back-end-apps-on-kubernetes">Develop, deploy and debug front-end + back-end apps on Kubernetes</h1>
 
-<p>Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don&rsquo;t want to replicate locally - those can be databses we don&rsquo;t have access to, queues we need to use, or multiple microservices we simply cannot run locally.</p>
+<p>Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don&rsquo;t want to replicate locally - those can be databases we don&rsquo;t have access to, queues we need to use, or multiple micro-services we simply cannot run locally.</p>
 
 <p>We will use Draft to easily iterate through changes in our back-end, and use the port-forwarding functionality to test our front-end locally, before deploying it in the cluster. We will also see how to use VS Code to experiment with the remote debugging of the NodeJS application deployed to Kubernetes.</p>
 
@@ -531,10 +545,10 @@ $ cd angular-todo-app
 
 <h3 id="deploy-the-node-back-end">Deploy the Node back-end</h3>
 
-<p>Earlier we were talking about Draft packs, and how to get started with an exisiting application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.</p>
+<p>Earlier we were talking about Draft packs, and how to get started with an existing application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.</p>
 
 <blockquote>
-<p>You can find <a href="https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug" target="_blank">the pack used for this application in my packs repositopry</a> - the only difference compared to <a href="https://github.com/Azure/draft/tree/master/packs/javascript" target="_blank">the official Draft pack for NodeJS</a> is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.</p>
+<p>You can find <a href="https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug" target="_blank">the pack used for this application in my packs repository</a> - the only difference compared to <a href="https://github.com/Azure/draft/tree/master/packs/javascript" target="_blank">the official Draft pack for NodeJS</a> is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.</p>
 </blockquote>
 
 <p>Navigate to the <code>node-backend</code> folder, and if everything is setup correctly, you should be able to:</p>
@@ -774,6 +788,9 @@ Connect to node-debug:9229 on localhost:9229
     
 
     
+        <li><a href="https://radu-matei.com/blog/debgg-helm-tiller/"
+                class="button big next">Debug Helm and Tiller using VS Code and Draft</a></li>
+    
 </ul>
 
 
@@ -908,6 +925,20 @@ Connect to node-debug:9229 on localhost:9229
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/debgg-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-04-29'>
+                                    April 29, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/real-world-draft/">Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</a></h3>
                                 
                                     
@@ -957,20 +988,6 @@ Connect to node-debug:9229 on localhost:9229
                                 <time class="published" datetime=
                                     '2017-11-26'>
                                     November 26, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/k8s-appsvc/">Best of Both worlds: Azure App Service and Kubernetes</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-10-17'>
-                                    October 17, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1027,7 +1044,7 @@ Connect to node-debug:9229 on localhost:9229
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">6</span>
+                                <span style="float:right;">7</span>
                             </header>
                         </article>
                     </li>
@@ -1071,7 +1088,34 @@ Connect to node-debug:9229 on localhost:9229
                     <li>
                         <article>
                             <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
                                 <span style="float:right;">2</span>
                             </header>
                         </article>
@@ -1089,25 +1133,7 @@ Connect to node-debug:9229 on localhost:9229
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/grpc/">grpc</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1126,15 +1152,6 @@ Connect to node-debug:9229 on localhost:9229
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/vscode/">vscode</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>

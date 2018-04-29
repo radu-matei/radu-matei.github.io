@@ -259,6 +259,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/debgg-helm-tiller/"><p>Debug Helm and Tiller using VS Code and Draft</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/real-world-draft/"><p>Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</p></a>
                     </li>
                 
@@ -272,10 +276,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/signalr-core/"><p>Getting started with SignalR Alpha 2</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/k8s-appsvc/"><p>Best of Both worlds: Azure App Service and Kubernetes</p></a>
                     </li>
                 
             </ul>
@@ -563,7 +563,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <li>it copies the source of the application inside the container, in the <code>/app</code> folder</li>
 <li>it sets the <code>/app</code> folder as the working folder where the commands will be executed from</li>
 <li>executes <code>dotnet restore</code> and <code>dotnet build</code></li>
-<li>expoes the 5000 port</li>
+<li>expose the 5000 port</li>
 <li>sets the environment variable for ASP .NET Core in the container</li>
 <li>when the container starts it will execute the <code>dotnet run</code> command</li>
 </ul>
@@ -641,13 +641,13 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 
 <p><img src="/img/article-photos/aspnet-core-docker-azure/azure-create-vm-1.png" alt="" /></p>
 
-<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal" target="_blank">In this article you can see the detalied process on how to open ports for Azure VMs.</a></p>
+<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal" target="_blank">In this article you can see the detailed process on how to open ports for Azure VMs.</a></p>
 
 <blockquote>
 <p><strong>We recommend you open incoming port 2375 in your firewall for Docker Cloud to communicate with the Docker daemon running in the node. For the overlay network to work, you must open port 6783/tcp and 6783/udp.</strong></p>
 </blockquote>
 
-<p>You have to find the <code>Network Security Group</code> tab from the VM settings, then the <code>Network Security Group</code> tab then the <code>Inbound Security Roules</code> tab.</p>
+<p>You have to find the <code>Network Security Group</code> tab from the VM settings, then the <code>Network Security Group</code> tab then the <code>Inbound Security Rules</code> tab.</p>
 
 <p><img src="/img/article-photos/aspnet-core-docker-azure/azure-network-security.png" alt="" /></p>
 
@@ -789,7 +789,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 
 <p>This is basically how the entire process looks like. It is not production ready, as it does not have any testing workflow put in place and the application is rather simple.</p>
 
-<p>Real world scenarions would most certainly involve more containers, so composing and orchestrating containers, as well as testing.</p>
+<p>Real world scenarios would most certainly involve more containers, so composing and orchestrating containers, as well as testing.</p>
 
 <p>We will try to deal with these aspects in future articles, but for now we created a very simple CI/CD workflow using GitHub, Docker Cloud and an Azure VM.</p>
 
@@ -973,6 +973,20 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/debgg-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-04-29'>
+                                    April 29, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/real-world-draft/">Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</a></h3>
                                 
                                     
@@ -1022,20 +1036,6 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                                 <time class="published" datetime=
                                     '2017-11-26'>
                                     November 26, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/k8s-appsvc/">Best of Both worlds: Azure App Service and Kubernetes</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-10-17'>
-                                    October 17, 2017</time>
                             </header>
                         </article>
                     </li>
@@ -1092,7 +1092,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">6</span>
+                                <span style="float:right;">7</span>
                             </header>
                         </article>
                     </li>
@@ -1136,7 +1136,34 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                     <li>
                         <article>
                             <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
                                 <span style="float:right;">2</span>
                             </header>
                         </article>
@@ -1154,25 +1181,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                     <li>
                         <article>
                             <header>
-                                <a href="/categories/draft/">draft</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
                                 <a href="/categories/grpc/">grpc</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/helm/">helm</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
@@ -1191,15 +1200,6 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                         <article>
                             <header>
                                 <a href="/categories/jenkins/">jenkins</a>
-                                <span style="float:right;">1</span>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <a href="/categories/vscode/">vscode</a>
                                 <span style="float:right;">1</span>
                             </header>
                         </article>
