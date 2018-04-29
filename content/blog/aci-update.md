@@ -107,7 +107,7 @@ All you have to do now is read the body of the HTTP request containing the webho
 See it in action
 ----------------
 
-First of all, we need to depoy an Azure Container Instance based on an image (**we own**) from Docker Hub:
+First of all, we need to deploy an Azure Container Instance based on an image (**we own**) from Docker Hub:
 
 ![](/img/article-photos/aci-update/select-aci.jpg)
 

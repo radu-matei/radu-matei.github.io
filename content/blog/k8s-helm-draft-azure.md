@@ -41,7 +41,7 @@ Introduction
 
 [In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using `acs-engine` and the Azure Cloud Shell](https://radu-matei.com/blog/k8s18-azure/). Now we will use that cluster to get started with Helm and Draft to simplify our development process.
 
-In the next post we will see how to integrate Jenkins with Azure Contaier Instances in this process, so stay tuned :)
+In the next post we will see how to integrate Jenkins with Azure Container Instances in this process, so stay tuned :)
 
 > If you don't have your `kubeconfig` and SSH keys to your [cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article](https://radu-matei.com/blog/k8s18-azure/).
 
@@ -67,7 +67,7 @@ Then, you use the config from within a container.
 
 The image simply installs `kubectl`, `helm` and `draft` and exposes a port inside the container (so we can easily `kubectl proxy` a bit later).
 
-Now all you need to do is run a conainer based on the image you just built, and mount the cluster access certificates folder so we can point `kubectl` at.
+Now all you need to do is run a container based on the image you just built, and mount the cluster access certificates folder so we can point `kubectl` at.
 
 {{< gist radu-matei c3a8619208fdaab90ccb1a82785e1731 >}}
 
@@ -278,5 +278,5 @@ We configured `helm` and `draft`, set up an ingress controller that used a domai
 Feedback
 ========
 
-If you have a better aproach at any of the concepts presented in this article, or have any questions, please use the comments below.
+If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 As always, thanks for reading, and any feedback is highly appreciated :)

@@ -114,7 +114,7 @@ The main thing that we will use from this library is exposed through the `ISense
 > The best place to learn how to use this library is [the demo section of the repository](https://github.com/emmellsoft/RPi.SenseHat/tree/master/RPi.SenseHat/RPi.SenseHat.Demo/Demos). There you can find how to create a compass, how to make disco lights from the 8x8 LED matrix or write the temperature on the LED matrix.
 
 
-We will create a new class that will only expose funtionality related with the temperature telemetry, but you can expand this class to do all the things you want.
+We will create a new class that will only expose functionality related with the temperature telemetry, but you can expand this class to do all the things you want.
 
 ```
 using System;
@@ -283,7 +283,7 @@ using Microsoft.Azure.Devices.Client;
 
 Basically, the methods we will use are `SendEventAsync`, which sends an event asynchronously and `ReceiveEventAsync` which receives and event asynchronously.
 
-> You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. [Here you can find a tutorial on how to start publising events from a UWP app with Azure IoT Hub](https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97).
+> You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. [Here you can find a tutorial on how to start publishing events from a UWP app with Azure IoT Hub](https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97).
 
 Adding cloud communication to the UWP app
 ------------------------------------------

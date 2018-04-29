@@ -168,7 +168,7 @@ Connection and Disconnection events
 
 First of all, we need to call `await base.OnConnected` so that the framework registers the connection. Then, we can retrieve the `ConnectionId` from the `WebSocketConnectionManager` so that we can send all clients (by using `SendMessageToAllAsync`) a log about who connected. 
 
-> The `SendMessageToAllAsync` method will be mainly used to pass logs to the clients and will most likely be refactored to emphasise this aspect. But for now, you might want to send plain text messages to clients, rather than method invocations.
+> The `SendMessageToAllAsync` method will be mainly used to pass logs to the clients and will most likely be refactored to emphasize this aspect. But for now, you might want to send plain text messages to clients, rather than method invocations.
 
 > The [`InvokeClientMethodAsync` method](https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager/WebSocketHandler.cs#L70-L83) also uses the `SendMessageAsync` method, passing a serialized [`InvocationDescriptor`](https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager.Common/InvocationDescriptor.cs) for the `Data` field.
 
@@ -192,7 +192,7 @@ In a similar manner we treat the disconnection event:
 
 > The only notable difference here is that we retrieve the connection id before calling `base.OnDisconnected`, since this method removes the connection id from the framework.
 
-Creating server methods and invoking client mehtods
+Creating server methods and invoking client methods
 ---------------------------------------------------
 
 All `public` methods in a `Handler` class can be invoked by connected clients.

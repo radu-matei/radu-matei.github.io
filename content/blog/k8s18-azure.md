@@ -102,7 +102,7 @@ acs-engine deploy --subscription-id <your-subscription-id> \
 > Note the `orchestratorRelease` property in the JSON file set to `1.8`!
 > Note that it automatically creates all assets for you including a service principal and a resource group.
 
-> Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elswhere, the will be another step involved where you login to `aka.ms/devicelogin`.
+> Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elsewhere, the will be another step involved where you login to `aka.ms/devicelogin`.
 
 ![](/img/article-photos/k8s18-azure/shell.png)
 
@@ -132,7 +132,7 @@ At this point you can use `kubectl` to get information about your cluster and yo
 
 Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!
 
-Configure `kubectl` from outisde the Azure Cloud Shell
+Configure `kubectl` from outside the Azure Cloud Shell
 ======================================================
 
 Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the `_output` directory from where you executed the `acs-engine deploy` command.

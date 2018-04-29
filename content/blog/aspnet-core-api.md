@@ -86,7 +86,7 @@ public class PostsController : Controller
 }
 ```
 
-To run the application, execute `dotnet restore` and `dotnet run` in the root of the project and browse to `http://localhost:5000/api/Posts/Hello`. If everyting works, you should see the message received from the controller.
+To run the application, execute `dotnet restore` and `dotnet run` in the root of the project and browse to `http://localhost:5000/api/Posts/Hello`. If everything works, you should see the message received from the controller.
 
 Adding the `Post` class
 ------------------------
@@ -240,7 +240,7 @@ So far, we have created an `IPostRepostitory` interface, implemented it in `Post
 
 We only need to specify that whenever someone needs an `IPostRepository`, the framework should provide them (the same) instance of `PostRepository`. So when the `PostController` constructor has a parameter of type `IPostRepository`, the framework will provide an instance of `PostRepository`.
 
-> We added the repository as singleton because of the in-memory impementation: if we made a new instance of `PostRepository` for every request, then the post list would be instantiated every time, not saving the modifications.
+> We added the repository as singleton because of the in-memory implementation: if we made a new instance of `PostRepository` for every request, then the post list would be instantiated every time, not saving the modifications.
 
 
 

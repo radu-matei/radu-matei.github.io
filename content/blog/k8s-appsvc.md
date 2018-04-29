@@ -37,7 +37,7 @@ We will start from a just-deployed Kubernetes cluster, will see how to expose se
 Prerequisites
 -------------
 
-This tutorial assumes you have a valid Azure subscription that you can use to deploy resorces. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
+This tutorial assumes you have a valid Azure subscription that you can use to deploy resources. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
 
 This tutorial uses a 4-node Kubernetes cluster (1 master + 3 agents) deployed on Azure. The machines are 4 D2_V2 VMs with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.
 
@@ -199,11 +199,11 @@ Now you have successfully deployed an application on App Service that uses priva
 Next Steps
 -----------
 
-A next step would be creating deployment pipelines for both App Service and the Kubenetes apps - [here is an example of a pipeline using Jenkins](https://github.com/azure-devops/movie-db-java-on-azure) for a web app on App Service with the backend in Kubernetes.
+A next step would be creating deployment pipelines for both App Service and the Kubernetes apps - [here is an example of a pipeline using Jenkins](https://github.com/azure-devops/movie-db-java-on-azure) for a web app on App Service with the backend in Kubernetes.
 
 Feedback
 --------
 
-If you have a better aproach at any of the concepts presented in this article, or have any questions, please use the comments below.
+If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 
 As always, thanks for reading, and any feedback is highly appreciated :)

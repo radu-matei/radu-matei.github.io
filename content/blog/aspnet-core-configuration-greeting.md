@@ -65,7 +65,7 @@ To use configuration settings in ASP .NET Core, simply instantiate a `Configurat
 
 
 
-Because at the time when we write the application we can't know the exact paths, we will not create stronyly-typed configurations but we will take the path from our application an check to see wether that path exists in our configuration file.
+Because at the time when we write the application we can't know the exact paths, we will not create strongly-typed configurations but we will take the path from our application an check to see wether that path exists in our configuration file.
 
 Building the configurable Greeting service
 ---------------------------------------------------
@@ -106,7 +106,7 @@ Then, we add a constructor for the `Startup` class that will instantiate a `Conf
 
 > The constructor has an `IHostingEnvironment` parameter that is used to establish the directory of the JSON configuration file. Since we placed it in the same folder as the other files, we can simply get the current directory: `Directory.GetCurrentDirectory()`.
 
-After we instantiate the `ConfigurationBuilder` we chain two method calls - one for establishing the directory of the configuration file, the other for determing the actual name of the file.
+After we instantiate the `ConfigurationBuilder` we chain two method calls - one for establishing the directory of the configuration file, the other for determine the actual name of the file.
 
 The `.AddJsonFile()` method takes three arguments in this case:
 
@@ -168,7 +168,7 @@ We know that our configuration is now accessible through the `Configuration` pro
 
 > For some examples of using Linq with lambdas [check this article from Code Magazine](http://www.codemag.com/article/1001051).
 
-We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard respone.
+We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard response.
 
 ```
             var defaultMessage = Configuration.AsEnumerable()
@@ -408,4 +408,4 @@ public class Startup
 Conclusion
 --------------
 
-We created a web application for which we configured the paths and the associated responses in an external JSON file. We ectracted this functionality in a service, `GreetingService` that was provided using dependency injection.
+We created a web application for which we configured the paths and the associated responses in an external JSON file. We extracted this functionality in a service, `GreetingService` that was provided using dependency injection.

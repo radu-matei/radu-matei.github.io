@@ -26,7 +26,7 @@ Table of Contents
 Introduction
 ------------
 
-If you ever used [Helm](https://github.com/kubernetes/helm) or [Draft](https://github.com/azure/draft), you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side componend (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.
+If you ever used [Helm](https://github.com/kubernetes/helm) or [Draft](https://github.com/azure/draft), you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.
 
 [`kube-toolkit`](https://github.com/radu-matei/kube-toolkit) aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.
 
@@ -49,7 +49,7 @@ In order to communicate with the cluster you need to pass the `kubeconfig` file,
 > Please note that there are still lots of things left to add, such as SSL, RBAC support or state management - you are more than welcome to contribute in any way to the project!
 
 
-As stated earliner, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.
+As stated earlier, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.
 
 Now for the actual implementation and how you can get started, and the first issue I bumped in was gathering the correct dependencies for Kubernetes 1.8:
 
@@ -62,11 +62,11 @@ Since this tool was built from the ground-up, the first step was to put together
 
 Essentially, during a 4 hour period (is was probably much more than that...), I was in the process of swapping git commit hashes and plugging them into `dep`, then trying to compile the project... Word of advice - check various release branches when working with vendored dependencies of Kubernetes!
 
-After finally getting it to work, [I ended up with a  Gopkg.toml you can find here](https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml) and I simply included the `vendor` folder in the repo to ensure reproduceable builds.
+After finally getting it to work, [I ended up with a  Gopkg.toml you can find here](https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml) and I simply included the `vendor` folder in the repo to ensure reproducible builds.
 
 > Please note that this setup is for Kubernetes release 1.8 - you are more than welcome to port the dependencies to release 1.9!
 
-> Having the `vendor` folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproduceable builds - you can put it in `.gitignore` if you want to.
+> Having the `vendor` folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproducible builds - you can put it in `.gitignore` if you want to.
 
 Defining and using gRPC services
 --------------------------------
@@ -338,7 +338,7 @@ First, you need to `make ktkd-linux` - this will create the linux binary that we
 
 > Notice there is not port exposed!
 
-> You can easiliy do this using `kubectl`
+> You can easily do this using `kubectl`
 
 Then, we need to build our client: `make ktk`, then, passing the `kubeconfig` file, attempt to get the version:
 

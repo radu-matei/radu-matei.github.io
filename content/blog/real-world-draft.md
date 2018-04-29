@@ -11,6 +11,14 @@ type = "post"
 summary = "Application containers have skyrocketed in popularity over the last few years. In recent months, Kubernetes has emerged as a popular solution for orchestrating these containers. While many turn to Kubernetes for its extensible architecture and vibrant open-source community, some still view Kubernetes as too difficult to use. Learn how to use Draft to simplify your cloud-native application development!"
 +++
 
+    + [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Develop, deploy and debug front-end + back-end apps on Kubernetes](#develop-deploy-and-debug-front-end-back-end-apps-on-kubernetes)
+    + [Deploy the Node back-end](#deploy-the-node-back-end)
+    + [Exploring the Angular front-end](#exploring-the-angular-front-end)
+    + [Updating the back-end](#updating-the-back-end)
+    + [Experimenting with VS Code and remote debugging](#experimenting-with-vs-code-and-remote-debugging)
+- [Conclusion](#conclusion)
 
 ### Introduction
 
@@ -53,7 +61,7 @@ In order to follow along with this article, you will need:
 * Docker running locally
 * access to a container registry (like [Docker Hub](https://hub.docker.com/), [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/), [Google Container Registry](https://cloud.google.com/container-registry/) or [Amazon Elastic Container registry](https://aws.amazon.com/ecr/)) - if you're using Minikube, [you can skip pushing to a registry](https://github.com/Azure/draft/blob/master/docs/install-minikube.md#configure-docker)
 * the Draft client
-    * here's how to [configure Draft with a Kubernetes cluster in the coud](https://github.com/Azure/draft/blob/master/docs/install-cloud.md)
+    * here's how to [configure Draft with a Kubernetes cluster in the cloud](https://github.com/Azure/draft/blob/master/docs/install-cloud.md)
     * here's how to [configure Draft with Minikube](https://github.com/Azure/draft/blob/master/docs/install-minikube.md)
 
 Those were the requirements to start using Draft right away. Additionally, to work on the sample provided with this article, you should also configure:
@@ -64,7 +72,7 @@ Those were the requirements to start using Draft right away. Additionally, to wo
 Develop, deploy and debug front-end + back-end apps on Kubernetes
 =================================================================
 
-Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don't want to replicate locally - those can be databses we don't have access to, queues we need to use, or multiple microservices we simply cannot run locally.
+Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don't want to replicate locally - those can be databases we don't have access to, queues we need to use, or multiple micro-services we simply cannot run locally.
 
 We will use Draft to easily iterate through changes in our back-end, and use the port-forwarding functionality to test our front-end locally, before deploying it in the cluster. We will also see how to use VS Code to experiment with the remote debugging of the NodeJS application deployed to Kubernetes.
 
@@ -84,9 +92,9 @@ $ cd angular-todo-app
 ### Deploy the Node back-end
 
 
-Earlier we were talking about Draft packs, and how to get started with an exisiting application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.
+Earlier we were talking about Draft packs, and how to get started with an existing application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.
 
-> You can find [the pack used for this application in my packs repositopry](https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug) - the only difference compared to [the official Draft pack for NodeJS](https://github.com/Azure/draft/tree/master/packs/javascript) is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.
+> You can find [the pack used for this application in my packs repository](https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug) - the only difference compared to [the official Draft pack for NodeJS](https://github.com/Azure/draft/tree/master/packs/javascript) is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.
 
 Navigate to the `node-backend` folder, and if everything is setup correctly, you should be able to:
 

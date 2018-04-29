@@ -139,7 +139,7 @@ The content of the Dockerfile is pretty self-explanatory:
 - it copies the source of the application inside the container, in the `/app` folder
 - it sets the `/app` folder as the working folder where the commands will be executed from
 - executes `dotnet restore` and `dotnet build`
-- expoes the 5000 port
+- expose the 5000 port
 - sets the environment variable for ASP .NET Core in the container
 - when the container starts it will execute the `dotnet run` command
 
@@ -216,11 +216,11 @@ I created an Ubuntu Server 14.04 VM (at the moment of writing this article, only
 
 ![](/img/article-photos/aspnet-core-docker-azure/azure-create-vm-1.png)
 
-After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. [In this article you can see the detalied process on how to open ports for Azure VMs.](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal)
+After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. [In this article you can see the detailed process on how to open ports for Azure VMs.](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal)
 
 > **We recommend you open incoming port 2375 in your firewall for Docker Cloud to communicate with the Docker daemon running in the node. For the overlay network to work, you must open port 6783/tcp and 6783/udp.**
 
-You have to find the `Network Security Group` tab from the VM settings, then the `Network Security Group` tab then the `Inbound Security Roules` tab.
+You have to find the `Network Security Group` tab from the VM settings, then the `Network Security Group` tab then the `Inbound Security Rules` tab.
 
 ![](/img/article-photos/aspnet-core-docker-azure/azure-network-security.png)
 
@@ -356,6 +356,6 @@ Conclusion
 
 This is basically how the entire process looks like. It is not production ready, as it does not have any testing workflow put in place and the application is rather simple.
 
-Real world scenarions would most certainly involve more containers, so composing and orchestrating containers, as well as testing.
+Real world scenarios would most certainly involve more containers, so composing and orchestrating containers, as well as testing.
 
 We will try to deal with these aspects in future articles, but for now we created a very simple CI/CD workflow using GitHub, Docker Cloud and an Azure VM.

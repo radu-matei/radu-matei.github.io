@@ -176,12 +176,12 @@ The cool thing about this plugin is you only see resources being used (CPU + mem
 Conclusion
 ==========
 
-We deployed Jenkins on our Kubernetes cluster using Helm (in a reproduceable way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles pipelines.
+We deployed Jenkins on our Kubernetes cluster using Helm (in a reproducible way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles pipelines.
 
 
 Feedback
 ========
 
-If you have a better aproach at any of the concepts presented in this article, or have any questions, please use the comments below.
+If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 
 As always, thanks for reading, and any feedback is highly appreciated :)
