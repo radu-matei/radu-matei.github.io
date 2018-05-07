@@ -4,7 +4,7 @@
     <head>
         
             
-                <title>Introduction to .NET Core</title>
+                <title>The state of debugging microservices on Kubernetes</title>
             
         
 
@@ -18,24 +18,24 @@
             <meta name="author" content="Radu Matei">
         
         
-            <meta name="description" content="What is .NET Core?">
+            <meta name="description" content="What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?">
         
 
         <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Introduction to .NET Core"/>
-<meta name="twitter:description" content="What is .NET Core?"/>
+<meta name="twitter:title" content="The state of debugging microservices on Kubernetes"/>
+<meta name="twitter:description" content="What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?"/>
 <meta name="twitter:site" content="@Matei_Radu"/>
 
-        <meta property="og:title" content="Introduction to .NET Core" />
-<meta property="og:description" content="What is .NET Core?" />
+        <meta property="og:title" content="The state of debugging microservices on Kubernetes" />
+<meta property="og:description" content="What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/dot-net-core-introduction/" />
+<meta property="og:url" content="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/" />
 
 
 
-<meta property="article:published_time" content="2016-07-16T00:00:00&#43;00:00"/>
+<meta property="article:published_time" content="2018-05-05T00:00:00&#43;00:00"/>
 
-<meta property="article:modified_time" content="2016-07-16T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2018-05-05T00:00:00&#43;00:00"/>
 
 
 
@@ -48,13 +48,13 @@
 
 
         
-<meta itemprop="name" content="Introduction to .NET Core">
-<meta itemprop="description" content="What is .NET Core?">
+<meta itemprop="name" content="The state of debugging microservices on Kubernetes">
+<meta itemprop="description" content="What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?">
 
 
-<meta itemprop="datePublished" content="2016-07-16T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2016-07-16T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1072">
+<meta itemprop="datePublished" content="2018-05-05T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2018-05-05T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1836">
 
 
 
@@ -289,43 +289,43 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&text=Introduction%20to%20.NET%20Core&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&text=The%20state%20of%20debugging%20microservices%20on%20Kubernetes&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
 
 
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn google-plus">
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f" target="_blank" class="share-btn google-plus">
     <i class="fa fa-google-plus"></i>
     <p>Google+</p>
 </a></li>
 
 
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn facebook">
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f" target="_blank" class="share-btn facebook">
     <i class="fa fa-facebook"></i>
     <p>Facebook</p>
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&title=The%20state%20of%20debugging%20microservices%20on%20Kubernetes" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&title=The%20state%20of%20debugging%20microservices%20on%20Kubernetes" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&title=The%20state%20of%20debugging%20microservices%20on%20Kubernetes" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
 
 
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn email">
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f" target="_blank" class="share-btn email">
     <i class="fa fa-envelope"></i>
     <p>Email</p>
 </a></li>
@@ -342,11 +342,11 @@ ga('send', 'pageview');
     <header>
     <div class="title">
         
-            <h1><a href="https://radu-matei.com/blog/dot-net-core-introduction/">Introduction to .NET Core</a></h1>
+            <h1><a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">The state of debugging microservices on Kubernetes</a></h1>
             
         
         
-            <p>What is .NET Core?</p>
+            <p>What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?</p>
         
     </div>
     <div class="meta">
@@ -355,11 +355,11 @@ ga('send', 'pageview');
         
 
         <time class="published"
-            datetime='2016-07-16'>
-            July 16, 2016</time>
+            datetime='2018-05-05'>
+            May 5, 2018</time>
         <span class="author">Radu Matei</span>
         
-            <p>6 minute read</p>
+            <p>9 minute read</p>
         
         
     </div>
@@ -371,43 +371,43 @@ ga('send', 'pageview');
             
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&text=Introduction%20to%20.NET%20Core&via=Matei_Radu" target="_blank" class="share-btn twitter">
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&text=The%20state%20of%20debugging%20microservices%20on%20Kubernetes&via=Matei_Radu" target="_blank" class="share-btn twitter">
     <i class="fa fa-twitter"></i>
     <p>Twitter</p>
 </a></li>
 
 
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn google-plus">
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f" target="_blank" class="share-btn google-plus">
     <i class="fa fa-google-plus"></i>
     <p>Google+</p>
 </a></li>
 
 
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn facebook">
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f" target="_blank" class="share-btn facebook">
     <i class="fa fa-facebook"></i>
     <p>Facebook</p>
 </a></li>
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn reddit">
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&title=The%20state%20of%20debugging%20microservices%20on%20Kubernetes" target="_blank" class="share-btn reddit">
     <i class="fa fa-reddit-alien"></i>
     <p>Reddit</p>
 </a></li>
 
 
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn linkedin">
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&title=The%20state%20of%20debugging%20microservices%20on%20Kubernetes" target="_blank" class="share-btn linkedin">
     <i class="fa fa-linkedin"></i>
     <p>LinkedIn</p>
 </a></li>
 
 
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f&title=Introduction%20to%20.NET%20Core" target="_blank" class="share-btn stumbleupon">
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f&title=The%20state%20of%20debugging%20microservices%20on%20Kubernetes" target="_blank" class="share-btn stumbleupon">
     <i class="fa fa-stumbleupon"></i>
     <p>StumbleUpon</p>
 </a></li>
 
 
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fdot-net-core-introduction%2f" target="_blank" class="share-btn email">
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fstate-of-debugging-microservices-on-k8s%2f" target="_blank" class="share-btn email">
     <i class="fa fa-envelope"></i>
     <p>Email</p>
 </a></li>
@@ -418,129 +418,221 @@ ga('send', 'pageview');
     
 
     
+        
+        
+
+
+
+
+    
+
+
+        
+
+        <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/" class="image featured">
+            <img src="/img/article-photos/state-of-debugging-microservices-on-k8s//GopherKubernetes.png" alt="" />
+        </a>
+    
 
 
     <div id="content">
         
 
-<p><strong>Table of Contents</strong></p>
-
-<ul>
-<li><a href="#what-is-net-core">What is .NET Core?</a></li>
-<li><a href="#scenarios-for-net-core">Scenarios for .NET Core</a></li>
-<li><a href="#net-standard---one-library-to-rule-them-all">.NET Standard - One library to rule them all</a></li>
-<li><a href="#tools">Tools</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul>
-
-<h2 id="what-is-net-core">What is .NET Core?</h2>
-
 <blockquote>
-<p>.NET Core is a general purpose development platform maintained by Microsoft and the .NET community on <a href="https://github.com/dotnet" target="_blank">GitHub</a>. It is cross-platform, <strong>supporting Windows, macOS and Linux</strong>, and can be used in device, cloud, and embedded/IoT scenarios.</p>
-
-<p>The following characteristics best define .NET Core:</p>
-
-<ul>
-<li><p>Flexible deployment: Can be included in your app or installed side-by-side user- or machine-wide.</p></li>
-
-<li><p>Cross-platform: Runs on Windows, macOS and Linux; can be ported to other OSes. The supported Operating Systems (OS), CPUs and application scenarios will grow over time, provided by Microsoft, other companies, and individuals.</p></li>
-
-<li><p>Command-line tools: All product scenarios can be exercised at the command-line.</p></li>
-
-<li><p>Compatible: .NET Core is compatible with .NET Framework, Xamarin and Mono, via the .NET Standard Library.</p></li>
-
-<li><p>Open source: The .NET Core platform is open source, using MIT an  Apache 2 licenses. Documentation is licensed under CC-BY. .NET Core is a .NET Foundation project.</p></li>
-
-<li><p>Supported by Microsoft: .NET Core is supported by Microsoft, per .NET Core Support</p></li>
-</ul>
-
-<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index" target="_blank">More on the Official .NET Core Documentation from Microsoft</a></p>
+<p>Credit for the image goes to <a href="https://github.com/ashleymcnamara/gophers" target="_blank">Ashley McNamara&rsquo;s awesome Gopher collection</a></p>
 </blockquote>
 
-<p>Basically, Microsoft built a version of .NET to allow developers to write cross-platform and cloud-optimized applications.</p>
+<h3 id="where-are-we-how-did-we-get-here">Where are we? How did we get here?</h3>
 
-<p>First, .NET is cross-platform. It runs on Windows, macOS and Linux, which allows the developer to share and run the exact same code between machines running different operating systems, with no changes in code and minimum or no changes in the deveopment process.
-(Watch out for OS specific APIs!)</p>
-
-<p>But the true innovation in .NET came with the modularization in design and architecture.
-The compiler (<a href="https://github.com/dotnet/roslyn" target="_blank">Roslyn</a>) and the runtime (<a href="https://github.com/dotnet/coreclr" target="_blank">CoreCLR</a>) are separate components that allow you to use different implementations (or even write your own).</p>
-
-<p>Every library comes as a NuGet package, so when you start a new project, you don&rsquo;t have any libraries, but a project file (currently a <code>.json</code>, in the future a <code>.csproj</code> to maintain consistency with all .NET projects) and a <code>Program.cs</code>.  As you develop your app, you add libraries as you need them, allowing you to minimize the size of your application.</p>
-
-<p>.NET Core also allows you to have multiple versions installed at the same time without having apps / parts of the OS breaking when you update or install a newer version of the framework, and will even allow you to ship the framework / parts of the framework with the application (since the footprint of the framework si small enough).</p>
+<p>For as long as we have been writing software, we have also introduced bugs in our applications. Back when we were developing monoliths, we could simply start the IDE of choice, add a couple of breakpoints, step through the code and <em>hopefully</em> solve the issue. There was a single place where the application was running, where logs were visible and where the application could be diagnosed.</p>
 
 <blockquote>
-<p>.NET Core will favor performance with a standard library that minimizes allocations and the overall memory footprint of your system.
-<a href="https://msdn.microsoft.com/en-us/magazine/mt694084.aspx" target="_blank">The complete MSDN article.</a></p>
+<p>Everyone knows that debugging is twice as hard as writing a program in the first place. So if you&rsquo;re as clever as you can be when you write it, how will you ever debug it? - <a href="https://www.amazon.com/Elements-Programming-Style-2nd/dp/0070342075" target="_blank">&ldquo;The Elements of Programming Style&rdquo;</a>, 2nd edition</p>
 </blockquote>
 
-<h2 id="scenarios-for-net-core">Scenarios for .NET Core</h2>
+<p>But for the most part, we&rsquo;re no longer writing monoliths, but microservices, with containers and Kubernetes as the clear platform of choice for developing and deploying them. And this has allowed us to break down incredibly complex solutions into smaller, easier to understand components, often written in multiple languages, with multiple teams independently contributing to different parts of the system, enabling true continuous delivery.</p>
+
+<p>Having a distributed solution with that many moving parts (ingresses, services, deployments, pods, containers, secrets, external services and more) means that accurately pinpointing a problem becomes significantly harder - and as a community, we have been developing really great tools for externalized and centralized logging, metrics and tracing, with the appearance of so many service mesh projects (Istio, Linkerd, Envoy, Conduit and many others) giving us articles such as - <a href="https://thenewstack.io/which-service-mesh-should-i-use/" target="_blank">Which service mesh should I use?</a></p>
+
+<p>When we identify a service as not working properly, we start our journey by first restarting the pods, hoping this will fix the issue.</p>
+
+
+
+
+    
+    
+        
+        
+        
+            
+        
+        
+            
+        
+    
+
+    
+    
+    
+
+    
+    
+
+
+
+
+    
+
+
+    
+
+    
+        <p><span class="image center-image">
+            <img src="/img/article-photos/state-of-debugging-microservices-on-k8s/turning-off.gif" alt="Turning off" />
+        </span></p>
+    
+
+
+
+<p>When that doesn&rsquo;t work, we proceed to adding a bunch of print statements in our code, rebuild the container image, push it to a registry, then update the deployment manifest with the new tag.
+With the new information, we proceed to making a few changes, rebuild and push the image, update the deployment&rsquo;s image tag and hope for the best. Repeat until the problem goes away.</p>
+
+<p><a href="https://www.javaworld.com/article/2074974/learn-java/are-you-still-using-print-statements-for-debugging-.html" target="_blank">This article from 2001 - Are you still using print statements for debugging? There are more effective ways to debug your Java code</a> - pointed out how there were better ways of debugging. Yet in 2018, we&rsquo;re forced to use the same technique that was considered outdated seventeen years ago! Don&rsquo;t we have any better solutions?</p>
+
+<h3 id="popular-debugging-solutions-on-kubernetes">Popular debugging solutions on Kubernetes</h3>
+
+<blockquote>
+<p>There are existing cloud-hosted services that support debugging - but in this article we&rsquo;re interested in open-source solutions that run on any Kubernetes cluster. Both Google and Microsoft have services in preview that allow the users of their managed Kubernetes cluster to attach a debugger:</p>
 
 <ul>
-<li><p><a href="https://developer.microsoft.com/en-us/windows/develop/building-universal-windows-apps" target="_blank">Universal Windows Apps</a> that run on all various Windows versions (on laptops, tablets, phones, IoT devices, xBox, HoloLens)</p></li>
-
-<li><p><a href="https://www.xamarin.com/platform" target="_blank">Xamarin Apps</a> that run on Android, iOS and macOS using the same shared C# code</p></li>
-
-<li><p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index" target="_blank">.NET Core</a> - cross-platform console applications and libraries</p></li>
-
-<li><p><a href="https://docs.asp.net/" target="_blank">ASP .NET Core</a> - cross-platform web applications that run on Windows (inside IIS and with the dedicated web server - Kestrel), macOS and Linux (with the dedicated web server - Kestrel) with <a href="http://web.ageofascent.com/asp-net-core-exeeds-1-15-million-requests-12-6-gbps/" target="_blank">superior performance</a> compared to the standard ASP .NET 4.6 or to Node.</p></li>
+<li><a href="http://landinghub.visualstudio.com/devspaces" target="_blank">Announcement of Azure Dev Spaces for Kubernetes</a></li>
+<li><a href="https://cloud.google.com/debugger/docs/quickstart" target="_blank">How to use the Stackdriver debugger on Google Cloud Platform</a></li>
 </ul>
+</blockquote>
 
-<p><img src="https://gupaja.bn1301.livefilestore.com/y3mLAmG-73wdLvYRFdnmUwYciTpGlCYf5WdiTSlRQ2hWJOiK9XB1piAiuvT_9auvQTIwmi-LuhH3qsYoVXGq1rNJ05HLWEu4ifcT6qiiMmqb27g5yG-7PuV4Y7i8qFMkKijgxTAKYjCkOdEAlBqh2hfyFrkqrbagfm0Fvp4LLpl56s?width=1280&amp;height=720&amp;cropmode=none" alt="Exciting times" /></p>
-
-<p>So right now, using C# and .NET you can build almost any type of application and target multiple frameworks.</p>
-
-<h2 id="net-standard-one-library-to-rule-them-all">.NET Standard - One library to rule them all</h2>
+<p>One of the most popular open source projects in the space of remote debugging on Kubernetes is <a href="https://github.com/solo-io/squash" target="_blank">Squash</a>.</p>
 
 <blockquote>
-<p>The .NET Standard Library is a formal specification of .NET APIs that are intended to be available on all .NET runtimes. The motivation behind the Standard Library is establishing greater uniformity in the .NET ecosystem. ECMA 335 continues to establish uniformity for .NET runtime behavior, but there is no similar spec for the .NET Base Class Libraries (BCL) for .NET library implementations.</p>
+<p>Squash brings the power of modern popular debuggers to developers of microservices apps that run on container orchestration platforms. Squash bridges between the orchestration platform (without changing it) and IDE. Users are free to choose which containers, pods, services or images they are interested in debugging, and are allowed to set breakpoints in their codes, follow values of their variables on the fly, step through the code while jumping between microservices, and change these values during run time.</p>
+</blockquote>
 
-<p>The .NET Standard Library enables the following key scenarios:</p>
+<p>The experience in <a href="https://www.youtube.com/watch?v=5TrV3qzXlgI" target="_blank">Idit&rsquo;s KubeCon Austin talk about Squash</a> is amazing! Being able to debug multiple microservices at the same time while stepping through code, evaluating expressions and variables is really awesome! However, the issue most people have with Squash is that <em>the Squash client shares the host PID namespace (and hence can see all processes on the node, making them available to be debugged).</em> Specifically, it means that you need to deploy (among other services) a Kubernetes <code>DaemonSet</code> that runs on each node, which is privileged and mounts the container runtime socket - here&rsquo;s the <a href="https://github.com/solo-io/squash/blob/master/contrib/kubernetes/squash-client.yml" target="_blank">Squash client deployment</a>.</p>
+
+<p>While the technology is really awesome and beautifully put together, having a privileged service running on each node, able to see all processes on all nodes will turn some people away.</p>
+
+<p>So what does it take to debug services on <em>any</em> Kubernetes cluster, without exposing all running processes on the cluster nodes?</p>
+
+<h3 id="how-to-debug-applications-on-kubernetes">How to debug applications on Kubernetes</h3>
+
+<p>Right now, to debug a Kubernetes service we need to:</p>
 
 <ul>
-<li><p>Defines uniform set of BCL APIs for all .NET platforms to implement, independent of workload.</p></li>
-
-<li><p>Enables developers to produce portable libraries that are usable across .NET runtimes, using this same set of APIs.</p></li>
-
-<li><p>Reduces and hopefully eliminates conditional compilation of shared source due to .NET APIs, only for OS APIs.</p></li>
+<li>build the application for debugging (include the debugging symbols along with the binary)</li>
+<li>create a container image (include the debugger) and push it to a container registry</li>
+<li>update the Kubernetes manifest or Helm chart with the correct image tag, a debugger port exposed and the correct security context so the debugger can attach to a process inside your pod</li>
 </ul>
 
-<p>More on the .NET Standard Library on the <a href="https://docs.microsoft.com/en-us/dotnet/articles/standard/library" target="_blank">Official Microsoft Documentation</a>.</p>
+<blockquote>
+<p>This varies from language to language - in NodeJS simply start the process and pass the <code>--inspect</code> flag. For Golang, you need to have the <code>CAP_SYS_PTRACE</code> capability for the container running your debugger, so it can <code>ptrace</code> the application process.</p>
+
+<p>Alternatively, you can directly start the process through the debugger, although this means a different process will be the main process in the container. You can also <code>exec</code> inside the container and start the debugging process before attaching the remote debugger - imperatively making changes to your containers means you no longer have immutable components, and replicating different behaviors becomes more difficult.</p>
 </blockquote>
 
-<p><img src="https://tl4blw.bn1301.livefilestore.com/y3m6sNWtdUd2Htc9yvtCL6sEvqjaJaEHh-2uGizu_fLU3hH7DL23-0nW104ESwTFZ32v6KmBeekCkZLmPQZIh6RklD-zE2vG4fi5Zo1mnqIR_gWugP1Es97QkxhK74JazU8NFgWomXCkbvgO7jZd5nxThPRrMGdCfwwc4THeX7eqU4?width=1280&amp;height=720&amp;cropmode=none" alt=".NET" /></p>
+<ul>
+<li>wait for a pod to be running</li>
+<li>forward all application and debugger ports from your pod to <code>localhost</code></li>
+<li>attach the local debugger to the remote target on the <code>localhost</code> port exposed by port forwarding</li>
+</ul>
 
-<p>The goal of .NET Standard is to have a single, unified set of libraries that you target when building an application, regardless of the type - console, web or mobile - you simply target .NET Standard and you are guaranteed that libraries there will work when shared across all platforms.</p>
+<p>Of course all the steps can be performed manually - and some people have been doing it, some more successfully than others. It is simply not viable to think people are willing to make all the steps manually.</p>
 
-<p>This is the part of the framework most of the work will take place in the future and you can follow the progress or contribute in <a href="https://github.com/dotnet/corefx" target="_blank">this GitHub repository</a>.</p>
+<p>Surely, there are existing tools that simplify parts of the experience:</p>
 
-<h2 id="tools">Tools</h2>
-
-<p>Historically, .NET developers didn&rsquo;t have to (or couldn&rsquo;t) use the command line so often. Visual Studio took care of most processes involved in building and running the applications.</p>
-
-<p>But with the open-source of .NET Core, all development efforts became CLI-first, so everything involved in building, compiling or running .NET Core applications can be done using the command line.</p>
-
-<p>In fact, all these things were built for the command line first and then were wrapped in the multiple tools available.</p>
-
-<p>Regardless of the OS, you use the same command line interface (which is also <a href="https://github.com/dotnet/cli" target="_blank">open source and available on GitHub</a>) to create new apps, build, or run.</p>
-
-<p><img src="https://9o6coq.bn1301.livefilestore.com/y3m9rWnsOG_vk6tONR1SWQFdThTblC_-OgmT8LZKbysS2EONc3azyFoPROy9DRCaauouG9HlOUBqk29uFbPK9Q_OPFC7QEyG_KcihlQYolIjnzOwTyhm1m_vI9ck5FfypPYz5mYRUDXW2V_8_Dn8YrvP5vSD88fXwvHKou-pU1PzsA?width=1280&amp;height=720&amp;cropmode=none" alt="Tools" /></p>
-
-<p><a href="https://www.visualstudio.com/en-us/products/code-vs.aspx" target="_blank">Visual Studio Code</a> is the cross-platform code editor for Linux, macOS and Windows. With VS Code you can build, debug and run web applications (ASP .NET Core, Node) or .NET Core console applications, with IntelliSense, code completion and Git integration.</p>
+<ul>
+<li><a href="https://github.com/vapor-ware/ksync" target="_blank">KSync</a> synchronizes the file system inside your container and works great with interpreted languages</li>
+<li><a href="https://github.com/datawire/telepresence" target="_blank">Telepresence</a> redirects traffic from the cluster to your local machine</li>
+<li><a href="https://github.com/Azure/draft" target="_blank">Draft</a> and <a href="https://github.com/GoogleContainerTools/skaffold" target="_blank">Skaffold</a> help with the process of consistently redeploying your application on each change.</li>
+</ul>
 
 <blockquote>
-<p>Using <a href="http://www.omnisharp.net/" target="_blank">OmniSharp</a> you can add IntelliSense to any of the following code editors - Atom, Brackets, Emacs, Sublime or Vim.</p>
+<p>For an introduction to the tools mentioned above, see <a href="https://www.youtube.com/watch?v=9YYeE-bMWv8&amp;list=PLvmPtYZtoXOENHJiAQc6HmV2jmuexKfrJ" target="_blank">Joe Beda&rsquo;s TGI Kubernetes series</a>.</p>
 </blockquote>
 
-<p><a href="https://www.xamarin.com/studio" target="_blank">Xamarin Studio</a> is the IDE for macOS that lets you build cross-platform mobile applications for iOS, Android or macOS, and even web applications.</p>
+<p>But taken independently, none of them provide an end-to-end experience to actually debugging multiple microservices in Kubernetes.
+This is exactly what we&rsquo;re orchestrating with the <a href="https://github.com/Azure/vscode-kubernetes-tools" target="_blank">VS Code Kubernetes extension</a> and <a href="https://github.com/Azure/draft" target="_blank">Draft</a> - allowing us to enable the experience for <em>any</em> Kubernetes cluster, bringing the code editor - the place we&rsquo;re spending most of our time writing the application - back to a place where it has access to all components, logs, traces and break points and can initiate the debugging session through a single command.</p>
 
-<p>With <a href="https://www.visualstudio.com/products/visual-studio-community-vs" target="_blank">Visual Studio Community</a> you can build all types of applications on the .NET Framework, including Xamarin apps, Azure integration and source control support. For Windows, it is the best IDE for building .NET applications.</p>
+<p>For an early preview of what the experience feels like right now, here&rsquo;s the keynote demo from KubeCon Copenhagen 2018:</p>
 
-<h2 id="conclusion">Conclusion</h2>
 
-<p><a href="https://www.microsoft.com/net" target="_blank">You can install .NET Core 1.0 on your system right now</a> and start using the command line interface (<code>dotnet new</code>, <code>dotnet restore</code>, <code>dotnet build</code>, <code>dotnet run</code>) or install <a href="https://www.visualstudio.com/en-us/products/code-vs.aspx" target="_blank">Visual Studio Code</a> with IntelliSense and debugging.</p>
+<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/0sh2aWdfBxA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
+ </div>
 
-<p>It is one of the most exciting times to be a .NET developer, being able to write code that runs across IoT devices, phones, tablets, laptops, desktops, holographic devices, servers or the cloud and share it across multiple operating systems, with familiar processes and tools.</p>
+
+<p>Here&rsquo;s what happened in the demo: using the VS Code Kubernetes extension, Helm and Draft, we are able to start two microservices, one written in Golang, one in NodeJS, create and push the container images, deploy them to Kubernetes using Helm, then attach the debuggers for Golang and NodeJS using VS Code. Then, as we make requests to our application, we can step through the NodeJS service, which creates requests to the Golang service - and we&rsquo;re able to debug that as well. Technically, we can chain as many services as we have in our system, although the the experience needs improvements on that (particularly on using a single VS Code instance).</p>
+
+<blockquote>
+<p>To see how debugging a real-world application looks like, <a href="https://radu-matei.com/blog/debug-helm-tiller/" target="_blank">here&rsquo;s how to use the same tools to debug Helm and Tiller.</a></p>
+</blockquote>
+
+<h3 id="well-how-should-we-debug-microservices-in-kubernetes">Well, how <em>should</em> we debug microservices in Kubernetes?</h3>
+
+<p>Kubernetes 1.10 introduced an <a href="https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/" target="_blank">alpha-feature allowing us to share the process namespace between containers in a pod</a> - this means we can have the application in <code>containerA</code> and the debugger, with the exposed ports and security context in <code>containerB</code>.
+The shared PID namespace is needed so that the debugger in <code>container B</code> can attach to a process in <code>containerA</code>, the application process, allowing us to have the <code>containerA</code> image very close (if not exactly the same as) to the production image.</p>
+
+<blockquote>
+<p>To enable feature gates in Kubernetes on Azure, you can use <a href="https://github.com/Azure/acs-engine/blob/master/examples/feature-gates/kubernetes-featuresgates.json" target="_blank"><code>acs-engine</code> with a cluster template</a> and pass the specific feature gate you need.</p>
+
+<p>In Google Cloud Platform, you can use <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/alpha-clusters" target="_blank">Alpha clusters</a>.</p>
+
+<p>It is generally not recommended to run Kubernetes alpha features in production, but for use only in short-lived testing clusters, due to increased risk of bugs and lack of long-term support.</p>
+</blockquote>
+
+<p>Once we have a cluster with Kubernetes 1.10 and <code>--feature-gates=PodShareProcessNamespace=true</code>, we can create a pod where we share the process namespace between the containers:</p>
+
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: &lt;your-pod&gt;
+spec:
+  shareProcessNamespace: true
+  containers:
+  - name: containerA
+    image: &lt;your-application-image&gt;
+  - name: containerB
+    image: &lt;your-debugger-image&gt;
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+    ports:                              
+    - containerPort: &lt;application-port&gt;
+    - containerPort: &lt;debugging-port&gt;
+</code></pre>
+
+<blockquote>
+<p>As mentioned earlier, some debuggers need to <code>ptrace</code> the process in order to successfully attach - some container runtimes disable by default the <code>SYS_PTRACE</code> capability, so we need to pass it to the container security context.</p>
+</blockquote>
+
+<p>Going for alpha in 1.11 is a feature used to <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/node/troubleshoot-running-pods.md" target="_blank">Troubleshoot Running Pods</a> - this will allow us to <strong>temporarily</strong> attach a container that has the debugger, the correct security context and the exposed ports for debugging - we then will attach the appropriate VS Code debugger, and when we&rsquo;re done, the container with the debugger will be killed.
+This comes with all of the benefits above, plus our <code>container B</code> will only run temporarily, while the debugger is attached in our IDE, having exposed ports and elevated security contexts only for the duration of the debugging session.</p>
+
+<pre><code>kubectl debug  --image=&lt;your-debugger-image&gt; &lt;your-application-pod&gt;
+</code></pre>
+
+<p>While this command is running we can start the debugging session, attach the debugger and understand the behavior of our application. When we disconnect the debugger, the container with the debugger will be killed, and our application returns to its normal. Imagine integrating this command in the regular <code>Start Debugging</code> workflow that we currently have with VS Code and Draft, and you have a pretty good idea of how the workflow will look in the not-so-distant future.</p>
+
+<blockquote>
+<p>Keep in mind that this feature is not yet released in Kubernetes, so probably the actual commands will change, but the end result should remain fairly similar.</p>
+</blockquote>
+
+<p>The biggest challenge is working towards having the debugging artifacts (container images and deployment manifests) as close to the production artifacts as possible. This will minimize the not so few cases where an issue appears in production but not in development, allowing us to attach debuggers to already running pods and, in extreme cases, even attach a debugger to a production pod (although, as previously mentioned, not advised).</p>
+
+<h3 id="how-to-get-involved">How to get involved</h3>
+
+<p>Give <a href="https://github.com/Azure/draft" target="_blank">Draft</a> and the <a href="https://github.com/Azure/vscode-kubernetes-tools" target="_blank">VS Code Kubernetes</a> extension a try!</p>
+
+<p>While there are lots of things to be improved, the process of developing, debugging and deploying microservices on Kubernetes is getting easier, faster.</p>
 
     </div>
         
@@ -568,7 +660,7 @@ The compiler (<a href="https://github.com/dotnet/roslyn" target="_blank">Roslyn<
 
     
     
-        <li><a href='/categories/dotnet-core'>dotnet-core</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
 </ul>
 
@@ -576,10 +668,10 @@ The compiler (<a href="https://github.com/dotnet/roslyn" target="_blank">Roslyn<
 </article>
 <ul class="actions pagination">
     
-
+        <li><a href="https://radu-matei.com/blog/debug-helm-tiller/"
+                class="button big previous">Debug Helm and Tiller using VS Code and Draft</a></li>
     
-        <li><a href="https://radu-matei.com/blog/dot-net-core-getting-started/"
-                class="button big next">Getting Started with .NET Core and VS Code</a></li>
+
     
 </ul>
 
@@ -590,13 +682,13 @@ The compiler (<a href="https://github.com/dotnet/roslyn" target="_blank">Roslyn<
 
 <script type="text/javascript">
     var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/dot-net-core-introduction/";
-    var disqus_title = "Introduction to .NET Core";
-    var disqus_url = "Introduction to .NET Core";
+    var disqus_identifier = "https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/";
+    var disqus_title = "The state of debugging microservices on Kubernetes";
+    var disqus_url = "The state of debugging microservices on Kubernetes";
 
     var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/dot-net-core-introduction/";  
-        this.page.identifier = "https://radu-matei.com/blog/dot-net-core-introduction/"; 
+        this.page.url = "https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/";  
+        this.page.identifier = "https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"; 
     };
 
     (function() {
