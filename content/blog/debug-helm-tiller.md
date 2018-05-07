@@ -2,8 +2,10 @@
 author = "Radu Matei"
 categories = ["kubernetes", "draft", "helm", "vscode"]
 date = "2018-04-29"
-description = "Using Draft and Visual Studio Code to simplify the debugging of Cloud-Native applications on Kubernetes"
+description = ""
 linktitle = ""
+featured = "helm_logo_transparent.png"
+featuredpath = "/img/article-photos/debug-helm-tiller/"
 title = "Debug Helm and Tiller using VS Code and Draft"
 type = "post"
 summary = ""

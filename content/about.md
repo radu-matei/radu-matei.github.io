@@ -7,7 +7,7 @@ date = "2017-09-05"
 Who am I?
 =========
 
-Hi, and thanks for the visit! I'm an open-source software developer and [I sometimes speak to user groups, meetups and conferences](/speaking).
+Hi, and thanks for the visit! I'm an open source software developer and [I sometimes speak to user groups, meetups and conferences](/speaking).
 I'm really passionate about **containers, orchestrators, serverless computing, *continuous everything* and the cloud**.
 
 I like to see myself as a **"friendly geek who accelerates developers to build epic stuff"** and work as a @Microsoft Technical Evangelist in Central and Eastern Europe - essentially, I work with software development companies and help them architect, develop and scale their software using the cloud.
@@ -30,7 +30,7 @@ What am I working on?
 
 I'm always working on fun little projects, so [check out my GitHub profile](https://github.com/radu-matei).
 
-That being said, I've worked on things like a [websocket manager for .NET Core](https://github.com/radu-matei/websocket-manager), adding support for [LinuxKit on Azure](https://github.com/linuxkit/linuxkit/pull/1933), adding native [Go in Azure Functions](https://github.com/radu-matei/azure-functions-golang-worker) and a bunch more.
+That being said, I've worked on things like a [websocket manager for .NET Core](https://github.com/radu-matei/websocket-manager), adding support for [LinuxKit on Azure](https://github.com/linuxkit/linuxkit), adding native [Go in Azure Functions](https://github.com/radu-matei/azure-functions-golang-worker) and I frequently contribute to open source developer tooling for Kubernetes such as [Draft](https://github.com/Azure/draft) and the [VS Code Kubernetes extension](https://github.com/Azure/vscode-kubernetes-tools).
 
 
 [How can you contact me?](/contact)
