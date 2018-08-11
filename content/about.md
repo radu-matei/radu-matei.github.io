@@ -10,8 +10,9 @@ Who am I?
 Hi, and thanks for the visit! I'm an open source software developer and [I sometimes speak to user groups, meetups and conferences](/speaking).
 I'm really passionate about **containers, orchestrators, serverless computing, *continuous everything* and the cloud**.
 
-I like to see myself as a **"friendly geek who accelerates developers to build epic stuff"** and work as a @Microsoft Technical Evangelist in Central and Eastern Europe - essentially, I work with software development companies and help them architect, develop and scale their software using the cloud.
-While I usually work with a wide range of technologies on a daily basis, I enjoy the most working with containers, orchestrators, write serverless functions and continuously deploy everything.
+I like to see myself as a *"friendly geek who accelerates developers to build epic stuff"* and work as Software Engineer in the Microsoft Azure Containers Team, building Kubernetes, containers and cloud native open source developer tools.
+
+In the past I was a Technical Evangelist and helped software development companies architect, develop and scale their solutions in the cloud.
 
 I also like to engage with the local startup ecosystem - this way, I've been a technical mentor in a few Romanian accelerators and pre-accelerators and helped founders scale their products with the cloud, and think teaching children about computers and programming is important, [and enjoy participating in Hour of Code](http://www.techsoupeurope.org/hour-of-code-2016-with-asociatia-techsoup-and-microsoft-romania/) events.
 
