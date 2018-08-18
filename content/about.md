@@ -12,7 +12,7 @@ I'm really passionate about **containers, orchestrators, serverless computing, *
 
 I like to see myself as a *"friendly geek who accelerates developers to build epic stuff"* and work as Software Engineer in the Microsoft Azure Containers Team, building Kubernetes, containers and cloud native open source developer tools.
 
-In the past I was a Technical Evangelist and helped software development companies architect, develop and scale their solutions in the cloud.
+In the past I was a Technical Evangelist @Microsoft and helped software development companies architect, develop and scale their solutions in the cloud.
 
 I also like to engage with the local startup ecosystem - this way, I've been a technical mentor in a few Romanian accelerators and pre-accelerators and helped founders scale their products with the cloud, and think teaching children about computers and programming is important, [and enjoy participating in Hour of Code](http://www.techsoupeurope.org/hour-of-code-2016-with-asociatia-techsoup-and-microsoft-romania/) events.
 
