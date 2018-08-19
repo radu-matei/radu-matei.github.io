@@ -12,7 +12,7 @@ summary = ""
 
 # Introduction
 
-Running any non-trivial application on Kubernetes will most likely require authorized access to other components - databases, storage buckets, APIs - all of which require a connection string or some sort of access key. Storing these values in Kubernetes is done through [Secrets][secrets], and while there are plenty of ways to make sure the secrets are [safe while at rest][encryption-rest] and how to [configure an external KMS provider][kms-provider], once the secret is injected into your application container, its value will be plain text.
+Running any non-trivial application on Kubernetes will most likely require authorized access to other components - databases, storage buckets, APIs - all of which require a connection string or some sort of access key. Storing these values in Kubernetes is done through [Secrets][secrets], and while there are plenty of ways to make sure the secrets are [safe while at rest][encryption-rest], as well as how to [configure an external KMS provider][kms-provider], once the secret is injected into your application container, its value will be plain text.
 
 In this article we wil explore how to filter any Kubernetes secrets that end up in application logs - [the entire project for this article can be found on GitHub][gh-project], together with a sample application.
 
@@ -36,13 +36,13 @@ In a nutshell, this is our approach:
 
 > Note that if you have an alpha cluster with [shared PID namespaces][k8s-shared-pid] - that is a cluster created with  `--feature-gates=PodShareProcessNamespace=true`, then you can access the main process' `stdout` directly, without sharing a volume between the main container and the sidecar.
 
-> While this is still an alpha feature (thus not recommended for testing in production clusters) and we will continue to explore how to achieve this through volume mounts, this guide is still helpful, with the only difference that the logs file will be accessed in the sidecar as `/proc/<main-application-pid>/fd/1`, which is the file descriptor of `stdout`.
+> While this is still an alpha feature (thus not recommended for testing in production clusters), and we will continue to explore how to achieve this through volume mounts, this guide is still helpful, with the only difference that the logs file will be accessed in the sidecar as `/proc/<main-application-pid>/fd/1`, which is the file descriptor of `stdout`.
 
 The main advantage of this approach is that we don't need to mount parts of the node filesystem in a pod, and we can enable the filter for individual applications, filtering the secrets from a specific namespace. The only mention here is that we should be able to redirect the logs of the main application to a specific file. If that is not possible, explore running the sidecar by sharing the PID namespace and accessing `stdout` directly.
 
 # The filtering process
 
-The filtering application is a simple Go application that tails the file where the main application writes the logs, and iterates through all Kubernetes secrets in the provided namespace and checks if any value is present in the logs. If a value is in the logs, it will remove it, then write the redacted log to `stdout`. This container's logs become the application logs:
+The filtering application is a simple Go application that tails the file where the main application writes the logs, iterates through all Kubernetes secrets in the provided namespace, and checks if any value is present in the logs. If found, it will remove it, then write the redacted log to `stdout`. This container's logs become the application logs:
 
 ```go
 func filter(line string, secrets []v1.Secret) string {
@@ -60,7 +60,7 @@ func filter(line string, secrets []v1.Secret) string {
 
 The filtering algorithm is fairly simple - it only does a `strings.Contains` on the log line for every Kubernetes secret value in the namespace -- this means that the more secrets in the namespace, the more CPU cycles it will take to filter a log -- so be mindful of this when running in a namespace with lots of secrets.
 
-> Be sure to [check out the best practice article on organizing Kubernetes namespaces][gcp-blog] from the Google Cloud Platform Blog.
+Note that the filtering function above is a simple example on how to process your logs -- for any production-purpose filtering, you should fork the repository and replace the function with your own, and an immediate alternative would be to use regex instead of the loop with`strings.Contains` -- but you are free to come up with virtually any filtering algorithm.
 
 A Kubernetes cache is used in order to avoid getting all secrets from the API on every filtering request. The resync period for the cache is set to 30 seconds. If a new secret is added, then the application tries to print it before the cache resynced, that log **will** contain the secret value. If your use case demands it, reduce the resync period - but keep in mind the impact this will have on networking and on the API server.
 
@@ -69,14 +69,14 @@ Because of the simplicity of the filtering loop, any processing done to a secret
 
 The filtering loop currently runs for for each new line. For a real world scenario, filtering the logs in chunks of lines seems a reasonable approach -- this can be modified in the [`main` function of the filter][main].
 
-Important note: **This method only prevents accidental printing of logs from an application output. It is not designed to prevent a potentially malicious attempt of gaining access to Kubernetes secrets - and it should be used accordingly.**
+Important note: **This method only prevents accidental printing of logs from an application output. It is not designed to prevent a potentially malicious attempt of gaining access to Kubernetes secrets -- and it should be used accordingly.**
 
 
 # The sample application
 
 Now that we saw how the filtering process works, let's see an example of this in action.
 
-The sample, which is [included in the github repository][gh-project], is a simple NodeJS application that just logs the query parameters of every request. The following section redirects the application `stdout` to a logs file whose name is provided as an environment variable:
+The sample, which is [included in the GitHub repository][gh-project], is a simple NodeJS application that just logs the query parameters of every request. The following section redirects the application `stdout` to a logs file whose name is provided as an environment variable:
 
 ```javascript
 var logsFile = process.env.LOGS_FILE;
@@ -90,7 +90,7 @@ This ensures all `console.log` calls from within the application will be redirec
 
 > Of course, the main application can be written in any language, and redirecting the logs to a file should be a fairly straightforward task in any modern framework.
 
-Now we simply build a container image out of our application, push it to a container registry. Then, we need to create a Kubernetes manifest with the main application and the sidecar:
+Now we simply build a container image out of our application and push it to a container registry. Then, we need to create a Kubernetes manifest with the main application and the sidecar:
 
 ```
 apiVersion: v1
@@ -128,7 +128,7 @@ spec:
 
 This is a simple Kubernetes manifest for a pod with two containers: the main application container and the sidecar filter; we pass the logs file as environment variables to both containers, while also mounting a volume that contains the log file to both containers.
 
-> Please note that in the repo there is also a Kubernetes that must be used on RBAC-enabled clusters, which is not shown here for brevity.
+> Please note that in the repo there is also a [Kubernetes manifest that must be used on RBAC-enabled clusters][filter-role] -- that is not shown here for brevity.
 
 For simplicity, let's create a new namespace:
 
@@ -136,10 +136,10 @@ For simplicity, let's create a new namespace:
 $ kubectl create namespace filter-logs
 ```
 
-Now in this namespace, [create a new secret, according to the instructions in the Kubernetes documentation.][k8s-create-secret].
+Now in this namespace, [create a new secret, according to the instructions in the Kubernetes documentation.][k8s-create-secret]
 The values I used are: `super-secret-admin-username` for the user name and `super-secret-admin-password` for the password.
 
-Now deploy the pod (and if needed, also the `filter-role.yaml` file containing the RBAC objects). We expect that if the web application would ever try to write `super-secret-admin-username` or `super-secret-admin-password` (or the value of any secret int he namespace) in the logs, our filtering sidecar would redact that.
+Now deploy the pod (and if needed, also the [`filter-role.yaml` file containing the RBAC objects][filter-role]). We expect that if the web application would ever try to write `super-secret-admin-username` or `super-secret-admin-password` (or the value of any secret in the namespace) in the logs, our filtering sidecar would redact that.
 
 Let's see if that actually happens:
 
@@ -164,7 +164,9 @@ $ kubectl logs filter-logs -c filter
 
 # Conclusion
 
-In this article
+In this article we saw how to filter Kubernetes secrets from the logs of our applications by running a sidecar container that continuously redacts the secret values from the logs. As mentioned, you are free to write your own filtering algorithm based on the needs of your application, as well as implement filtering in chunks of multiple log lines.
+
+Thanks for reading, and have fun filtering your application logs!
 
 
 [secrets]: https://kubernetes.io/docs/concepts/configuration/secret/
@@ -175,7 +177,6 @@ In this article
 
 [k8s-shared-pid]: https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/
 
-[gcp-blog]: https://cloudplatform.googleblog.com/2018/04/Kubernetes-best-practices-Organizing-with-Namespaces.html
-
 [main]: https://github.com/radu-matei/filter-k8s-logs/blob/master/main.go
 [k8s-create-secret]: https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret-using-kubectl-create-secret
+[filter-role]: https://github.com/radu-matei/filter-k8s-logs/blob/master/sample/filter-role.yaml
