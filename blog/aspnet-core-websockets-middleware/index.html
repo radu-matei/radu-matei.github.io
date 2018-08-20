@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.38.2" />
+        <meta name="generator" content="Hugo 0.48-DEV" />
         
 
 
@@ -35,24 +35,8 @@ The version of the project described in this article can still be found in the b
 While the general aspects provided in this article about creating a websockets middleware for Asp .Net Core are still valid, the specific information about the websocket-manager project have changed, since I updated a lot of parts.
 The version of the project described in this article can still be found in the blog-article branch on GitHub." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-websockets-middleware/" />
-
-
-
-<meta property="article:published_time" content="2016-12-30T00:00:00&#43;00:00"/>
-
+<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-websockets-middleware/" /><meta property="article:published_time" content="2016-12-30T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2016-12-30T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
         
 <meta itemprop="name" content="Creating a WebSockets middleware for ASP .NET Core">
 <meta itemprop="description" content="UPDATE - February 2017 This article describes the latest development of websocket-manager and how to use it in your application.
@@ -92,14 +76,17 @@ The version of the project described in this article can still be found in the b
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -262,6 +249,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/filter-k8s-logs/"><p>Filter secrets from Kubernetes logs</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"><p>The state of debugging microservices on Kubernetes</p></a>
                     </li>
                 
@@ -275,10 +266,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/kube-toolkit/"><p>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/aci-update/"><p>Update Azure Container Instances with Docker Hub webhooks</p></a>
                     </li>
                 
             </ul>
@@ -866,18 +853,18 @@ namespace ChatApplication
 &lt;html&gt;
 
 &lt;head&gt;
-	&lt;meta charset=&quot;utf-8&quot; /&gt;
-	&lt;title&gt;Real-Time Notifications&lt;/title&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;title&gt;Real-Time Notifications&lt;/title&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
     &lt;h1&gt;This should be mapped to &quot;/ws&quot;&lt;/h1&gt;
-	&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
-	&lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
+    &lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
+    &lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
 
-	&lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
+    &lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
 
-    	&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
+        &lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
         var uri = &quot;ws://&quot; + window.location.host + &quot;/ws&quot;;
         function connect() {
             socket = new WebSocket(uri);
@@ -1243,7 +1230,7 @@ namespace EchoConsoleClient
             
                 <header>
                    <a href="/"> <h2>Radu Matei</h2></a>
-                    <p>Friendly geek who accelerates developers to build epic stuff, @Microsoft Technical Evangelist, Software Developer, Container Enthusiast. Opinions are my own.</p>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
                 </header>
             
             <ul class="icons">
@@ -1335,6 +1322,20 @@ namespace EchoConsoleClient
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-08-20'>
+                                    August 20, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">The state of debugging microservices on Kubernetes</a></h3>
                                 
                                     
@@ -1388,20 +1389,6 @@ namespace EchoConsoleClient
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/aci-update/">Update Azure Container Instances with Docker Hub webhooks</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-12-14'>
-                                    December 14, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -1445,7 +1432,7 @@ namespace EchoConsoleClient
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">8</span>
+                                <span style="float:right;">9</span>
                             </header>
                         </article>
                     </li>

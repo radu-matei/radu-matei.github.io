@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.38.2" />
+        <meta name="generator" content="Hugo 0.48-DEV" />
         
 
 
@@ -29,24 +29,8 @@
         <meta property="og:title" content="Kubernetes 1.8 on Azure" />
 <meta property="og:description" content="Deploy Kubernetes 1.8 on Azure using acs-engine" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/k8s18-azure/" />
-
-
-
-<meta property="article:published_time" content="2017-10-06T00:00:00&#43;00:00"/>
-
+<meta property="og:url" content="https://radu-matei.com/blog/k8s18-azure/" /><meta property="article:published_time" content="2017-10-06T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2017-10-06T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
         
 <meta itemprop="name" content="Kubernetes 1.8 on Azure">
 <meta itemprop="description" content="Deploy Kubernetes 1.8 on Azure using acs-engine">
@@ -84,14 +68,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -254,6 +241,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/filter-k8s-logs/"><p>Filter secrets from Kubernetes logs</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"><p>The state of debugging microservices on Kubernetes</p></a>
                     </li>
                 
@@ -267,10 +258,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/kube-toolkit/"><p>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/aci-update/"><p>Update Azure Container Instances with Docker Hub webhooks</p></a>
                     </li>
                 
             </ul>
@@ -487,7 +474,7 @@ ga('send', 'pageview');
 
 <p>This is how a typical cluster definition file looks for Kubernetes. Compared to <a href="https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json" target="_blank">the example offered in the repo</a>, this only adds the <code>orchestratorRelease</code> property and sets it to <code>1.8</code>.</p>
 
-<script src="//gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js"></script>
 
 <p>The great thing about this version of <code>acs-engine</code> is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using <code>acs-engine</code> and deploy them with the <code>az</code> command line):</p>
 
@@ -649,7 +636,7 @@ You will want to have access to your cluster from outside the browser (for obvio
             
                 <header>
                    <a href="/"> <h2>Radu Matei</h2></a>
-                    <p>Friendly geek who accelerates developers to build epic stuff, @Microsoft Technical Evangelist, Software Developer, Container Enthusiast. Opinions are my own.</p>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
                 </header>
             
             <ul class="icons">
@@ -741,6 +728,20 @@ You will want to have access to your cluster from outside the browser (for obvio
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-08-20'>
+                                    August 20, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">The state of debugging microservices on Kubernetes</a></h3>
                                 
                                     
@@ -794,20 +795,6 @@ You will want to have access to your cluster from outside the browser (for obvio
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/aci-update/">Update Azure Container Instances with Docker Hub webhooks</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-12-14'>
-                                    December 14, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -851,7 +838,7 @@ You will want to have access to your cluster from outside the browser (for obvio
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">8</span>
+                                <span style="float:right;">9</span>
                             </header>
                         </article>
                     </li>

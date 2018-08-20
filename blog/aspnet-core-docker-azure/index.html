@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.38.2" />
+        <meta name="generator" content="Hugo 0.48-DEV" />
         
 
 
@@ -33,24 +33,8 @@ If you don&rsquo;t want to create an ASP.NET Core application but are interested
 <meta property="og:description" content="Introduction In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.
 If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, you might want to skip to the part we start creating the CI/CD workflow." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-docker-azure/" />
-
-
-
-<meta property="article:published_time" content="2016-11-26T00:00:00&#43;00:00"/>
-
+<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-docker-azure/" /><meta property="article:published_time" content="2016-11-26T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2016-11-26T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
         
 <meta itemprop="name" content="Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure">
 <meta itemprop="description" content="Introduction In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.
@@ -89,14 +73,17 @@ If you don&rsquo;t want to create an ASP.NET Core application but are interested
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -259,6 +246,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/filter-k8s-logs/"><p>Filter secrets from Kubernetes logs</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"><p>The state of debugging microservices on Kubernetes</p></a>
                     </li>
                 
@@ -272,10 +263,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/kube-toolkit/"><p>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/aci-update/"><p>Update Azure Container Instances with Docker Hub webhooks</p></a>
                     </li>
                 
             </ul>
@@ -881,7 +868,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
             
                 <header>
                    <a href="/"> <h2>Radu Matei</h2></a>
-                    <p>Friendly geek who accelerates developers to build epic stuff, @Microsoft Technical Evangelist, Software Developer, Container Enthusiast. Opinions are my own.</p>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
                 </header>
             
             <ul class="icons">
@@ -973,6 +960,20 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-08-20'>
+                                    August 20, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">The state of debugging microservices on Kubernetes</a></h3>
                                 
                                     
@@ -1026,20 +1027,6 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/aci-update/">Update Azure Container Instances with Docker Hub webhooks</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-12-14'>
-                                    December 14, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -1083,7 +1070,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">8</span>
+                                <span style="float:right;">9</span>
                             </header>
                         </article>
                     </li>

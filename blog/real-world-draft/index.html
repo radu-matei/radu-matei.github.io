@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.38.2" />
+        <meta name="generator" content="Hugo 0.48-DEV" />
         
 
 
@@ -29,24 +29,8 @@
         <meta property="og:title" content="Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging." />
 <meta property="og:description" content="Using Draft to simplify your cloud-native application development." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/real-world-draft/" />
-
-
-
-<meta property="article:published_time" content="2018-04-10T00:00:00&#43;00:00"/>
-
+<meta property="og:url" content="https://radu-matei.com/blog/real-world-draft/" /><meta property="article:published_time" content="2018-04-10T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2018-04-10T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
         
 <meta itemprop="name" content="Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.">
 <meta itemprop="description" content="Using Draft to simplify your cloud-native application development.">
@@ -84,14 +68,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -254,6 +241,10 @@ ga('send', 'pageview');
 
                 
                     <li>
+                        <a href="https://radu-matei.com/blog/filter-k8s-logs/"><p>Filter secrets from Kubernetes logs</p></a>
+                    </li>
+                
+                    <li>
                         <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"><p>The state of debugging microservices on Kubernetes</p></a>
                     </li>
                 
@@ -267,10 +258,6 @@ ga('send', 'pageview');
                 
                     <li>
                         <a href="https://radu-matei.com/blog/kube-toolkit/"><p>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</p></a>
-                    </li>
-                
-                    <li>
-                        <a href="https://radu-matei.com/blog/aci-update/"><p>Update Azure Container Instances with Docker Hub webhooks</p></a>
                     </li>
                 
             </ul>
@@ -463,9 +450,9 @@ ga('send', 'pageview');
 <p>To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank">follow the official Draft documentation</a> and watch a short episode on Azure Friday:</p>
 
 
-<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
-  <iframe src="//www.youtube.com/embed/DvaT3H8Wyf8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
- </div>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/DvaT3H8Wyf8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
 
 
 <p>If you ever developed an application that you later deployed on Kubernetes, you know that this is not a trivial task: you need to write a Dockerfile, push it to a container registry, then create Kubernetes manifest files for the deployment and the service and then apply them using <code>kubectl</code>, <code>helm</code> or other deployment tools - <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/" target="_blank">and we haven&rsquo;t even started to think about continuous integration and deployment</a>.</p>
@@ -720,9 +707,9 @@ Connect to node-debug:9229 on localhost:9229
 <p>In the <code>node-backend</code> folder you can find the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/.vscode/launch.json" target="_blank"><code>.vscode/launch.json</code></a> file - this contains the configuration we will use to remote debug our application using Draft and VS Code. With the extension above activated (in debug or side-loaded), open the <code>node-backend</code> directory in a new VS Code window and hit <code>F5</code>, or start debugging:</p>
 
 
-<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
-  <iframe src="//www.youtube.com/embed/AO8nRmAN7ys" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
- </div>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/AO8nRmAN7ys" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
 
 
 <blockquote>
@@ -833,7 +820,7 @@ Connect to node-debug:9229 on localhost:9229
             
                 <header>
                    <a href="/"> <h2>Radu Matei</h2></a>
-                    <p>Friendly geek who accelerates developers to build epic stuff, @Microsoft Technical Evangelist, Software Developer, Container Enthusiast. Opinions are my own.</p>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
                 </header>
             
             <ul class="icons">
@@ -925,6 +912,20 @@ Connect to node-debug:9229 on localhost:9229
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2018-08-20'>
+                                    August 20, 2018</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">The state of debugging microservices on Kubernetes</a></h3>
                                 
                                     
@@ -978,20 +979,6 @@ Connect to node-debug:9229 on localhost:9229
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/aci-update/">Update Azure Container Instances with Docker Hub webhooks</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2017-12-14'>
-                                    December 14, 2017</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -1035,7 +1022,7 @@ Connect to node-debug:9229 on localhost:9229
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">8</span>
+                                <span style="float:right;">9</span>
                             </header>
                         </article>
                     </li>
