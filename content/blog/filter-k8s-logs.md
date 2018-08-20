@@ -1,7 +1,7 @@
 +++
 author = "Radu Matei"
 categories = ["kubernetes"]
-date = "2018-08-18"
+date = "2018-08-20"
 description = "How to remove secrets from the logs of Kubernetes applications?"
 featured = "Kubernetes_logo.svg"
 featuredpath = "/img/article-photos/filter-k8s-logs/"
@@ -9,6 +9,12 @@ title = "Filter secrets from Kubernetes logs"
 type = "post"
 summary = ""
 +++
+
+- [Introduction](#introduction)
+- [How to filter the logs of a Kubernetes pod](#how-to-filter-the-logs-of-a-kubernetes-pod)
+- [The filtering process](#the-filtering-process)
+- [The sample application](#the-sample-application)
+- [Conclusion](#conclusion)
 
 # Introduction
 
@@ -166,7 +172,7 @@ $ kubectl logs filter-logs -c filter
 
 In this article we saw how to filter Kubernetes secrets from the logs of our applications by running a sidecar container that continuously redacts the secret values from the logs. As mentioned, you are free to write your own filtering algorithm based on the needs of your application, as well as implement filtering in chunks of multiple log lines.
 
-Thanks for reading, and have fun filtering your application logs!
+Thanks for reading, let me know your thoughts in the comments, and have fun filtering your application logs!
 
 
 [secrets]: https://kubernetes.io/docs/concepts/configuration/secret/
