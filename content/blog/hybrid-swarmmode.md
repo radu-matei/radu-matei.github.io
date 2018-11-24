@@ -24,7 +24,7 @@ Here is a list of resources you might want to get started with before diving int
 How is this article different compared to the docs above?
 ---------------------------------------------------------
 
-In this article we will focus on deploying the cluster on Azure programatically, using [acs-engine](https://github.com/Azure/acs-engine), a tool that generates [ARM (Azure Resource Manager) templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.
+In this article we will focus on deploying the cluster on Azure programmatically, using [acs-engine](https://github.com/Azure/acs-engine), a tool that generates [ARM (Azure Resource Manager) templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.
 
 
 While you can [find more information about acs-engine on the GitHub repo](https://github.com/Azure/acs-engine), in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the [various Azure command-line interfaces](https://azure.github.io/projects/clis/) like Azure CLI 2.0 or Azure PowerShell.

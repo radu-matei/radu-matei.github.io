@@ -1,20 +1,22 @@
 <!-- Header -->
 <header id="header">
     {{ if and (.IsNode) (or (.IsHome) (eq .Title "Posts")) }}
-        <h1><a href="/">{{ .Site.Params.navbarTitle }}</i></a></h1>
+    <h1><a href="/">{{ .Site.Params.navbarTitle }}</i></a></h1>
     {{ else }}
-        <h2><a href="/">{{ .Site.Params.navbarTitle }}</i></a></h2>
+    <h2><a href="/">{{ .Site.Params.navbarTitle }}</i></a></h2>
     {{ end }}
 
     <nav class="links">
         <ul>
             {{ range .Site.Menus.main }}
-                <li>
-                    <a href="{{ .URL }}">
-                        {{ with .Identifier }}
-                            <i class="{{ . }}">&nbsp;</i>{{ end }}{{ .Name }}
-                    </a>
-                </li>
+            {{ $url := urls.Parse .URL }}
+            {{ $baseurl := urls.Parse $.Site.Params.Baseurl }}
+            <li>
+                <a href="{{ .URL }}" {{ if ne $url.Host $baseurl.Host }} target="_blank" {{ end }}>
+                    {{ with .Identifier }}
+                    <i class="{{ . }}">&nbsp;</i>{{ end }}{{ .Name }}
+                </a>
+            </li>
             {{ end }}
         </ul>
     </nav>
@@ -43,53 +45,57 @@
 <section id="menu">
 
     <!-- Search -->
-        <section>
-            <form class="search" method="get" action="//google.com/search">
-                <input type="text" name="q" placeholder="Search" />
-                <input type="hidden" name="q" value="site:{{ .Site.BaseURL }}">
-            </form>
-        </section>
+    <section>
+        <form class="search" method="get" action="//google.com/search">
+            <input type="text" name="q" placeholder="Search" />
+            <input type="hidden" name="q" value="site:{{ .Site.BaseURL }}">
+        </form>
+    </section>
 
     <!-- Links -->
-        <section>
-            <ul class="links">
-                {{ range .Site.Menus.main }}
-                    <li>
-                        <a href="{{ .URL }}">
-                            <h3>
-                                {{ with .Identifier }}
-                                    <i class="{{ . }}">&nbsp;</i>
-                                {{ end }}
-                                {{ .Name }}
-                            </h3>
-                        </a>
-                    </li>
-                {{ end }}
-            </ul>
-        </section>
+    <section>
+        <ul class="links">
+            {{ range .Site.Menus.main }}
+            {{ $url := urls.Parse .URL }}
+            {{ $baseurl := urls.Parse $.Site.Params.Baseurl }}
+            <li>
+                <a href="{{ .URL }}" {{ if ne $url.Host $baseurl.Host }} target="_blank" {{ end }}>
+                    <h3>
+                        {{ with .Identifier }}
+                        <i class="{{ . }}">&nbsp;</i>
+                        {{ end }}
+                        {{ .Name }}
+                    </h3>
+                </a>
+            </li>
+            {{ end }}
+        </ul>
+    </section>
 
     <!-- Recent Posts -->
-        <section>
-            <ul class="links">
-                <header>
-                    <h3>Recent Posts</h3>
-                </header>
-                {{ with .Site.Params.postAmount.sidebar }}
-                    {{ $.Scratch.Set "postLimit" . }}
-                {{ else }}
-                    {{ $.Scratch.Set "postLimit" 5 }}
-                {{ end }}
+    <section>
+        <ul class="links">
+            <header>
+                <h3>Recent Posts</h3>
+            </header>
+            {{ with .Site.Params.postAmount.sidebar }}
+            {{ $.Scratch.Set "postLimit" . }}
+            {{ else }}
+            {{ $.Scratch.Set "postLimit" 5 }}
+            {{ end }}
 
-                {{ range first ($.Scratch.Get "postLimit") (where .Site.Pages "Type" "post") }}
-                    <li>
-                        <a href="{{ .Permalink }}"><p>{{ .Title }}</p></a>
-                    </li>
-                {{ end }}
-            </ul>
-        </section>
+            {{ range first ($.Scratch.Get "postLimit") (where .Site.Pages "Type" "post") }}
+            <li>
+                <a href="{{ .Permalink }}">
+                    <p>{{ .Title }}</p>
+                </a>
+            </li>
+            {{ end }}
+        </ul>
+    </section>
 
     <!-- Actions -->
-        <!--
+    <!--
         <section>
             <ul class="actions vertical">
                 <li><a href="#" class="button big fit">Log In</a></li>

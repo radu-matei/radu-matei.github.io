@@ -88,14 +88,14 @@ First of all, it is important to understand what middleware is and how the new r
 
 > [Image from the Official ASP .NET Core Documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/_static/request-delegate-pipeline.png)
 
-The new pipeline consists of a series of `RequestDelegate` objects being called one after the next, and each component can perform operations before and after the next delegate, or can short-cirtuit the pipeline, handle the request itself and not pass the context further.
+The new pipeline consists of a series of `RequestDelegate` objects being called one after the next, and each component can perform operations before and after the next delegate, or can short-circuit the pipeline, handle the request itself and not pass the context further.
 
 Before writing the middleware itself, we need a few classes that deal with connections and handling messages.
 
 Writing a WebSocket Connection Manager
 --------------------------------------
 
-The first thing we notice when using the WebSocket package is that everything is low-level: we deal with individual connections, buffers and cancellation tokens. There is no built-in way of storing sockets, nor are they identified in any way. So we will build a class that keeps all active sockets in a thread-safe collection and assigns each a unique ID, while also maintaning the collection (getting, adding and removing sockets).
+The first thing we notice when using the WebSocket package is that everything is low-level: we deal with individual connections, buffers and cancellation tokens. There is no built-in way of storing sockets, nor are they identified in any way. So we will build a class that keeps all active sockets in a thread-safe collection and assigns each a unique ID, while also maintaining the collection (getting, adding and removing sockets).
 
 ```
 using System;
@@ -227,7 +227,7 @@ There is also the `SendMessageAsync` which sends a message to a specific `socket
 The middleware itself
 ---------------------
 
-So far we built classes that help maintaning a record of connected sockets and handle sending and receiving messages to and from those sockets. Now it's time to build the actual middleware:
+So far we built classes that help maintaining a record of connected sockets and handle sending and receiving messages to and from those sockets. Now it's time to build the actual middleware:
 
 As any middleware, it needs to receive a `RequestDelegate` for the `next` component in the pipeline, while executing operations on the `HttpContext` before and after invoking the next component, and it needs an `async Task Invoke` method. It doesn't have to inherit or implement anything, just to have the `Invoke` method.
 
@@ -312,7 +312,7 @@ Most likely in modern applications you want to send notifications and messages o
 
 With this middleware, you can map different paths of your application with specific implementations of `WebSocketHandler`, so you would get completely isolated environments (and different instances of `WebSocketConnectionManager`, but more on this later).
 
-So mapping the middeware is done using the following extension method on `IApplicationBuilder`:
+So mapping the middleware is done using the following extension method on `IApplicationBuilder`:
 
 ```
         public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app, 
@@ -323,7 +323,7 @@ So mapping the middeware is done using the following extension method on `IAppli
         }
 ```
 
-It receives a path and it maps that path using with the `WebSocketManagerMiddleware` which is passed the specific implementation of `WebSockethandler` you provided as argument for the `MapWebSocketManager` extension method.
+It receives a path and it maps that path using with the `WebSocketManagerMiddleware` which is passed the specific implementation of `WebSocketHandler` you provided as argument for the `MapWebSocketManager` extension method.
 
 You also need to add some services in order to use them, and this is done in another extension method on `IServiceCollection`:
 
@@ -344,7 +344,7 @@ You also need to add some services in order to use them, and this is done in ano
         }
 ```
 
-Besides from adding the `WebSocketConnectionManager` service, it also searches the executing assemly for types that inherit `WebSocketHandler` and it registers them as singleton (so that every request gets the same instance of the message handler) using reflection.
+Besides from adding the `WebSocketConnectionManager` service, it also searches the executing assembly for types that inherit `WebSocketHandler` and it registers them as singleton (so that every request gets the same instance of the message handler) using reflection.
 
 And this is pretty much the middleware. Now we will take a look at how we would use it in ASP .NET Core applications, and just like in the case of SignalR, there are two scenarios for usage:
 
@@ -710,7 +710,7 @@ Conclusion
 
 Let's take a step back and see what we have done:
 
-- we've started by investigating the `WebSocekts` package from ASP .NET Core
+- we've started by investigating the `WebSockets` package from ASP .NET Core
 - we've taken a look at ASP .NET Core middleware
 - we've written a connection manager for WebSocket connections
 - we've written an abstract handler class that deals with connection and disconnection events, while also sending and receiving messages

@@ -210,7 +210,7 @@ Camel case issues and custom contract resolvers
 
 At this moment, MVC uses camel case notation to pass JSON to clients. That means that even if on the server you write your class properties with Pascal case notation (as you should!), JavaScript clients would get Camel cased objects.
 
-This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse metods across the JavaScript client, thing we cannot tolerate.
+This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse methods across the JavaScript client, thing we cannot tolerate.
 
 So we are going to make SignalR pass objects in camel case. Basically, we are going to "recycle" [this old SignalR GitHub issue](https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751) and adapt it to our versions of ASP.NET and SignalR.
 
@@ -233,7 +233,7 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
 
 While this is not far from what we are going to do, at this moment we simply cannot force all components to pass camel case objects because it would break current conventions in place.
 
-Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is tansformed to camel case.
+Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is transformed to camel case.
 
 We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified. 
 

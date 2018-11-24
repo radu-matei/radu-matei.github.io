@@ -57,7 +57,7 @@ Normally at this point you would manually download and install the latest versio
 
 > You can find [the repository on GitHub here](https://github.com/radu-matei/kubectl-helm-draft) and [the image on Docker Hub](https://hub.docker.com/r/radumatei/kubectl-helm-draft/).
 
-> Please note that at the time of writing this article, the lastest versions are: `v1.8.0` for `kubectl`, `v2.6.2` for `helm` and `v0.7.0` for `draft`.
+> Please note that at the time of writing this article, the latest versions are: `v1.8.0` for `kubectl`, `v2.6.2` for `helm` and `v0.7.0` for `draft`.
 
 > When a new version is available, simply change the environment variable in the Dockerfile and build again.
 

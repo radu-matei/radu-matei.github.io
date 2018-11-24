@@ -21,7 +21,7 @@ The end goal of this little project is to acquire data from the sensors, upload 
 
 What is Sense HAT?
 ------------------
-> The Sense HAT is an add-on board for Raspberry Pi, made espacially for the [Astro Pi](https://astro-pi.org/) mission to go in Space.
+> The Sense HAT is an add-on board for Raspberry Pi, made especially for the [Astro Pi](https://astro-pi.org/) mission to go in Space.
 > The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the following sensors:
     
 >    - Gyroscope

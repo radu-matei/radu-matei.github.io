@@ -142,7 +142,7 @@ We will need to add a `Handler` class that will allow the clients to connect to 
 
 Since this uses the ASP .NET Core built-in dependency injection, this class will have a constructor that passes all relevant components (in this case `WebSocketManager` - that we will not use directly).
 
-This class will handle clients connecting and disconecting, exposes public methods that clients directly call (invoke) and allows the invocation of client methods.
+This class will handle clients connecting and disconnecting, exposes public methods that clients directly call (invoke) and allows the invocation of client methods.
 
 The library uses a[ `Message` class](https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager.Common/Message.cs) to pass messages between the server and clients, which contains a `MessageType` (most likely this will be a method invocation) and a `Data` field which can be used to hold any JSON-serialized object (since it is a `string` field). This is how we will pass log messages to the clients.
 

@@ -146,7 +146,7 @@ This is a very basic web application. For every request, it will simply respond 
     }))
 
 ```
-This is the part that actually creates the response - it is a [Lambda Expression](https://msdn.microsoft.com/en-us/library/bb397687.aspx) that takes the `context` as parameter and writes the response asynchrounously and is called a [request delegate](https://docs.asp.net/en/latest/fundamentals/middleware.html#what-is-middleware).
+This is the part that actually creates the response - it is a [Lambda Expression](https://msdn.microsoft.com/en-us/library/bb397687.aspx) that takes the `context` as parameter and writes the response asynchronous and is called a [request delegate](https://docs.asp.net/en/latest/fundamentals/middleware.html#what-is-middleware).
 
 
 You can either run the application from the command line (`dotnet run`) or from VS Code.

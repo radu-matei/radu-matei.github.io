@@ -281,11 +281,11 @@ Now, in another file, `GreetingService.cs` we will add the actual implementation
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-public class GreeringService : IGreetingService
+public class GreetingService : IGreetingService
 {
     private IConfiguration Configuration {get;set;}
 
-    public GreeringService(IConfiguration configuration)
+    public GreetingService(IConfiguration configuration)
     {
         Configuration = configuration;
     }
@@ -341,7 +341,7 @@ Both the `IGreetingService` and `IConfiguration` parameters are configured in th
                                     .Build(), 
                      ServiceLifetime.Singleton));
                      
-        services.AddTransient<IGreetingService, GreeringService>();
+        services.AddTransient<IGreetingService, GreetingService>();
     }
 ```
 
@@ -388,7 +388,7 @@ public class Startup
                                     .Build(), 
                      ServiceLifetime.Singleton));
                      
-        services.AddTransient<IGreetingService, GreeringService>();
+        services.AddTransient<IGreetingService, GreetingService>();
     }
     public void Configure(IApplicationBuilder app, IGreetingService greetingService)
     {

@@ -226,7 +226,7 @@ Besides from the publicly exposed methods of the API (any public method placed i
 Registering the repository service in `Startup`
 --------------------------------------------------------------------
 
-So far, we have created an `IPostRepostitory` interface, implemented it in `PostRepository` and used it in `PostController`(without creating any instance). So if we ran the application right now and navigated to `http://localhost:5000/api/Posts/GetPosts` we would get a null reference exception simply because we haven't specified what instance of `IPostRepository` our application is supposed to use.
+So far, we have created an `IPostRepository` interface, implemented it in `PostRepository` and used it in `PostController`(without creating any instance). So if we ran the application right now and navigated to `http://localhost:5000/api/Posts/GetPosts` we would get a null reference exception simply because we haven't specified what instance of `IPostRepository` our application is supposed to use.
 
 
 

@@ -100,7 +100,7 @@ namespace ConsoleApplication
 }
 ```
 
-> In a future release, the `project` file will return to a `.csproj` extension in order to maitain compatibility with all Visual Studio and Xamarin projects. 
+> In a future release, the `project` file will return to a `.csproj` extension in order to maintain compatibility with all Visual Studio and Xamarin projects. 
 
 Calling [`dotnet restore`](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore)  will restore all dependencies of the application.
 

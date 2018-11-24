@@ -75,7 +75,7 @@ AZURE_CLIENT_ID: contains your Azure Active Directory Application Client ID
 AZURE_CLIENT_SECRET: contains your Azure Active Directory Application Secret
 ```
 
-The credentials above allow us to programatically access Azure resources through the REST API or through an SDK - in our case, we'll use the Go SDK - they are used as environment variables in the program, together with the resource group name and container group name:
+The credentials above allow us to programmatically access Azure resources through the REST API or through an SDK - in our case, we'll use the Go SDK - they are used as environment variables in the program, together with the resource group name and container group name:
 
 ```text
 RESOURCE_GROUP_NAME: the name of the resource group where the container group is deployed

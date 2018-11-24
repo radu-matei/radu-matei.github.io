@@ -28,7 +28,7 @@ Introduction
 
 > ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.
 
-> You can [follow the developent of SignalR on GitHub](https://github.com/aspnet/signalr)
+> You can [follow the development of SignalR on GitHub](https://github.com/aspnet/signalr)
 
 While ASP.NET hit version 2.0, SignalR has been in development for the better part of the last couple if years - and if you want to get an insight on new things, [I recommend watching this talk by David Fowler and Damian Edwards, the people in charge of SignalR (and the creators of it)](https://vimeo.com/204078084).
 
@@ -170,7 +170,7 @@ Let's see how it works:
 Handling connection and disconnection events
 --------------------------------------------
 
-Another thing we used to do in the old SignalR was to handle connection and disconnection events through some overriden methods in our hubs. We can still do this in an extremely similar way - below you can find the `OnConnectedAsync` and `OnDisconnectedAsync` methods:
+Another thing we used to do in the old SignalR was to handle connection and disconnection events through some overridden methods in our hubs. We can still do this in an extremely similar way - below you can find the `OnConnectedAsync` and `OnDisconnectedAsync` methods:
 
 ```csharp
 public override Task OnConnectedAsync()

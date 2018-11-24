@@ -43,7 +43,7 @@ What is .NET Core?
 
 Basically, Microsoft built a version of .NET to allow developers to write cross-platform and cloud-optimized applications.
 
-First, .NET is cross-platform. It runs on Windows, macOS and Linux, which allows the developer to share and run the exact same code between machines running different operating systems, with no changes in code and minimum or no changes in the deveopment process.
+First, .NET is cross-platform. It runs on Windows, macOS and Linux, which allows the developer to share and run the exact same code between machines running different operating systems, with no changes in code and minimum or no changes in the development process.
 (Watch out for OS specific APIs!)
 
 

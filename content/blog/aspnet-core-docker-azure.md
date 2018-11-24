@@ -108,7 +108,7 @@ Writing the Dockerfile
 
 > [More information on the Dockerfile on the Official Docker Documentation](https://docs.docker.com/engine/reference/builder/)
 
-Basically, the Dockerfile is like a recipe for building container images. It is a script composed of multiple commands executed succesively to create images based on other images.
+Basically, the Dockerfile is like a recipe for building container images. It is a script composed of multiple commands executed successively to create images based on other images.
 
 You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you [install the VS Code Docker extension](https://code.visualstudio.com/Docs/languages/dockerfile), press F1 and search for Docker, you should see something similar to:
 
@@ -159,7 +159,7 @@ To build the image, simply run the following command in the same folder with the
 ![](/img/article-photos/aspnet-core-docker-azure/docker-build-1.png)
 ![](/img/article-photos/aspnet-core-docker-azure/docker-build-2.png)
 
-You can clearly see how each step in the Dockerfile is executed succesively and how at every step an intermediate container gets created. This is done so that if the execution fails at let's say STEP 7, all progress made up to that point doesn't get lost. After every successful step executed, the previous container is removed.
+You can clearly see how each step in the Dockerfile is executed successively and how at every step an intermediate container gets created. This is done so that if the execution fails at let's say STEP 7, all progress made up to that point doesn't get lost. After every successful step executed, the previous container is removed.
 
 Running `docker images` should show you the newly created image containing your application and its dependencies (among other images that you might have).
 
@@ -174,7 +174,7 @@ Now that we built our image it's time to run a new container based on that image
 
 `docker run -d -p 8080:5000 -t aspnet-core-docker-azure`
 
-Let's examine the aruments passed along the `docker run` command:
+Let's examine the arguments passed along the `docker run` command:
 
 - `-d` - the container will run in `detached` mode, so we won't see logs from the container as output
 

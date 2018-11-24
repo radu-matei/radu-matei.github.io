@@ -130,7 +130,7 @@ We will now look at how to write the simplest Jenkinsfile that will to exactly t
 
 This Jenkinsfile makes use of having multiple containers in the same Kubernetes pod - we will have 3 containers - one based on a Docker image, one based on `kubectl` and the last based on `helm`.
 
-> You can create your own containers - in this case I used the official one for Docker and the images built by [Lachlan Evenson](https://twitter.com/LachlanEvenson), since are widely used on Docker Hub and I kind of trust Lachlan :)
+> You can create your own containers - in this case I used the official one for Docker and the images built by [Lachie Evenson](https://twitter.com/LachlanEvenson), since are widely used on Docker Hub and I kind of trust Lachie :)
 
 > Use images from the Internet at your own risk!
 

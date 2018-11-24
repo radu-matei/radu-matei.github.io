@@ -84,7 +84,7 @@ public class Test : ITest
 How to inject an `ITest` service
 ---------------------------------
 
-In order to inject a service of type `ITest`, you need to add a function in `Startup` called `ConfigureServices` that has a parameter of type `ISerciceCollection` and add the service in this collection.
+In order to inject a service of type `ITest`, you need to add a function in `Startup` called `ConfigureServices` that has a parameter of type `IServiceCollection` and add the service in this collection.
 
 ```
 public void ConfigureServices(IServiceCollection services)
@@ -124,7 +124,7 @@ In this case, the JSON section we are interested in is `services`. At this key, 
 
 The `Service` class
 -------------------
-These 3 properties are mapped into a class called `Service`. For simplicity, the `ServiceType` and `ImplementationType` propeties are of type `string`, but you can always implement a `JsonConverter` that maps them to the type `Type` (There is no immediate conversion from `string` to `Type`).
+These 3 properties are mapped into a class called `Service`. For simplicity, the `ServiceType` and `ImplementationType` properties are of type `string`, but you can always implement a `JsonConverter` that maps them to the type `Type` (There is no immediate conversion from `string` to `Type`).
 
 Since `Newtonsoft` has implemented the conversion from `string` to `enum`, we used it here to convert to `ServiceLifetime` enum from `Microsoft.Extensions.DependencyInjection`.
 
@@ -241,4 +241,4 @@ Conclusion
 This is a very basic and rudimentary way of injecting dependencies in the application. It is by no means production ready, it doesn't deal with exceptions, services that don't exist or incorrect lifetimes.
 
  
- It is only a simple alternative to registering each service manually, in code, recompiling the entire application evey time you needed to swap some services. 
+ It is only a simple alternative to registering each service manually, in code, recompiling the entire application every time you needed to swap some services. 
