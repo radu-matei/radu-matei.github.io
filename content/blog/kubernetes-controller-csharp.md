@@ -120,7 +120,7 @@ var controller = new Controller<ExampleCRD>(
         Console.WriteLine("Event type: {0} for {1}", eventType, example.Metadata.Name));
 
 var cts = new CancellationTokenSource();
-await controller.StartAsync(cts.Token).ConfigureAwait(false);
+await controller.StartAsync(cts.Token);
 ```
 
 And so we end up with a really, really simple controller, where for every change, we write the event type and name of the resource to the console. Did I say this is a very simple controller?
