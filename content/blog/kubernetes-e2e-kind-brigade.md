@@ -2,12 +2,14 @@
 author = "Radu Matei"
 categories = ["kubernetes", "brigade"]
 date = "2019-08-10"
-description = "How to set up end-to-end jobs in your cluster with Kind and Brigade"
+description = ""
 linktitle = ""
 title = "Running end-to-end tests on your Kubernetes cluster with Kind and Brigade"
 type = "post"
 featured = "kind-brigade.png"
 featuredpath = "/img/article-photos/kubernetes-e2e-kind-brigade/"
+summary = "The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade."
+images = ["/img/article-photos/kubernetes-e2e-kind-brigade/kind-brigade.png"]
 +++
 
 # What is Kind?
@@ -28,7 +30,7 @@ But what if you're running your build pipelines _in a Kubernetes cluster_? One o
 
 > **DANGER**
 
-> While configuring Kind locally, or in a CI environment is straightforward, running in a Kubernetes pod is not that well documented, and bad configuration could potentially harm your cluster. Test all of the instructions presented here before running them in any production cluster, and monitor your environments for potential resource leaks. 
+> While configuring Kind locally or in a CI environment is straightforward, running in a Kubernetes pod is not that well documented, and bad configuration could potentially harm your cluster. Test all of the instructions presented here before running them in any production cluster, and monitor your environments for potential resource leaks. 
 
 > For the ongoing discussion on documenting Kind in a Kubernetes pod, [see this issue][kind-303].
 
@@ -136,7 +138,7 @@ Now you can add your own tasks through `kind.tasks.push("your-tasks")` - you can
 
 > Note that dynamic volume provisioning doesn't currently work in Kind ([see this issue][pvc]).
 
-Note that you an also completely change the configured tasks - [check out how the steps are configured, and always ensure to delete the Kind cluster even when your tasks fail (by default, we are using Linux traps)][kind-class].
+You can also completely change the configured tasks - [check out how the steps are configured, and always ensure to delete the Kind cluster even when your tasks fail (by default, we are using Linux traps)][kind-class].
 
 Sample output from running the job:
 
@@ -169,16 +171,18 @@ kube-system   kube-proxy-lnj2s                             1/1     Running      
 
 # Conclusion
 
-We've seen how to configure Kind to run in a pod in a Kubernetes cluster, and how to abstract all of the configuration and automate running jobs by simply instantiating a `KindJob` object.
+We've seen how to configure Kind to run in a pod in a Kubernetes cluster, and how to abstract all of the configuration and automate running jobs with Brigade by simply instantiating a `KindJob` object.
 
 Check out the [instructions in the Brigade utils library on how to add it to your Brigade project][utils], and stay tuned for the release of Brigade 1.2!
+
+> Shoutout to the Kind team for the awesome project and to [Vaughn Dice](https://github.com/vdice) for coming up with the really clean solution of using Linux traps to handle cluster cleanup!
 
 [kind]: https://kind.sigs.k8s.io/
 [kind-quick-start]: https://kind.sigs.k8s.io/docs/user/quick-start/
 [kind-ci-examples]: https://github.com/kind-ci/examples
 [kind-303]: https://github.com/kubernetes-sigs/kind/issues/303
 [kind-759]: https://github.com/kubernetes-sigs/kind/issues/759
-[dockerfile-gist]: https://gist.github.com/radu-matei/
+[dockerfile-gist]: https://gist.github.com/radu-matei/56056810bb251ccb478f3f57b64b734a
 [kind-var-lib-docker]: https://github.com/kubernetes-sigs/kind/issues/625#issuecomment-505184948
 [pvc]: https://github.com/kubernetes-sigs/kind/issues/118
 

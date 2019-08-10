@@ -4,9 +4,9 @@ description = "Hi, it looks like you're trying to contact Radu!"
 date = "2017-12-12"
 +++
 
-[Email](mailto:radu@radu-matei.com)
+[Email](mailto:root@radu.sh)
 --------------------------------------------------------
-You email me at [radu@radu-matei.com](mailto:radu@radu-matei.com) - this is the easiest way to get in contact with me - however, keep in mind this is my personal account, so please don't spam :)
+You email me at [root@radu.sh](mailto:root@radu.sh) - this is the easiest way to get in contact with me - however, keep in mind this is my personal account, so please don't spam :)
 
 [GitHub](https://github.com/radu-matei)
 --------------------------------------------------

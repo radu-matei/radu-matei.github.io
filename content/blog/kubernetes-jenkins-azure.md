@@ -37,7 +37,7 @@ To follow along with this article, *you need a Kubernetes cluster* (we will use 
 
 My cluster is deployed into Azure, West Europe, but you can do the exact same steps using the Google Container Engine or your on-prem cluster (note that you will not be given public IP addresses as is the case with Azure or GKE).
 
-Now to check that everything is configured, verify your cluster information and vesions. This is my starting point:
+Now to check that everything is configured, verify your cluster information and versions. This is my starting point:
 
 ![](/img/article-photos/kubernetes-jenkins-azure/cluster-info.png)
 
@@ -61,7 +61,7 @@ This is the only file we will need to edit ourselves. Below you can find the one
 
 > [Here you can find all possible configuration for the values file, adjust it to your specific needs](https://github.com/kubernetes/charts/tree/master/stable/jenkins)!
 
-Note that this verison mounts the `/var/run/docker.sock` socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.
+Note that this version mounts the `/var/run/docker.sock` socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.
 
 > This also installs other plugins - such as Jenkins Blue Ocean.
 
