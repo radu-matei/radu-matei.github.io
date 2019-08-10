@@ -6,7 +6,7 @@ description = "Lightweight controllers for your custom resource definitions, in 
 linktitle = ""
 title = "Writing controllers for Kubernetes CRDs with C#"
 type = "post"
-summary = "The goal of this article is to show you how to use the Kubernetes C# client to write extremely simpel controllers for your Kubernetes custom resources, and start watching resources in a few lines of C#"
+summary = "The goal of this article is to show you how to use the Kubernetes C# client to write extremely simple controllers for your Kubernetes custom resources, and start watching resources in a few lines of C#"
 +++
 
 # Introduction
@@ -29,7 +29,7 @@ And since I haven't written C# in quite some time, I decided this would be a nic
 
 # Using the C# client to build a controller
 
-There is a [C# client for Kubernetes][kubernetes-csharp], whith has great examples, and we are going to use it in building our controller. Besides the usual CRUD operations that you can do with the client, you can also _watch_ for various resources - we listen on a given resource, and then we handle the events that take place:
+There is a [C# client for Kubernetes][kubernetes-csharp], which has great examples, and we are going to use it in building our controller. Besides the usual CRUD operations that you can do with the client, you can also _watch_ for various resources - we listen on a given resource, and then we handle the events that take place:
 
 ```csharp
 var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
@@ -75,7 +75,7 @@ Then, you have:
 These fields can be used to encapsulate your own business logic in the custom resource, and describe the desired and current state of the resource.
 
 
-And because we want to cast the resources we watch to some C# types, we need to have a class structure for the CRD. Luckily, the C# client comes in extrenely handy, and provides us with an object that contains the `apiVersion` and `kind`, in the [`KubernetesObject`][kubernetes-object], and an object that encapsulates the metadata, in [`V1ObjectMeta`][object-meta].
+And because we want to cast the resources we watch to some C# types, we need to have a class structure for the CRD. Luckily, the C# client comes in extremely handy, and provides us with an object that contains the `apiVersion` and `kind`, in the [`KubernetesObject`][kubernetes-object], and an object that encapsulates the metadata, in [`V1ObjectMeta`][object-meta].
 
 This means that we have to add the `spec` and (optionally) `status` for our CRD, and this is (on a high level) what the `CustomResource` class in the project looks like:
 
@@ -100,7 +100,7 @@ Creating the type for your CRD comes down to building a C# class that mirrors yo
 
 # Wrapping everything in a `Controller` class
 
-Now that we have the building blocks, we can create a library that contains the custom resource class we see above (and another class that contains some metadata about your CRD, such as group and namesapce) and build a [class for our controller][controller].
+Now that we have the building blocks, we can create a library that contains the custom resource class we see above (and another class that contains some metadata about your CRD, such as group and namespace) and build a [class for our controller][controller].
 
 We include a cancellation token, an instance of the Kubernetes client, and some metadata for the CRD, then pass a handler method to execute for changes in our custom resources, and we end up with a library that can be consumed from a C# console library as follows (for a CRD that [can be found in the repository][crd-cr]):
 
@@ -135,7 +135,7 @@ As it turns out, this was much easier than I anticipated before starting, and th
 
 But if the Rust and C# clients tell us anything about Kubernetes controllers, is that for the simplest use cases, implementing them in other languages might actually allow us to get started much easier (without having a `hack` directory in our repository and depending on executing Bash scripts to generate APIs).
 
-What other things would you need in a C# controller library for Kubernetets? Would you like to see this as a NuGet package? Feel free to [open an issue on the repository][issues], and feel free to send feedback.
+What other things would you need in a C# controller library for Kubernetes? Would you like to see this as a NuGet package? Feel free to [open an issue on the repository][issues], and feel free to send feedback.
 
 Thanks for reading!
 

@@ -4,6 +4,15 @@ description = ""
 date = "2017-11-25"
 +++
 
+2019
+====
+
+|  Date          |  Event/Conference                                             |  Talk                                                                  |
+| ---            | ---                                                           | ---                                                                    |
+|May 23          |  [KubeCon Barcelona](https://kccnceu19.sched.com/event/N7N9/deep-dive-brigade-radu-matei-microsoft)     |  [Deep Dive: Brigade](https://www.youtube.com/watch?v=Sd9S6GhUiwM)     |
+|May 22          |  [KubeCon Barcelona](https://kccnceu19.sched.com/event/N7PI/intro-brigade-radu-matei-microsoft)         |  [Introduction to Brigade](https://www.youtube.com/watch?v=NTeJzvtiLWo)	  |
+
+
 2018
 ====
 
