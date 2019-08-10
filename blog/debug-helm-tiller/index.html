@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.40.1" />
+        <meta name="generator" content="Hugo 0.56.3" />
         
 
 
@@ -32,25 +32,10 @@
 <meta property="og:description" content="Introduction Debugging the Helm CLI Debugging Tiller  Building the Tiller binary for debugging Creating the Docker image, pushing it to a registry The Helm template for our deployment Putting it all together. Start debugging with VS Code  Conclusion  Introduction In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://radu-matei.com/blog/debug-helm-tiller/" />
+<meta property="article:published_time" content="2018-04-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-04-29T00:00:00+00:00" />
 
-
-
-<meta property="article:published_time" content="2018-04-29T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2018-04-29T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
-        
-<meta itemprop="name" content="Debug Helm and Tiller using VS Code and Draft">
+        <meta itemprop="name" content="Debug Helm and Tiller using VS Code and Draft">
 <meta itemprop="description" content="Introduction Debugging the Helm CLI Debugging Tiller  Building the Tiller binary for debugging Creating the Docker image, pushing it to a registry The Helm template for our deployment Putting it all together. Start debugging with VS Code  Conclusion  Introduction In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process.">
 
 
@@ -86,14 +71,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -298,6 +286,12 @@ ga('send', 'pageview');
 
             
             <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
                 <a href="https://radu-matei.com/blog/helm-wasm/">
                     <p>Rendering Helm templates in the browser, with Web Assembly</p>
                 </a>
@@ -318,12 +312,6 @@ ga('send', 'pageview');
             <li>
                 <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">
                     <p>The state of debugging microservices on Kubernetes</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/debug-helm-tiller/">
-                    <p>Debug Helm and Tiller using VS Code and Draft</p>
                 </a>
             </li>
             
@@ -574,9 +562,9 @@ More about Helm in <a href="https://docs.helm.sh" target="_blank">the official d
 <p>In both cases, the default command executed will be <code>helm version</code> - note that you can customize the command and arguments passed to your binary, and you can set breakpoints in your Helm CLI&rsquo;s code. If you select the desired configuration and start debugging (F5), the execution of <code>helm version</code> will start. If you setup breakpoints in VS Code, the execution will be stopped and you can step in, out and over method executions or evaluate expressions and variable values:</p>
 
 
-<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
-  <iframe src="//www.youtube.com/embed/qUbkGq-RygM" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
- </div>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/qUbkGq-RygM" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
 
 
 <p>To change the command and arguments passed to the Helm CLI, simply add to the <code>args</code> property in the launch configuration.
@@ -649,12 +637,13 @@ CMD ./start.sh
 <ul>
 <li>we need a base image that either contains the Golang debugger, Delve, or install it - for simplicity, we&rsquo;re using a pre-built image with Delve, but you can create your own base image for debugging  (<strong>and you should!</strong> - you don&rsquo;t want to trust random images from the Internet)</li>
 <li>we copy the Tiller binary we built before</li>
-<li>we also copy a shell script and use it to start the container - this script will start Tiller and attach the Delve debugger to the Tiller process, creating a headless Delve server and exposing it on port 2345:</li>
-</ul>
+
+<li><p>we also copy a shell script and use it to start the container - this script will start Tiller and attach the Delve debugger to the Tiller process, creating a headless Delve server and exposing it on port 2345:</p>
 
 <pre><code>./tiller &amp; 
 dlv attach $(pgrep -x tiller | head -n 1) tiller --headless --listen=0.0.0.0:2345 --log=true
-</code></pre>
+</code></pre></li>
+</ul>
 
 <p>Now we need to configure a couple of things for Draft, in <code>draft.toml</code>:</p>
 
@@ -737,9 +726,9 @@ spec:
 <p>The <code>original-debug</code> configuration is simply a Golang remote debug configuration instructing to attach the debugger on <code>localhost:2345</code> - essentially, the extension orchestrates all the steps necessary to successfully debug your application.</p>
 
 
-<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
-  <iframe src="//www.youtube.com/embed/z6mWx4C3p7I" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
- </div>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/z6mWx4C3p7I" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
 
 
 <p>Now as you saw in the video, we&rsquo;re attached to Tiller which is deployed in Kubernetes.</p>
@@ -889,6 +878,8 @@ spec:
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -907,7 +898,7 @@ spec:
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -928,6 +919,20 @@ spec:
                     
                 
 
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
                 
                     <li>
                         <article>
@@ -985,20 +990,6 @@ spec:
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/debug-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2018-04-29'>
-                                    April 29, 2018</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -1042,7 +1033,7 @@ spec:
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">10</span>
+                                <span style="float:right;">11</span>
                             </header>
                         </article>
                     </li>
@@ -1133,6 +1124,15 @@ spec:
                             <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1242,6 +1242,8 @@ spec:
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -1260,7 +1262,7 @@ spec:
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 

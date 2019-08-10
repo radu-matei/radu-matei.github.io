@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.40.1" />
+        <meta name="generator" content="Hugo 0.56.3" />
         
 
 
@@ -30,25 +30,10 @@
 <meta property="og:description" content="Lightweight controllers for your custom resource definitions, in C#" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://radu-matei.com/blog/kubernetes-controller-csharp/" />
+<meta property="article:published_time" content="2019-05-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-05-06T00:00:00+00:00" />
 
-
-
-<meta property="article:published_time" content="2019-05-06T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2019-05-06T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
-        
-<meta itemprop="name" content="Writing controllers for Kubernetes CRDs with C#">
+        <meta itemprop="name" content="Writing controllers for Kubernetes CRDs with C#">
 <meta itemprop="description" content="Lightweight controllers for your custom resource definitions, in C#">
 
 
@@ -84,14 +69,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -296,6 +284,12 @@ ga('send', 'pageview');
 
             
             <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
                 <a href="https://radu-matei.com/blog/helm-wasm/">
                     <p>Rendering Helm templates in the browser, with Web Assembly</p>
                 </a>
@@ -316,12 +310,6 @@ ga('send', 'pageview');
             <li>
                 <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">
                     <p>The state of debugging microservices on Kubernetes</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/debug-helm-tiller/">
-                    <p>Debug Helm and Tiller using VS Code and Draft</p>
                 </a>
             </li>
             
@@ -492,7 +480,7 @@ ga('send', 'pageview');
 
 <h1 id="using-the-c-client-to-build-a-controller">Using the C# client to build a controller</h1>
 
-<p>There is a <a href="https://github.com/kubernetes-client/csharp" target="_blank">C# client for Kubernetes</a>, whith has great examples, and we are going to use it in building our controller. Besides the usual CRUD operations that you can do with the client, you can also <em>watch</em> for various resources - we listen on a given resource, and then we handle the events that take place:</p>
+<p>There is a <a href="https://github.com/kubernetes-client/csharp" target="_blank">C# client for Kubernetes</a>, which has great examples, and we are going to use it in building our controller. Besides the usual CRUD operations that you can do with the client, you can also <em>watch</em> for various resources - we listen on a given resource, and then we handle the events that take place:</p>
 
 <pre><code class="language-csharp">var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
                 group: &quot;api group&quot;,
@@ -539,7 +527,7 @@ status:
 
 <p>These fields can be used to encapsulate your own business logic in the custom resource, and describe the desired and current state of the resource.</p>
 
-<p>And because we want to cast the resources we watch to some C# types, we need to have a class structure for the CRD. Luckily, the C# client comes in extrenely handy, and provides us with an object that contains the <code>apiVersion</code> and <code>kind</code>, in the <a href="https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/IKubernetesObject.cs" target="_blank"><code>KubernetesObject</code></a>, and an object that encapsulates the metadata, in <a href="https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/generated/Models/V1ObjectMeta.cs" target="_blank"><code>V1ObjectMeta</code></a>.</p>
+<p>And because we want to cast the resources we watch to some C# types, we need to have a class structure for the CRD. Luckily, the C# client comes in extremely handy, and provides us with an object that contains the <code>apiVersion</code> and <code>kind</code>, in the <a href="https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/IKubernetesObject.cs" target="_blank"><code>KubernetesObject</code></a>, and an object that encapsulates the metadata, in <a href="https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/generated/Models/V1ObjectMeta.cs" target="_blank"><code>V1ObjectMeta</code></a>.</p>
 
 <p>This means that we have to add the <code>spec</code> and (optionally) <code>status</code> for our CRD, and this is (on a high level) what the <code>CustomResource</code> class in the project looks like:</p>
 
@@ -567,7 +555,7 @@ status:
 
 <h1 id="wrapping-everything-in-a-controller-class">Wrapping everything in a <code>Controller</code> class</h1>
 
-<p>Now that we have the building blocks, we can create a library that contains the custom resource class we see above (and another class that contains some metadata about your CRD, such as group and namesapce) and build a <a href="https://github.com/engineerd/kubecontroller-csharp/blob/article/KubeController/Controller.cs" target="_blank">class for our controller</a>.</p>
+<p>Now that we have the building blocks, we can create a library that contains the custom resource class we see above (and another class that contains some metadata about your CRD, such as group and namespace) and build a <a href="https://github.com/engineerd/kubecontroller-csharp/blob/article/KubeController/Controller.cs" target="_blank">class for our controller</a>.</p>
 
 <p>We include a cancellation token, an instance of the Kubernetes client, and some metadata for the CRD, then pass a handler method to execute for changes in our custom resources, and we end up with a library that can be consumed from a C# console library as follows (for a CRD that <a href="https://github.com/engineerd/kubecontroller-csharp/tree/article/KubeController.Sample/deploy" target="_blank">can be found in the repository</a>):</p>
 
@@ -601,7 +589,7 @@ await controller.StartAsync(cts.Token);
 
 <p>But if the Rust and C# clients tell us anything about Kubernetes controllers, is that for the simplest use cases, implementing them in other languages might actually allow us to get started much easier (without having a <code>hack</code> directory in our repository and depending on executing Bash scripts to generate APIs).</p>
 
-<p>What other things would you need in a C# controller library for Kubernetets? Would you like to see this as a NuGet package? Feel free to <a href="https://github.com/engineerd/kubecontroller-csharp/issues" target="_blank">open an issue on the repository</a>, and feel free to send feedback.</p>
+<p>What other things would you need in a C# controller library for Kubernetes? Would you like to see this as a NuGet package? Feel free to <a href="https://github.com/engineerd/kubecontroller-csharp/issues" target="_blank">open an issue on the repository</a>, and feel free to send feedback.</p>
 
 <p>Thanks for reading!</p>
 
@@ -736,6 +724,8 @@ await controller.StartAsync(cts.Token);
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -754,7 +744,7 @@ await controller.StartAsync(cts.Token);
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -775,6 +765,20 @@ await controller.StartAsync(cts.Token);
                     
                 
 
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
                 
                     <li>
                         <article>
@@ -832,20 +836,6 @@ await controller.StartAsync(cts.Token);
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/debug-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2018-04-29'>
-                                    April 29, 2018</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -889,7 +879,7 @@ await controller.StartAsync(cts.Token);
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">10</span>
+                                <span style="float:right;">11</span>
                             </header>
                         </article>
                     </li>
@@ -980,6 +970,15 @@ await controller.StartAsync(cts.Token);
                             <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1089,6 +1088,8 @@ await controller.StartAsync(cts.Token);
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -1107,7 +1108,7 @@ await controller.StartAsync(cts.Token);
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 

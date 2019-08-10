@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.40.1" />
+        <meta name="generator" content="Hugo 0.56.3" />
         
 
 
@@ -30,25 +30,10 @@
 <meta property="og:description" content="Deploy Jenkins using Helm, create Jenkins pipelines and execute builds in Kubernetes pods" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://radu-matei.com/blog/kubernetes-jenkins-azure/" />
+<meta property="article:published_time" content="2017-10-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-08T00:00:00+00:00" />
 
-
-
-<meta property="article:published_time" content="2017-10-08T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2017-10-08T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
-        
-<meta itemprop="name" content="Jenkins pipelines with Kubernetes ">
+        <meta itemprop="name" content="Jenkins pipelines with Kubernetes ">
 <meta itemprop="description" content="Deploy Jenkins using Helm, create Jenkins pipelines and execute builds in Kubernetes pods">
 
 
@@ -84,14 +69,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -296,6 +284,12 @@ ga('send', 'pageview');
 
             
             <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
                 <a href="https://radu-matei.com/blog/helm-wasm/">
                     <p>Rendering Helm templates in the browser, with Web Assembly</p>
                 </a>
@@ -316,12 +310,6 @@ ga('send', 'pageview');
             <li>
                 <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">
                     <p>The state of debugging microservices on Kubernetes</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/debug-helm-tiller/">
-                    <p>Debug Helm and Tiller using VS Code and Draft</p>
                 </a>
             </li>
             
@@ -500,7 +488,7 @@ ga('send', 'pageview');
 
 <p>My cluster is deployed into Azure, West Europe, but you can do the exact same steps using the Google Container Engine or your on-prem cluster (note that you will not be given public IP addresses as is the case with Azure or GKE).</p>
 
-<p>Now to check that everything is configured, verify your cluster information and vesions. This is my starting point:</p>
+<p>Now to check that everything is configured, verify your cluster information and versions. This is my starting point:</p>
 
 <p><img src="/img/article-photos/kubernetes-jenkins-azure/cluster-info.png" alt="" /></p>
 
@@ -520,13 +508,13 @@ ga('send', 'pageview');
 
 <p>This is the only file we will need to edit ourselves. Below you can find the one I use.</p>
 
-<script src="//gist.github.com/radu-matei/466ae82b4b269d6bb762b088683bf9e6.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/466ae82b4b269d6bb762b088683bf9e6.js"></script>
 
 <blockquote>
 <p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
 </blockquote>
 
-<p>Note that this verison mounts the <code>/var/run/docker.sock</code> socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.</p>
+<p>Note that this version mounts the <code>/var/run/docker.sock</code> socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.</p>
 
 <blockquote>
 <p>This also installs other plugins - such as Jenkins Blue Ocean.</p>
@@ -598,7 +586,7 @@ ga('send', 'pageview');
 <p><a href="https://github.com/jenkinsci/kubernetes-plugin" target="_blank">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
 </blockquote>
 
-<script src="//gist.github.com/radu-matei/376f5a2b042b0df82d7d905c9c6cf8ff.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/376f5a2b042b0df82d7d905c9c6cf8ff.js"></script>
 
 <blockquote>
 <p>Don&rsquo;t forget to use your credential ID in the Jenkinsfile!</p>
@@ -792,6 +780,8 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -810,7 +800,7 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -831,6 +821,20 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                     
                 
 
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
                 
                     <li>
                         <article>
@@ -888,20 +892,6 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/debug-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2018-04-29'>
-                                    April 29, 2018</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -945,7 +935,7 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">10</span>
+                                <span style="float:right;">11</span>
                             </header>
                         </article>
                     </li>
@@ -1036,6 +1026,15 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
                             <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1145,6 +1144,8 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -1163,7 +1164,7 @@ You might want to take a look at the new 1.8 RBAC features in Kubernetes, but ke
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 

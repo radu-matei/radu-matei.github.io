@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.40.1" />
+        <meta name="generator" content="Hugo 0.56.3" />
         
 
 
@@ -25,33 +25,18 @@
 
         <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Getting started with SignalR Alpha 2"/>
-<meta name="twitter:description" content="Table of Contents  Introduction Chat, of course Adding a C# console client Handling connection and disconnection events Working with an MVC/WebApi application Streaming Sending binary data Redis scaleout Conclusion  Introduction  ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data."/>
+<meta name="twitter:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"/>
 <meta name="twitter:site" content="@matei_radu"/>
 
         <meta property="og:title" content="Getting started with SignalR Alpha 2" />
-<meta property="og:description" content="Table of Contents  Introduction Chat, of course Adding a C# console client Handling connection and disconnection events Working with an MVC/WebApi application Streaming Sending binary data Redis scaleout Conclusion  Introduction  ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data." />
+<meta property="og:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://radu-matei.com/blog/signalr-core/" />
+<meta property="article:published_time" content="2017-11-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-11-26T00:00:00+00:00" />
 
-
-
-<meta property="article:published_time" content="2017-11-26T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2017-11-26T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
-        
-<meta itemprop="name" content="Getting started with SignalR Alpha 2">
-<meta itemprop="description" content="Table of Contents  Introduction Chat, of course Adding a C# console client Handling connection and disconnection events Working with an MVC/WebApi application Streaming Sending binary data Redis scaleout Conclusion  Introduction  ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.">
+        <meta itemprop="name" content="Getting started with SignalR Alpha 2">
+<meta itemprop="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!">
 
 
 <meta itemprop="datePublished" content="2017-11-26T00:00:00&#43;00:00" />
@@ -86,14 +71,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -298,6 +286,12 @@ ga('send', 'pageview');
 
             
             <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
                 <a href="https://radu-matei.com/blog/helm-wasm/">
                     <p>Rendering Helm templates in the browser, with Web Assembly</p>
                 </a>
@@ -318,12 +312,6 @@ ga('send', 'pageview');
             <li>
                 <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">
                     <p>The state of debugging microservices on Kubernetes</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/debug-helm-tiller/">
-                    <p>Debug Helm and Tiller using VS Code and Draft</p>
                 </a>
             </li>
             
@@ -520,32 +508,33 @@ ga('send', 'pageview');
 
 <p>This is how your <code>.csproj</code> should look like:</p>
 
-<script src="//gist.github.com/radu-matei/6446f5d4b4c7076d76e3e50622d7a00d.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/6446f5d4b4c7076d76e3e50622d7a00d.js"></script>
 
 <p>Now let&rsquo;s create our Chat Hub - essentially, it is a class that inherits the base <code>Hub</code> class from SignalR. It only has a single method, <code>Send</code>, which sends messages to all connected clients - in fact, the method tells all clients to execute their <code>broadcastMessage</code> with <code>name</code> and <code>message</code> as parameters.</p>
 
-<script src="//gist.github.com/radu-matei/5d28200e30e0bf9af6f755bc85625884.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/5d28200e30e0bf9af6f755bc85625884.js"></script>
 
 <p>Now we need to tell our app to add the SignalR service and instruct it on how to expose the chat service we just created: all you need to notice here:</p>
 
 <ul>
 <li><code>services.AddSignalR()</code> - this adds SignalR to the available services and to the dependency injection engine</li>
-<li><code>app.UseFileServer()</code> - this allows the serving of static files - we will need this once we add a simple HTML page</li>
-</ul>
+
+<li><p><code>app.UseFileServer()</code> - this allows the serving of static files - we will need this once we add a simple HTML page</p>
 
 <pre><code class="language-csharp">app.UseSignalR(routes =&gt;
 {
-    routes.MapHub&lt;ChatHub&gt;(&quot;chat&quot;);
+routes.MapHub&lt;ChatHub&gt;(&quot;chat&quot;);
 });
 </code></pre>
 
 <ul>
 <li>this instructs the app to use SignalR and to map the Hub we just created, and expose the endpoint as <code>/chat</code></li>
+</ul></li>
 </ul>
 
 <p>Below is the full <code>Startup.cs</code> file:</p>
 
-<script src="//gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js"></script>
 
 <p>Now to the client: we need to create a simple HTML page that can send messages. It will use the SignalR JavaScript client, which you can either download using <code>npm</code>: <code>npm install @aspnet/signalr-client</code>, or <a href="https://gist.github.com/radu-matei/84f12b835fbd0fbe3cbe165a70e13e34" target="_blank">use the gist from here</a>.</p>
 
@@ -561,34 +550,31 @@ ga('send', 'pageview');
 
 <ul>
 <li><code>var transport = signalR.TransportType.WebSockets;</code> - we specify that we want to use WebSockets</li>
-<li><code>var connection = new signalR.HubConnection(&quot;http://${document.location.host}/chat&quot;, { transport: transport });</code> - we create a new SignalR connection to the <code>/chat</code> endpoint we defined in <code>Startup.cs</code>, using WebSockets as the trasport</li>
-</ul>
+
+<li><p><code>var connection = new signalR.HubConnection(&quot;http://${document.location.host}/chat&quot;, { transport: transport });</code> - we create a new SignalR connection to the <code>/chat</code> endpoint we defined in <code>Startup.cs</code>, using WebSockets as the trasport</p>
 
 <pre><code class="language-javascript">connection.on('broadcastMessage', (name, message) =&gt; {
-    var liElement = document.createElement('li');
-    liElement.innerHTML = '&lt;strong&gt;' + name + '&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;' + message;
-    document.getElementById('discussion').appendChild(liElement);
+var liElement = document.createElement('li');
+liElement.innerHTML = '&lt;strong&gt;' + name + '&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;' + message;
+document.getElementById('discussion').appendChild(liElement);
 });
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>here we define and implement the <code>broadcastMessage</code> method we saw in the hub earlier - essentially, we add the message we received in an unordered list in the page</li>
-</ul>
+<li><p>here we define and implement the <code>broadcastMessage</code> method we saw in the hub earlier - essentially, we add the message we received in an unordered list in the page</p>
 
 <pre><code class="language-javascript">button.addEventListener(&quot;click&quot;, event =&gt; {
-    connection.invoke('send', name, messageInput.value);
-    messageInput.value = '';
-    messageInput.focus();
+connection.invoke('send', name, messageInput.value);
+messageInput.value = '';
+messageInput.focus();
 });
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>then we simply start the connection: <code>connection.start();</code></li>
+<li><p>then we simply start the connection: <code>connection.start();</code></p></li>
 </ul>
 
 <p>Below is the full <code>index.html</code>:</p>
 
-<script src="//gist.github.com/radu-matei/015f4bcb856659d33484adf030bde50a.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/015f4bcb856659d33484adf030bde50a.js"></script>
 
 <p>Now if we want to actually see if it works, we need to start the web app (either from Visual Studio/Code, or through <code>dotnet run</code>), then in a browser go to <code>http://localhost:5000</code>:</p>
 
@@ -611,33 +597,31 @@ ga('send', 'pageview');
 <p>Let&rsquo;s explore the most important things about the console client:</p>
 
 <ul>
-<li>we first start the connection to <code>http://localhost:5000/chat</code></li>
-</ul>
+<li><p>we first start the connection to <code>http://localhost:5000/chat</code></p>
 
 <pre><code class="language-csharp">public static async Task StartConnectionAsync()
 {
-    _connection = new HubConnectionBuilder()
-         .WithUrl(&quot;http://localhost:5000/chat&quot;)
-         .WithConsoleLogger()
-         .Build();
+_connection = new HubConnectionBuilder()
+     .WithUrl(&quot;http://localhost:5000/chat&quot;)
+     .WithConsoleLogger()
+     .Build();
 
-    await _connection.StartAsync();
+await _connection.StartAsync();
 }
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>then, we register and implement the method for <code>broadcastMessage</code>:</li>
-</ul>
+<li><p>then, we register and implement the method for <code>broadcastMessage</code>:</p>
 
 <pre><code class="language-csharp">_connection.On&lt;string, string&gt;(&quot;broadcastMessage&quot;, (name, message) =&gt;
 {
-    Console.WriteLine($&quot;{name} said: {message}&quot;);
+Console.WriteLine($&quot;{name} said: {message}&quot;);
 });
-</code></pre>
+</code></pre></li>
+</ul>
 
 <p>Below is the full <code>Program.cs</code>:</p>
 
-<script src="//gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
 
 <blockquote>
 <p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client" target="_blank">find the full implementation of the console client on GitHub</a></p>
@@ -661,15 +645,15 @@ ga('send', 'pageview');
 <ul>
 <li><p>this method invokes the <code>broadcastMessage</code> and tells everybody the connection ID of the newly connected client, then returns and continues with the regular <code>OnConnectedAsync</code> implementation from the hub</p></li>
 
-<li><p>the <code>OnDisconnectedAsync</code> method basically does the same thing</p></li>
-</ul>
+<li><p>the <code>OnDisconnectedAsync</code> method basically does the same thing</p>
 
 <pre><code>public override Task OnDisconnectedAsync(System.Exception exception)
 {
-    Clients.All.InvokeAsync(&quot;broadcastMessage&quot;, &quot;system&quot;, $&quot;{Context.ConnectionId} left the conversation&quot;);
-    return base.OnDisconnectedAsync(exception);
+Clients.All.InvokeAsync(&quot;broadcastMessage&quot;, &quot;system&quot;, $&quot;{Context.ConnectionId} left the conversation&quot;);
+return base.OnDisconnectedAsync(exception);
 }
-</code></pre>
+</code></pre></li>
+</ul>
 
 <h2 id="working-with-an-mvc-webapi-application">Working with an MVC/WebApi application</h2>
 
@@ -683,7 +667,7 @@ ga('send', 'pageview');
 
 <p>Now we add a simple <code>NotificationsHub</code> that doesn&rsquo;t have any methods - since clients will not call directly hub methods, but rather be notified from the controller.</p>
 
-<script src="//gist.github.com/radu-matei/4df09d4a3b955e697ef64bb7fba06382.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/4df09d4a3b955e697ef64bb7fba06382.js"></script>
 
 <p>Now the client is pretty much the same, the only difference is that when the button is pressed, there is no SignalR hub invocation, but a simple fetch to a controller method - and the controller is the interesting one:</p>
 
@@ -693,7 +677,7 @@ ga('send', 'pageview');
 <li><p>then, we simply call some method on the connected clients as if we were inside a hub</p></li>
 </ul>
 
-<script src="//gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js"></script>
+<script type="application/javascript" src="//gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js"></script>
 
 <blockquote>
 <p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc" target="_blank">find the MVC sample on GitHub</a></p>
@@ -719,28 +703,29 @@ ga('send', 'pageview');
 
 <ul>
 <li>in order to stream from the method, we need it to return an <code>IObservable&lt;T&gt;</code> which will send a message every second</li>
-<li>the <code>SendStreamInit</code> method is used to broadcast to all connected clients that the streaming started, and each client will handle the stream event in their specific way - we&rsquo;ll see more when implementing the clients</li>
-</ul>
+
+<li><p>the <code>SendStreamInit</code> method is used to broadcast to all connected clients that the streaming started, and each client will handle the stream event in their specific way - we&rsquo;ll see more when implementing the clients</p>
 
 <pre><code class="language-csharp">public void SendStreamInit()
 {
-    Clients.All.InvokeAsync(&quot;streamStarted&quot;);
+Clients.All.InvokeAsync(&quot;streamStarted&quot;);
 }
 
 public IObservable&lt;string&gt; StartStreaming()
 {
-    return Observable.Create(
-        async (IObserver&lt;string&gt; observer) =&gt;
+return Observable.Create(
+    async (IObserver&lt;string&gt; observer) =&gt;
+    {
+        for (int i = 0; i &lt; 10; i++)
         {
-            for (int i = 0; i &lt; 10; i++)
-            {
-                observer.OnNext($&quot;sending...{i}&quot;);
-                await Task.Delay(1000);
-            }
-        });
-    }
+            observer.OnNext($&quot;sending...{i}&quot;);
+            await Task.Delay(1000);
+        }
+    });
 }
-</code></pre>
+}
+</code></pre></li>
+</ul>
 
 <p>Now for the JavaScript client:</p>
 
@@ -1022,6 +1007,8 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -1040,7 +1027,7 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -1061,6 +1048,20 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                     
                 
 
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
                 
                     <li>
                         <article>
@@ -1118,20 +1119,6 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/debug-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2018-04-29'>
-                                    April 29, 2018</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -1175,7 +1162,7 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">10</span>
+                                <span style="float:right;">11</span>
                             </header>
                         </article>
                     </li>
@@ -1266,6 +1253,15 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
                             <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1375,6 +1371,8 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -1393,7 +1391,7 @@ var connection = new signalR.HubConnection(`http://${document.location.host}/cha
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 

@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.40.1" />
+        <meta name="generator" content="Hugo 0.56.3" />
         
 
 
@@ -30,25 +30,10 @@
 <meta property="og:description" content="What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/" />
+<meta property="article:published_time" content="2018-05-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-05-05T00:00:00+00:00" />
 
-
-
-<meta property="article:published_time" content="2018-05-05T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2018-05-05T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-
-
-
-        
-<meta itemprop="name" content="The state of debugging microservices on Kubernetes">
+        <meta itemprop="name" content="The state of debugging microservices on Kubernetes">
 <meta itemprop="description" content="What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?">
 
 
@@ -84,14 +69,17 @@
         
         
             
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-81142224-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
 
         
@@ -296,6 +284,12 @@ ga('send', 'pageview');
 
             
             <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
                 <a href="https://radu-matei.com/blog/helm-wasm/">
                     <p>Rendering Helm templates in the browser, with Web Assembly</p>
                 </a>
@@ -316,12 +310,6 @@ ga('send', 'pageview');
             <li>
                 <a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/">
                     <p>The state of debugging microservices on Kubernetes</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/debug-helm-tiller/">
-                    <p>Debug Helm and Tiller using VS Code and Draft</p>
                 </a>
             </li>
             
@@ -615,9 +603,9 @@ This is exactly what we&rsquo;re orchestrating with the <a href="https://github.
 <p>For an early preview of what the experience feels like right now, here&rsquo;s the keynote demo from KubeCon Copenhagen 2018:</p>
 
 
-<div style="position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;">
-  <iframe src="//www.youtube.com/embed/0sh2aWdfBxA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen frameborder="0" title="YouTube Video"></iframe>
- </div>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/0sh2aWdfBxA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
 
 
 <p>Here&rsquo;s what happened in the demo: using the VS Code Kubernetes extension, Helm and Draft, we are able to start two microservices, one written in Golang, one in NodeJS, create and push the container images, deploy them to Kubernetes using Helm, then attach the debuggers for Golang and NodeJS using VS Code. Then, as we make requests to our application, we can step through the NodeJS service, which creates requests to the Golang service - and we&rsquo;re able to debug that as well. Technically, we can chain as many services as we have in our system, although the the experience needs improvements on that (particularly on using a single VS Code instance).</p>
@@ -814,6 +802,8 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -832,7 +822,7 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
@@ -853,6 +843,20 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
                     
                 
 
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
                 
                     <li>
                         <article>
@@ -910,20 +914,6 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
                         </article>
                     </li>
                 
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/debug-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2018-04-29'>
-                                    April 29, 2018</time>
-                            </header>
-                        </article>
-                    </li>
-                
 
                 
                     <li>
@@ -967,7 +957,7 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
                         <article>
                             <header>
                                 <a href="/categories/kubernetes/">kubernetes</a>
-                                <span style="float:right;">10</span>
+                                <span style="float:right;">11</span>
                             </header>
                         </article>
                     </li>
@@ -1058,6 +1048,15 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
                             <header>
                                 <a href="/categories/websockets/">websockets</a>
                                 <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
                             </header>
                         </article>
                     </li>
@@ -1167,6 +1166,8 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
 
 
 
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
 
 
 
@@ -1185,7 +1186,7 @@ This comes with all of the benefits above, plus our <code>container B</code> wil
 
 
 
-<li><a href="mailto:radu@radu-matei.com" title="Email" class="fa fa-envelope"></a></li>
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
 
 
                 
