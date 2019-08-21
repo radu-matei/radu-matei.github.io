@@ -1,19 +1,11 @@
-
-
-
-    
-        
-    
-
-
-
-
 <!DOCTYPE HTML>
 
 <html>
     <head>
         
-            <title>azure Posts - Radu Matei&#39;s Blog</title>
+            
+                <title>Running Kubernetes end-to-end tests with Kind and GitHub Actions</title>
+            
         
 
         <meta charset="utf-8" />
@@ -23,27 +15,43 @@
 
 
         
+            <meta name="author" content="Radu Matei">
+        
         
             
                 <meta name="description" content="Radu M - Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
             
         
 
-        <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="azure"/>
-<meta name="twitter:description" content="Radu M - Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own."/>
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png"/>
+
+<meta name="twitter:title" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions"/>
+<meta name="twitter:description" content="Using Kubernetes in Docker in GitHub Actions"/>
 <meta name="twitter:site" content="@matei_radu"/>
 
-        <meta property="og:title" content="azure" />
-<meta property="og:description" content="Radu M - Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://radu-matei.com/categories/azure/" />
+        <meta property="og:title" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions" />
+<meta property="og:description" content="Using Kubernetes in Docker in GitHub Actions" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/kubernetes-e2e-github-actions/" />
 
-<meta property="og:updated_time" content="2017-12-14T00:00:00+00:00" />
+<meta property="og:image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png" />
+<meta property="article:published_time" content="2019-08-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-08-21T00:00:00+00:00" />
 
-        <meta itemprop="name" content="azure">
-<meta itemprop="description" content="Radu M - Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
+        <meta itemprop="name" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions">
+<meta itemprop="description" content="Using Kubernetes in Docker in GitHub Actions">
 
+
+<meta itemprop="datePublished" content="2019-08-21T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-08-21T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="810">
+
+  <meta itemprop="image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png">
+
+
+
+<meta itemprop="keywords" content="" />
 
         
 
@@ -89,6 +97,7 @@ if (!doNotTrack) {
         
         <div id="wrapper">
 
+    
     
 <header id="header">
     
@@ -156,6 +165,10 @@ if (!doNotTrack) {
     </nav>
     <nav class="main">
         <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
             
             <li class="search">
                 <a class="fa-search" href="#search">Search</a>
@@ -314,16 +327,70 @@ if (!doNotTrack) {
     
     
 </section>
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&text=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&title=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&title=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&title=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
     
     <div id="main">
-        <h1>azure</h1>
         
         
-            <article class="post">
+        <article class="post">
     <header>
     <div class="title">
         
-            <h2><a href="https://radu-matei.com/blog/aspnet-core-docker-azure/">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</a></h2>
+            <h1><a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">Running Kubernetes end-to-end tests with Kind and GitHub Actions</a></h1>
+            
         
         
     </div>
@@ -333,24 +400,237 @@ if (!doNotTrack) {
         
 
         <time class="published"
-            datetime='2016-11-26'>
-            November 26, 2016</time>
+            datetime='2019-08-21'>
+            August 21, 2019</time>
         <span class="author">Radu Matei</span>
         
-            <p>13 minute read</p>
+            <p>4 minute read</p>
         
         
     </div>
 </header>
 
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&text=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&title=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&title=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f&title=Running%20Kubernetes%20end-to-end%20tests%20with%20Kind%20and%20GitHub%20Actions" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fkubernetes-e2e-github-actions%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
     
 
-    <p>In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.</p>
+    
+        
+        
 
+
+
+
+    
+
+
+        
+
+        <a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/" class="image featured">
+            <img src="/img/article-photos/kubernetes-e2e-github-actions//kind-github.png" alt="" />
+        </a>
+    
+
+
+    <div id="content">
+        
+
+<h1 id="introduction">Introduction</h1>
+
+<blockquote>
+<p><a href="https://kind.sigs.k8s.io/" target="_blank">Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p>
+
+<p>For a <a href="https://kind.sigs.k8s.io/docs/user/quick-start/" target="_blank">quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p>
+</blockquote>
+
+<p>A few weeks ago, I wrote an <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/" target="_blank">article about running Kind in a Kubernetes cluster</a>. But you don&rsquo;t need to have an existing Kubernetes cluster in order to use Kind - you can <a href="https://github.com/kind-ci/examples" target="_blank">configure your favorite CI</a> to start a cluster using Kind, and in this short article, we&rsquo;ll have a look at how to use the latest beta of GitHub Actions to do this.</p>
+
+<blockquote>
+<p>If you&rsquo;re not in the GitHub Actions beta already, <a href="https://github.com/features/actions/signup/" target="_blank">you can sign up here</a>.</p>
+</blockquote>
+
+<h1 id="tl-dr-it-just-works">TL; DR - It just works</h1>
+
+<p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let&rsquo;s see how the configuration looks like:</p>
+
+<pre><code class="language-yaml">name: Kind
+on: [push, pull_request]
+
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Kind
+      run: |
+        export GOBIN=$(go env GOPATH)/bin
+        export PATH=$PATH:$GOBIN
+        mkdir -p $GOBIN
+
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+        chmod +x kubectl
+        mv kubectl $GOBIN
+        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64
+        chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
+
+        kind create cluster --wait 300s
+        export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
+        kubectl wait --for=condition=Ready pods --namespace kube-system
+        kubectl cluster-info
+        kubectl get pods -n kube-system
+</code></pre>
+
+<blockquote>
+<p>Note that you don&rsquo;t need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p>
+</blockquote>
+
+<p>Breaking down the the configuration file, we have:</p>
+
+<ul>
+<li>a workflow called <code>Kind</code></li>
+<li>it runs on all <code>push</code> or <code>pull_request</code> events</li>
+<li>with one job, <code>kind</code>, which runs on <code>ubuntu-latest</code> (Ubuntu 18.04)</li>
+<li>checkout the source code</li>
+<li>get the <code>kind</code> and <code>kubectl</code> binaries</li>
+<li><code>kind create cluster</code></li>
+<li>wait for the cluster to come up</li>
+</ul>
+
+<p>The only slightly interesting thing we&rsquo;re doing here is waiting for the cluster to be ready - <code>kind create cluster --wait</code> waits until the resources are ready, but just to be sure (and to show you how to wait for resources in a given namespace so you might use it later), we wait for all pods in <code>kube-system</code> to be in a <em>Ready</em> state using <code>kubectl</code>.</p>
+
+<pre><code> ✓ Installing StorageClass 💾
+ ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
+ ✓ Ready after 53s 💚
+
+pod/coredns-5c98db65d4-658bm condition met
+pod/coredns-5c98db65d4-bjcfh condition met
+pod/kindnet-wdglm condition met
+pod/kube-proxy-7gd45 condition met
+
+Kubernetes master is running at https://127.0.0.1:33687
+KubeDNS is running at https://127.0.0.1:33687/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+NAMESPACE     NAME                       READY   STATUS    RESTARTS   AGE
+kube-system   coredns-5c98db65d4-658bm   1/1     Running   0          47s
+kube-system   coredns-5c98db65d4-bjcfh   1/1     Running   0          47s
+kube-system   kindnet-wdglm              1/1     Running   1          47s
+kube-system   kube-proxy-7gd45           1/1     Running   0          47s
+</code></pre>
+
+<blockquote>
+<p>Note that depending on your cluster configuration you might have to wait for additional resources to be in a <em>Ready</em> state before using it.</p>
+</blockquote>
+
+<h1 id="using-helm-3">Using Helm 3</h1>
+
+<p>Now that the cluster is ready, you can start configuring your usual toolchain - let&rsquo;s see how we would use the latest Helm 3 pre-release (yay for <a href="https://helm.sh/blog/helm-3-preview-pt2/" target="_blank">no more Tiller</a>):</p>
+
+<pre><code>export HELM_PLATFORM=linux-amd64 &amp;&amp; export HELM_VERSION=helm-v3.0.0-alpha.2
+wget https://get.helm.sh/$HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; tar -xvzf $HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; rm -rf $HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; mv $HELM_PLATFORM/helm $GOBIN/helm3 &amp;&amp; chmod +x $GOBIN/helm3
+helm3 init &amp;&amp; helm3 repo update &amp;&amp; helm3 install ni stable/nginx-ingress
+kubectl get pods
+</code></pre>
+
+<blockquote>
+<p>Note that if you&rsquo;re using Helm 2, <a href="https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions" target="_blank">it already comes configured on the GitHub workers</a>.</p>
+</blockquote>
+
+<p>In this example, we just install a chart from the stable repository:</p>
+
+<pre><code>$HELM_HOME has been configured at /home/runner/.helm.
+Happy Helming!
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;stable&quot; chart repository
+Update Complete. ⎈ Happy Helming!⎈ 
+
+NAME: ni
+LAST DEPLOYED: 2019-08-21 10:24:48.635109582 +0000 UTC m=+1.216598463
+NAMESPACE: default
+STATUS: deployed
+
+NOTES:
+The nginx-ingress controller has been installed.
+It may take a few minutes for the LoadBalancer IP to be available.
+You can watch the status by running 'kubectl --namespace default get services -o wide -w ni-nginx-ingress-controller'
+
+If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: &lt;base64 encoded cert&gt;
+    tls.key: &lt;base64 encoded key&gt;
+  type: kubernetes.io/tls
+
+NAME                                                READY   STATUS              RESTARTS   AGE
+ni-nginx-ingress-controller-64845d9cd4-fzqjt        0/1     ContainerCreating   0          0s
+ni-nginx-ingress-default-backend-77f8c99775-smr4p   0/1     ContainerCreating   0          0s
+</code></pre>
+
+<p>If your workload is using a persistent volume, the deployment will currently fail, <a href="https://github.com/kubernetes-sigs/kind/issues/118" target="_blank">since Kind does not have support for dynamic volume provisioning</a>, which is planned for the next version.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Running Kind in GitHub Actions is straightforward - get the right binaries, create a cluster, then configure your usual toolchain.
+Thanks for reading!</p>
+
+    </div>
+        
+
+        
     <footer>
-        <ul class="actions">
-            <li><a href="https://radu-matei.com/blog/aspnet-core-docker-azure/" class="button big">Continue Reading</a></li>
-        </ul>
         <ul class="stats">
     
         
@@ -363,7 +643,7 @@ if (!doNotTrack) {
                     
 
                     
-                        Categories
+                        Category
                     
                 
             </li>
@@ -372,97 +652,47 @@ if (!doNotTrack) {
 
     
     
-        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
-    
-        <li><a href='/categories/docker'>docker</a></li>
-    
-        <li><a href='/categories/azure'>azure</a></li>
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
     
 </ul>
 
     </footer>
 </article>
-
-        
-            <article class="post">
-    <header>
-    <div class="title">
-        
-            <h2><a href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/">ASP.NET Core MVC and SignalR Core</a></h2>
-        
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2016-09-09'>
-            September 9, 2016</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>9 minute read</p>
-        
-        
-    </div>
-</header>
-
-    
-
-    <p>In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!</p>
-
-    <footer>
-        <ul class="actions">
-            <li><a href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/" class="button big">Continue Reading</a></li>
-        </ul>
-        <ul class="stats">
-    
-        
-
-        
-        
-            <li>
-                
-                
-                    
-
-                    
-                        Categories
-                    
-                
-            </li>
-        
-    
-
-    
-    
-        <li><a href='/categories/aspnet-core'>aspnet-core</a></li>
-    
-        <li><a href='/categories/azure'>azure</a></li>
-    
-        <li><a href='/categories/signalr'>signalr</a></li>
-    
-</ul>
-
-    </footer>
-</article>
-
-        
-
-        
 <ul class="actions pagination">
     
-        <li><a href="/categories/azure/"
-                class="button big previous">Previous Page</a></li>
+        <li><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/"
+                class="button big previous">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></li>
     
 
-    
-        <li><a href="#" class="disabled button big next">Next Page</a></li>
     
 </ul>
 
+
+<article class="post">
+    <div id="disqus_thread"></div>
+
+
+<script type="text/javascript">
+    var disqus_shortname = 'radu-matei';
+    var disqus_identifier = "https://radu-matei.com/blog/kubernetes-e2e-github-actions/";
+    var disqus_title = "Running Kubernetes end-to-end tests with Kind and GitHub Actions";
+    var disqus_url = "Running Kubernetes end-to-end tests with Kind and GitHub Actions";
+
+    var disqus_config = function () {
+        this.page.url = "https://radu-matei.com/blog/kubernetes-e2e-github-actions/";  
+        this.page.identifier = "https://radu-matei.com/blog/kubernetes-e2e-github-actions/"; 
+    };
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</article>
     </div>
+         
     
 <section id="sidebar">
 
@@ -481,9 +711,6 @@ if (!doNotTrack) {
                 </header>
             
             <ul class="icons">
-                
-                    <li><a href="https://radu-matei.com/categories/azure/index.xml" type="application/rss+xml"
-                        target="_blank" title="RSS" class="fa fa-rss"></a></li>
                 
                 
                     
@@ -848,9 +1075,6 @@ if (!doNotTrack) {
     
         <section id="footer">
             <ul class="icons">
-                
-                    <li><a href="https://radu-matei.com/categories/azure/index.xml" type="application/rss+xml"
-                        target="_blank" title="RSS" class="fa fa-rss"></a></li>
                 
                 
                     
