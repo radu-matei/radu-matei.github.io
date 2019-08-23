@@ -45,7 +45,7 @@
 
 <meta itemprop="datePublished" content="2019-08-21T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-08-21T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="810">
+<meta itemprop="wordCount" content="813">
 
   <meta itemprop="image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png">
 
@@ -292,6 +292,12 @@ if (!doNotTrack) {
 
             
             <li>
+                <a href="https://radu-matei.com/blog/building-github-actions/">
+                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
+                </a>
+            </li>
+            
+            <li>
                 <a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">
                     <p>Running Kubernetes end-to-end tests with Kind and GitHub Actions</p>
                 </a>
@@ -312,12 +318,6 @@ if (!doNotTrack) {
             <li>
                 <a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">
                     <p>Writing controllers for Kubernetes CRDs with C#</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/filter-k8s-logs/">
-                    <p>Filter secrets from Kubernetes logs</p>
                 </a>
             </li>
             
@@ -516,14 +516,12 @@ jobs:
         mkdir -p $GOBIN
 
         curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-        chmod +x kubectl
-        mv kubectl $GOBIN
-        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64
-        chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
+        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
+        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
 
         kind create cluster --wait 300s
         export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
-        kubectl wait --for=condition=Ready pods --namespace kube-system
+        kubectl wait --for=condition=Ready pods --all --namespace kube-system
         kubectl cluster-info
         kubectl get pods -n kube-system
 </code></pre>
@@ -643,7 +641,7 @@ Thanks for reading!</p>
                     
 
                     
-                        Category
+                        Categories
                     
                 
             </li>
@@ -653,6 +651,8 @@ Thanks for reading!</p>
     
     
         <li><a href='/categories/kubernetes'>kubernetes</a></li>
+    
+        <li><a href='/categories/github'>github</a></li>
     
 </ul>
 
@@ -664,6 +664,9 @@ Thanks for reading!</p>
                 class="button big previous">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></li>
     
 
+    
+        <li><a href="https://radu-matei.com/blog/building-github-actions/"
+                class="button big next">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></li>
     
 </ul>
 
@@ -797,6 +800,20 @@ Thanks for reading!</p>
                     <li>
                         <article>
                             <header>
+                                <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-23'>
+                                    August 23, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
                                 <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">Running Kubernetes end-to-end tests with Kind and GitHub Actions</a></h3>
                                 
                                     
@@ -846,20 +863,6 @@ Thanks for reading!</p>
                                 <time class="published" datetime=
                                     '2019-05-06'>
                                     May 6, 2019</time>
-                            </header>
-                        </article>
-                    </li>
-                
-                    <li>
-                        <article>
-                            <header>
-                                <h3><a href="https://radu-matei.com/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a></h3>
-                                
-                                    
-                                
-                                <time class="published" datetime=
-                                    '2018-08-20'>
-                                    August 20, 2018</time>
                             </header>
                         </article>
                     </li>
@@ -970,6 +973,15 @@ Thanks for reading!</p>
                         <article>
                             <header>
                                 <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/github/">github</a>
                                 <span style="float:right;">2</span>
                             </header>
                         </article>
