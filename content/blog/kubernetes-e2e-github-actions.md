@@ -12,6 +12,59 @@ summary = "Using Kubernetes in Docker in GitHub Actions"
 images = ["/img/article-photos/kubernetes-e2e-github-actions/kind-github.png"]
 +++
 
+# [The Kind GitHub Action][kind]
+
+[![](/img/article-photos/building-github-actions/marketplace.PNG)][kind-action]
+
+
+To configure a Kubernetes cluster in your GitHub Actions in a single step, you can use the new [`@engineerd/setup-kind`][kind-action] action:
+
+```
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: engineerd/setup-kind@v0.1.0
+    - name: Testing
+      run: |
+        export KUBECONFIG="$(kind get kubeconfig-path)"
+        kubectl cluster-info
+```
+
+Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to `kind create cluster`:
+
+```
+Creating cluster "kind" ...
+ ✓ Ensuring node image (kindest/node:v1.15.3) 🖼
+ ✓ Preparing nodes 📦📦📦📦📦📦📦
+ ✓ Configuring the external load balancer ⚖️
+ ✓ Creating kubeadm config 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
+ ✓ Joining more control-plane nodes 🎮
+ ✓ Joining worker nodes 🚜
+ ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
+Cluster creation complete. 
+
+Kubernetes master is running at https://127.0.0.1:44867
+KubeDNS is running at https://127.0.0.1:44867/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+$ kubectl get nodes
+NAME                  STATUS     ROLES    AGE     VERSION
+kind-control-plane    Ready      master   2m42s   v1.15.3
+kind-control-plane2   Ready      master   2m11s   v1.15.3
+kind-control-plane3   Ready      master   65s     v1.15.3
+kind-worker           NotReady   <none>   28s     v1.15.3
+kind-worker2          NotReady   <none>   28s     v1.15.3
+kind-worker3          NotReady   <none>   28s     v1.15.3
+```
+> When creating multi-node clusters, make sure you wait for the nodes to become available - this is still a work in progress that will be fixed in future versions.
+
+> EDIT: See [the article about building reusable GitHub Actions](https://radu-matei.com/blog/building-github-actions/).
+
+
 # Introduction
 
 > [Kind, or Kubernetes In Docker][kind], is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).
@@ -154,3 +207,5 @@ Thanks for reading!
 [helm-blog]: https://helm.sh/blog/helm-3-preview-pt2/
 [software-workers]: https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions
 [kind-pvc]: https://github.com/kubernetes-sigs/kind/issues/118
+
+[kind-action]: https://github.com/marketplace/actions/kind-kubernetes-in-docker-action

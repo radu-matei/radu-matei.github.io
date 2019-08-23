@@ -1,0 +1,1171 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>Kubernetes 1.8 on Azure</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.57.2" />
+        
+
+
+        
+            <meta name="author" content="Radu Matei">
+        
+        
+            <meta name="description" content="Deploy Kubernetes 1.8 on Azure using acs-engine">
+        
+
+        <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes 1.8 on Azure"/>
+<meta name="twitter:description" content="Deploy Kubernetes 1.8 on Azure using acs-engine"/>
+<meta name="twitter:site" content="@matei_radu"/>
+
+        <meta property="og:title" content="Kubernetes 1.8 on Azure" />
+<meta property="og:description" content="Deploy Kubernetes 1.8 on Azure using acs-engine" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/k8s18-azure/" />
+<meta property="article:published_time" content="2017-10-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-06T00:00:00+00:00" />
+
+        <meta itemprop="name" content="Kubernetes 1.8 on Azure">
+<meta itemprop="description" content="Deploy Kubernetes 1.8 on Azure using acs-engine">
+
+
+<meta itemprop="datePublished" content="2017-10-06T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-10-06T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1164">
+
+
+
+<meta itemprop="keywords" content="" />
+
+        
+
+        
+
+        
+        
+            
+        
+
+        
+        
+            <link rel="stylesheet" href="/css/google-font.css" />
+            <link rel="stylesheet" href="/css/font-awesome.min.css" />
+            <link rel="stylesheet" href="/css/main.css" />
+            <link rel="stylesheet" href="/css/add-on.css" />
+            <link rel="stylesheet" href="/css/monokai-sublime.css">
+        
+
+        
+
+        
+        
+        
+            
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+        
+    </head>
+    <body>
+
+        
+        <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+    <h2><a href="/">Radu M</i></a></h2>
+    
+
+    <nav class="links">
+        <ul>
+            
+            
+            
+            <li>
+                <a href="/blog" >
+                    
+                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/about" >
+                    
+                    <i class="fa fa-smile-o">&nbsp;</i>About
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/speaking" >
+                    
+                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/contact" >
+                    
+                    <i class="fa fa-envelope-o">&nbsp;</i>Contact
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://github.com/radu-matei"  target="_blank" >
+                    
+                    <i class="fa fa-github">&nbsp;</i>Open Source
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://twitter.com/matei_radu"  target="_blank" >
+                    
+                    <i class="fa fa-twitter">&nbsp;</i>Tweets
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="q" value="site:https://radu-matei.com">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+    <section>
+        <form class="search" method="get" action="//google.com/search">
+            <input type="text" name="q" placeholder="Search" />
+            <input type="hidden" name="q" value="site:https://radu-matei.com">
+        </form>
+    </section>
+
+    
+    <section>
+        <ul class="links">
+            
+            
+            
+            <li>
+                <a href="/blog" >
+                    <h3>
+                        
+                        <i class="fa fa-newspaper-o">&nbsp;</i>
+                        
+                        Blog
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/about" >
+                    <h3>
+                        
+                        <i class="fa fa-smile-o">&nbsp;</i>
+                        
+                        About
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/speaking" >
+                    <h3>
+                        
+                        <i class="fa fa-comments-o">&nbsp;</i>
+                        
+                        Speaking
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/contact" >
+                    <h3>
+                        
+                        <i class="fa fa-envelope-o">&nbsp;</i>
+                        
+                        Contact
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://github.com/radu-matei"  target="_blank" >
+                    <h3>
+                        
+                        <i class="fa fa-github">&nbsp;</i>
+                        
+                        Open Source
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://twitter.com/matei_radu"  target="_blank" >
+                    <h3>
+                        
+                        <i class="fa fa-twitter">&nbsp;</i>
+                        
+                        Tweets
+                    </h3>
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+    <section>
+        <ul class="links">
+            <header>
+                <h3>Recent Posts</h3>
+            </header>
+            
+            
+            
+
+            
+            <li>
+                <a href="https://radu-matei.com/blog/building-github-actions/">
+                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">
+                    <p>Running Kubernetes end-to-end tests with Kind and GitHub Actions</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/helm-wasm/">
+                    <p>Rendering Helm templates in the browser, with Web Assembly</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">
+                    <p>Writing controllers for Kubernetes CRDs with C#</p>
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+    
+</section>
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&text=Kubernetes%201.8%20on%20Azure&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&title=Kubernetes%201.8%20on%20Azure" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&title=Kubernetes%201.8%20on%20Azure" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&title=Kubernetes%201.8%20on%20Azure" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+    <header>
+    <div class="title">
+        
+            <h1><a href="https://radu-matei.com/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a></h1>
+            
+        
+        
+            <p>Deploy Kubernetes 1.8 on Azure using acs-engine</p>
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2017-10-06'>
+            October 6, 2017</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>6 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&text=Kubernetes%201.8%20on%20Azure&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&title=Kubernetes%201.8%20on%20Azure" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&title=Kubernetes%201.8%20on%20Azure" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f&title=Kubernetes%201.8%20on%20Azure" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fk8s18-azure%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
+
+    <div id="content">
+        
+
+<h1 id="table-of-content">Table of Content</h1>
+
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#deploying-orchestrator-clusters-in-azure">Deploying orchestrator clusters in Azure</a></li>
+<li><a href="#getting-the-acs-engine-binary">Getting the acs-engine binary</a></li>
+<li><a href="#deploy-the-cluster">Deploy the cluster</a></li>
+<li><a href="#conclusion-feedback">Conclusion and feedback</a></li>
+</ul>
+
+<h1 id="prerequisites">Prerequisites</h1>
+
+<p>This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank">create a free account and get $200 for 12 months</a>.</p>
+
+<p>This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.</p>
+
+<blockquote>
+<p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p>
+
+<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank">Azure Pricing Calculator</a></p>
+</blockquote>
+
+<p><img src="/img/article-photos/k8s18-azure/pricing.png" alt="" /></p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. <a href="http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html" target="_blank">You can read the full blog post that announces the release here</a> and you can see <a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0" target="_blank">the release on GitHub</a> and the <a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180" target="_blank">associated changelog with all new features</a>.</p>
+
+<p>In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.</p>
+
+<p>If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can <a href="#getting-the-acs-engine-binary">skip the following section and go directly to where the action actually starts.</a></p>
+
+<h1 id="deploying-orchestrator-clusters-in-azure">Deploying orchestrator clusters in Azure</h1>
+
+<p>There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/" target="_blank">deploy a Kubernetes cluster</a>). <a href="https://azure.microsoft.com/en-us/services/container-service/" target="_blank">Azure Container Service</a> allows you to easily <a href="https://docs.microsoft.com/en-us/azure/container-service/" target="_blank">deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the <code>az</code> command line</a>. This is the way to go if you don&rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.</p>
+
+<p>Then there is a tool called <a href="https://github.com/azure/acs-engine" target="_blank"><code>acs-engine</code></a>. This is basically the &ldquo;engine&rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.</p>
+
+<p><code>acs-engine</code> takes a <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md" target="_blank">cluster definition file</a> where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates" target="_blank">ARM (Azure Resource Manager) templates</a> that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).</p>
+
+<p>Kubernetes 1.8 has just been released, and together with it came <a href="https://github.com/Azure/acs-engine/releases" target="_blank">v0.8.0 of <code>acs-engine</code></a> with support for Kubernetes 1.8.</p>
+
+<p>You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).</p>
+
+<h1 id="getting-the-acs-engine-binary">Getting the acs-engine binary</h1>
+
+<p>In this step all you need to do is download the the binary associated with v0.8.0 of <code>acs-engine</code> for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.</p>
+
+<p>First you need to download the GitHub release archive for Linux:</p>
+
+<p><code>wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz</code></p>
+
+<p>Then, you need to unarchive it:</p>
+
+<p><code>tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz</code></p>
+
+<p>This will create a folder called <code>acs-engine-v0.8.0-linux-amd64</code>, and inside it you will find (among the license and the readme) the <code>acs-engine</code> binary.</p>
+
+<p><img src="/img/article-photos/k8s18-azure/acs-engine-shell.png" alt="" /></p>
+
+<p>Now you only need to put it in your path (or move it to a directory that is in your path) and you have the <code>acs-engine</code> binary accessible from anywhere.</p>
+
+<p>We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.</p>
+
+<h1 id="deploy-the-cluster">Deploy the cluster</h1>
+
+<p>This is how a typical cluster definition file looks for Kubernetes. Compared to <a href="https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json" target="_blank">the example offered in the repo</a>, this only adds the <code>orchestratorRelease</code> property and sets it to <code>1.8</code>.</p>
+
+<script type="application/javascript" src="https://gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js"></script>
+
+
+<p>The great thing about this version of <code>acs-engine</code> is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using <code>acs-engine</code> and deploy them with the <code>az</code> command line):</p>
+
+<ul>
+<li>an Azure subscription id (you can find it using <code>az account show</code>)</li>
+<li>a DNS prefix for your cluster</li>
+<li>the location of your cluster</li>
+
+<li><p>the cluster definition file from above</p>
+
+<pre><code>acs-engine deploy --subscription-id &lt;your-subscription-id&gt; \
+--dns-prefix &lt;your-dns-prefix&gt; --location westeurope \
+--auto-suffix --api-model kubernetes18.json
+</code></pre></li>
+</ul>
+
+<blockquote>
+<p>Note the <code>orchestratorRelease</code> property in the JSON file set to <code>1.8</code>!
+Note that it automatically creates all assets for you including a service principal and a resource group.</p>
+
+<p>Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elsewhere, the will be another step involved where you login to <code>aka.ms/devicelogin</code>.</p>
+</blockquote>
+
+<p><img src="/img/article-photos/k8s18-azure/shell.png" alt="" /></p>
+
+<p>After the deployment succeeds, you should see a resource group in your subscription with all your Kubernetes assets:</p>
+
+<p><img src="/img/article-photos/k8s18-azure/resource-group.png" alt="" /></p>
+
+<p>The output of the command above is an <code>_output</code> folder where you have your SSH keys and the <code>kubeconfig</code> to access the cluster.</p>
+
+<p>Now to access the cluster.</p>
+
+<blockquote>
+<p>Depending on which version of <code>kubectl</code> you have installed, you might want to <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl" target="_blank">upgrade to 1.8 as it is detailed here</a>.</p>
+</blockquote>
+
+<p>Now you need to point your <code>kubectl</code> to the <code>kubeconfig</code> file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:</p>
+
+<p><code>export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json</code></p>
+
+<p>At this point you can use <code>kubectl</code> to get information about your cluster and your nodes:</p>
+
+<p><code>kubectl get nodes</code></p>
+
+<p><img src="/img/article-photos/k8s18-azure/k8s18.png" alt="" /></p>
+
+<blockquote>
+<p>Note the <code>v1.8.0</code>!</p>
+</blockquote>
+
+<p>Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!</p>
+
+<h1 id="configure-kubectl-from-outside-the-azure-cloud-shell">Configure <code>kubectl</code> from outside the Azure Cloud Shell</h1>
+
+<p>Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the <code>_output</code> directory from where you executed the <code>acs-engine deploy</code> command.
+You will want to have access to your cluster from outside the browser (for obvious reasons), so you will have to download the certificates and keys.</p>
+
+<p>After watching <a href="https://channel9.msdn.com/Shows/Azure-Friday/Azure-Cloud-Shell" target="_blank">this video on Channel9 explaining Azure Cloud Shell</a>, you simply need to put your files in <code>/home/&lt;your-username&gt;/clouddrive</code>. Then you will find them in the Azure Storage account (more specifically in the the File Share) associated with your Cloud Shell.</p>
+
+<blockquote>
+<p>If you don&rsquo;t want to manually download each file (and you don&rsquo;t have to mount the share), simply make an archive of the entire folder download it.</p>
+</blockquote>
+
+<p>Then, point your local <code>kubectl</code> to the <code>kubeconfig.&lt;azure-location&gt;.json</code> file and you have access to your cluster.</p>
+
+<blockquote>
+<p>Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, <a href="https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/" target="_blank">as described in the Bitnami documentation</a>.</p>
+</blockquote>
+
+<h1 id="conclusion-feedback">Conclusion, feedback</h1>
+
+<p>In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell.</p>
+
+<p>If you have any ideas, comments or feedback, please use the comments below :)</p>
+
+    </div>
+        
+
+        
+    <footer>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+                        Categories
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
+    
+        <li><a href='/categories/azure'>azure</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+<ul class="actions pagination">
+    
+        <li><a href="https://radu-matei.com/blog/hybrid-swarmmode/"
+                class="button big previous">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</a></li>
+    
+
+    
+        <li><a href="https://radu-matei.com/blog/k8s-helm-draft-azure/"
+                class="button big next">Get started with Helm and Draft for Kubernetes</a></li>
+    
+</ul>
+
+
+<article class="post">
+    <div id="disqus_thread"></div>
+
+
+<script type="text/javascript">
+    var disqus_shortname = 'radu-matei';
+    var disqus_identifier = "https://radu-matei.com/blog/k8s18-azure/";
+    var disqus_title = "Kubernetes 1.8 on Azure";
+    var disqus_url = "Kubernetes 1.8 on Azure";
+
+    var disqus_config = function () {
+        this.page.url = "https://radu-matei.com/blog/k8s18-azure/";  
+        this.page.identifier = "https://radu-matei.com/blog/k8s18-azure/"; 
+    };
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</article>
+    </div>
+         
+    
+<section id="sidebar">
+
+    
+        <section id="intro">
+            
+            
+                
+                    <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
+                
+            
+            
+                <header>
+                   <a href="/"> <h2>Radu M</h2></a>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
+                </header>
+            
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <ul class="posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-23'>
+                                    August 23, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">Running Kubernetes end-to-end tests with Kind and GitHub Actions</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-21'>
+                                    August 21, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/helm-wasm/">Rendering Helm templates in the browser, with Web Assembly</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-05-11'>
+                                    May 11, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">Writing controllers for Kubernetes CRDs with C#</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-05-06'>
+                                    May 6, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+
+                
+                    <li>
+                        <ul class="actions">
+                            <li><a href=
+                            
+                                /blog/
+                            
+                            class="button">View more posts</a></li>
+                        </ul>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+    
+    
+    
+        <section id="categories">
+            <ul class="posts">
+                <header>
+                    <h3><a href="/categories/">Categories</a></h3>
+                </header>
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/kubernetes/">kubernetes</a>
+                                <span style="float:right;">12</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/aspnet-core/">aspnet-core</a>
+                                <span style="float:right;">11</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/azure/">azure</a>
+                                <span style="float:right;">7</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/docker/">docker</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/signalr/">signalr</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dependency-injection/">dependency-injection</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dotnet-core/">dotnet-core</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/github/">github</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/websockets/">websockets</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/csharp/">csharp</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/grpc/">grpc</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/iot/">iot</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/jenkins/">jenkins</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/wasm/">wasm</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/windows-containers/">windows-containers</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+            </ul>
+        </section>
+    
+
+    
+        
+
+    
+        <section id="footer">
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+        </section>
+
+</section>
+
+            </div>
+        <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+        
+        
+
+        
+        
+            
+        
+
+        
+        
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/skel.min.js"></script>
+            <script src="/js/util.js"></script>
+            <script src="/js/main.js"></script>
+            <script src="/js/backToTop.js"></script>
+            <script src="/js/highlight.pack.js"></script>
+        
+
+        
+
+            
+            <script>hljs.initHighlightingOnLoad();</script>
+            
+
+            
+    </body>
+</html>
+

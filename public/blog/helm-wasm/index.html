@@ -1,0 +1,1146 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>Rendering Helm templates in the browser, with Web Assembly</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.57.2" />
+        
+
+
+        
+            <meta name="author" content="Radu Matei">
+        
+        
+            
+                <meta name="description" content="Radu M - Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
+            
+        
+
+        <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Rendering Helm templates in the browser, with Web Assembly"/>
+<meta name="twitter:description" content="Introduction I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."/>
+<meta name="twitter:site" content="@matei_radu"/>
+
+        <meta property="og:title" content="Rendering Helm templates in the browser, with Web Assembly" />
+<meta property="og:description" content="Introduction I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/helm-wasm/" />
+<meta property="article:published_time" content="2019-05-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-05-11T00:00:00+00:00" />
+
+        <meta itemprop="name" content="Rendering Helm templates in the browser, with Web Assembly">
+<meta itemprop="description" content="Introduction I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out.">
+
+
+<meta itemprop="datePublished" content="2019-05-11T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-05-11T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="925">
+
+
+
+<meta itemprop="keywords" content="" />
+
+        
+
+        
+
+        
+        
+            
+        
+
+        
+        
+            <link rel="stylesheet" href="/css/google-font.css" />
+            <link rel="stylesheet" href="/css/font-awesome.min.css" />
+            <link rel="stylesheet" href="/css/main.css" />
+            <link rel="stylesheet" href="/css/add-on.css" />
+            <link rel="stylesheet" href="/css/monokai-sublime.css">
+        
+
+        
+
+        
+        
+        
+            
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+        
+    </head>
+    <body>
+
+        
+        <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+    <h2><a href="/">Radu M</i></a></h2>
+    
+
+    <nav class="links">
+        <ul>
+            
+            
+            
+            <li>
+                <a href="/blog" >
+                    
+                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/about" >
+                    
+                    <i class="fa fa-smile-o">&nbsp;</i>About
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/speaking" >
+                    
+                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/contact" >
+                    
+                    <i class="fa fa-envelope-o">&nbsp;</i>Contact
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://github.com/radu-matei"  target="_blank" >
+                    
+                    <i class="fa fa-github">&nbsp;</i>Open Source
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://twitter.com/matei_radu"  target="_blank" >
+                    
+                    <i class="fa fa-twitter">&nbsp;</i>Tweets
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="q" value="site:https://radu-matei.com">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+    <section>
+        <form class="search" method="get" action="//google.com/search">
+            <input type="text" name="q" placeholder="Search" />
+            <input type="hidden" name="q" value="site:https://radu-matei.com">
+        </form>
+    </section>
+
+    
+    <section>
+        <ul class="links">
+            
+            
+            
+            <li>
+                <a href="/blog" >
+                    <h3>
+                        
+                        <i class="fa fa-newspaper-o">&nbsp;</i>
+                        
+                        Blog
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/about" >
+                    <h3>
+                        
+                        <i class="fa fa-smile-o">&nbsp;</i>
+                        
+                        About
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/speaking" >
+                    <h3>
+                        
+                        <i class="fa fa-comments-o">&nbsp;</i>
+                        
+                        Speaking
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/contact" >
+                    <h3>
+                        
+                        <i class="fa fa-envelope-o">&nbsp;</i>
+                        
+                        Contact
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://github.com/radu-matei"  target="_blank" >
+                    <h3>
+                        
+                        <i class="fa fa-github">&nbsp;</i>
+                        
+                        Open Source
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://twitter.com/matei_radu"  target="_blank" >
+                    <h3>
+                        
+                        <i class="fa fa-twitter">&nbsp;</i>
+                        
+                        Tweets
+                    </h3>
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+    <section>
+        <ul class="links">
+            <header>
+                <h3>Recent Posts</h3>
+            </header>
+            
+            
+            
+
+            
+            <li>
+                <a href="https://radu-matei.com/blog/building-github-actions/">
+                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">
+                    <p>Running Kubernetes end-to-end tests with Kind and GitHub Actions</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/helm-wasm/">
+                    <p>Rendering Helm templates in the browser, with Web Assembly</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">
+                    <p>Writing controllers for Kubernetes CRDs with C#</p>
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+    
+</section>
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&text=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&title=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&title=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&title=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+    <header>
+    <div class="title">
+        
+            <h1><a href="https://radu-matei.com/blog/helm-wasm/">Rendering Helm templates in the browser, with Web Assembly</a></h1>
+            
+        
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2019-05-11'>
+            May 11, 2019</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>5 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&text=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&title=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&title=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f&title=Rendering%20Helm%20templates%20in%20the%20browser%2c%20with%20Web%20Assembly" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fhelm-wasm%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
+
+    <div id="content">
+        
+
+<h1 id="introduction">Introduction</h1>
+
+<p>I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the <em>hello world</em> examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of <code>helm template</code>, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out.</p>
+
+<p>This should <em>absolutely not</em> be used for any serious purpose, since you are about to see some glued pieces of software that happen to work. Now that we have that out of the way, let see <em>how</em> this works.</p>
+
+<h1 id="interacting-with-the-dom-from-go">Interacting with the DOM from Go</h1>
+
+<p>The first thing you learn in JavaScript after the slight amusement of <code>alert</code> is gone, is to manipulate the DOM - you are able select elements by their ID or class, then read and write their values.
+This can be done in Go with Web Assembly using the <code>sycall/js</code> package, and the syntax is really similar to JavaScript:</p>
+
+<pre><code>someValue := document.Call(&quot;getElementById&quot;, &quot;someId&quot;).Get(&quot;value&quot;).String()
+</code></pre>
+
+<p>This is equivalent to the following in JavaScript (and modifying the value of objects can be done in a similar way):</p>
+
+<pre><code>var someValue = document.getElementById(&quot;someId&quot;).value
+</code></pre>
+
+<p>So in theory, we have the inputs and outputs for our simple application - we can read the chart metadata, templates, and values files from a bunch of HTML text areas, and we can write the output to another text area. (Luckily enough, the only other HTML element we are using is a button - ideal, since that&rsquo;s pretty much all I can do on the front-end.)</p>
+
+<p>Now we need to actually render the Helm templates, and this is the part I wasn&rsquo;t sure that was even going to compile with Web Assembly - we&rsquo;re directly importing packages from <code>k8s.io/helm</code> into our application, as well as the library for unmarshaling YAML, then calling the Helm render engine:</p>
+
+<pre><code class="language-golang">func render(this js.Value, args []js.Value) interface{} {
+	document := js.Global().Get(&quot;document&quot;)
+	metadata := document.Call(&quot;getElementById&quot;, &quot;metadata&quot;).Get(&quot;value&quot;).String()
+	templates := document.Call(&quot;getElementById&quot;, &quot;templates&quot;).Get(&quot;value&quot;).String()
+	values := document.Call(&quot;getElementById&quot;, &quot;values&quot;).Get(&quot;value&quot;).String()
+
+    m := &amp;chart.Metadata{}
+    // unmarshaling the chart metadata, coming from the HTML input
+	err := yaml.Unmarshal([]byte(metadata), m)
+	if err != nil {
+		fmt.Printf(&quot;cannot unmarshal chart metadata: %v&quot;, err)
+	}
+
+    t := []*chart.Template{}
+    // Helm templates, coming from the HTML input
+	t = append(t, &amp;chart.Template{Name: &quot;service.yaml&quot;, Data: []byte(templates)})
+	c := &amp;chart.Chart{
+		Metadata:  m,
+		Templates: t,
+    }
+
+    // values file, from the HTML input
+	config := &amp;chart.Config{Raw: values, Values: map[string]*chart.Value{}}
+
+	renderedTemplates, err := renderutil.Render(c, config, renderOpts)
+	if err != nil {
+		fmt.Printf(&quot;error rendering: %v&quot;, err)
+	}
+	fmt.Printf(&quot;rendered: %v&quot;, renderedTemplates)
+
+	result := &quot;&quot;
+	for _, v := range renderedTemplates {
+		result += v
+	}
+
+    // showing the result in the browser
+	document.Call(&quot;getElementById&quot;, &quot;result&quot;).Set(&quot;textContent&quot;, result)
+	return nil
+}
+</code></pre>
+
+<p>The next important piece is registering a function written in Go so it can be used from JavaScript:</p>
+
+<pre><code>js.Global().Set(&quot;render&quot;, js.FuncOf(render))
+</code></pre>
+
+<p>The only thing to note here is the signature for <code>render</code>, which has to be <code>func render(this js.Value, args []js.Value) interface{}</code>, where <code>this</code> is the JavaScript context that calls the Go function, and <code>args</code> contains the arguments the function was called with.</p>
+
+<blockquote>
+<p>Complete documentation for the <a href="https://godoc.org/syscall/js" target="_blank"><code>syscall/js</code> package</a>.</p>
+
+<p>In this article we&rsquo;re not really using <code>this</code> or <code>args</code>, but we are directly reading the values of HTML elements from the DOM.</p>
+
+<p>You can <a href="https://github.com/radu-matei/helm-template-wasm" target="_blank">find the complete repository for this example on GitHub</a>.</p>
+
+<p>If you want to <a href="https://github.com/golang/go/wiki/WebAssembly" target="_blank">get started with Go and Web Assembly, the best resource is from the official Go repository</a>.</p>
+</blockquote>
+
+<h1 id="building-and-using-the-package">Building and using the package</h1>
+
+<p>In the same way we cross-compile our Go projects for various operating systems and architectures, we need to compile our package for Web Assembly (in this example, <code>wasm/render.go</code> is the path to the Go file we have above):</p>
+
+<p><code>GOARCH=wasm GOOS=js go build -o lib.wasm wasm/render.go</code></p>
+
+<p>The output of the compilation is a <code>lib.wasm</code> file we will import in our web application.</p>
+
+<blockquote>
+<p><code>lib.wasm</code> needs to be imported in the web application, and the module needs to be instantiated - this can be found it <code>index.html</code> in the repository, and is mostly the standard way of importing and starting a Web Assembly module for Go.</p>
+</blockquote>
+
+<p>Next, we need the text areas and the button:</p>
+
+<pre><code class="language-html">Metadata:
+&lt;textarea id=&quot;metadata&quot; cols=&quot;50&quot; rows=&quot;10&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+Templates:
+&lt;textarea id=&quot;templates&quot; cols=&quot;50&quot; rows=&quot;20&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+Values:
+&lt;textarea id=&quot;values&quot; cols=&quot;50&quot; rows=&quot;20&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+
+&lt;button onClick=&quot;render()&quot; id=&quot;renderButton&quot;&gt;
+  Render
+&lt;/button&gt;
+Result:
+&lt;textarea id=&quot;result&quot; cols=&quot;50&quot; rows=&quot;20&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+</code></pre>
+
+<p>The callback for the <code>renderButton</code>, <code>render()</code>, is precisely the Go function from above, and will be executed whenever the button is clicked.</p>
+
+<p>Provided we included the <code>wasm_exec.js</code> script and used it to fetch the <code>lib.wasm</code> library we just built, then we should be able to test this out - in the repo for this example there is a simply web server - <code>go run main.go</code> will start listening on port 8080, and accessing <code>localhost:8080</code> will serve <code>index.html</code>, which loads <code>lib.wasm</code> and registers the <code>render</code> function so that whenever the button is pressed, the Go function gets executed and renders the Helm templates:</p>
+
+<p><img src="/img/article-photos/helm-wasm/helm-wasm.gif" alt="" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>In around 40 lines of code I managed to get package from a fairly complex project written in Go, and execute it in the browser, with Web Assembly. Do I really understand how it works? Not yet, but this is incredibly exciting, both from the technical perspective, but just as important, because of all the possibilities it opens up.</p>
+
+<p>Thanks for reading!</p>
+
+    </div>
+        
+
+        
+    <footer>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+                        Categories
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categories/golang'>golang</a></li>
+    
+        <li><a href='/categories/wasm'>wasm</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+<ul class="actions pagination">
+    
+        <li><a href="https://radu-matei.com/blog/kubernetes-controller-csharp/"
+                class="button big previous">Writing controllers for Kubernetes CRDs with C#</a></li>
+    
+
+    
+        <li><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/"
+                class="button big next">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></li>
+    
+</ul>
+
+
+<article class="post">
+    <div id="disqus_thread"></div>
+
+
+<script type="text/javascript">
+    var disqus_shortname = 'radu-matei';
+    var disqus_identifier = "https://radu-matei.com/blog/helm-wasm/";
+    var disqus_title = "Rendering Helm templates in the browser, with Web Assembly";
+    var disqus_url = "Rendering Helm templates in the browser, with Web Assembly";
+
+    var disqus_config = function () {
+        this.page.url = "https://radu-matei.com/blog/helm-wasm/";  
+        this.page.identifier = "https://radu-matei.com/blog/helm-wasm/"; 
+    };
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</article>
+    </div>
+         
+    
+<section id="sidebar">
+
+    
+        <section id="intro">
+            
+            
+                
+                    <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
+                
+            
+            
+                <header>
+                   <a href="/"> <h2>Radu M</h2></a>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
+                </header>
+            
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <ul class="posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-23'>
+                                    August 23, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">Running Kubernetes end-to-end tests with Kind and GitHub Actions</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-21'>
+                                    August 21, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/helm-wasm/">Rendering Helm templates in the browser, with Web Assembly</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-05-11'>
+                                    May 11, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">Writing controllers for Kubernetes CRDs with C#</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-05-06'>
+                                    May 6, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+
+                
+                    <li>
+                        <ul class="actions">
+                            <li><a href=
+                            
+                                /blog/
+                            
+                            class="button">View more posts</a></li>
+                        </ul>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+    
+    
+    
+        <section id="categories">
+            <ul class="posts">
+                <header>
+                    <h3><a href="/categories/">Categories</a></h3>
+                </header>
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/kubernetes/">kubernetes</a>
+                                <span style="float:right;">12</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/aspnet-core/">aspnet-core</a>
+                                <span style="float:right;">11</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/azure/">azure</a>
+                                <span style="float:right;">7</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/docker/">docker</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/signalr/">signalr</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dependency-injection/">dependency-injection</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dotnet-core/">dotnet-core</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/github/">github</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/websockets/">websockets</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/csharp/">csharp</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/grpc/">grpc</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/iot/">iot</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/jenkins/">jenkins</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/wasm/">wasm</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/windows-containers/">windows-containers</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+            </ul>
+        </section>
+    
+
+    
+        
+
+    
+        <section id="footer">
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+        </section>
+
+</section>
+
+            </div>
+        <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+        
+        
+
+        
+        
+            
+        
+
+        
+        
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/skel.min.js"></script>
+            <script src="/js/util.js"></script>
+            <script src="/js/main.js"></script>
+            <script src="/js/backToTop.js"></script>
+            <script src="/js/highlight.pack.js"></script>
+        
+
+        
+
+            
+            <script>hljs.initHighlightingOnLoad();</script>
+            
+
+            
+    </body>
+</html>
+

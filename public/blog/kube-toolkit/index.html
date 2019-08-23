@@ -1,0 +1,1384 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.57.2" />
+        
+
+
+        
+            <meta name="author" content="Radu Matei">
+        
+        
+            <meta name="description" content="Building tools like Helm and Draft for Kubernetes using gRPC and Go">
+        
+
+        <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go"/>
+<meta name="twitter:description" content="Building tools like Helm and Draft for Kubernetes using gRPC and Go"/>
+<meta name="twitter:site" content="@matei_radu"/>
+
+        <meta property="og:title" content="kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go" />
+<meta property="og:description" content="Building tools like Helm and Draft for Kubernetes using gRPC and Go" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/kube-toolkit/" />
+<meta property="article:published_time" content="2017-12-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-12-18T00:00:00+00:00" />
+
+        <meta itemprop="name" content="kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go">
+<meta itemprop="description" content="Building tools like Helm and Draft for Kubernetes using gRPC and Go">
+
+
+<meta itemprop="datePublished" content="2017-12-18T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-12-18T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2093">
+
+
+
+<meta itemprop="keywords" content="" />
+
+        
+
+        
+
+        
+        
+            
+        
+
+        
+        
+            <link rel="stylesheet" href="/css/google-font.css" />
+            <link rel="stylesheet" href="/css/font-awesome.min.css" />
+            <link rel="stylesheet" href="/css/main.css" />
+            <link rel="stylesheet" href="/css/add-on.css" />
+            <link rel="stylesheet" href="/css/monokai-sublime.css">
+        
+
+        
+
+        
+        
+        
+            
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+        
+    </head>
+    <body>
+
+        
+        <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+    <h2><a href="/">Radu M</i></a></h2>
+    
+
+    <nav class="links">
+        <ul>
+            
+            
+            
+            <li>
+                <a href="/blog" >
+                    
+                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/about" >
+                    
+                    <i class="fa fa-smile-o">&nbsp;</i>About
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/speaking" >
+                    
+                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/contact" >
+                    
+                    <i class="fa fa-envelope-o">&nbsp;</i>Contact
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://github.com/radu-matei"  target="_blank" >
+                    
+                    <i class="fa fa-github">&nbsp;</i>Open Source
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://twitter.com/matei_radu"  target="_blank" >
+                    
+                    <i class="fa fa-twitter">&nbsp;</i>Tweets
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="q" value="site:https://radu-matei.com">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+    <section>
+        <form class="search" method="get" action="//google.com/search">
+            <input type="text" name="q" placeholder="Search" />
+            <input type="hidden" name="q" value="site:https://radu-matei.com">
+        </form>
+    </section>
+
+    
+    <section>
+        <ul class="links">
+            
+            
+            
+            <li>
+                <a href="/blog" >
+                    <h3>
+                        
+                        <i class="fa fa-newspaper-o">&nbsp;</i>
+                        
+                        Blog
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/about" >
+                    <h3>
+                        
+                        <i class="fa fa-smile-o">&nbsp;</i>
+                        
+                        About
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/speaking" >
+                    <h3>
+                        
+                        <i class="fa fa-comments-o">&nbsp;</i>
+                        
+                        Speaking
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="/contact" >
+                    <h3>
+                        
+                        <i class="fa fa-envelope-o">&nbsp;</i>
+                        
+                        Contact
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://github.com/radu-matei"  target="_blank" >
+                    <h3>
+                        
+                        <i class="fa fa-github">&nbsp;</i>
+                        
+                        Open Source
+                    </h3>
+                </a>
+            </li>
+            
+            
+            
+            <li>
+                <a href="https://twitter.com/matei_radu"  target="_blank" >
+                    <h3>
+                        
+                        <i class="fa fa-twitter">&nbsp;</i>
+                        
+                        Tweets
+                    </h3>
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+    <section>
+        <ul class="links">
+            <header>
+                <h3>Recent Posts</h3>
+            </header>
+            
+            
+            
+
+            
+            <li>
+                <a href="https://radu-matei.com/blog/building-github-actions/">
+                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">
+                    <p>Running Kubernetes end-to-end tests with Kind and GitHub Actions</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">
+                    <p>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/helm-wasm/">
+                    <p>Rendering Helm templates in the browser, with Web Assembly</p>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">
+                    <p>Writing controllers for Kubernetes CRDs with C#</p>
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+    
+</section>
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&text=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&title=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&title=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&title=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+    <header>
+    <div class="title">
+        
+            <h1><a href="https://radu-matei.com/blog/kube-toolkit/">kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</a></h1>
+            
+        
+        
+            <p>Building tools like Helm and Draft for Kubernetes using gRPC and Go</p>
+        
+    </div>
+    <div class="meta">
+        
+            
+        
+
+        <time class="published"
+            datetime='2017-12-18'>
+            December 18, 2017</time>
+        <span class="author">Radu Matei</span>
+        
+            <p>10 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+    <section id="social-share">
+        <ul class="icons">
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&text=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&title=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&title=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f&title=kube-toolkit%3a%20Toolkit%20for%20creating%20gRPC-based%20CLI%20tools%20for%20Kubernetes%2c%20written%20in%20Go" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fkube-toolkit%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+    
+
+    <div id="content">
+        
+
+<h1 id="table-of-contents">Table of Contents</h1>
+
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#vendoring-kube-toolkit">Vendoring <code>kube-toolkit</code></a></li>
+<li><a href="#defining-and-using-grpc-services">Defining and using gRPC services</a></li>
+<li><a href="#connecting-to-the-kubernetes-cluster">Connecting to the Kubernetes cluster</a></li>
+<li><a href="#using-cobra-folder-structure-and-adding-your-own-commands">Using cobra, folder structure and adding your own commands</a></li>
+<li><a href="#see-in-in-action">See in in action</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>If you ever used <a href="https://github.com/kubernetes/helm" target="_blank">Helm</a> or <a href="https://github.com/azure/draft" target="_blank">Draft</a>, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p>
+
+<p><a href="https://github.com/radu-matei/kube-toolkit" target="_blank"><code>kube-toolkit</code></a> aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.</p>
+
+<blockquote>
+<p>This project started as a learning experience / small experiment of mine in building a tool for Kubernetes that allowed you to connect to all major cloud providers - then the Open Broker API became mainstream, and I realized I was reinventing the Service Broker wheel - so decided to take the good parts and make them available to anyone starting to build a Kubernetes tool.</p>
+</blockquote>
+
+<h2 id="architecture">Architecture</h2>
+
+<p><a href="https://github.com/radu-matei/kube-toolkit" target="_blank"><code>kube-toolkit</code></a> has two major components:</p>
+
+<ul>
+<li><code>ktk</code> (short for Kubernetes ToolKit) - client that you install locally</li>
+<li><code>ktkd</code> (short for Kuberentes ToolKit Daemon) - server-side component that is deployed on your Kubernetes cluster</li>
+</ul>
+
+<p>The <code>kube-toolkit</code> client (<code>ktk</code>) interacts with the server-side component (<code>ktkd</code>) using the Kubernetes API to create authenticated tunnels back to the cluster, using gRPC as the underlying communication protocol. The server runs as a pod in Kubernetes, and since it is only a starting point for future tools, it only knows how to return its version, and showcases how to stream data back to the client.</p>
+
+<p>In order to communicate with the cluster you need to pass the <code>kubeconfig</code> file, and the tool will start a tunnel to the cluster for each command you execute, then will tear it down so there are no open connections to the cluster when no command is executed.</p>
+
+<blockquote>
+<p>Please note that there are still lots of things left to add, such as SSL, RBAC support or state management - you are more than welcome to contribute in any way to the project!</p>
+</blockquote>
+
+<p>As stated earlier, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.</p>
+
+<p>Now for the actual implementation and how you can get started, and the first issue I bumped in was gathering the correct dependencies for Kubernetes 1.8:</p>
+
+<h2 id="vendoring-kube-toolkit">Vendoring <code>kube-toolkit</code></h2>
+
+<p>Since this tool was built from the ground-up, the first step was to put together the correct versions of the dependencies to <code>k8s.io/client-go</code>, <code>github.com/kubernetes/helm</code>, <code>k8s.io/api</code>, <code>k8s.io/apimachinery</code> and a bunch more. A trivial step you might say, but in the times of Kubernetes 1.8, this was incredibly frustrating&hellip;</p>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">For example: Helm v2.7.0, client-go v5.0.0 and Kubernetes v1.8.0 all target 1.8.0 - somehow, apiserver needs the previous beta of client-go...<br><br>It is increasingly frustrating... <a href="https://t.co/kj8HD2aKQZ">pic.twitter.com/kj8HD2aKQZ</a></p>&mdash; Radu M (@matei_radu) <a href="https://twitter.com/matei_radu/status/924321387128508419?ref_src=twsrc%5Etfw">October 28, 2017</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>Essentially, during a 4 hour period (is was probably much more than that&hellip;), I was in the process of swapping git commit hashes and plugging them into <code>dep</code>, then trying to compile the project&hellip; Word of advice - check various release branches when working with vendored dependencies of Kubernetes!</p>
+
+<p>After finally getting it to work, <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml" target="_blank">I ended up with a  Gopkg.toml you can find here</a> and I simply included the <code>vendor</code> folder in the repo to ensure reproducible builds.</p>
+
+<blockquote>
+<p>Please note that this setup is for Kubernetes release 1.8 - you are more than welcome to port the dependencies to release 1.9!</p>
+
+<p>Having the <code>vendor</code> folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproducible builds - you can put it in <code>.gitignore</code> if you want to.</p>
+</blockquote>
+
+<h2 id="defining-and-using-grpc-services">Defining and using gRPC services</h2>
+
+<blockquote>
+<p>If you&rsquo;re not familiar with gRPC for Go, there is a <a href="https://grpc.io/docs/tutorials/basic/go.html" target="_blank">great basics tutorial you can get started with</a> and understand how to use the client and server.</p>
+</blockquote>
+
+<p>In its current form, <a href="https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1" target="_blank"><code>v0.1</code></a>, the service is able to return the server and client version and showcase how to stream some data - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto" target="_blank">essentially, the <code>.proto</code> looks like this</a>:</p>
+
+<pre><code class="language-go">syntax = &quot;proto3&quot;;
+
+package rpc;
+
+service KTK {
+	rpc GetVersion(Empty) returns (Version){}
+	rpc ServerStream(Empty) returns(stream StreamingMessage){}
+}
+
+message Version {
+	string sem_ver = 1;
+	string git_commit = 2;
+}
+
+message StreamingMessage {
+	string message = 1;
+}
+</code></pre>
+
+<blockquote>
+<p>The <code>Empty</code> message is missing as it is completely uninteresting.</p>
+</blockquote>
+
+<p>This defines a service with two methods, <code>GetVersion</code> and <code>ServerStream</code> (which returns a stream of <code>StreamingMessage</code> back to the client), and <strong>this is the place where you will first define your service methods!</strong></p>
+
+<p>Now if we take a look at the <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Makefile" target="_blank"><code>Makefile</code></a>, there is an <code>rpc</code> target that will use the <code>protoc</code> compiler and build the client and server in Golang for our service in <code>pkg/rpc</code> (as defined in the <code>Makefile</code>).</p>
+
+<p>Now it&rsquo;s about creating actual implementations for the client and server. <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40" target="_blank">For example, the client implementation for <code>GetVersion</code> is as straightforward as simply as calling the <code>GetVersion</code> on the generated client</a>:</p>
+
+<pre><code class="language-go">// GetVersion returns the ktk version
+func (client *Client) GetVersion(ctx context.Context) (*rpc.Version, error) {
+	return client.RPC.GetVersion(ctx, &amp;rpc.Empty{})
+}
+</code></pre>
+
+<p>This function call will simply return the version from the server - note that we have to <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74" target="_blank">implement the server method as below</a>:</p>
+
+<pre><code class="language-go">// GetVersion returns the current version of the server.
+func (server *Server) GetVersion(ctx context.Context, _ *rpc.Empty) (*rpc.Version, error) {
+	log.Debugf(&quot;executing ktkd version&quot;)
+	return &amp;rpc.Version{
+		SemVer:    version.SemVer,
+		GitCommit: version.GitCommit}, nil
+}
+</code></pre>
+
+<blockquote>
+<p>The version and commit hash are injected at build time through compile flags. See Makefile.</p>
+</blockquote>
+
+<p>Now let&rsquo;s take a look at some streaming messages - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82" target="_blank">first the server</a>:</p>
+
+<pre><code class="language-go">// ServerStream starts a new stream from the server
+func (server *Server) ServerStream(_ *rpc.Empty, stream rpc.KTK_ServerStreamServer) error {
+	log.Debugf(&quot;received server stream command&quot;)
+	for i := 0; i &lt; 5; i++ {
+		err := stream.Send(&amp;rpc.StreamingMessage{
+			Message: fmt.Sprintf(&quot;Sending stream back to client, iteration: %d&quot;, i),
+		})
+		if err != nil {
+			return err
+		}
+
+		time.Sleep(2 * time.Second)
+	}
+
+	return nil
+}
+</code></pre>
+
+<p>This will send 5 messages back to the client, 2 seconds apart.</p>
+
+<p><a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49" target="_blank">Receiving the stream is done like this</a>:</p>
+
+<pre><code class="language-go">// ServerStream starts a stream from the server
+func (client *Client) ServerStream(ctx context.Context, opts ...grpc.CallOption) error {
+	log.Debugf(&quot;called InitializeCloud client method...&quot;)
+
+	stream, err := client.RPC.ServerStream(ctx, &amp;rpc.Empty{})
+	if err != nil {
+		log.Fatalf(&quot;cannot start server stream: %v&quot;, err)
+		return err
+	}
+
+	for {
+		message, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf(&quot;error receiving stream: %v&quot;, err)
+		}
+
+		fmt.Println(message.Message)
+	}
+
+	return nil
+}
+</code></pre>
+
+<p>With this proto service, you should have a clear understanding on how to write additional methods for the gRPC service and implement the client and the server.</p>
+
+<p>Now that you have a pretty good understanding on how to write gRPC client and server methods, let&rsquo;s explore how to connect to the Kubernetes cluster.</p>
+
+<h2 id="connecting-to-the-kubernetes-cluster">Connecting to the Kubernetes cluster</h2>
+
+<p>For this part, I will <a href="https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go" target="_blank">give 100% credits to the Draft team</a> as I merely copied their implementation of a port forwarder that uses the Helm packages.</p>
+
+<p>Essentially, this creates a new &ldquo;SSH-like tunnel&rdquo; back to a pod in the Kubernetes cluster - normally, the pod is the one running our server-side component, <code>ktkd</code> (you have to specify the name and labels for it):</p>
+
+<pre><code class="language-go">//New returns a tunnel to the ktkd pod.
+func New(clientset *kubernetes.Clientset, config *restclient.Config, namespace string) (*kube.Tunnel, error) {
+	podName, err := getKTKDPodName(clientset, namespace)
+	if err != nil {
+		return nil, err
+	}
+	log.Debugf(&quot;found pod: %s&quot;, podName)
+
+    // the default port for ktkd is 10000
+    const ktkdPort = 10000
+    
+    // this gets a tunnel to the ktkd pod, port 10000
+	t := kube.NewTunnel(clientset.CoreV1().RESTClient(), config, namespace, podName, ktkdPort)
+	return t, t.ForwardPort()
+}
+</code></pre>
+
+<p>This tunnel is created for every executed command, and allows us to execute commands against <code>localhost:some-random-port</code> and then it forwards the request to <code>ktkdpod-internal-ip:10000</code>. As stated earlier, behind the scenes it uses the Go client for Kubernetes and packages from Helm.</p>
+
+<blockquote>
+<p>Please note that there is no need to publicly expose any port on the pod.</p>
+</blockquote>
+
+<h2 id="using-cobra-folder-structure-and-adding-your-own-commands">Using cobra, folder structure and adding your own commands</h2>
+
+<p>Both the client and the server are essentially <a href="https://github.com/spf13/cobra" target="_blank"><code>cobra</code></a> CLI apps.</p>
+
+<blockquote>
+<p>If you are not familiar with cobra, it is a library created by <a href="https://github.com/spf13" target="_blank">Steve Francia, or @spf13</a> for creating CLI apps, and tools like Kubernetes, Docker, rkt, etcd or Hugo are built upon cobra.</p>
+</blockquote>
+
+<p>Let&rsquo;s have a look at the folder structure:</p>
+
+<pre><code class="language-makefile">kube-toolkit
+└───cmd
+│   └───ktk
+│   |    │--- ktk.go
+│   |    │--- serverStream.go
+│   |    │--- version.go
+│   └───ktkd
+│        │--- ktkd.go
+│        │--- start.go
+└───pkg
+│   └───ktk
+│   |    │--- client.go
+│   └───ktkd
+│   |    │--- server.go
+│   └───portforwarder
+│   |    │--- portforwarder.go
+│   └───rpc
+│   |    │--- rpc.proto
+|   |    |--- rpc.pb.go
+│   └───version
+│   |    │--- version.go
+</code></pre>
+
+<p>In the <code>cmd</code> directory we have the CLIs for <code>ktk</code> and <code>ktkd</code>, and in <code>pkg</code> we have all packages that we use throughout the tool - the implementations for the gRPC client and server, the port forwarder, the generated Go service and proto.</p>
+
+<p>Let&rsquo;s take a look at how everything works together for the version command:</p>
+
+<ul>
+<li><p>first of all, I briefly mentioned that the version and git commit are injected at build time using compilation flags - the <code>LFFLAGS</code> inject into <code>GitCommit</code>and <code>SemVer</code> the respective values from the <code>version</code> package from <code>pkg</code> into both the client and the server (which can have different versions!):</p>
+
+<pre><code class="language-makefile">VERSION_PACKAGE = github.com/radu-matei/kube-toolkit/pkg/version
+LDFLAGS += -X $(VERSION_PACKAGE).GitCommit=${GIT_COMMIT}
+LDFLAGS += -X $(VERSION_PACKAGE).SemVer=${SEMVER}
+</code></pre></li>
+</ul>
+
+<blockquote>
+<p>There is a <a href="https://blog.alexellis.io/inject-build-time-vars-golang/" target="_blank">great article by Alex Ellis explaining everything about injecting build-time variables</a></p>
+</blockquote>
+
+<ul>
+<li>earlier we saw the client and the server implementation of <code>GetVersion</code></li>
+</ul>
+
+<p>Now let&rsquo;s see how to put together the server app:</p>
+
+<pre><code class="language-go">func newStartCmd(out io.Writer) *cobra.Command {
+	startCmd := &amp;startCmd{}
+
+	cmd := &amp;cobra.Command{
+		Use:   &quot;start&quot;,
+		Short: startUsage,
+		Long:  startUsage,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return startCmd.run()
+		},
+	}
+
+	flags := cmd.Flags()
+	flags.StringVar(&amp;listenAddress, &quot;listen-addr&quot;, &quot;0.0.0.0:10000&quot;, &quot;the ktkd server listen address&quot;)
+
+	return cmd
+}
+
+func (cmd *startCmd) run() error {
+
+	cfg := &amp;ktkd.ServerConfig{
+		ListenAddress: listenAddress,
+	}
+
+	return ktkd.NewServer(cfg).Serve(context.Background())
+}
+</code></pre>
+
+<p>We will simply call <code>ktkd start</code>, which will start the gRPC server and we will be ready to accept incoming requests from clients.</p>
+
+<ul>
+<li><p>now the cobra <code>run</code> method for <code>ktk version</code>:</p>
+
+<pre><code class="language-go">func (cmd *versionCmd) run() error {
+
+	log.Debugf(&quot;making request to: %s&quot;, ktkdHost)
+
+	conn, err := ktk.GetGRPCConnection(ktkdHost)
+	if err != nil {
+		log.Fatalf(&quot;cannot create grpc connection: %v&quot;, err)
+	}
+	defer conn.Close()
+
+	cmd.client = ensureKTKClient(cmd.client, conn)
+
+	ktkdVersion, err := cmd.client.GetVersion(context.Background())
+	if err != nil {
+		return fmt.Errorf(&quot;cannot get ktkd version: %v&quot;, err)
+    }
+
+fmt.Printf(&quot;ktk Semver: %s GitCommit: %s\n&quot;, version.SemVer, version.GitCommit)
+fmt.Printf(&quot;ktkd SemVer:  %s Git Commit: %s\n&quot;, ktkdVersion.SemVer, ktkdVersion.GitCommit)
+    
+	return nil
+}
+</code></pre></li>
+
+<li><p>here, we get an instance of the gRPC client, then call the server for its version. Then we simply print the version.</p></li>
+</ul>
+
+<p>For every new functionality, we need to add a new cobra command (and remember to add it to the root command) and implement it accordingly.</p>
+
+<h2 id="see-in-in-action">See in in action</h2>
+
+<p>First of all, you need to deploy the <code>ktkd</code> pod to a Kubernetes cluster.</p>
+
+<blockquote>
+<p>As of right now, there isn&rsquo;t an automated way to deploy this to Kubernetes, <a href="https://github.com/radu-matei/kube-toolkit/issues/9" target="_blank">but there is an open issue for anyone that wants to contribute!</a></p>
+</blockquote>
+
+<p>First, you need to <code>make ktkd-linux</code> - this will create the linux binary that we will then package into a Docker container and deploy to the cluster - <code>docker build -t your-username/ktkd</code>. Then, deploy this to Kubernetes:</p>
+
+<p><img src="/img/article-photos/kube-toolkit/pod.jpg" alt="" /></p>
+
+<blockquote>
+<p>Notice there is not port exposed!</p>
+
+<p>You can easily do this using <code>kubectl</code></p>
+</blockquote>
+
+<p>Then, we need to build our client: <code>make ktk</code>, then, passing the <code>kubeconfig</code> file, attempt to get the version:</p>
+
+<p><img src="/img/article-photos/kube-toolkit/ktk.jpg" alt="" /></p>
+
+<blockquote>
+<p>Remember to pass the path to your <code>kubeconfig</code> file!</p>
+</blockquote>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>And just like this, we managed to get a tool that connects to a Kubernetes cluster from a CLI application through tunnels and gRPC! You can now build your own functionality on top of this, extend the proto service and implement the client and server!</p>
+
+<p>This started with me looking at Helm and Draft and trying to understand how to build a similar tool and trying to understand all concepts involved. It is by no means as complex as Helm and Draft (it actually removes some abstraction compared to Draft, in that this tool uses directly the generated gRPC client) and it should serve as a starting point building the next awesome tool for Kubernetes!</p>
+
+<p>You are invited to <a href="https://github.com/radu-matei/kube-toolkit" target="_blank">contribute on the GitHub repo, tackle some of the issues there and provide your feedback!</a></p>
+
+<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a></p>
+
+    </div>
+        
+
+        
+    <footer>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+                        Categories
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categories/kubernetes'>kubernetes</a></li>
+    
+        <li><a href='/categories/golang'>golang</a></li>
+    
+        <li><a href='/categories/grpc'>grpc</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+<ul class="actions pagination">
+    
+        <li><a href="https://radu-matei.com/blog/aci-update/"
+                class="button big previous">Update Azure Container Instances with Docker Hub webhooks</a></li>
+    
+
+    
+        <li><a href="https://radu-matei.com/blog/real-world-draft/"
+                class="button big next">Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</a></li>
+    
+</ul>
+
+
+<article class="post">
+    <div id="disqus_thread"></div>
+
+
+<script type="text/javascript">
+    var disqus_shortname = 'radu-matei';
+    var disqus_identifier = "https://radu-matei.com/blog/kube-toolkit/";
+    var disqus_title = "kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go";
+    var disqus_url = "kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go";
+
+    var disqus_config = function () {
+        this.page.url = "https://radu-matei.com/blog/kube-toolkit/";  
+        this.page.identifier = "https://radu-matei.com/blog/kube-toolkit/"; 
+    };
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</article>
+    </div>
+         
+    
+<section id="sidebar">
+
+    
+        <section id="intro">
+            
+            
+                
+                    <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
+                
+            
+            
+                <header>
+                   <a href="/"> <h2>Radu M</h2></a>
+                    <p>Kubernetes, containers and cloud native open-source developer tools. Debugging distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.</p>
+                </header>
+            
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <ul class="posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+                    
+                
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-23'>
+                                    August 23, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">Running Kubernetes end-to-end tests with Kind and GitHub Actions</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-21'>
+                                    August 21, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-08-10'>
+                                    August 10, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/helm-wasm/">Rendering Helm templates in the browser, with Web Assembly</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-05-11'>
+                                    May 11, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <h3><a href="https://radu-matei.com/blog/kubernetes-controller-csharp/">Writing controllers for Kubernetes CRDs with C#</a></h3>
+                                
+                                    
+                                
+                                <time class="published" datetime=
+                                    '2019-05-06'>
+                                    May 6, 2019</time>
+                            </header>
+                        </article>
+                    </li>
+                
+
+                
+                    <li>
+                        <ul class="actions">
+                            <li><a href=
+                            
+                                /blog/
+                            
+                            class="button">View more posts</a></li>
+                        </ul>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+    
+    
+    
+        <section id="categories">
+            <ul class="posts">
+                <header>
+                    <h3><a href="/categories/">Categories</a></h3>
+                </header>
+
+                
+                    
+                
+
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/kubernetes/">kubernetes</a>
+                                <span style="float:right;">12</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/aspnet-core/">aspnet-core</a>
+                                <span style="float:right;">11</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/azure/">azure</a>
+                                <span style="float:right;">7</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/docker/">docker</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/signalr/">signalr</a>
+                                <span style="float:right;">4</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dependency-injection/">dependency-injection</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/golang/">golang</a>
+                                <span style="float:right;">3</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/dotnet-core/">dotnet-core</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/draft/">draft</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/github/">github</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/helm/">helm</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/vscode/">vscode</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/websockets/">websockets</a>
+                                <span style="float:right;">2</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/brigade/">brigade</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/csharp/">csharp</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/grpc/">grpc</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/iot/">iot</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/jenkins/">jenkins</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/wasm/">wasm</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+                    <li>
+                        <article>
+                            <header>
+                                <a href="/categories/windows-containers/">windows-containers</a>
+                                <span style="float:right;">1</span>
+                            </header>
+                        </article>
+                    </li>
+                
+            </ul>
+        </section>
+    
+
+    
+        
+
+    
+        <section id="footer">
+            <ul class="icons">
+                
+                
+                    
+<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
+
+
+                
+            </ul>
+
+            <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
+        </section>
+
+</section>
+
+            </div>
+        <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+        
+        
+
+        
+        
+            
+        
+
+        
+        
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/skel.min.js"></script>
+            <script src="/js/util.js"></script>
+            <script src="/js/main.js"></script>
+            <script src="/js/backToTop.js"></script>
+            <script src="/js/highlight.pack.js"></script>
+        
+
+        
+
+            
+            <script>hljs.initHighlightingOnLoad();</script>
+            
+
+            
+    </body>
+</html>
+
