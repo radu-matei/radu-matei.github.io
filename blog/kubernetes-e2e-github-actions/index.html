@@ -45,7 +45,7 @@
 
 <meta itemprop="datePublished" content="2019-08-21T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-08-21T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="813">
+<meta itemprop="wordCount" content="1039">
 
   <meta itemprop="image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png">
 
@@ -404,7 +404,7 @@ if (!doNotTrack) {
             August 21, 2019</time>
         <span class="author">Radu Matei</span>
         
-            <p>4 minute read</p>
+            <p>5 minute read</p>
         
         
     </div>
@@ -482,6 +482,58 @@ if (!doNotTrack) {
 
     <div id="content">
         
+
+<h1 id="the-kind-github-action-kind"><a href="https://kind.sigs.k8s.io/" target="_blank">The Kind GitHub Action</a></h1>
+
+<p><a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action" target="_blank"><img src="/img/article-photos/building-github-actions/marketplace.PNG" alt="" /></a></p>
+
+<p>To configure a Kubernetes cluster in your GitHub Actions in a single step, you can use the new <a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action" target="_blank"><code>@engineerd/setup-kind</code></a> action:</p>
+
+<pre><code>jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: engineerd/setup-kind@v0.1.0
+    - name: Testing
+      run: |
+        export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
+        kubectl cluster-info
+</code></pre>
+
+<p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
+
+<pre><code>Creating cluster &quot;kind&quot; ...
+ ✓ Ensuring node image (kindest/node:v1.15.3) 🖼
+ ✓ Preparing nodes 📦📦📦📦📦📦📦
+ ✓ Configuring the external load balancer ⚖️
+ ✓ Creating kubeadm config 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
+ ✓ Joining more control-plane nodes 🎮
+ ✓ Joining worker nodes 🚜
+ ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
+Cluster creation complete. 
+
+Kubernetes master is running at https://127.0.0.1:44867
+KubeDNS is running at https://127.0.0.1:44867/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+$ kubectl get nodes
+NAME                  STATUS     ROLES    AGE     VERSION
+kind-control-plane    Ready      master   2m42s   v1.15.3
+kind-control-plane2   Ready      master   2m11s   v1.15.3
+kind-control-plane3   Ready      master   65s     v1.15.3
+kind-worker           NotReady   &lt;none&gt;   28s     v1.15.3
+kind-worker2          NotReady   &lt;none&gt;   28s     v1.15.3
+kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
+</code></pre>
+
+<blockquote>
+<p>When creating multi-node clusters, make sure you wait for the nodes to become available - this is still a work in progress that will be fixed in future versions.</p>
+
+<p>EDIT: See <a href="https://radu-matei.com/blog/building-github-actions/" target="_blank">the article about building reusable GitHub Actions</a>.</p>
+</blockquote>
 
 <h1 id="introduction">Introduction</h1>
 
