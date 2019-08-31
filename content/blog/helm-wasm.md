@@ -7,6 +7,9 @@ linktitle = ""
 title = "Rendering Helm templates in the browser, with Web Assembly"
 type = "post"
 summary = ""
+featured = "helm-wasm.png"
+featuredpath = "/img/article-photos/helm-wasm/"
+images = ["/img/article-photos/helm-wasm/helm-wasm.png"]
 +++
 
 # Introduction

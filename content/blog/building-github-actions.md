@@ -20,7 +20,7 @@ images = ["/img/article-photos/building-github-actions/actions-logo.png"]
 
 The [official GitHub organization for Actions][actions] contains actions to set up custom versions for [NodeJS][node], [Python][py], or [Java][java], and you can directly import them in your workflow file - for example, setting up a custom version for Go:
 
-```yaml
+```
 steps:
   - name: Setup go
     uses: actions/setup-go@v1
@@ -170,11 +170,11 @@ const absPath: string = path.join(wd, "path-relative-to-the-repo-root");
 
 > | Package | Description |
 >  ------- | ----------- |
-> | [@actions/core](https://github.com/actions/toolkit/tree/master/packages/core) | Core functions for getting inputs, > setting outputs, setting results, logging, secrets and environment variables |
-> | [@actions/exec](https://github.com/actions/toolkit/tree/master/packages/exec) | Functions necessary for running > tools on the command line |
-> | [@actions/io](https://github.com/actions/toolkit/tree/master/packages/io) | Core functions for CLI filesystem > scenarios |
-> | [@actions/tool-cache](https://github.com/actions/toolkit/tree/master/packages/tool-cache) | Functions necessary for >downloading and caching tools |
-> | [@actions/github](https://github.com/actions/toolkit/tree/master/packages/github) | An Octokit client hydrated with >the context that the current action is being run in |
+> | [@actions/core](https://github.com/actions/toolkit/tree/master/packages/core) | Core functions for getting inputs, setting outputs, setting results, logging, secrets and environment variables |
+> | [@actions/exec](https://github.com/actions/toolkit/tree/master/packages/exec) | Functions necessary for running tools on the command line |
+> | [@actions/io](https://github.com/actions/toolkit/tree/master/packages/io) | Core functions for CLI filesystem scenarios |
+> | [@actions/tool-cache](https://github.com/actions/toolkit/tree/master/packages/tool-cache) | Functions necessary for downloading and caching tools |
+> | [@actions/github](https://github.com/actions/toolkit/tree/master/packages/github) | An Octokit client hydrated with the context that the current action is being run in |
 
 
 ### Testing
