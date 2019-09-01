@@ -14,9 +14,7 @@ summary = "How I added a dark theme toggle to my Hugo website without writing a 
 
 # Introduction
 
-Everyone seems to be adding dark themes to their platforms these days. Recently, Microsoft even released a trailer for the future dark mode - an actual video trailer, produced to showcase a theme: 
-
-{{< tweet 1166742433134186497 >}}
+Everyone seems to be adding dark themes to their platforms these days. Recently, [Microsoft even released a trailer for the future dark mode][msft-dark] - an actual video trailer, produced to showcase a theme.
 
 My blog, based on the [Hugo Future Imperfect theme][future-imperfect], has a strikingly light theme - which makes it extremely difficult to read at night. But because my front-end skills are completely non-existent (no, really!), creating a dark theme stylesheet for my website was out of the question.
 So I wanted to cheat my way into adding a dark mode, but without putting in the effort of actually learning CSS.
@@ -118,7 +116,7 @@ function setTheme(mode) {
 
 # Conclusion
 
-I managed to add a dark mode to my blog and persist the preference in local storage - all without writing a single line of CSS.
+I managed to add a dark mode to my blog and persist the preference in local storage - all without writing a single line of CSS. It's not perfect, and it needs plenty of more work (for example, images are inverted in an iframe), but I'm happy with the progress I made without much effort.
 
 Thanks for reading :)
 
@@ -126,3 +124,4 @@ Thanks for reading :)
 [extension]: https://mybrowseraddon.com/dark-mode.html
 [github-dark]: https://github.com/StylishThemes/Github-Dark
 [font-awesome]: https://fontawesome.com/
+[msft-dark]: https://twitter.com/Microsoft365/status/1166742433134186497
