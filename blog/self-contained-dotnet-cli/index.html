@@ -5,7 +5,7 @@
 <head>
     
     
-    <title>Radu Matei&#39;s Blog</title>
+    <title>Building self-contained, single executable .NET Core 3 CLI tools</title>
     
     
 
@@ -16,27 +16,41 @@
 
 
     
+    <meta name="author" content="Radu Matei">
     
     
-    <meta name="description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
-    
+    <meta name="description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time.">
     
 
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Radu Matei&#39;s Blog"/>
-<meta name="twitter:description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own."/>
+    <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG"/>
+
+<meta name="twitter:title" content="Building self-contained, single executable .NET Core 3 CLI tools"/>
+<meta name="twitter:description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."/>
 <meta name="twitter:site" content="@matei_radu"/>
 
-    <meta property="og:title" content="Radu Matei&#39;s Blog" />
-<meta property="og:description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://radu-matei.com/" />
+    <meta property="og:title" content="Building self-contained, single executable .NET Core 3 CLI tools" />
+<meta property="og:description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/self-contained-dotnet-cli/" />
 
-<meta property="og:updated_time" content="2019-09-02T00:00:00+00:00" />
+<meta property="og:image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG" />
+<meta property="article:published_time" content="2019-09-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-09-02T00:00:00+00:00" />
 
-    <meta itemprop="name" content="Radu Matei&#39;s Blog">
-<meta itemprop="description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
+    <meta itemprop="name" content="Building self-contained, single executable .NET Core 3 CLI tools">
+<meta itemprop="description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time.">
 
+
+<meta itemprop="datePublished" content="2019-09-02T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-09-02T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2757">
+
+  <meta itemprop="image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG">
+
+
+
+<meta itemprop="keywords" content="" />
 
     
 
@@ -84,11 +98,11 @@ if (!doNotTrack) {
 
     
     <div id="wrapper">
-    
-    
+
+
 <header id="header">
     
-    <h1><a href="/">Radu M</i></a></h1>
+    <h2><a href="/">Radu M</i></a></h2>
     
 
     <nav class="links">
@@ -251,14 +265,70 @@ if (!doNotTrack) {
     
     
 </section>
+<section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&text=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&title=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&title=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&title=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+
+<div id="main">
     
-    <div id="main">
-        
-            <article class="post">
+    
+    <article class="post">
     <header>
     <div class="title">
         
-            <h2><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h2>
+            <h1><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h1>
+            
         
         
             <p>.NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time.</p>
@@ -796,64 +866,9 @@ emote-aot --version  0.13s user 0.03s
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </article>
-
-            <section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
+</div>
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&text=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&title=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&title=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f&title=Building%20self-contained%2c%20single%20executable%20.NET%20Core%203%20CLI%20tools" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fself-contained-dotnet-cli%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-</section>
-
-        
-    </div>
-    
 <section id="sidebar">
 
     
@@ -873,9 +888,6 @@ emote-aot --version  0.13s user 0.03s
         </header>
         
         <ul class="icons">
-            
-            <li><a href="https://radu-matei.com/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
-            </li>
             
             
             
@@ -1048,9 +1060,6 @@ emote-aot --version  0.13s user 0.03s
     
     <section id="footer">
         <ul class="icons">
-            
-            <li><a href="https://radu-matei.com/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
-            </li>
             
             
             
