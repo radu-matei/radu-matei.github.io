@@ -24,7 +24,7 @@ And after an embarrassing number of tries, my jobs would contain a step that wou
 
 ```
 jobs:
-  kind:
+  configurator:
     runs-on: ubuntu-latest
     steps:
     - name: configure Helm 3
@@ -50,7 +50,7 @@ So let's see how to use the custom GitHub Action to achieve the same thing on a 
 
 ```
 jobs:
-  kind:
+  configurator:
     runs-on: ubuntu-latest
     steps:
       - uses: engineerd/configurator@v0.0.1
@@ -149,6 +149,30 @@ Common actions for Helm:
 - helm list:      list releases of charts
 ```
 
+# A complete cross-platform job
+
+Instead of configuring two separate jobs, we can use a build matrix to configure the URL, name, and path in archive according to the operating system the job is running on:
+
+```
+jobs:
+  configurator:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+        - {os: "ubuntu-latest", url: "https://get.helm.sh/helm-v3.0.0-beta.3-linux-amd64.tar.gz", name: "hb3", pathInArchive: "linux-amd64/helm" }
+        - {os: "windows-latest", url: "https://get.helm.sh/helm-v3.0.0-beta.3-windows-amd64.zip", name: "hb3.exe", pathInArchive: "windows-amd64/helm.exe" }
+    steps:
+      - uses: engineerd/configurator@v0.0.1
+        with:
+          name: ${{ matrix.config.name }}
+          url: ${{ matrix.config.url }}
+          pathInArchive: ${{ matrix.config.pathInArchive }}
+      - name: Testing
+        run: |
+          hb3 --help
+```
+
 # Next steps
 
 This is a generic action for downloading tools and adding them to the path. However, keep in mind that:
@@ -156,7 +180,6 @@ This is a generic action for downloading tools and adding them to the path. Howe
 - it currently doesn't work for macOS, and it has been tested for `ubuntu-latest` and `windows-latest`
 - complex flags for the unarchive process have not been tested yet
 - it currently only works for statically compiled tools - however, it might also work for adding entire archive directories to the path.
-- I'm currently investigating how to configure the inputs parameters to use in a build matrix (set the correct URL, path in the archive, and name for the current operating system in the matrix), as it would greatly simplify working with the build matrix.
 
 If you are interested in any of the above, [feel free to comment on issues or directly contribute to the project][repo], and let me know if you have any issues.
 
