@@ -7,6 +7,13 @@
 <html>
 
 <head>
+
+    {{ if .Params.canonicalUrl }}
+    <link rel="canonical" href="{{ .Params.canonicalUrl }}">
+    {{ else }}
+    <link rel="canonical" href="{{ .Permalink }}">
+    {{ end }}
+
     {{ with $.Scratch.Get "generalTitle" }}
     <title>{{ . }}</title>
     {{ else }}
