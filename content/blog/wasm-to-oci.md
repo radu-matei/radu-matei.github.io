@@ -7,9 +7,9 @@ linktitle = ""
 title = "Distributing WebAssembly modules using OCI registries"
 type = "post"
 summary = ""
-featured = ""
-featuredpath = ""
-images = [""]
+featured = "wasm-to-oci.png"
+featuredpath = "/img/article-photos/wasm-to-oci/"
+images = ["/img/article-photos/wasm-to-oci/wasm-to-oci.png"]
 +++
 
 # WebAssembly and WASI
