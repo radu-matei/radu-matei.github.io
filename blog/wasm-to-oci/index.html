@@ -5,12 +5,12 @@
 <head>
 
     
-    <link rel="canonical" href="https://radu-matei.com/">
+    <link rel="canonical" href="https://radu-matei.com/blog/wasm-to-oci/">
     
 
     
     
-    <title>Radu Matei&#39;s Blog</title>
+    <title>Distributing WebAssembly modules using OCI registries</title>
     
     
 
@@ -21,27 +21,43 @@
 
 
     
+    <meta name="author" content="Radu Matei">
+    
     
     
     <meta name="description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
     
     
 
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Radu Matei&#39;s Blog"/>
-<meta name="twitter:description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own."/>
+    <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://radu-matei.com"/>
+
+<meta name="twitter:title" content="Distributing WebAssembly modules using OCI registries"/>
+<meta name="twitter:description" content="WebAssembly and WASI WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so."/>
 <meta name="twitter:site" content="@matei_radu"/>
 
-    <meta property="og:title" content="Radu Matei&#39;s Blog" />
-<meta property="og:description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://radu-matei.com/" />
+    <meta property="og:title" content="Distributing WebAssembly modules using OCI registries" />
+<meta property="og:description" content="WebAssembly and WASI WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/wasm-to-oci/" />
 
-<meta property="og:updated_time" content="2019-10-13T00:00:00+00:00" />
+<meta property="og:image" content="https://radu-matei.com" />
+<meta property="article:published_time" content="2019-10-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-10-13T00:00:00+00:00" />
 
-    <meta itemprop="name" content="Radu Matei&#39;s Blog">
-<meta itemprop="description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
+    <meta itemprop="name" content="Distributing WebAssembly modules using OCI registries">
+<meta itemprop="description" content="WebAssembly and WASI WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so.">
 
+
+<meta itemprop="datePublished" content="2019-10-13T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-10-13T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="911">
+
+  <meta itemprop="image" content="https://radu-matei.com">
+
+
+
+<meta itemprop="keywords" content="" />
 
     
 
@@ -89,11 +105,11 @@ if (!doNotTrack) {
 
     
     <div id="wrapper">
-    
-    
+
+
 <header id="header">
     
-    <h1><a href="/">Radu M</i></a></h1>
+    <h2><a href="/">Radu M</i></a></h2>
     
 
     <nav class="links">
@@ -278,14 +294,70 @@ if (!doNotTrack) {
     
     
 </section>
+<section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&text=Distributing%20WebAssembly%20modules%20using%20OCI%20registries&via=matei_radu" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+</a></li>
+
+
+<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+</a></li>
+
+
+<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+</a></li>
+
+
+<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&title=Distributing%20WebAssembly%20modules%20using%20OCI%20registries" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+</a></li>
+
+
+<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&title=Distributing%20WebAssembly%20modules%20using%20OCI%20registries" target="_blank" class="share-btn linkedin">
+    <i class="fa fa-linkedin"></i>
+    <p>LinkedIn</p>
+</a></li>
+
+
+<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&title=Distributing%20WebAssembly%20modules%20using%20OCI%20registries" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+</a></li>
+
+
+<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+</a></li>
+
+        </ul>
+    </section>
+</section>
+
+
+<div id="main">
     
-    <div id="main">
-        
-            <article class="post">
+    
+    <article class="post">
     <header>
     <div class="title">
         
-            <h2><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h2>
+            <h1><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h1>
+            
         
         
     </div>
@@ -539,64 +611,9 @@ Hello from WebAssembly!
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </article>
-
-            <section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
+</div>
 
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&text=Distributing%20WebAssembly%20modules%20using%20OCI%20registries&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&title=Distributing%20WebAssembly%20modules%20using%20OCI%20registries" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&title=Distributing%20WebAssembly%20modules%20using%20OCI%20registries" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f&title=Distributing%20WebAssembly%20modules%20using%20OCI%20registries" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fwasm-to-oci%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-</section>
-
-        
-    </div>
-    
 <section id="sidebar">
 
     
@@ -616,9 +633,6 @@ Hello from WebAssembly!
         </header>
         
         <ul class="icons">
-            
-            <li><a href="https://radu-matei.com/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
-            </li>
             
             
             
@@ -791,9 +805,6 @@ Hello from WebAssembly!
     
     <section id="footer">
         <ul class="icons">
-            
-            <li><a href="https://radu-matei.com/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
-            </li>
             
             
             
