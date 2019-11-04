@@ -1,445 +1,131 @@
-<!DOCTYPE HTML>
-
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
 
 <head>
-
-    
-    <link rel="canonical" href="https://radu-matei.com/blog/k8s-helm-draft-azure/">
-    
-
-    
-    
-    <title>Get started with Helm and Draft for Kubernetes</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Get started with Helm and Draft for Kubernetes | radu&#39;s blog</title>
+     
     
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content="Hugo 0.57.2" />
-    
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="Get started with Helm and Draft for Kubernetes" />
+<meta name="twitter:description" content="Easy Kubernetes with Helm and Draft" />
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-
-    
-    <meta name="author" content="Radu Matei">
-    
-    
-    <meta name="description" content="Easy Kubernetes with Helm and Draft">
-    
-
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Get started with Helm and Draft for Kubernetes"/>
-<meta name="twitter:description" content="Easy Kubernetes with Helm and Draft"/>
-<meta name="twitter:site" content="@matei_radu"/>
-
-    <meta property="og:title" content="Get started with Helm and Draft for Kubernetes" />
-<meta property="og:description" content="Easy Kubernetes with Helm and Draft" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/k8s-helm-draft-azure/" />
-<meta property="article:published_time" content="2017-10-07T00:00:00+00:00" />
-<meta property="article:modified_time" content="2017-10-07T00:00:00+00:00" />
-
-    <meta itemprop="name" content="Get started with Helm and Draft for Kubernetes">
-<meta itemprop="description" content="Easy Kubernetes with Helm and Draft">
-
-
-<meta itemprop="datePublished" content="2017-10-07T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2017-10-07T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1962">
-
-
-
-<meta itemprop="keywords" content="" />
-
-    
-
-    
-
-    
-    
-    
-    
-
-    
-    
-    <link rel="stylesheet" href="/css/google-font.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/add-on.css" />
     <link rel="stylesheet" href="/css/monokai-sublime.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 
-    
 
-    
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     
-    
-    
-    
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/k8s-helm-draft-azure/"> 
 
-    
 </head>
 
 <body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
 
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-    <div id="wrapper">
-
-
-<header id="header">
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
     
-    <h2><a href="/">Radu M</i></a></h2>
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-
-    <nav class="links">
-        <ul>
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    
-                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    
-                    <i class="fa fa-smile-o">&nbsp;</i>About
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    
-                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    
-                    <i class="fa fa-pencil">&nbsp;</i>My other blog
-                </a>
-            </li>
-            
-        </ul>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
     </nav>
-    <nav class="main">
-        <ul>
-            
-            <li id="share-nav" class="share-menu" style="display:none;">
-                <a class="fa-share-alt" href="#share-menu">Share</a>
-            </li>
-            
-            <li class="search">
-                <a class="fa-search" href="#search">Search</a>
-                <form id="search" method="get" action="//google.com/search">
-                    <input type="text" name="q" placeholder="Search" />
-                    <input type="hidden" name="q" value="site:https://radu-matei.com">
-                </form>
-            </li>
-            <li>
-                <a id="dark-mode-toggle" class="fal fa-moon-o">Toggle Dark Mode</a>
-            </li>
-            <li class="menu">
-                <a class="fa-bars" href="#menu">Menu</a>
-            </li>
-        </ul>
-    </nav>
-</header>
-
-
-<section id="menu">
 
     
-    <section>
-        <form class="search" method="get" action="//google.com/search">
-            <input type="text" name="q" placeholder="Search" />
-            <input type="hidden" name="q" value="site:https://radu-matei.com">
-        </form>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    <h3>
-                        
-                        <i class="fa fa-newspaper-o">&nbsp;</i>
-                        
-                        Blog
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    <h3>
-                        
-                        <i class="fa fa-smile-o">&nbsp;</i>
-                        
-                        About
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    <h3>
-                        
-                        <i class="fa fa-comments-o">&nbsp;</i>
-                        
-                        Speaking
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    <h3>
-                        
-                        <i class="fa fa-pencil">&nbsp;</i>
-                        
-                        My other blog
-                    </h3>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            <li>
-                <a href="https://radu-matei.com/blog/wasm-to-oci/">
-                    <p>Distributing WebAssembly modules using OCI registries</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">
-                    <p>Cross platform GitHub Action for downloading, extracting, and adding tools to path</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">
-                    <p>Building self-contained, single executable .NET Core 3 CLI tools</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/dark-mode/">
-                    <p>Adding dark mode to a Hugo static website without learning CSS</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/building-github-actions/">
-                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-</section>
-<section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&text=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&title=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&title=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&title=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
+    <p class="author">
+      
+    </p>
+  </div>
 </section>
 
-
-<div id="main">
-    
-    
-    <article class="post">
-    <header>
-    <div class="title">
-        
-            <h1><a href="https://radu-matei.com/blog/k8s-helm-draft-azure/">Get started with Helm and Draft for Kubernetes</a></h1>
-            
-        
-        
-            <p>Easy Kubernetes with Helm and Draft</p>
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2017-10-07'>
-            October 7, 2017</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>10 minute read</p>
-        
-        
-    </div>
-</header>
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/kubernetes">#kubernetes</a>
 
 
-    <section id="social-share">
-        <ul class="icons">
+
+  
+  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
+  
+ 
+        </div>
+        
+        <h2 class="subtitle is-6">October 7, 2017. 10 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Get started with Helm and Draft for Kubernetes</h1>
+        
+        <div class="content">
             
 
+<!-- Table of contents
+=================
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&text=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
+- [Introduction](#introduction)
+- [Using kubectl, helm and draft](#using-kubectl-helm-and-draft)
+- [Configure Helm](#configure-helm)
+- [Configure Draft](#configure-draft)
+- [Creating an application](#creating-an-application)
+- [Investigating what actually happens](#investigating-what-actually-happens)
+- [Exiting the container](#exiting-the-container)
+- [Conclusion](#conclusion)
+- [Feedback](#feedback)
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&title=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&title=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f&title=Get%20started%20with%20Helm%20and%20Draft%20for%20Kubernetes" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-helm-draft-azure%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-    
-
-    <div id="content">
-        
-
-<h1 id="table-of-contents">Table of contents</h1>
-
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#using-kubectl-helm-and-draft">Using kubectl, helm and draft</a></li>
-<li><a href="#configure-helm">Configure Helm</a></li>
-<li><a href="#configure-draft">Configure Draft</a></li>
-<li><a href="#creating-an-application">Creating an application</a></li>
-<li><a href="#investigating-what-actually-happens">Investigating what actually happens</a></li>
-<li><a href="#exiting-the-container">Exiting the container</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#feedback">Feedback</a></li>
-</ul>
-
-<h1 id="prerequisites">Prerequisites</h1>
+Prerequisites
+============= -->
 
 <p><a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">In the previous tutorial</a> I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank">create a free account and get $200 for 12 months</a>.</p>
 
@@ -453,7 +139,7 @@ if (!doNotTrack) {
 
 <p><img src="/img/article-photos/k8s18-azure/pricing.png" alt="" /></p>
 
-<h1 id="introduction">Introduction</h1>
+<h3 id="introduction">Introduction</h3>
 
 <p><a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell</a>. Now we will use that cluster to get started with Helm and Draft to simplify our development process.</p>
 
@@ -463,7 +149,7 @@ if (!doNotTrack) {
 <p>If you don&rsquo;t have your <code>kubeconfig</code> and SSH keys to your <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article</a>.</p>
 </blockquote>
 
-<h1 id="using-kubectl-helm-and-draft">Using kubectl, helm and draft</h1>
+<h3 id="using-kubectl-helm-and-draft">Using <code>kubectl</code>, <code>helm</code> and <code>draft</code></h3>
 
 <p>Normally at this point you would manually download and install the latest version for <code>kubectl</code>, <code>helm</code> and <code>draft</code>. Luckily, you can use the Dockerfile below to create yourself an image that already has those installed.</p>
 
@@ -503,7 +189,7 @@ if (!doNotTrack) {
 
 <p><img src="/img/article-photos/k8s-helm-draft-azure/export-config.png" alt="" /></p>
 
-<h1 id="configure-helm">Configure Helm</h1>
+<h3 id="configure-helm">Configure Helm</h3>
 
 <blockquote>
 <p>Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes.</p>
@@ -544,7 +230,7 @@ if (!doNotTrack) {
 <p>We now have configured <code>helm</code>:
 <img src="/img/article-photos/k8s-helm-draft-azure/helm-ls-search.png" alt="" /></p>
 
-<h1 id="configure-draft">Configure Draft</h1>
+<h3 id="configure-draft">Configure Draft</h3>
 
 <blockquote>
 <p>Draft makes it easy to build applications that run on Kubernetes. Draft targets the &ldquo;inner loop&rdquo; of a developer&rsquo;s workflow: as they hack on code, but before code is committed to version control.</p>
@@ -602,7 +288,7 @@ if (!doNotTrack) {
 <p><a href="https://github.com/Azure/draft/blob/master/docs/ingress.md#i-dont-manage-a-domain" target="_blank">If you don&rsquo;t manage a domain, please see the instructions here</a>.</p>
 </blockquote>
 
-<h1 id="creating-an-application">Creating an application</h1>
+<h3 id="creating-an-application">Creating an application</h3>
 
 <p>Remember earlier that we also mounted a local directory where we will write our application. This was to allow us to easily use VS Code to develop the application.</p>
 
@@ -642,7 +328,6 @@ if (!doNotTrack) {
     wait = false
     watch = true
     watch_delay = 2
-
 </code></pre>
 
 <p>Executing <code>draft up</code> will automatically build the image and push it to the image repository.</p>
@@ -660,7 +345,7 @@ if (!doNotTrack) {
 
 <p>Note that for any update of your application (that is you modifying the app locally and saving it) while the <code>draft up</code> process is running, you will get the updated version of your application deployed automatically.</p>
 
-<h1 id="investigating-what-actually-happens">Investigating what actually happens</h1>
+<h3 id="investigating-what-actually-happens">Investigating what actually happens</h3>
 
 <p>Remember that you also exposed port 8080 from the container? Now it&rsquo;s time to start the proxy that will allow us to browse the Kubernetes dashboard locally:</p>
 
@@ -681,7 +366,7 @@ if (!doNotTrack) {
 <p>Now you can update the app locally (save the source code) and the app will be automatically updated on your cluster.
 You don&rsquo;t need to have Go (or whatever language you use for developement) locally, not even Docker. Using Draft you don&rsquo;t need to understand how to write a Dockerfile, or a Helm chart - you simply want your app in the cluster.</p>
 
-<h1 id="exiting-the-container">Exiting the container</h1>
+<h3 id="exiting-the-container">Exiting the container</h3>
 
 <p>When you are done working, simply exit the container - no global config was written, no context switching is necessary to change between different clusters - you simply have a directory with all config for your cluster - <code>kubeconfig</code> and config for <code>helm</code> and <code>draft</code>.</p>
 
@@ -691,379 +376,88 @@ You don&rsquo;t need to have Go (or whatever language you use for developement) 
 
 <p>You can also use the same container with a different config folder for another cluster. That easy :)</p>
 
-<h1 id="conclusion">Conclusion</h1>
+<h3 id="conclusion">Conclusion</h3>
 
 <p>We saw how to get started with Helm and Draft and tried a new approach at config management for multiple clusters using a config folder for each cluster.
 We configured <code>helm</code> and <code>draft</code>, set up an ingress controller that used a domain we own, then deployed new apps to the cluster in seconds without writing Dockerfiles, Kubernetes deployment files or Helm charts.  We just worry about our app.</p>
 
-<h1 id="feedback">Feedback</h1>
-
 <p>If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
     </div>
-        
-
-        
-    <footer>
-        <ul class="stats">
-    
-    
-
-    
-    
-    <li>
-        
-        
-        
-
-        
-        Categories
-        
-        
-    </li>
-    
-    
-
-    
-    
-    <li><a href='/categories/kubernetes'>kubernetes</a></li>
-    
-    <li><a href='/categories/azure'>azure</a></li>
-    
-</ul>
-    </footer>
-</article>
-<ul class="actions pagination">
-    
-        <li><a href="https://radu-matei.com/blog/k8s18-azure/"
-                class="button big previous">Kubernetes 1.8 on Azure</a></li>
-    
-
-    
-        <li><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/"
-                class="button big next">Jenkins pipelines with Kubernetes </a></li>
-    
-</ul>
+</section>
 
 
-<article class="post">
-    <div id="disqus_thread"></div>
-
-
-<script type="text/javascript">
-    var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/k8s-helm-draft-azure/";
-    var disqus_title = "Get started with Helm and Draft for Kubernetes";
-    var disqus_url = "Get started with Helm and Draft for Kubernetes";
-
-    var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/k8s-helm-draft-azure/";  
-        this.page.identifier = "https://radu-matei.com/blog/k8s-helm-draft-azure/"; 
-    };
-
-    (function() {
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</article>
-</div>
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
 
 
-<section id="sidebar">
-
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
     
-    <section id="intro">
-        
-        
-        
-        <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
-        
-        
-        
-        <header>
-            <a href="/">
-                <h2>Radu M</h2>
-            </a>
-            <p>Open source, Kubernetes, cloud native, developer tools for distributed systems. Software Engineer at Microsoft Azure. Opinions are my own.</p>
-        </header>
-        
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-    </section>
-
-    
-    <section id="recent-posts">
-        <ul class="posts">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            
-            
-
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-10-13'>
-                            October 13, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">Cross platform GitHub Action for downloading, extracting, and adding tools to path</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-17'>
-                            September 17, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-02'>
-                            September 2, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/dark-mode/">Adding dark mode to a Hugo static website without learning CSS</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-01'>
-                            September 1, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-08-23'>
-                            August 23, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-
-            
-            <li>
-                <ul class="actions">
-                    <li><a href= /blog/ 
-                            class="button">View more posts</a></li>
-                </ul>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-    
-    
-    
-
-    
-    
-
-    
-    <section id="footer">
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-
-        <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
-    </section>
+  </div>
 
 </section>
-</div>
-<a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
 
 
-
-
-
-
-
-<script src="/js/jquery.min.js"></script>
-<script src="/js/skel.min.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/main.js"></script>
-<script src="/js/backToTop.js"></script>
-<script src="/js/highlight.pack.js"></script>
-<script src="/js/dark.js"></script>
-
-
-
-
-
-
-<script>hljs.initHighlightingOnLoad();</script>
-
+<script src="/js/dark.js "></script>
 
 
 </body>
 
 </html>
+

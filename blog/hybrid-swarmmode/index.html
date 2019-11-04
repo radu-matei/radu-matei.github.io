@@ -1,431 +1,116 @@
-<!DOCTYPE HTML>
-
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
 
 <head>
-
-    
-    <link rel="canonical" href="https://radu-matei.com/blog/hybrid-swarmmode/">
-    
-
-    
-    
-    <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine | radu&#39;s blog</title>
+     
     
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content="Hugo 0.57.2" />
-    
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine" />
+<meta name="twitter:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine" />
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-
-    
-    <meta name="author" content="Radu Matei">
-    
-    
-    <meta name="description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine">
-    
-
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine"/>
-<meta name="twitter:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"/>
-<meta name="twitter:site" content="@matei_radu"/>
-
-    <meta property="og:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine" />
-<meta property="og:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/hybrid-swarmmode/" />
-<meta property="article:published_time" content="2017-07-03T00:00:00+00:00" />
-<meta property="article:modified_time" content="2017-07-03T00:00:00+00:00" />
-
-    <meta itemprop="name" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine">
-<meta itemprop="description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine">
-
-
-<meta itemprop="datePublished" content="2017-07-03T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2017-07-03T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1794">
-
-
-
-<meta itemprop="keywords" content="" />
-
-    
-
-    
-
-    
-    
-    
-    
-
-    
-    
-    <link rel="stylesheet" href="/css/google-font.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/add-on.css" />
     <link rel="stylesheet" href="/css/monokai-sublime.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 
-    
 
-    
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     
-    
-    
-    
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/hybrid-swarmmode/"> 
 
-    
 </head>
 
 <body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
 
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-    <div id="wrapper">
-
-
-<header id="header">
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
     
-    <h2><a href="/">Radu M</i></a></h2>
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-
-    <nav class="links">
-        <ul>
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    
-                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    
-                    <i class="fa fa-smile-o">&nbsp;</i>About
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    
-                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    
-                    <i class="fa fa-pencil">&nbsp;</i>My other blog
-                </a>
-            </li>
-            
-        </ul>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
     </nav>
-    <nav class="main">
-        <ul>
-            
-            <li id="share-nav" class="share-menu" style="display:none;">
-                <a class="fa-share-alt" href="#share-menu">Share</a>
-            </li>
-            
-            <li class="search">
-                <a class="fa-search" href="#search">Search</a>
-                <form id="search" method="get" action="//google.com/search">
-                    <input type="text" name="q" placeholder="Search" />
-                    <input type="hidden" name="q" value="site:https://radu-matei.com">
-                </form>
-            </li>
-            <li>
-                <a id="dark-mode-toggle" class="fal fa-moon-o">Toggle Dark Mode</a>
-            </li>
-            <li class="menu">
-                <a class="fa-bars" href="#menu">Menu</a>
-            </li>
-        </ul>
-    </nav>
-</header>
-
-
-<section id="menu">
 
     
-    <section>
-        <form class="search" method="get" action="//google.com/search">
-            <input type="text" name="q" placeholder="Search" />
-            <input type="hidden" name="q" value="site:https://radu-matei.com">
-        </form>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    <h3>
-                        
-                        <i class="fa fa-newspaper-o">&nbsp;</i>
-                        
-                        Blog
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    <h3>
-                        
-                        <i class="fa fa-smile-o">&nbsp;</i>
-                        
-                        About
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    <h3>
-                        
-                        <i class="fa fa-comments-o">&nbsp;</i>
-                        
-                        Speaking
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    <h3>
-                        
-                        <i class="fa fa-pencil">&nbsp;</i>
-                        
-                        My other blog
-                    </h3>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            <li>
-                <a href="https://radu-matei.com/blog/wasm-to-oci/">
-                    <p>Distributing WebAssembly modules using OCI registries</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">
-                    <p>Cross platform GitHub Action for downloading, extracting, and adding tools to path</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">
-                    <p>Building self-contained, single executable .NET Core 3 CLI tools</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/dark-mode/">
-                    <p>Adding dark mode to a Hugo static website without learning CSS</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/building-github-actions/">
-                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-</section>
-<section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&text=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&title=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&title=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&title=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
+    <p class="author">
+      
+    </p>
+  </div>
 </section>
 
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/docker">#docker</a>
 
-<div id="main">
-    
-    
-    <article class="post">
-    <header>
-    <div class="title">
+
+
+  
+  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
+  
+  | <a class="subtitle is-6" href="/tags/windows-containers">#windows-containers</a>
+  
+ 
+        </div>
         
-            <h1><a href="https://radu-matei.com/blog/hybrid-swarmmode/">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</a></h1>
+        <h2 class="subtitle is-6">July 3, 2017. 9 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</h1>
+        
+        <div class="content">
             
-        
-        
-            <p>Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine</p>
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2017-07-03'>
-            July 3, 2017</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>9 minute read</p>
-        
-        
-    </div>
-</header>
-
-
-    <section id="social-share">
-        <ul class="icons">
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&text=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&title=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&title=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f&title=The%20Hybrid%20Cluster%3a%20A%20CI%2fCD%20Story%20%5bPart%201%5d%20-%20Configuring%20a%20hybrid%20swarm%20mode%20cluster%20in%20Azure%20with%20acs-engine" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fhybrid-swarmmode%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-    
-
-    <div id="content">
-        
-
-<h2 id="introduction">Introduction</h2>
 
 <p>Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.</p>
 
@@ -437,13 +122,13 @@ if (!doNotTrack) {
 <li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters" target="_blank">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a></li>
 </ul>
 
-<h2 id="how-is-this-article-different-compared-to-the-docs-above">How is this article different compared to the docs above?</h2>
+<h3 id="how-is-this-article-different-compared-to-the-docs-above">How is this article different compared to the docs above?</h3>
 
 <p>In this article we will focus on deploying the cluster on Azure programmatically, using <a href="https://github.com/Azure/acs-engine" target="_blank">acs-engine</a>, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview" target="_blank">ARM (Azure Resource Manager) templates</a> for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
 
 <p>While you can <a href="https://github.com/Azure/acs-engine" target="_blank">find more information about acs-engine on the GitHub repo</a>, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/" target="_blank">various Azure command-line interfaces</a> like Azure CLI 2.0 or Azure PowerShell.</p>
 
-<h2 id="getting-started-prerequisites">Getting started - prerequisites</h2>
+<h3 id="getting-started-prerequisites">Getting started - prerequisites</h3>
 
 <p>This article will continue under the assumption that you have an active Azure subscription. If you don&rsquo;t, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/" target="_blank">Visual Studio Dev Essentials</a> (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md" target="_blank">this link on how to activate your free monthly $25</a>), or a <a href="https://azure.microsoft.com/en-us/free/" target="_blank">free trial</a>.</p>
 
@@ -451,7 +136,7 @@ if (!doNotTrack) {
 <p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster" target="_blank">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a> where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
 </blockquote>
 
-<h2 id="understanding-all-types-of-containers">Understanding all types of containers</h2>
+<h3 id="understanding-all-types-of-containers">Understanding all types of containers</h3>
 
 <p>First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations.</p>
 
@@ -481,7 +166,7 @@ if (!doNotTrack) {
 
 <p>After we deploy our cluster, we will be able to deploy all types of containers described above.</p>
 
-<h2 id="the-acs-engine-cluster-definition">The acs-engine cluster definition</h2>
+<h3 id="the-acs-engine-cluster-definition">The <code>acs-engine</code> cluster definition</h3>
 
 <p>As said earlier, we will use a JSON cluster definition file to, well, define our cluster.</p>
 
@@ -502,7 +187,7 @@ if (!doNotTrack) {
 
 <p>Compared to the image above, there is an additional VM Scale Set with the Windows agents. All VMs are in the same VNET, with the masters on a private subnet. All VMs are fully accessible to each other.</p>
 
-<h2 id="deploying-the-cluster-to-azure">Deploying the cluster to Azure</h2>
+<h3 id="deploying-the-cluster-to-azure">Deploying the cluster to Azure</h3>
 
 <p>So far we only have a cluster definition (with values for FQDN, usernames and passwords). Before we can actually deploy, we need to generate the ARM templates using acs-engine.</p>
 
@@ -524,7 +209,9 @@ if (!doNotTrack) {
 
 <p>Then, we need to download the package for acs-engine: <code>go get github.com/Azure/acs-engine</code>, then navigate to the source of the package and build it: <code>go build</code>.</p>
 
-<p>Then, we add the <code>bin</code> folder from the <code>go</code> directory in the path: <code>export PATH=$PATH:/home/{yourusername}/go/bin</code></p>
+<p>Then, we add the <code>bin</code> folder from the <code>go</code> directory in the path:</p>
+
+<p><code>export PATH=$PATH:/home/{yourusername}/go/bin</code></p>
 
 <p>Now you should be able to execute <code>acs-engine</code> from any directory:</p>
 
@@ -532,7 +219,8 @@ if (!doNotTrack) {
 
 <p>Now let&rsquo;s create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or <code>wget</code> the file:</p>
 
-<p><code>wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json</code></p>
+<pre><code>wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json
+</code></pre>
 
 <p>After you edit the file with your values, generate the ARM templates using <code>acs-engine generate swarmmode-hybrid.json</code>:</p>
 
@@ -548,7 +236,12 @@ if (!doNotTrack) {
 
 <p>Then, using the generated files <code>azuredeploy.json</code> and <code>azuredeploy.parameters.json</code>, create a new deployment using the <code>az</code> command-line interface:</p>
 
-<p><code>az group deployment create --name hybrid-swarmmode-deployment --resource-group {your-resource-group} --template-file azuredeploy.json  --parameters azuredeploy.parameters.json</code></p>
+<pre><code>az group deployment create
+    --name hybrid-swarmmode-deployment
+    --resource-group {your-resource-group}
+    --template-file azuredeploy.json
+    --parameters azuredeploy.parameters.json
+</code></pre>
 
 <blockquote>
 <p>Note that you can also use a local installation of <code>az</code>, or in a container, or any method of deploying ARM templates.</p>
@@ -567,7 +260,7 @@ if (!doNotTrack) {
 <li>network interfaces and OS disks for the masters</li>
 </ul>
 
-<h2 id="connecting-to-the-cluster">Connecting to the cluster</h2>
+<h3 id="connecting-to-the-cluster">Connecting to the cluster</h3>
 
 <p>After the deployment succeeds, you are now ready to connect to the master. You will SSH into the masters using the user and SSH key you setup in the cluster definition file. The 3 FQDNs will have the following template:</p>
 
@@ -575,7 +268,8 @@ if (!doNotTrack) {
 
 <p>Each master can be publicly accessed using the FQDN and one of the ports (2200..220x) (So you will access the first master on 2200, the second master on 2201 and so on.). For example, to SSH into the first master, use the following:</p>
 
-<p><code>ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200</code></p>
+<pre><code>ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200
+</code></pre>
 
 <p>Then, if you list all nodes in the cluster you might first see this:</p>
 
@@ -597,7 +291,7 @@ if (!doNotTrack) {
 
 <p><img src="/img/article-photos/hybrid-swarmmode/node-inspect.PNG" alt="" /></p>
 
-<h2 id="deploying-services-to-the-cluster">Deploying services to the cluster</h2>
+<h3 id="deploying-services-to-the-cluster">Deploying services to the cluster</h3>
 
 <p>From now on, you can treat this cluster as any other Docker Swarm Mode cluster: with the single mention that you cannot run Linux containers on Windows and Windows containers on Linux. This means that when starting services, we need to put some restrictions in place.</p>
 
@@ -634,385 +328,89 @@ if (!doNotTrack) {
 
 <p><img src="/img/article-photos/hybrid-swarmmode/running.PNG" alt="" /></p>
 
-<h2 id="conclusion">Conclusion</h2>
+<h3 id="conclusion">Conclusion</h3>
 
-<p>In this article we saw how to deploy a hybrid Swarm Mode cluster on Azure using acs-engine and how to deploy a mixed-OS containerized application on the cluster we created.</p>
-
-<h2 id="next-steps">Next Steps</h2>
-
-<p>Next, we will explore how to create a consistent CI/CD story with GitHub and Jenkins (with Linux and Windows slaves that are created dynamically for each build).</p>
-
-<h2 id="feedback">Feedback</h2>
+<p>In this article we saw how to deploy a hybrid Swarm Mode cluster on Azure using acs-engine and how to deploy a mixed-OS containerized application on the cluster we created.
+Next, we will explore how to create a consistent CI/CD story with GitHub and Jenkins (with Linux and Windows slaves that are created dynamically for each build).</p>
 
 <p>If you think this article could be better, please provide your feedback in the comments below.</p>
 
-<h2 id="thanks-for-reading">Thanks for reading :)</h2>
+<p>Thanks for reading :)</p>
 
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
     </div>
-        
-
-        
-    <footer>
-        <ul class="stats">
-    
-    
-
-    
-    
-    <li>
-        
-        
-        
-
-        
-        Categories
-        
-        
-    </li>
-    
-    
-
-    
-    
-    <li><a href='/categories/docker'>docker</a></li>
-    
-    <li><a href='/categories/azure'>azure</a></li>
-    
-    <li><a href='/categories/windows-containers'>windows-containers</a></li>
-    
-</ul>
-    </footer>
-</article>
-<ul class="actions pagination">
-    
-        <li><a href="https://radu-matei.com/blog/real-time-aspnet-core/"
-                class="button big previous">Real-Time ASP .NET Core</a></li>
-    
-
-    
-        <li><a href="https://radu-matei.com/blog/k8s18-azure/"
-                class="button big next">Kubernetes 1.8 on Azure</a></li>
-    
-</ul>
+</section>
 
 
-<article class="post">
-    <div id="disqus_thread"></div>
-
-
-<script type="text/javascript">
-    var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/hybrid-swarmmode/";
-    var disqus_title = "The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine";
-    var disqus_url = "The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine";
-
-    var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/hybrid-swarmmode/";  
-        this.page.identifier = "https://radu-matei.com/blog/hybrid-swarmmode/"; 
-    };
-
-    (function() {
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</article>
-</div>
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
 
 
-<section id="sidebar">
-
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
     
-    <section id="intro">
-        
-        
-        
-        <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
-        
-        
-        
-        <header>
-            <a href="/">
-                <h2>Radu M</h2>
-            </a>
-            <p>Open source, Kubernetes, cloud native, developer tools for distributed systems. Software Engineer at Microsoft Azure. Opinions are my own.</p>
-        </header>
-        
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-    </section>
-
-    
-    <section id="recent-posts">
-        <ul class="posts">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            
-            
-
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-10-13'>
-                            October 13, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">Cross platform GitHub Action for downloading, extracting, and adding tools to path</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-17'>
-                            September 17, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-02'>
-                            September 2, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/dark-mode/">Adding dark mode to a Hugo static website without learning CSS</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-01'>
-                            September 1, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-08-23'>
-                            August 23, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-
-            
-            <li>
-                <ul class="actions">
-                    <li><a href= /blog/ 
-                            class="button">View more posts</a></li>
-                </ul>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-    
-    
-    
-
-    
-    
-
-    
-    <section id="footer">
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-
-        <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
-    </section>
+  </div>
 
 </section>
-</div>
-<a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
 
 
-
-
-
-
-
-<script src="/js/jquery.min.js"></script>
-<script src="/js/skel.min.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/main.js"></script>
-<script src="/js/backToTop.js"></script>
-<script src="/js/highlight.pack.js"></script>
-<script src="/js/dark.js"></script>
-
-
-
-
-
-
-<script>hljs.initHighlightingOnLoad();</script>
-
+<script src="/js/dark.js "></script>
 
 
 </body>
 
 </html>
+

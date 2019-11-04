@@ -1,445 +1,132 @@
-<!DOCTYPE HTML>
-
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
 
 <head>
-
-    
-    <link rel="canonical" href="https://radu-matei.com/blog/k8s-appsvc/">
-    
-
-    
-    
-    <title>Best of Both worlds: Azure App Service and Kubernetes</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Best of Both worlds: Azure App Service and Kubernetes | radu&#39;s blog</title>
+     
     
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content="Hugo 0.57.2" />
-    
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="Best of Both worlds: Azure App Service and Kubernetes" />
+<meta name="twitter:description" content="Consuming a private API built with Kubernetes from Azure App Service" />
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-
-    
-    <meta name="author" content="Radu Matei">
-    
-    
-    <meta name="description" content="Consuming a private API built with Kubernetes from Azure App Service">
-    
-
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Best of Both worlds: Azure App Service and Kubernetes"/>
-<meta name="twitter:description" content="Consuming a private API built with Kubernetes from Azure App Service"/>
-<meta name="twitter:site" content="@matei_radu"/>
-
-    <meta property="og:title" content="Best of Both worlds: Azure App Service and Kubernetes" />
-<meta property="og:description" content="Consuming a private API built with Kubernetes from Azure App Service" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/k8s-appsvc/" />
-<meta property="article:published_time" content="2017-10-17T00:00:00+00:00" />
-<meta property="article:modified_time" content="2017-10-17T00:00:00+00:00" />
-
-    <meta itemprop="name" content="Best of Both worlds: Azure App Service and Kubernetes">
-<meta itemprop="description" content="Consuming a private API built with Kubernetes from Azure App Service">
-
-
-<meta itemprop="datePublished" content="2017-10-17T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2017-10-17T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1696">
-
-
-
-<meta itemprop="keywords" content="" />
-
-    
-
-    
-
-    
-    
-    
-    
-
-    
-    
-    <link rel="stylesheet" href="/css/google-font.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/add-on.css" />
     <link rel="stylesheet" href="/css/monokai-sublime.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 
-    
 
-    
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     
-    
-    
-    
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/k8s-appsvc/"> 
 
-    
 </head>
 
 <body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
 
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-    <div id="wrapper">
-
-
-<header id="header">
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
     
-    <h2><a href="/">Radu M</i></a></h2>
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-
-    <nav class="links">
-        <ul>
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    
-                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    
-                    <i class="fa fa-smile-o">&nbsp;</i>About
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    
-                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    
-                    <i class="fa fa-pencil">&nbsp;</i>My other blog
-                </a>
-            </li>
-            
-        </ul>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
     </nav>
-    <nav class="main">
-        <ul>
-            
-            <li id="share-nav" class="share-menu" style="display:none;">
-                <a class="fa-share-alt" href="#share-menu">Share</a>
-            </li>
-            
-            <li class="search">
-                <a class="fa-search" href="#search">Search</a>
-                <form id="search" method="get" action="//google.com/search">
-                    <input type="text" name="q" placeholder="Search" />
-                    <input type="hidden" name="q" value="site:https://radu-matei.com">
-                </form>
-            </li>
-            <li>
-                <a id="dark-mode-toggle" class="fal fa-moon-o">Toggle Dark Mode</a>
-            </li>
-            <li class="menu">
-                <a class="fa-bars" href="#menu">Menu</a>
-            </li>
-        </ul>
-    </nav>
-</header>
-
-
-<section id="menu">
 
     
-    <section>
-        <form class="search" method="get" action="//google.com/search">
-            <input type="text" name="q" placeholder="Search" />
-            <input type="hidden" name="q" value="site:https://radu-matei.com">
-        </form>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    <h3>
-                        
-                        <i class="fa fa-newspaper-o">&nbsp;</i>
-                        
-                        Blog
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    <h3>
-                        
-                        <i class="fa fa-smile-o">&nbsp;</i>
-                        
-                        About
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    <h3>
-                        
-                        <i class="fa fa-comments-o">&nbsp;</i>
-                        
-                        Speaking
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    <h3>
-                        
-                        <i class="fa fa-pencil">&nbsp;</i>
-                        
-                        My other blog
-                    </h3>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            <li>
-                <a href="https://radu-matei.com/blog/wasm-to-oci/">
-                    <p>Distributing WebAssembly modules using OCI registries</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">
-                    <p>Cross platform GitHub Action for downloading, extracting, and adding tools to path</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">
-                    <p>Building self-contained, single executable .NET Core 3 CLI tools</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/dark-mode/">
-                    <p>Adding dark mode to a Hugo static website without learning CSS</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/building-github-actions/">
-                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-</section>
-<section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&text=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&title=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&title=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&title=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
+    <p class="author">
+      
+    </p>
+  </div>
 </section>
 
-
-<div id="main">
-    
-    
-    <article class="post">
-    <header>
-    <div class="title">
-        
-            <h1><a href="https://radu-matei.com/blog/k8s-appsvc/">Best of Both worlds: Azure App Service and Kubernetes</a></h1>
-            
-        
-        
-            <p>Consuming a private API built with Kubernetes from Azure App Service</p>
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2017-10-17'>
-            October 17, 2017</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>8 minute read</p>
-        
-        
-    </div>
-</header>
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/kubernetes">#kubernetes</a>
 
 
-    <section id="social-share">
-        <ul class="icons">
+
+  
+  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
+  
+ 
+        </div>
+        
+        <h2 class="subtitle is-6">October 17, 2017. 8 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Best of Both worlds: Azure App Service and Kubernetes</h1>
+        
+        <div class="content">
             
 
+<!--
+Table of Contents
+-----------------
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&text=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Why not just expose services publicly?](#why-not-just-expose-services-publicly)
+- [Deploy Kubernetes services with a private IP](#deploy-kubernetes-services-with-a-private-ip)
+- [The networking settings](#the-networking-settings)
+- [Testing the integration](#testing-the-integration)
+- [Conclusion](#conclusion)
+- [Next Steps](#next-steps)
+- [Feedback](#feedback)
 
 
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&title=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&title=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f&title=Best%20of%20Both%20worlds%3a%20Azure%20App%20Service%20and%20Kubernetes" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2fk8s-appsvc%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-    
-
-    <div id="content">
-        
-
-<h2 id="table-of-contents">Table of Contents</h2>
-
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#why-not-just-expose-services-publicly">Why not just expose services publicly?</a></li>
-<li><a href="#deploy-kubernetes-services-with-a-private-ip">Deploy Kubernetes services with a private IP</a></li>
-<li><a href="#the-networking-settings">The networking settings</a></li>
-<li><a href="#testing-the-integration">Testing the integration</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#next-steps">Next Steps</a></li>
-<li><a href="#feedback">Feedback</a></li>
-</ul>
-
-<h2 id="introduction">Introduction</h2>
+Introduction
+------------ -->
 
 <p>In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet.</p>
 
@@ -451,7 +138,7 @@ if (!doNotTrack) {
 <p>Note that in order to deploy a Kubernetes cluster on Azure you can either <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">use <code>acs-engine</code> (a tool that deploys custom clusters on Azure) - here&rsquo;s how to deploy Kubernetes 1.8 on Azure using <code>acs-engine</code></a> or <a href="https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-walkthrough" target="_blank">use the <code>az</code> command line - here&rsquo;s the official documentation.</a></p>
 </blockquote>
 
-<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="prerequisites">Prerequisites</h3>
 
 <p>This tutorial assumes you have a valid Azure subscription that you can use to deploy resources. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank">create a free account and get $200 for 12 months</a>.</p>
 
@@ -473,7 +160,7 @@ if (!doNotTrack) {
 <p>Here you can <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/" target="_blank">find out more about the Azure VPN Gateway</a></p>
 </blockquote>
 
-<h2 id="why-not-just-expose-services-publicly">Why not just expose services publicly?</h2>
+<h3 id="why-not-just-expose-services-publicly">Why not just expose services publicly?</h3>
 
 <p>The alternative to this entire article is simply exposing public services from Kubernetes with a public IP address and just use that public IP address from your App Service application.</p>
 
@@ -489,7 +176,7 @@ if (!doNotTrack) {
 <p>Networking pricing is a complex topic in any cloud provider and I am by no means expert in Azure Networking - you can read more about Azure Networking <a href="https://azure.microsoft.com/en-us/pricing/details/virtual-network/" target="_blank">pricing for virtual networks</a>, for <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/" target="_blank">VPN gateways</a> and <a href="https://azure.microsoft.com/en-us/pricing/details/bandwidth/" target="_blank">bandwidth</a>.</p>
 </blockquote>
 
-<h2 id="deploy-kubernetes-services-with-a-private-ip">Deploy Kubernetes services with a private IP</h2>
+<h3 id="deploy-kubernetes-services-with-a-private-ip">Deploy Kubernetes services with a private IP</h3>
 
 <p>When you deploy Kubernetes in Azure, all resources (network interfaces of VMs, load balancers) are deployed in a virtual network, and each VM gets a private IP inside that VNet.</p>
 
@@ -519,7 +206,7 @@ That being said, let&rsquo;s see how a Kubernetes service that is internally exp
 
 <p><img src="/img/article-photos/k8s-appsvc/private-ip.PNG" alt="" /></p>
 
-<h2 id="the-networking-settings">The networking settings</h2>
+<h3 id="the-networking-settings">The networking settings</h3>
 
 <p>So we now have a Kubernetes service accessible from within our virtual network. We now need to integrate an App Service instance in that virtual network to consume the API we deployed.</p>
 
@@ -589,7 +276,7 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 <p><img src="/img/article-photos/k8s-appsvc/setup.PNG" alt="" /></p>
 
-<h2 id="testing-the-integration">Testing the integration</h2>
+<h3 id="testing-the-integration">Testing the integration</h3>
 
 <p>Now to the moment of truth: I created a very simple .NET Core app (it can be Node, PHP, Java) that makes requests to a <code>PrivateAddress</code> that you can configure in the App Settings in Azure Portal. You can <a href="https://github.com/radu-matei/app-svc-vnet" target="_blank">find the app on GitHub</a>, but all it does is make an HTTP request and return the response.</p>
 
@@ -605,7 +292,7 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 <p><img src="/img/article-photos/k8s-appsvc/pods.PNG" alt="" /></p>
 
-<h2 id="current-known-limitations">Current known limitations</h2>
+<h3 id="current-known-limitations">Current known limitations</h3>
 
 <p>Right now you cannot use this article with a Web App on Containers or App Service on Linux, as the VNet integration does not currently support them.</p>
 
@@ -615,379 +302,85 @@ Now in order to create this, we first need to <a href="https://docs.microsoft.co
 
 <p>Now you have successfully deployed an application on App Service that uses private APIs from within a non-Internet routable network. You get the best of both worlds: the ease of deployment, autoscaling, SSL and other fun features of App Service, with the flexibility of Kubernetes, all in the same application.</p>
 
-<h2 id="next-steps">Next Steps</h2>
-
 <p>A next step would be creating deployment pipelines for both App Service and the Kubernetes apps - <a href="https://github.com/azure-devops/movie-db-java-on-azure" target="_blank">here is an example of a pipeline using Jenkins</a> for a web app on App Service with the backend in Kubernetes.</p>
 
-<h2 id="feedback">Feedback</h2>
+<p>If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
+As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
-<p>If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.</p>
 
-<p>As always, thanks for reading, and any feedback is highly appreciated :)</p>
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
 
+            
+        </div>
+        
     </div>
-        
-
-        
-    <footer>
-        <ul class="stats">
-    
-    
-
-    
-    
-    <li>
-        
-        
-        
-
-        
-        Categories
-        
-        
-    </li>
-    
-    
-
-    
-    
-    <li><a href='/categories/kubernetes'>kubernetes</a></li>
-    
-    <li><a href='/categories/azure'>azure</a></li>
-    
-</ul>
-    </footer>
-</article>
-<ul class="actions pagination">
-    
-        <li><a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/"
-                class="button big previous">Jenkins pipelines with Kubernetes </a></li>
-    
-
-    
-        <li><a href="https://radu-matei.com/blog/signalr-core/"
-                class="button big next">Getting started with SignalR Alpha 2</a></li>
-    
-</ul>
+</section>
 
 
-<article class="post">
-    <div id="disqus_thread"></div>
-
-
-<script type="text/javascript">
-    var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/k8s-appsvc/";
-    var disqus_title = "Best of Both worlds: Azure App Service and Kubernetes";
-    var disqus_url = "Best of Both worlds: Azure App Service and Kubernetes";
-
-    var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/k8s-appsvc/";  
-        this.page.identifier = "https://radu-matei.com/blog/k8s-appsvc/"; 
-    };
-
-    (function() {
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</article>
-</div>
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
 
 
-<section id="sidebar">
-
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
     
-    <section id="intro">
-        
-        
-        
-        <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
-        
-        
-        
-        <header>
-            <a href="/">
-                <h2>Radu M</h2>
-            </a>
-            <p>Open source, Kubernetes, cloud native, developer tools for distributed systems. Software Engineer at Microsoft Azure. Opinions are my own.</p>
-        </header>
-        
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-    </section>
-
-    
-    <section id="recent-posts">
-        <ul class="posts">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            
-            
-
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-10-13'>
-                            October 13, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">Cross platform GitHub Action for downloading, extracting, and adding tools to path</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-17'>
-                            September 17, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-02'>
-                            September 2, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/dark-mode/">Adding dark mode to a Hugo static website without learning CSS</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-01'>
-                            September 1, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-08-23'>
-                            August 23, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-
-            
-            <li>
-                <ul class="actions">
-                    <li><a href= /blog/ 
-                            class="button">View more posts</a></li>
-                </ul>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-    
-    
-    
-
-    
-    
-
-    
-    <section id="footer">
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-
-        <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
-    </section>
+  </div>
 
 </section>
-</div>
-<a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
 
 
-
-
-
-
-
-<script src="/js/jquery.min.js"></script>
-<script src="/js/skel.min.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/main.js"></script>
-<script src="/js/backToTop.js"></script>
-<script src="/js/highlight.pack.js"></script>
-<script src="/js/dark.js"></script>
-
-
-
-
-
-
-<script>hljs.initHighlightingOnLoad();</script>
-
+<script src="/js/dark.js "></script>
 
 
 </body>
 
 </html>
+

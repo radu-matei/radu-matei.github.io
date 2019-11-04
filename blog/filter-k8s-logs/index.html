@@ -1,464 +1,124 @@
-<!DOCTYPE HTML>
-
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
 
 <head>
-
-    
-    <link rel="canonical" href="https://radu-matei.com/blog/filter-k8s-logs/">
-    
-
-    
-    
-    <title>Filter secrets from Kubernetes logs</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Filter secrets from Kubernetes logs | radu&#39;s blog</title>
+     
     
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content="Hugo 0.57.2" />
-    
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="Filter secrets from Kubernetes logs" />
+<meta name="twitter:description" content="How to remove secrets from the logs of Kubernetes applications?" />
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-
-    
-    <meta name="author" content="Radu Matei">
-    
-    
-    <meta name="description" content="How to remove secrets from the logs of Kubernetes applications?">
-    
-
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Filter secrets from Kubernetes logs"/>
-<meta name="twitter:description" content="How to remove secrets from the logs of Kubernetes applications?"/>
-<meta name="twitter:site" content="@matei_radu"/>
-
-    <meta property="og:title" content="Filter secrets from Kubernetes logs" />
-<meta property="og:description" content="How to remove secrets from the logs of Kubernetes applications?" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/filter-k8s-logs/" />
-<meta property="article:published_time" content="2018-08-20T00:00:00+00:00" />
-<meta property="article:modified_time" content="2018-08-20T00:00:00+00:00" />
-
-    <meta itemprop="name" content="Filter secrets from Kubernetes logs">
-<meta itemprop="description" content="How to remove secrets from the logs of Kubernetes applications?">
-
-
-<meta itemprop="datePublished" content="2018-08-20T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2018-08-20T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1600">
-
-
-
-<meta itemprop="keywords" content="" />
-
-    
-
-    
-
-    
-    
-    
-    
-
-    
-    
-    <link rel="stylesheet" href="/css/google-font.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/add-on.css" />
     <link rel="stylesheet" href="/css/monokai-sublime.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 
-    
 
-    
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     
-    
-    
-    
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/filter-k8s-logs/"> 
 
-    
 </head>
 
 <body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
 
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-    <div id="wrapper">
-
-
-<header id="header">
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
     
-    <h2><a href="/">Radu M</i></a></h2>
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-
-    <nav class="links">
-        <ul>
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    
-                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    
-                    <i class="fa fa-smile-o">&nbsp;</i>About
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    
-                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    
-                    <i class="fa fa-pencil">&nbsp;</i>My other blog
-                </a>
-            </li>
-            
-        </ul>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
     </nav>
-    <nav class="main">
-        <ul>
-            
-            <li id="share-nav" class="share-menu" style="display:none;">
-                <a class="fa-share-alt" href="#share-menu">Share</a>
-            </li>
-            
-            <li class="search">
-                <a class="fa-search" href="#search">Search</a>
-                <form id="search" method="get" action="//google.com/search">
-                    <input type="text" name="q" placeholder="Search" />
-                    <input type="hidden" name="q" value="site:https://radu-matei.com">
-                </form>
-            </li>
-            <li>
-                <a id="dark-mode-toggle" class="fal fa-moon-o">Toggle Dark Mode</a>
-            </li>
-            <li class="menu">
-                <a class="fa-bars" href="#menu">Menu</a>
-            </li>
-        </ul>
-    </nav>
-</header>
-
-
-<section id="menu">
 
     
-    <section>
-        <form class="search" method="get" action="//google.com/search">
-            <input type="text" name="q" placeholder="Search" />
-            <input type="hidden" name="q" value="site:https://radu-matei.com">
-        </form>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    <h3>
-                        
-                        <i class="fa fa-newspaper-o">&nbsp;</i>
-                        
-                        Blog
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    <h3>
-                        
-                        <i class="fa fa-smile-o">&nbsp;</i>
-                        
-                        About
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    <h3>
-                        
-                        <i class="fa fa-comments-o">&nbsp;</i>
-                        
-                        Speaking
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    <h3>
-                        
-                        <i class="fa fa-pencil">&nbsp;</i>
-                        
-                        My other blog
-                    </h3>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            <li>
-                <a href="https://radu-matei.com/blog/wasm-to-oci/">
-                    <p>Distributing WebAssembly modules using OCI registries</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">
-                    <p>Cross platform GitHub Action for downloading, extracting, and adding tools to path</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">
-                    <p>Building self-contained, single executable .NET Core 3 CLI tools</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/dark-mode/">
-                    <p>Adding dark mode to a Hugo static website without learning CSS</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/building-github-actions/">
-                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-</section>
-<section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&text=Filter%20secrets%20from%20Kubernetes%20logs&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&title=Filter%20secrets%20from%20Kubernetes%20logs" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&title=Filter%20secrets%20from%20Kubernetes%20logs" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&title=Filter%20secrets%20from%20Kubernetes%20logs" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
+    <p class="author">
+      
+    </p>
+  </div>
 </section>
 
-
-<div id="main">
-    
-    
-    <article class="post">
-    <header>
-    <div class="title">
-        
-            <h1><a href="https://radu-matei.com/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a></h1>
-            
-        
-        
-            <p>How to remove secrets from the logs of Kubernetes applications?</p>
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2018-08-20'>
-            August 20, 2018</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>8 minute read</p>
-        
-        
-    </div>
-</header>
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/kubernetes">#kubernetes</a>
 
 
-    <section id="social-share">
-        <ul class="icons">
+ 
+        </div>
+        
+        <h2 class="subtitle is-6">August 20, 2018. 8 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Filter secrets from Kubernetes logs</h1>
+        
+        <div class="content">
             
 
+<!-- - [Introduction](#introduction)
+- [How to filter the logs of a Kubernetes pod](#how-to-filter-the-logs-of-a-kubernetes-pod)
+- [The filtering process](#the-filtering-process)
+- [The sample application](#the-sample-application)
+- [Conclusion](#conclusion)
 
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&text=Filter%20secrets%20from%20Kubernetes%20logs&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&title=Filter%20secrets%20from%20Kubernetes%20logs" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&title=Filter%20secrets%20from%20Kubernetes%20logs" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f&title=Filter%20secrets%20from%20Kubernetes%20logs" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2ffilter-k8s-logs%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-    
-    
-
-    
-        
-        
-
-
-
-
-    
-
-
-        
-
-        <a href="https://radu-matei.com/blog/filter-k8s-logs/" class="image featured">
-            <img src="/img/article-photos/filter-k8s-logs//Kubernetes_logo.svg" alt="" />
-        </a>
-    
-
-
-    <div id="content">
-        
-
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#how-to-filter-the-logs-of-a-kubernetes-pod">How to filter the logs of a Kubernetes pod</a></li>
-<li><a href="#the-filtering-process">The filtering process</a></li>
-<li><a href="#the-sample-application">The sample application</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul>
-
-<h1 id="introduction">Introduction</h1>
+# Introduction -->
 
 <p>Running any non-trivial application on Kubernetes will most likely require authorized access to other components - databases, storage buckets, APIs - all of which require a connection string or some sort of access key. Storing these values in Kubernetes is done through <a href="https://kubernetes.io/docs/concepts/configuration/secret/" target="_blank">Secrets</a>, and while there are plenty of ways to make sure the secrets are <a href="https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/" target="_blank">safe while at rest</a>, as well as how to <a href="https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/" target="_blank">configure an external KMS provider</a>, once the secret is injected into your application container, its value will be plain text.</p>
 
 <p>In this article we wil explore how to filter any Kubernetes secrets that end up in application logs - <a href="https://github.com/radu-matei/filter-k8s-logs" target="_blank">the entire project for this article can be found on GitHub</a>, together with a sample application.</p>
 
-<h1 id="how-to-filter-the-logs-of-a-kubernetes-pod">How to filter the logs of a Kubernetes pod</h1>
+<h3 id="how-to-filter-the-logs-of-a-kubernetes-pod">How to filter the logs of a Kubernetes pod</h3>
 
 <p>One approach could be to run a privileged <code>DaemonSet</code> that mounts the logs directory and runs a filtering process on the logs. This presents the immediate advantage of not having to modify your applications at all - however, filtering the logs of <em>all</em> pods deployed on the cluster will be a highly intensive task, and mounting part of the node filesystem inside a pod (that is privileged or not) can prove to be disruptive. That is why, while this approach is mentioned for completeness, is not recommended.</p>
 
@@ -487,7 +147,7 @@ if (!doNotTrack) {
 
 <p>The main advantage of this approach is that we don&rsquo;t need to mount parts of the node filesystem in a pod, and we can enable the filter for individual applications, filtering the secrets from a specific namespace. The only mention here is that we should be able to redirect the logs of the main application to a specific file. If that is not possible, explore running the sidecar by sharing the PID namespace and accessing <code>stdout</code> directly.</p>
 
-<h1 id="the-filtering-process">The filtering process</h1>
+<h3 id="the-filtering-process">The filtering process</h3>
 
 <p>The filtering application is a simple Go application that tails the file where the main application writes the logs, iterates through all Kubernetes secrets in the provided namespace, and checks if any value is present in the logs. If found, it will remove it, then write the redacted log to <code>stdout</code>. This container&rsquo;s logs become the application logs:</p>
 
@@ -506,7 +166,7 @@ if (!doNotTrack) {
 
 <p>The filtering algorithm is fairly simple - it only does a <code>strings.Contains</code> on the log line for every Kubernetes secret value in the namespace &ndash; this means that the more secrets in the namespace, the more CPU cycles it will take to filter a log &ndash; so be mindful of this when running in a namespace with lots of secrets.</p>
 
-<p>Note that the filtering function above is a simple example on how to process your logs &ndash; for any production-purpose filtering, you should fork the repository and replace the function with your own, and an immediate alternative would be to use regex instead of the loop with<code>strings.Contains</code> &ndash; but you are free to come up with virtually any filtering algorithm.</p>
+<p>Note that the filtering function above is a simple example on how to process your logs &ndash; for any production-purpose filtering, you should fork the repository and replace the function with your own, and an immediate alternative would be to use regex instead of the loop with <code>strings.Contains</code> &ndash; but you are free to come up with virtually any filtering algorithm.</p>
 
 <p>A Kubernetes cache is used in order to avoid getting all secrets from the API on every filtering request. The resync period for the cache is set to 30 seconds. If a new secret is added, then the application tries to print it before the cache resynced, that log <strong>will</strong> contain the secret value. If your use case demands it, reduce the resync period - but keep in mind the impact this will have on networking and on the API server.</p>
 
@@ -516,7 +176,7 @@ if (!doNotTrack) {
 
 <p>Important note: <strong>This method only prevents accidental printing of logs from an application output. It is not designed to prevent a potentially malicious attempt of gaining access to Kubernetes secrets &ndash; and it should be used accordingly.</strong></p>
 
-<h1 id="the-sample-application">The sample application</h1>
+<h3 id="the-sample-application">The sample application</h3>
 
 <p>Now that we saw how the filtering process works, let&rsquo;s see an example of this in action.</p>
 
@@ -606,373 +266,86 @@ The values I used are: <code>super-secret-admin-username</code> for the user nam
   password: '[ redacted ]abc' }
 </code></pre>
 
-<h1 id="conclusion">Conclusion</h1>
+<h3 id="conclusion">Conclusion</h3>
 
 <p>In this article we saw how to filter Kubernetes secrets from the logs of our applications by running a sidecar container that continuously redacts the secret values from the logs. As mentioned, you are free to write your own filtering algorithm based on the needs of your application, as well as implement filtering in chunks of multiple log lines.</p>
 
 <p>Thanks for reading, let me know your thoughts in the comments, and have fun filtering your application logs!</p>
 
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
     </div>
-        
-
-        
-    <footer>
-        <ul class="stats">
-    
-    
-
-    
-    
-    <li>
-        
-        
-        
-
-        
-        Category
-        
-        
-    </li>
-    
-    
-
-    
-    
-    <li><a href='/categories/kubernetes'>kubernetes</a></li>
-    
-</ul>
-    </footer>
-</article>
-<ul class="actions pagination">
-    
-        <li><a href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"
-                class="button big previous">The state of debugging microservices on Kubernetes</a></li>
-    
-
-    
-        <li><a href="https://radu-matei.com/blog/kubernetes-controller-csharp/"
-                class="button big next">Writing controllers for Kubernetes CRDs with C#</a></li>
-    
-</ul>
+</section>
 
 
-<article class="post">
-    <div id="disqus_thread"></div>
-
-
-<script type="text/javascript">
-    var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/filter-k8s-logs/";
-    var disqus_title = "Filter secrets from Kubernetes logs";
-    var disqus_url = "Filter secrets from Kubernetes logs";
-
-    var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/filter-k8s-logs/";  
-        this.page.identifier = "https://radu-matei.com/blog/filter-k8s-logs/"; 
-    };
-
-    (function() {
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</article>
-</div>
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
 
 
-<section id="sidebar">
-
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
     
-    <section id="intro">
-        
-        
-        
-        <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
-        
-        
-        
-        <header>
-            <a href="/">
-                <h2>Radu M</h2>
-            </a>
-            <p>Open source, Kubernetes, cloud native, developer tools for distributed systems. Software Engineer at Microsoft Azure. Opinions are my own.</p>
-        </header>
-        
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-    </section>
-
-    
-    <section id="recent-posts">
-        <ul class="posts">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            
-            
-
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-10-13'>
-                            October 13, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">Cross platform GitHub Action for downloading, extracting, and adding tools to path</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-17'>
-                            September 17, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-02'>
-                            September 2, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/dark-mode/">Adding dark mode to a Hugo static website without learning CSS</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-01'>
-                            September 1, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-08-23'>
-                            August 23, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-
-            
-            <li>
-                <ul class="actions">
-                    <li><a href= /blog/ 
-                            class="button">View more posts</a></li>
-                </ul>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-    
-    
-    
-
-    
-    
-
-    
-    <section id="footer">
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-
-        <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
-    </section>
+  </div>
 
 </section>
-</div>
-<a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
 
 
-
-
-
-
-
-<script src="/js/jquery.min.js"></script>
-<script src="/js/skel.min.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/main.js"></script>
-<script src="/js/backToTop.js"></script>
-<script src="/js/highlight.pack.js"></script>
-<script src="/js/dark.js"></script>
-
-
-
-
-
-
-<script>hljs.initHighlightingOnLoad();</script>
-
+<script src="/js/dark.js "></script>
 
 
 </body>
 
 </html>
+

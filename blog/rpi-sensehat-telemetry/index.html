@@ -1,442 +1,121 @@
-<!DOCTYPE HTML>
-
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
 
 <head>
-
-    
-    <link rel="canonical" href="https://radu-matei.com/blog/rpi-sensehat-telemetry/">
-    
-
-    
-    
-    <title>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite | radu&#39;s blog</title>
+     
     
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content="Hugo 0.57.2" />
-    
+    <meta name='twitter:card' content='summary_large_image'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/rpi-sensehat-telemetry/rpi-sensehat-assembly.jpg">
+<meta name="twitter:title" content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite" />
+<meta name="twitter:description" content="" />
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-
-    
-    <meta name="author" content="Radu Matei">
-    
-    
-    
-    <meta name="description" content="Radu M - Open source, #Kubernetes, cloud native, developer tools for distributed systems. Software Engineer @Microsoft @Azure. Opinions are my own.">
-    
-    
-
-    <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite"/>
-<meta name="twitter:description" content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)."/>
-<meta name="twitter:site" content="@matei_radu"/>
-
-    <meta property="og:title" content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite" />
-<meta property="og:description" content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/rpi-sensehat-telemetry/" />
-<meta property="article:published_time" content="2016-10-10T00:00:00+00:00" />
-<meta property="article:modified_time" content="2016-10-10T00:00:00+00:00" />
-
-    <meta itemprop="name" content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite">
-<meta itemprop="description" content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications).">
-
-
-<meta itemprop="datePublished" content="2016-10-10T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2016-10-10T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2086">
-
-
-
-<meta itemprop="keywords" content="" />
-
-    
-
-    
-
-    
-    
-    
-    
-
-    
-    
-    <link rel="stylesheet" href="/css/google-font.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/main.css" />
-    <link rel="stylesheet" href="/css/add-on.css" />
     <link rel="stylesheet" href="/css/monokai-sublime.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 
-    
 
-    
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     
-    
-    
-    
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/rpi-sensehat-telemetry/"> 
 
-    
 </head>
 
 <body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
 
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-    <div id="wrapper">
-
-
-<header id="header">
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
     
-    <h2><a href="/">Radu M</i></a></h2>
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
     
-
-    <nav class="links">
-        <ul>
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    
-                    <i class="fa fa-newspaper-o">&nbsp;</i>Blog
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    
-                    <i class="fa fa-smile-o">&nbsp;</i>About
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    
-                    <i class="fa fa-comments-o">&nbsp;</i>Speaking
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    
-                    <i class="fa fa-pencil">&nbsp;</i>My other blog
-                </a>
-            </li>
-            
-        </ul>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
     </nav>
-    <nav class="main">
-        <ul>
-            
-            <li id="share-nav" class="share-menu" style="display:none;">
-                <a class="fa-share-alt" href="#share-menu">Share</a>
-            </li>
-            
-            <li class="search">
-                <a class="fa-search" href="#search">Search</a>
-                <form id="search" method="get" action="//google.com/search">
-                    <input type="text" name="q" placeholder="Search" />
-                    <input type="hidden" name="q" value="site:https://radu-matei.com">
-                </form>
-            </li>
-            <li>
-                <a id="dark-mode-toggle" class="fal fa-moon-o">Toggle Dark Mode</a>
-            </li>
-            <li class="menu">
-                <a class="fa-bars" href="#menu">Menu</a>
-            </li>
-        </ul>
-    </nav>
-</header>
-
-
-<section id="menu">
 
     
-    <section>
-        <form class="search" method="get" action="//google.com/search">
-            <input type="text" name="q" placeholder="Search" />
-            <input type="hidden" name="q" value="site:https://radu-matei.com">
-        </form>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            
-            
-            
-            <li>
-                <a href="/blog" >
-                    <h3>
-                        
-                        <i class="fa fa-newspaper-o">&nbsp;</i>
-                        
-                        Blog
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/about" >
-                    <h3>
-                        
-                        <i class="fa fa-smile-o">&nbsp;</i>
-                        
-                        About
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="/speaking" >
-                    <h3>
-                        
-                        <i class="fa fa-comments-o">&nbsp;</i>
-                        
-                        Speaking
-                    </h3>
-                </a>
-            </li>
-            
-            
-            
-            <li>
-                <a href="https://radu.sh"  target="_blank" >
-                    <h3>
-                        
-                        <i class="fa fa-pencil">&nbsp;</i>
-                        
-                        My other blog
-                    </h3>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    <section>
-        <ul class="links">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            <li>
-                <a href="https://radu-matei.com/blog/wasm-to-oci/">
-                    <p>Distributing WebAssembly modules using OCI registries</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">
-                    <p>Cross platform GitHub Action for downloading, extracting, and adding tools to path</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">
-                    <p>Building self-contained, single executable .NET Core 3 CLI tools</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/dark-mode/">
-                    <p>Adding dark mode to a Hugo static website without learning CSS</p>
-                </a>
-            </li>
-            
-            <li>
-                <a href="https://radu-matei.com/blog/building-github-actions/">
-                    <p>Building Reusable GitHub Actions in TypeScript, using the official toolkit</p>
-                </a>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-</section>
-<section id="share-menu">
-    <section id="social-share-nav">
-        <ul class="links">
-            <header>
-                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
-            </header>
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&text=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&title=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&title=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&title=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
+    <p class="author">
+      
+    </p>
+  </div>
 </section>
 
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/iot">#iot</a>
 
-<div id="main">
-    
-    
-    <article class="post">
-    <header>
-    <div class="title">
+
+ 
+        </div>
         
-            <h1><a href="https://radu-matei.com/blog/rpi-sensehat-telemetry/">Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</a></h1>
+        <h2 class="subtitle is-6">October 10, 2016. 10 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</h1>
+        
+        <div class="content">
             
-        
-        
-    </div>
-    <div class="meta">
-        
-            
-        
-
-        <time class="published"
-            datetime='2016-10-10'>
-            October 10, 2016</time>
-        <span class="author">Radu Matei</span>
-        
-            <p>10 minute read</p>
-        
-        
-    </div>
-</header>
-
-
-    <section id="social-share">
-        <ul class="icons">
-            
-
-
-<li><a href="//twitter.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&text=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite&via=matei_radu" target="_blank" class="share-btn twitter">
-    <i class="fa fa-twitter"></i>
-    <p>Twitter</p>
-</a></li>
-
-
-<li><a href="//plus.google.com/share?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f" target="_blank" class="share-btn google-plus">
-    <i class="fa fa-google-plus"></i>
-    <p>Google+</p>
-</a></li>
-
-
-<li><a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f" target="_blank" class="share-btn facebook">
-    <i class="fa fa-facebook"></i>
-    <p>Facebook</p>
-</a></li>
-
-
-<li><a href="//reddit.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&title=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite" target="_blank" class="share-btn reddit">
-    <i class="fa fa-reddit-alien"></i>
-    <p>Reddit</p>
-</a></li>
-
-
-<li><a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&title=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite" target="_blank" class="share-btn linkedin">
-    <i class="fa fa-linkedin"></i>
-    <p>LinkedIn</p>
-</a></li>
-
-
-<li><a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f&title=Get%20started%20with%20Raspberry%20Pi3%2c%20Sense%20HAT%20and%20Azure%20IoT%20Suite" target="_blank" class="share-btn stumbleupon">
-    <i class="fa fa-stumbleupon"></i>
-    <p>StumbleUpon</p>
-</a></li>
-
-
-<li><a href="mailto:?subject=Check out this post by Radu%20Matei&body=https%3a%2f%2fradu-matei.com%2fblog%2frpi-sensehat-telemetry%2f" target="_blank" class="share-btn email">
-    <i class="fa fa-envelope"></i>
-    <p>Email</p>
-</a></li>
-
-        </ul>
-    </section>
-    
-
-    <div id="content">
-        
 
 <blockquote>
 <p>You can check <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry" target="_blank">the GitHub repository of this project for the full source code</a></p>
 </blockquote>
-
-<h2 id="introduction">Introduction</h2>
 
 <p>In this blog post, we will get started with the <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/" target="_blank">Raspberry Pi3</a>, the <a href="https://www.raspberrypi.org/products/sense-hat/" target="_blank">Sense HAT</a> and Azure IoT Suite.
 More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, which we will detail a little later.</p>
 
 <p>The end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications).</p>
 
-<h2 id="what-is-sense-hat">What is Sense HAT?</h2>
+<h3 id="what-is-sense-hat">What is Sense HAT?</h3>
 
 <blockquote>
 <p>The Sense HAT is an add-on board for Raspberry Pi, made especially for the <a href="https://astro-pi.org/" target="_blank">Astro Pi</a> mission to go in Space.
@@ -459,9 +138,9 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 
 <p>Basically, the Sense HAT is a board that has integrated sensors and a joystick, with an additional 8x8 LED matrix. It is a very fun board to play with and I recommend it if you don&rsquo;t want (or know, for that matter) to get tangled in wires and in calculating resistances.</p>
 
-<h2 id="assembling-the-two-boards">Assembling the two boards</h2>
+<h3 id="assembling-the-two-boards">Assembling the two boards</h3>
 
-<p>In order to get started, firstly we need to assemble the HAT on the Pi.</p>
+<p>In order to get started, we first need to assemble the HAT on the Pi.</p>
 
 <p><img src="https://raw.githubusercontent.com/raspberrypilearning/astro-pi-guide/3ca15fd5e2a44121f0ac9bbcaf64f3c2f0b51a54/images/sense-hat-assembly.png" alt="" /></p>
 
@@ -477,7 +156,7 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 
 <p>Assuming you assembled the board and installed Windows on your Raspberry, we are ready to get started.</p>
 
-<h2 id="creating-a-windows-universal-app-that-will-run-on-the-raspberry">Creating a Windows Universal App that will run on the Raspberry</h2>
+<h3 id="creating-a-windows-universal-app-that-will-run-on-the-raspberry">Creating a Windows Universal App that will run on the Raspberry</h3>
 
 <blockquote>
 <p>At this moment there is no official .NET library to work with the Sense HAT. There is an official Python library and you <a href="http://pythonhosted.org/sense-hat/" target="_blank">can get started with it here.</a></p>
@@ -500,7 +179,7 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 <p><a href="https://msdn.microsoft.com/en-us/windows/uwp/get-started/create-a-hello-world-app-xaml-universal" target="_blank">Here you can find a very brief introduction to creating UWP apps and a Hello, World example.</a></p>
 </blockquote>
 
-<h2 id="creating-the-app-architecture">Creating the app architecture</h2>
+<h3 id="creating-the-app-architecture">Creating the app architecture</h3>
 
 <p>At this point, we can choose between two approaches:</p>
 
@@ -522,20 +201,19 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 
 <p>To get started, open Visual Studio and create a new Universal Windows app for Windows 10. There is nothing specific for Raspberry Pi or Sense HAT yet, just a typical UWP app. (In my case, the naming was: <code>RPiSenseHatTelemetry.Uwp</code>).</p>
 
-<h2 id="the-telemetry-collected-and-analyzed">The telemetry collected and analyzed</h2>
+<h3 id="the-telemetry-collected-and-analyzed">The telemetry collected and analyzed</h3>
 
 <p>In this very simple example, we will only get the temperature telemetry, with the Celsius value and the timestamp of the measurement.
 Since we plan on taking more telemetry than temperature (and use these classes in other projects), we will create a project called <code>RPiSenseHatTelemetry.Common</code> that we will reference later.</p>
 
-<pre><code>    public class TemperatureTelemetry
-    {
-        public string Time { get; set; }
-
-        public double Temperature { get; set; }
-    }
+<pre><code>public class TemperatureTelemetry
+{
+    public string Time { get; set; }
+    public double Temperature { get; set; }
+}
 </code></pre>
 
-<h2 id="the-sense-hat-communication-project">The Sense HAT Communication Project</h2>
+<h3 id="the-sense-hat-communication-project">The Sense HAT Communication Project</h3>
 
 <p>Right now, we need to have specific functionality for communicating with the Sense HAT. In a new class library project (in this case called: <code>RPiSenseHatTelemetry.SenseHatCommunication</code>), add the NuGet package for the Sense HAT: <code>Install-Package Emmellsoft.IoT.RPi.SenseHat</code>. This will add a bunch of files and folders to your project (mainly for demo and testing purposes) that we will not use, all we need is the reference to the <code>Emmellsoft.IoT.RPi.SenseHat</code> dll.</p>
 
@@ -600,44 +278,44 @@ In the <code>Activate</code> method, we get the reference to the <code>ISenseHat
 
 <p>This is the entire code that deals with the Sense HAT.</p>
 
-<h2 id="displaying-the-temperature-in-the-uwp-app">Displaying the temperature in the UWP app</h2>
+<h3 id="displaying-the-temperature-in-the-uwp-app">Displaying the temperature in the UWP app</h3>
 
 <p>In the <code>MainPage</code> of the UWP app, we need to have a <code>SenseHat</code> property in order to get the temperature once every three seconds, that we then display.</p>
 
-<pre><code>    public sealed partial class MainPage : Page
+<pre><code>public sealed partial class MainPage : Page
+{
+    private SenseHat _senseHat { get; set; }
+
+    public MainPage()
     {
-        private SenseHat _senseHat { get; set; }
+        this.InitializeComponent();
 
-        public MainPage()
+        _senseHat = new SenseHat();
+        this.ActivateSenseHat();
+
+        this.Loaded += (sender, e) =&gt;
         {
-            this.InitializeComponent();
+            DispatcherTimer timer = new DispatcherTimer();
 
-            _senseHat = new SenseHat();
-            this.ActivateSenseHat();
-
-            this.Loaded += (sender, e) =&gt;
+            timer.Tick += async (x, y) =&gt;
             {
-                DispatcherTimer timer = new DispatcherTimer();
-
-                timer.Tick += async (x, y) =&gt;
-                {
-                    var temperatureTelemetry = _senseHat.GetTemperature();
-                    this.temperatureTextBlock.Text = &quot;Temperature: &quot; + 
-                                                      temperatureTelemetry.Temperature.ToString() + 
-                                                      &quot;at &quot; + 
-                                                      temperatureTelemetry.Time;
-                };
-
-                timer.Interval = TimeSpan.FromSeconds(3);
-                timer.Start();
+                var temperatureTelemetry = _senseHat.GetTemperature();
+                this.temperatureTextBlock.Text = &quot;Temperature: &quot; +
+                                                    temperatureTelemetry.Temperature.ToString() +
+                                                    &quot;at &quot; +
+                                                    temperatureTelemetry.Time;
             };
-        }
 
-        private async void ActivateSenseHat()
-        {
-           await _senseHat.Activate();
-        }
+            timer.Interval = TimeSpan.FromSeconds(3);
+            timer.Start();
+        };
     }
+
+    private async void ActivateSenseHat()
+    {
+        await _senseHat.Activate();
+    }
+}
 </code></pre>
 
 <p>After the page has loaded, we use a <code>DispatcherTimer</code> object and every 3 seconds we get a new value from the sensors and display it in the UWP app.</p>
@@ -646,9 +324,9 @@ In the <code>Activate</code> method, we get the reference to the <code>ISenseHat
 <p>Later, in the same place as we displayed in the app, we will send the data to IoT Hub and we will write the value on the HAT LED matrix.</p>
 </blockquote>
 
-<h2 id="communicating-with-the-cloud-azure-iot-hub">Communicating with the Cloud - Azure IoT Hub</h2>
+<h3 id="communicating-with-the-cloud-azure-iot-hub">Communicating with the Cloud - Azure IoT Hub</h3>
 
-<p>First of all, we need to create an Azure IoT Hub. To do this, simply <a href="https://azure.microsoft.com/en-gb/documentation/articles/iot-hub-csharp-csharp-getstarted/#create-an-iot-hub" target="_blank">follow the instructions here</a>.</p>
+<p>First of all, we need to create an Azure IoT Hub. To do this, <a href="https://azure.microsoft.com/en-gb/documentation/articles/iot-hub-csharp-csharp-getstarted/#create-an-iot-hub" target="_blank">follow the instructions here</a>.</p>
 
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/iot-hub.JPG" alt="" /></p>
 
@@ -715,23 +393,23 @@ using Microsoft.Azure.Devices.Client;
 <p>You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. <a href="https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97" target="_blank">Here you can find a tutorial on how to start publishing events from a UWP app with Azure IoT Hub</a>.</p>
 </blockquote>
 
-<h2 id="adding-cloud-communication-to-the-uwp-app">Adding cloud communication to the UWP app</h2>
+<h3 id="adding-cloud-communication-to-the-uwp-app">Adding cloud communication to the UWP app</h3>
 
 <p>To add the cloud communication to the UWP app, simply create a new instance of our newly created class, <code>IoTHubConnection</code> and use the <code>SendEventAsync</code> method in the <code>MainPage.xaml.cs</code> file.</p>
 
-<pre><code>    timer.Tick += async (x, y) =&gt;
-    {
-        var temperatureTelemetry = _senseHat.GetTemperature();
-        this.temperatureTextBlock.Text = &quot;Temperature: &quot; + 
-                                            temperatureTelemetry.Temperature.ToString() + 
-                                            &quot;at &quot; + 
-                                            temperatureTelemetry.Time;
+<pre><code>timer.Tick += async (x, y) =&gt;
+{
+    var temperatureTelemetry = _senseHat.GetTemperature();
+    this.temperatureTextBlock.Text = &quot;Temperature: &quot; +
+                                        temperatureTelemetry.Temperature.ToString() +
+                                        &quot;at &quot; +
+                                        temperatureTelemetry.Time;
 
-        await _iotHubConnection.SendEventAsync(JsonConvert.SerializeObject(temperatureTelemetry));
-    };
+    await _iotHubConnection.SendEventAsync(JsonConvert.SerializeObject(temperatureTelemetry));
+};
 </code></pre>
 
-<h2 id="sending-the-data-from-iot-hub-to-stream-analytics">Sending the data from IoT Hub to Stream Analytics</h2>
+<h3 id="sending-the-data-from-iot-hub-to-stream-analytics">Sending the data from IoT Hub to Stream Analytics</h3>
 
 <blockquote>
 <p>You can <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-introduction/" target="_blank">get started on what is Stream Analytics here</a>.
@@ -748,8 +426,9 @@ This is an <a href="https://azure.microsoft.com/en-us/documentation/articles/str
 
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/stream-analytics-input.JPG" alt="" /></p>
 
-<p>We also need to configure an output, an Azure SQL database:
-<img src="/img/article-photos/rpi-sensehat-telemetry/stream-analytics-output.JPG" alt="" /></p>
+<p>We also need to configure an output, an Azure SQL database:</p>
+
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/stream-analytics-output.JPG" alt="" /></p>
 
 <p>Notice how we also need to configure a table for our data to be stored. This table should have the same structure as our <code>TemperatureTelemetry</code> objects that we send.</p>
 
@@ -775,19 +454,23 @@ FROM
 <p>The names <code>sql-database-output</code> and <code>rpi-sensehat-iot-hub-input</code> are the names I gave the SQL database as output and the IoT Hub as input, respectively.</p>
 </blockquote>
 
-<h2 id="testing-and-running-the-application">Testing and running the application</h2>
+<h3 id="testing-and-running-the-application">Testing and running the application</h3>
 
-<p>Right now, we can run the application remotely from Visual Studio to our Raspberry Pi by finding the IP in the IoT Dashboard application:
-<img src="/img/article-photos/rpi-sensehat-telemetry/iot-dashboard.JPG" alt="" /></p>
+<p>Right now, we can run the application remotely from Visual Studio to our Raspberry Pi by finding the IP in the IoT Dashboard application:</p>
 
-<p>We can also connect from our browser through the device portal:
-<img src="/img/article-photos/rpi-sensehat-telemetry/device-portal.JPG" alt="" /></p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/iot-dashboard.JPG" alt="" /></p>
 
-<p>We can also create a remote desktop connection to our Raspberry:
-<img src="/img/article-photos/rpi-sensehat-telemetry/remote-client.JPG" alt="" /></p>
+<p>We can also connect from our browser through the device portal:</p>
 
-<p>From Visual Studio, we deploy our application to a remote device:
-<img src="/img/article-photos/rpi-sensehat-telemetry/set-remote.JPG" alt="" /></p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/device-portal.JPG" alt="" /></p>
+
+<p>We can also create a remote desktop connection to our Raspberry:</p>
+
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/remote-client.JPG" alt="" /></p>
+
+<p>From Visual Studio, we deploy our application to a remote device:</p>
+
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/set-remote.JPG" alt="" /></p>
 
 <p>After the application is successfully deployed, we will see data coming into the IoT Hub through the Device Explorer, and also in the SQL database we created as output for the Stream Analytics job.</p>
 
@@ -800,375 +483,86 @@ FROM
 You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/PowerShell%20Scripts/Execute-SqlStatement.ps1" target="_blank">find the script here with demo usage</a>.</p>
 </blockquote>
 
-<h2 id="next-steps">Next steps</h2>
-
 <p>In a following article, we will configure an additional output for the Stream Analytics job, a Service Bus that will allow us to use the messages real-time in a web (or even mobile) application, with custom alerts. We will also create a command from the IoT Hub based on an alert from the Stream Analytics job that will turn on or off the LED matrix (and will even control an Arduino connected through USB). We will also write the current temperature on the LED matrix.</p>
 
-<h2 id="conclusion">Conclusion</h2>
+<h3 id="conclusion">Conclusion</h3>
 
 <p>We created a very simple UWP app that takes data from the Sense HAT sensors, displays it on the screen, then sends it through Azure IoT Hub, then to a Stream Analytics job that outputs it into an Azure SQL database.</p>
 
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
     </div>
-        
-
-        
-    <footer>
-        <ul class="stats">
-    
-    
-
-    
-    
-    <li>
-        
-        
-        
-
-        
-        Category
-        
-        
-    </li>
-    
-    
-
-    
-    
-    <li><a href='/categories/iot'>iot</a></li>
-    
-</ul>
-    </footer>
-</article>
-<ul class="actions pagination">
-    
-        <li><a href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/"
-                class="button big previous">ASP.NET Core MVC and SignalR Core</a></li>
-    
-
-    
-        <li><a href="https://radu-matei.com/blog/aspnet-core-docker-azure/"
-                class="button big next">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</a></li>
-    
-</ul>
+</section>
 
 
-<article class="post">
-    <div id="disqus_thread"></div>
-
-
-<script type="text/javascript">
-    var disqus_shortname = 'radu-matei';
-    var disqus_identifier = "https://radu-matei.com/blog/rpi-sensehat-telemetry/";
-    var disqus_title = "Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite";
-    var disqus_url = "Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite";
-
-    var disqus_config = function () {
-        this.page.url = "https://radu-matei.com/blog/rpi-sensehat-telemetry/";  
-        this.page.identifier = "https://radu-matei.com/blog/rpi-sensehat-telemetry/"; 
-    };
-
-    (function() {
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</article>
-</div>
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
 
 
-<section id="sidebar">
-
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
     
-    <section id="intro">
-        
-        
-        
-        <img src="/img/main/profile.jpg" class="intro-circle" width="150" alt="Radu" />
-        
-        
-        
-        <header>
-            <a href="/">
-                <h2>Radu M</h2>
-            </a>
-            <p>Open source, Kubernetes, cloud native, developer tools for distributed systems. Software Engineer at Microsoft Azure. Opinions are my own.</p>
-        </header>
-        
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-    </section>
-
-    
-    <section id="recent-posts">
-        <ul class="posts">
-            <header>
-                <h3>Recent Posts</h3>
-            </header>
-            
-            
-            
-
-            
-            
-            
-
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-10-13'>
-                            October 13, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/">Cross platform GitHub Action for downloading, extracting, and adding tools to path</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-17'>
-                            September 17, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-02'>
-                            September 2, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/dark-mode/">Adding dark mode to a Hugo static website without learning CSS</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-09-01'>
-                            September 1, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-            <li>
-                <article>
-                    <header>
-                        <h3><a href="https://radu-matei.com/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a></h3>
-                        
-                        
-                        
-                        <time class="published" datetime='2019-08-23'>
-                            August 23, 2019</time>
-                    </header>
-                </article>
-            </li>
-            
-
-            
-            <li>
-                <ul class="actions">
-                    <li><a href= /blog/ 
-                            class="button">View more posts</a></li>
-                </ul>
-            </li>
-            
-        </ul>
-    </section>
-
-    
-    
-    
-    
-    
-
-    
-    
-
-    
-    <section id="footer">
-        <ul class="icons">
-            
-            
-            
-<li><a href="//github.com/radu-matei" target="_blank" title="GitHub" class="fa fa-github"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//instagram.com/iamradum" target="_blank" title="Instagram" class="fa fa-instagram"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//linkedin.com/in/mateiradu" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<li><a href="//twitter.com/matei_radu" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
-
-
-
-<li><a href="mailto:root@radu.sh" title="Email" class="fa fa-envelope"></a></li>
-
-
-            
-        </ul>
-
-        <p class="copyright">&copy; Radu Matei&#39;s Blog. Powered by <a href="//gohugo.io" target="_blank">Hugo</a></p>
-    </section>
+  </div>
 
 </section>
-</div>
-<a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
 
 
-
-
-
-
-
-<script src="/js/jquery.min.js"></script>
-<script src="/js/skel.min.js"></script>
-<script src="/js/util.js"></script>
-<script src="/js/main.js"></script>
-<script src="/js/backToTop.js"></script>
-<script src="/js/highlight.pack.js"></script>
-<script src="/js/dark.js"></script>
-
-
-
-
-
-
-<script>hljs.initHighlightingOnLoad();</script>
-
+<script src="/js/dark.js "></script>
 
 
 </body>
 
 </html>
+
