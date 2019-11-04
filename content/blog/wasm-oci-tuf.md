@@ -9,7 +9,7 @@ summary  = "Attacks on software repositories happen all the time, and any future
 featured = "wasm-to-oci.png"
 featuredpath = "/img/article-photos/wasm-to-oci/"
 images = ["/img/article-photos/wasm-to-oci/wasm-to-oci.png"]
-image = "img/article-photos/wasm-to-oci/wasm-to-oci.png"
+image = "/img/article-photos/wasm-to-oci/wasm-to-oci.png"
 +++
 
 ![](/img/article-photos/wasm-to-oci/wasm-to-oci.png)
