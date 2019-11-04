@@ -1,0 +1,39 @@
+{{ partial "header" . }} {{ partial "nav" . }}
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+            {{ if .Params.tags }} {{ partial "tags" .Params.tags }} {{ end }}
+        </div>
+        {{ if and (not .Date.IsZero) (not .Params.disable_comments) }}
+        <h2 class="subtitle is-6">{{ .Date.Format "January 2, 2006" }}. {{ .ReadingTime }} minutes read</h2>{{ end }}
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">{{ .Title }}</h1>
+        {{ if and (.Site.Params.Info.adsense) (.Params.adsenseTop) }} {{ partial "adsense" . }} {{ end }}
+        <div class="content">
+            {{ .Content }}
+
+            {{ if in .Params.tags "stories" }}
+            <p class="subtitle tags is-6 is-pulled-left">This story is {{ .Content | countwords }} words long.</p>
+            <br><br>
+            {{  end  }}
+            <p class="author"><a href="https://twitter.com/{{ .Site.Params.Social.Twitter }}"
+                    target="_blank">{{ .Site.Params.rss.authorName }}<br>
+                    <small>@{{ .Site.Params.Social.Twitter }}</a></small>
+            </p>
+
+            {{ if .Site.Params.Info.related }}
+            <div class="related">{{ partial "related" . }}</div>
+            {{ end }}
+        </div>
+        {{ if and (.Site.Params.Info.adsense) (.Params.adsenseBottom) }} {{ partial "adsense" . }} {{ end}}
+    </div>
+</section>
+
+{{ partial "disqus.html" . }}
+{{ partial "footer.html" . }}

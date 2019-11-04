@@ -1,24 +1,23 @@
 +++
 author = "Radu Matei"
-categories = ["aspnet-core", "docker", "azure"]
+tags = ["dotnet-core", "docker", "azure"]
 date = "2016-11-26"
 description = ""
 linktitle = ""
 title = "Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure"
-type = "post"
+# type = "post"
 summary = "In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud."
-
+image = "/img/article-photos/aspnet-core-docker-azure/ci-cd-workflow.png"
 +++
 
-Introduction
-------------
+<!-- Introduction
+------------ -->
 
 In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.
 
 If you don't want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, [you might want to skip to the part we start creating the CI/CD workflow.](!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)
 
-Moving parts and used components
---------------------------------
+### Moving parts and used components
 
 The main part of a CI/CD workflow like this is the application itself. It can be however complicated, but in this case I want to emphasize the workflow itself and will only build a very simple application with ASP.NET Core.
 
@@ -40,8 +39,7 @@ Then, we will configure an Azure VM to be a node for Docker Cloud and Docker Clo
 
 > [Photo source on the Docker Blog](https://blog.docker.com/2016/04/cicd-with-docker-cloud/)
 
-Create a GitHub repository
----------------------------
+### Create a GitHub repository
 
 First, we need a GitHub repository. If you already have a repo with an application you want to use you can do that. However, I will create a new repo and clone it on my computer.
 
@@ -55,8 +53,7 @@ Since this is a .NET Core application, I chose to add a `.gitignore` file that w
 
 Create the repository, then clone it somewhere locally on your computer. In my case, I would execute `git clone https://github.com/radu-matei/aspnet-core-docker-azure`.
 
-Creating the ASP.NET Core application
--------------------------------------
+### Creating the ASP.NET Core application
 
 This will be the part with the least focus in this article, since we have covered building ASP.NET Core applications for a while now and you can find a lot resources on this topic, including some on this site.
 
@@ -66,7 +63,7 @@ Basically, we will create the same application as explained in [this blog post](
 
 > While .NET Core 1.0.1 is the latest version at the moment of writing this article, you can also use other versions, since the Docker images are available on Docker Hub.
 
-In the folder that was just created from cloning the repository, execute `dotnet new` in order to create a new .NET Core application. 
+In the folder that was just created from cloning the repository, execute `dotnet new` in order to create a new .NET Core application.
 
 ![](/img/article-photos/aspnet-core-docker-azure/git-clone-dotnet.png)
 
@@ -86,24 +83,24 @@ Since `1.0.1` is the latest stable version, we will use it as example for this a
 Add the required Kestrel dependency in `project.json`, keeping in mind that the version is `1.0.1` and respond to any incoming request with a message and the current date and time of the server:
 
 ```
-    public static void Main(string[] args)
-        {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .Configure(app => app.Run(context => 
-                {
-                    return context.Response.WriteAsync($"Hello, Universe! It is {DateTime.Now}");
-                }))
-                .Build();
+public static void Main(string[] args)
+    {
+        var host = new WebHostBuilder()
+            .UseKestrel()
+            .Configure(app => app.Run(context =>
+            {
+                return context.Response.WriteAsync($"Hello, Universe! It is {DateTime.Now}");
+            }))
+            .Build();
 
-            host.Run();
-        }
+        host.Run();
+    }
 ```
 
 And this is the entire ASP.NET Core application we will use for this article.
 
-Writing the Dockerfile
-----------------------
+### Writing the Dockerfile
+
 > Docker can build images automatically by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image. Using docker build users can create an automated build that executes several command-line instructions in succession.
 
 > [More information on the Dockerfile on the Official Docker Documentation](https://docs.docker.com/engine/reference/builder/)
@@ -145,8 +142,7 @@ The content of the Dockerfile is pretty self-explanatory:
 
 > In this case, we both build and run the application inside the container. In a production environment, we would only use the `dotnet runtime` image from Microsoft that is only able to execute applications and not build them. This would result in a much smaller footprint of the image.
 
-Building the image
-------------------
+### Building the image
 
 At this point, we have configured the application (which wasn't that hard), we have a definition for Docker, our Dockerfile, but we haven't built an image or a container so far.
 
@@ -167,8 +163,8 @@ Running `docker images` should show you the newly created image containing your 
 
 Notice though that the base for our image also got pulled from Docker Hub - `microsoft/dotnet:1.0.1-sdk-projectjson`.
 
-Running a new container
------------------------
+### Running a new container
+
 
 Now that we built our image it's time to run a new container based on that image.
 
@@ -200,10 +196,9 @@ So if we navigate to `http://localhost:8080` we should see our application runni
 
 So far we created a very simple ASP .NET Core application and we ran it locally inside Docker.We  haven't used the GitHub repo, Docker Hub, Docker Cloud or Azure just yet. This is where we start doing so.
 
-Setup an Azure VM as node for Docker Cloud
--------------------------------------------
+### Setup an Azure VM as node for Docker Cloud
 
-While Docker Cloud allows you to run containers and build images on some free tier servers, you would most likely want to do it on your own machine. 
+While Docker Cloud allows you to run containers and build images on some free tier servers, you would most likely want to do it on your own machine.
 
 If you link the Docker Cloud account with your cloud subscription (in this case Azure), you can create nodes and clusters directly from the Docker Cloud portal.
 
@@ -259,8 +254,7 @@ After the command above successfully executed and you refreshed your Docker Clou
 
 This is all the required setup for a VM to be a Docker Cloud node.
 
-Creating a repository in Docker Cloud
--------------------------------------
+### Creating a repository in Docker Cloud
 
 By now, the GitHub repository with the application should be up to date, since we will use it to create a new Docker Cloud repository that will automatically build images on every git push in the GitHub repo.
 
@@ -288,8 +282,7 @@ At any time you can see the logs from building the image in the `Builds` tab.
 
 Now if you go to Docker Hub you should see your newly created image.
 
-Creating a service based on the image we created
-------------------------------------------------
+### Creating a service based on the image we created
 
 > A service is a group of containers of the same image:tag. Services make it simple to scale your application. With Docker Cloud, you simply drag a slider to change the number of containers in a service.
 
@@ -303,7 +296,7 @@ Creating a service based on the image we created
 
 > More on Docker Cloud services on [the Official Docker Documentation](https://docs.docker.com/docker-cloud/getting-started/your_first_service/).
 
-We will create a service based on the image we just created. 
+We will create a service based on the image we just created.
 
 The only custom settings will be to enable the `AUTOREDEPLOY` option and to specify the port to be 80 on the machine.
 
@@ -319,8 +312,7 @@ If we go to the containers tab, we can see the container running.
 
 ![](/img/article-photos/aspnet-core-docker-azure/containers.png)
 
-Testing the application
-------------------------
+### Testing the application
 
 Remember the DNS we assigned to the Azure VM? In my case it was `http://ubuntu-docker-cloud.westeurope.cloudapp.azure.com/`. Normally, the container should have started on port 80 (the default HTTP port) on this machine.
 
@@ -330,8 +322,7 @@ Let's try and access that exact URL:
 
 At this point, you can create additional service and start containers on this machine, provided you open ports on the VM with the procedure described above.
 
-Updating the application
--------------------------
+### Updating the application
 
 Because we setup the image based on the GitHub repository and we checked the `AUTOREDEPLOY` option, every time we will push on the master branch of the repository, the entire system will update itself.
 
@@ -351,8 +342,7 @@ After the build and redeploy are successful, accessing the application should re
 
 ![](/img/article-photos/aspnet-core-docker-azure/public-app-updated.png)
 
-Conclusion
-----------
+### Conclusion
 
 This is basically how the entire process looks like. It is not production ready, as it does not have any testing workflow put in place and the application is rather simple.
 

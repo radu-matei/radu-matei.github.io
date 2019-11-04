@@ -1,0 +1,70 @@
+<section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      <!-- <div class="nav-left"> -->
+      <!-- <a href="{{ .Site.BaseURL }}"><img src="/logo_transparent.png" width="100" height="100" /> </a> -->
+
+      <a class="nav-item" href="{{ .Site.BaseURL }}">
+        <h1 class="title is-4">{{ .Site.Title }}</h1>
+      </a>
+      <!-- </div> -->
+
+      <a class="nav-item" href="{{ .Site.BaseURL }}/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i>
+          {{- $social := ( .Site.Params.social ) -}}
+          {{- range $platform := $social.config.platforms -}}
+          {{- with $username := ( index $social $platform ) -}}
+          <a class="level-item" aria-label="{{ $platform }}" title={{ humanize $platform }}
+            href="{{ print ( index $.Site.Data.theme.social.base $platform ) $username }}" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class>
+                {{- partial "svg/icons" $platform -}}
+              </i>
+            </span>
+          </a>
+          {{- end -}} {{- end -}}
+        </nav>
+      </div>
+    </nav>
+
+    <!-- <nav class="nav">
+        {{ if (isset .Site.Params "sections_left" ) }}
+        <div class="nav-left">
+          {{- range $section, $printable := .Site.Params.sections_left -}}
+          {{- if $printable -}}
+          <a class="nav-item" href="{{$section}}">
+            <h2 class="title is-5">{{$printable}}</h2>
+          </a>
+          {{- end -}}
+          {{- end -}}
+        </div>
+        {{ end }}
+
+        {{ if (isset .Site.Params "sections_right" ) }}
+        <div class="nav-right">
+          {{- range $section, $printable := .Site.Params.sections_right -}}
+          {{- if $printable -}}
+          <a class="nav-item" href="{{$section}}">
+            <h2 class="title is-5">{{$printable}}</h2>
+          </a>
+
+
+          {{- end -}}
+          {{- end -}}
+
+        </div>
+        {{ end }}
+
+      </nav> -->
+    <p class="author">
+      <!-- <a href="https://radu-matei.com/blog" target="_blank">The other blog of Radu M
+      </a> -->
+    </p>
+  </div>
+</section>

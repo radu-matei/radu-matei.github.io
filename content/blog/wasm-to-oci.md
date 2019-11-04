@@ -1,18 +1,19 @@
 +++
 author = "Radu Matei"
-categories = ["wasm"]
+tags = ["wasm", "golang"]
 date = "2019-10-13"
 description = ""
 linktitle = ""
 title = "Distributing WebAssembly modules using OCI registries"
-type = "post"
+# type = "post"
 summary = ""
 featured = "wasm-to-oci.png"
 featuredpath = "/img/article-photos/wasm-to-oci/"
 images = ["/img/article-photos/wasm-to-oci/wasm-to-oci.png"]
+image = "/img/article-photos/wasm-to-oci/wasm-to-oci.png"
 +++
 
-# WebAssembly and WASI
+![](/img/article-photos/wasm-to-oci/wasm-to-oci.png)
 
 [WebAssembly (WASM)][wasm] _is a binary instruction format for a stack-based virtual machine._ In familiar terms, WASM is used as a compilation target for various programming languages (C, C++, Rust, or Golang, for example), generating a compact binary with a known format. [Mozilla Developer Network describes][mdn-concepts] WebAssembly as having _huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so._
 
@@ -28,11 +29,11 @@ WASI could provide a very interesting alternative to the container ecosystem - b
 
 > Read [the WASI announcement blog post][wasi-announcement] if you want to learn more about how it works, and the principles behind WASI.
 
-# Distributing WASM modules using OCI registries
+### Distributing WebAssembly modules using OCI registries
 
-Right now there are a couple of ways to distribute WASM modules - [`wasm-pack`][wasm-pack-publish] (which uses NPM to store modules), or [WAPM][wapm] (independent of programming language and toolchain, but still a very early stage tool, without much adoption yet outside of the Wasmer ecosystem), to name a few. But if we consider WASM as a potential cross-platform alternative to Linux containers, then we also need a way to distribute them, independent of programming language and toolchain. And why not use exactly the method for distributing container images, OCI registries?
+Right now there are a couple of ways to distribute WebAssembly modules - [`wasm-pack`][wasm-pack-publish] (which uses NPM to store modules), or [WAPM][wapm] (independent of programming language and toolchain, but still a very early stage tool, without much adoption yet outside of the Wasmer ecosystem), to name a few. But if we consider WebAssembly as a potential cross-platform alternative to Linux containers, then we also need a way to distribute them, independent of programming language and toolchain. And why not use exactly the method for distributing container images, OCI registries?
 
-Additionally, OCI recently announced [the OCI Artifacts project][oci-artifacts], which aims to extend the OCI registry specification and store other cloud native artifacts (think about Helm charts, or CNAB bundles). This has immediate advantages - a consistent way to distribute multiple artifacts type, using already existing registry services, or reusing and extending the current security model (like[TUF][tuf]).
+Additionally, OCI recently announced [the OCI Artifacts project][oci-artifacts], which aims to extend the OCI registry specification and store other cloud native artifacts (think about Helm charts, or CNAB bundles). This has immediate advantages - a consistent way to distribute multiple artifacts type, using already existing registry services, or reusing and extending the current security model (like [TUF][tuf]).
 
 [ORAS][oras] (OCI Registry as Storage) is a proposed implementation for the OCI Artifacts project, and significantly simplifies storing arbitrary content in OCI registries. So we could use the ORAS client library to build a really simple tool to push and pull WebAssembly modules to OCI registries.
 
@@ -48,35 +49,35 @@ ContentLayerMediaType = "application/vnd.wasm.content.layer.v1+wasm"
 In order to push, we read the contents of the module, add them as a single layer in an OCI descriptor, then use `oras.Push`:
 
 ```
-	contents, err := ioutil.ReadFile(module)
+contents, err := ioutil.ReadFile(module)
 
-	desc := store.Add(module, ContentLayerMediaType, contents)
-	layers := []ocispec.Descriptor{desc}
+desc := store.Add(module, ContentLayerMediaType, contents)
+layers := []ocispec.Descriptor{desc}
 
-	pushOpts := []oras.PushOpt{
-		oras.WithConfigMediaType(ConfigMediaType),
-		oras.WithNameValidation(nil),
-	}
+pushOpts := []oras.PushOpt{
+	oras.WithConfigMediaType(ConfigMediaType),
+	oras.WithNameValidation(nil),
+}
 
-	manifest, err := oras.Push(ctx, resolver, ref, store, layers, pushOpts...)
+manifest, err := oras.Push(ctx, resolver, ref, store, layers, pushOpts...)
 ```
 
 Pulling is similarly straightforward - we use `oras.Pull` to get the OCI manifest and actual module, then write it to a file:
 
 ```
-	pullOpts := []oras.PullOpt{
-		oras.WithAllowedMediaType(ContentLayerMediaType),
-		oras.WithPullEmptyNameAllowed(),
-	}
+pullOpts := []oras.PullOpt{
+	oras.WithAllowedMediaType(ContentLayerMediaType),
+	oras.WithPullEmptyNameAllowed(),
+}
 
-	_, layers, err := oras.Pull(ctx, resolver, ref, store, pullOpts...)
-	manifest, contents, _ := store.Get(layers[0])
-	ioutil.WriteFile(outFile, contents, 0755)
+_, layers, err := oras.Pull(ctx, resolver, ref, store, pullOpts...)
+manifest, contents, _ := store.Get(layers[0])
+ioutil.WriteFile(outFile, contents, 0755)
 ```
 
 The Go package and a `wasm-to-oci` utility [can be found on GitHub][wasm-to-oci].
 
-# Testing with an OCI registry
+### Testing with an OCI registry
 
 We have a local module (which can be found in the `testdata` directory of the [repo][wasm-to-oci]), and we use the `wasm-to-oci` to push to an Azure Container Registry repository that we are currently logged in to (using the Docker CLI):
 
@@ -126,7 +127,7 @@ We can inspect the generated OCI manifest, and see the media types we set earlie
 }
 ```
 
-# Conclusion
+### Conclusion
 
 This was an interesting proof of concept for storing WASM in OCI registries. Most likely you don't need this if you're using WebAssembly on the web right now, but it can be useful in the context of WASI, and particularly considering this extremely cool [containerd shim for WebAssembly][containerd-wasm].
 

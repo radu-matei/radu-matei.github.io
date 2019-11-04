@@ -1,11 +1,11 @@
 +++
 author = "Radu Matei"
-categories = ["aspnet-core", "azure", "signalr"]
+tags = ["aspnet-core", "azure", "signalr"]
 date = "2016-09-09"
 description = ""
 linktitle = ""
 title = "ASP.NET Core MVC and SignalR Core"
-type = "post"
+# type = "post"
 summary = "In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"
 
 +++
@@ -24,7 +24,7 @@ In this article we will take a look at how to integrate ASP.NET Core MVC with Si
 
 > This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. [This article](https://radu-matei.github.io/blog/aspnet-core-api/) does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.
 
-> In order to get started with SignalR Core, [take a look at this article](https://radu-matei.github.io/blog/signalr-core/). 
+> In order to get started with SignalR Core, [take a look at this article](https://radu-matei.github.io/blog/signalr-core/).
 
 We will build on [this application](https://radu-matei.github.io/blog/aspnet-core-api/) and add real time functionality to it.
 
@@ -49,7 +49,7 @@ Configure the application
 Add the required packages
 -------------------------
 
-For this application, we will need the Kestrel web server (of course), the MVC packages so we can use controllers, static files so we can have HTML and JavaScript files served, SignalR and WebSockets: 
+For this application, we will need the Kestrel web server (of course), the MVC packages so we can use controllers, static files so we can have HTML and JavaScript files served, SignalR and WebSockets:
 
 ```
 "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
@@ -114,7 +114,7 @@ public interface IPostRepository
     Post GetPost(int id);
     void AddPost(Post post);
 }
-``` 
+```
 
 > Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, IPostRepository, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.
 
@@ -225,8 +225,8 @@ var settings = new JsonSerializerSettings();
 settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
 var serializer = JsonSerializer.Create(settings);
-services.Add(new ServiceDescriptor(typeof(JsonSerializer), 
-             provider => serializer, 
+services.Add(new ServiceDescriptor(typeof(JsonSerializer),
+             provider => serializer,
              ServiceLifetime.Transient));
 
 ```
@@ -235,7 +235,7 @@ While this is not far from what we are going to do, at this moment we simply can
 
 Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is transformed to camel case.
 
-We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified. 
+We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified.
 
 We will write a custom contract resolver that looks at the assembly of the object type and if it is not an internal SignalR object (if it is not from the same assembly as `Connection`, a class from SignalR), then it modifies it to be camel case:
 
@@ -279,8 +279,8 @@ var settings = new JsonSerializerSettings();
 settings.ContractResolver = new SignalRContractResolver();
 
 var serializer = JsonSerializer.Create(settings);
-services.Add(new ServiceDescriptor(typeof(JsonSerializer), 
-             provider => serializer, 
+services.Add(new ServiceDescriptor(typeof(JsonSerializer),
+             provider => serializer,
              ServiceLifetime.Transient));
 ```
 
@@ -296,7 +296,7 @@ Again, the `Configure` method is pretty straightforward: we add static files sup
     {
         app.UseStaticFiles();
 
-        app.UseMvc(routes => 
+        app.UseMvc(routes =>
         {
             routes.MapRoute(
                     name: "default",
@@ -330,17 +330,17 @@ The `ConfigureServices` method
 
         var serializer = JsonSerializer.Create(settings);
 
-        services.Add(new ServiceDescriptor(typeof(JsonSerializer), 
-                     provider => serializer, 
+        services.Add(new ServiceDescriptor(typeof(JsonSerializer),
+                     provider => serializer,
                      ServiceLifetime.Transient));
 
         services.AddSingleton<IPostRepository, PostRepository>();
 
-        services.AddSignalR(options => 
+        services.AddSignalR(options =>
         {
             options.Hubs.EnableDetailedErrors = true;
         });
-        
+
         services.AddMvc();
     }
 ```
@@ -405,14 +405,14 @@ The client will be exactly the same as in SignalR 2.2.x:
     <script src="/signalr/hubs"></script>
 </head>
 <body>
-    
+
     <input id="userNameInput" type="text" placeholder="Enter your user name..." />
     <input id="textInput" type="text" placeholder="Enter your status..." />
 
     <button id="publishPostButton">Publish post!</button>
 
     <ul id="postsList"></ul>
-    
+
     <script type="text/javascript">
         $.ajax({
             url: '/api/Posts/GetPosts',
@@ -450,7 +450,7 @@ The client will be exactly the same as in SignalR 2.2.x:
                 data: post
             });
         });
-        
+
         $.connection.hub.logging = true;
         $.connection.hub.start();
     </script>
@@ -465,4 +465,4 @@ Conclusion
 
 In this article we saw how to use MVC Core and SignalR for providing real time data to users.
 
-Since SignalR is still in alpha, at this moment there are some issues to be addressed and many breaking changes to come and I will try to keep this example up-to-date. 
+Since SignalR is still in alpha, at this moment there are some issues to be addressed and many breaking changes to come and I will try to keep this example up-to-date.

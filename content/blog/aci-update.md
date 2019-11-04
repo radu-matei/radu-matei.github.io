@@ -1,15 +1,15 @@
 +++
 author = "Radu Matei"
-categories = ["azure", "docker", "golang"]
+tags = ["azure", "docker", "golang"]
 date = "2017-12-14"
 description = "Automatically update the image of your Azure Container Instance and keep the public IP address of the container group"
 linktitle = ""
 title = "Update Azure Container Instances with Docker Hub webhooks"
-type = "post"
-summary = "In this article we will see how to update Azure Container Instances based on webhooks from Docker Hub"
+# type = "post"
+summary = "Back in July, Microsoft announced Azure Container Instances, a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud. In this article we will see how to update Azure Container Instances based on webhooks from Docker Hub"
 
 +++
-
+<!--
 Table of Contents
 -----------------
 
@@ -21,11 +21,11 @@ Table of Contents
 - [Feedback](#feedback)
 
 Introduction
-------------
+------------ -->
 
 Back in July, [Microsoft announced Azure Container Instances](https://azure.microsoft.com/en-us/blog/announcing-azure-container-instances/), *a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud.*
 
-Essentially, this allowed you to run single or multi-container groups (scheduled on the same host machine, within the same local network, storage and lifetime) with fast startup times, hypervisor-level security, public IP address connectivity and billing by the second. 
+Essentially, this allowed you to run single or multi-container groups (scheduled on the same host machine, within the same local network, storage and lifetime) with fast startup times, hypervisor-level security, public IP address connectivity and billing by the second.
 
 > [Here's the quickstart from the Azure Documentation where you can get started with ACI from the portal or the CLI](https://docs.microsoft.com/en-us/azure/container-instances/)
 
@@ -40,8 +40,8 @@ In this article we will not use any of the two projects mentioned, but build a s
 Please note that while you will not be able to do this from the portal, it can be done through the Azure REST API or various language SDKs.
 
 
-Webhooks from Docker Hub
------------------------
+### Webhooks from Docker Hub
+
 As I was saying earlier, we will accept incoming webhooks from Docker Hub and update the Azure containers accordingly. First let's see how a Docker Hub webhook looks like:
 
 {{< gist radu-matei 92aad3a204d954f4316875528fbe6a23 >}}
@@ -61,8 +61,7 @@ Now taking that JSON and using it with [this little cool utility that generates 
 From this point, we'll create a simple web server that listens for webhook requests and will update the container using the Go SDK.
 
 
-Using the Azure Go SDK to update container groups
--------------------------------------------------
+### Using the Azure Go SDK to update container groups
 
 In order to use the Azure Go SDK you need some credentials - first of all, [go through the documentation showing you how to create a service principal](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal).
 
@@ -104,8 +103,7 @@ All you have to do now is read the body of the HTTP request containing the webho
 
 {{< gist radu-matei 17ab85c46b8e2ca4eac1b86ce4e31af5 >}}
 
-See it in action
-----------------
+### See it in action
 
 First of all, we need to deploy an Azure Container Instance based on an image (**we own**) from Docker Hub:
 
@@ -126,7 +124,6 @@ After a few moments, you should have a running container with a public IP addres
 This is the container running:
 
 ![](/img/article-photos/aci-update/v1.jpg)
-
 
 
 Now we need to:
@@ -169,17 +166,13 @@ Our container is actually updated to the new version (notice the public IP addre
 > Of course, we can deploy this application to Azure Container Instance - Inception!
 
 
-Final Thoughts
---------------
+### Conclusion
 
 This app was quickly put together to show that using the SDK you can update Azure Container Instances using webhooks from Docker Hub - of course, it can be extended to take webhooks from your favourite container registry, and even keep track of multiple ACI instances to update - this is outside the scope of the article.
 
 Hopefully in a future article we will see how to stop using `ngrok` and a full web server and move towards serverless - Azure Functions.
 
 > Please note that while the container gets updated, your app will be down for a couple of seconds!
-
-Feedback
---------
 
 Thanks for reading! If you want to extend the functionality of this little tool, [you are welcome to contribute on GitHub](https://github.com/radu-matei/aci-hooks) with issues and pull requests.
 

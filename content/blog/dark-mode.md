@@ -1,25 +1,26 @@
 +++
 author = "Radu Matei"
-categories = ["web"]
+tags = ["web"]
 date = "2019-09-01"
 description = "How I added a dark theme toggle to my Hugo website without writing a single line of CSS"
 linktitle = ""
 title = "Adding dark mode to a Hugo static website without learning CSS"
-type = "post"
+# type = "post"
 featured = "dark.gif"
 featuredpath = "/img/article-photos/dark-mode/"
 images = ["/img/article-photos/dark-mode/dark.gif"]
+image = "/img/article-photos/dark-mode/dark.gif"
 summary = "How I added a dark theme toggle to my Hugo website without writing a single line of CSS"
 +++
 
-# Introduction
+![](/img/article-photos/dark-mode/dark.gif)
 
 Everyone seems to be adding dark themes to their platforms these days. Recently, [Microsoft even released a trailer for the future dark mode][msft-dark] - an actual video trailer, produced to showcase a theme.
 
 My blog, based on the [Hugo Future Imperfect theme][future-imperfect], has a strikingly light theme - which makes it extremely difficult to read at night. But because my front-end skills are completely non-existent (no, really!), creating a dark theme stylesheet for my website was out of the question.
 So I wanted to cheat my way into adding a dark mode, but without putting in the effort of actually learning CSS.
 
-# Generating a dark mode theme
+### Generating a dark mode theme
 
 Recently, I've started using the [Dark Mode Extension][extension] for my browser, particularly during the night - and while it is not ideal, and lots of sites require their own custom-made dark theme ([looking at you, GitHub!][github-dark]), it works well enough not to destroy my eyes when I read StackOverflow answers in the middle of the night.
 
@@ -61,7 +62,7 @@ So I saved this file along with the other CSS files in my theme, referenced it i
 
 Now that I have a style, it's time to add a way of toggling between light and dark modes.
 
-# Toggling between the light and dark modes
+### Toggling between the light and dark modes
 
 My theme comes with a navigation bar that is always visible at the top. In the top right, there is a button that opens the sharing menu, one for search, and another for a menu. That portion seemed perfect to add another button, since it's always in view.
 
@@ -98,7 +99,7 @@ function setTheme(mode) {
 
 So when the icon is pressed, the style sheet is enabled or disabled, and the correct icon is set.
 
-# Using local storage for persistance
+### Using local storage for persistance
 
 This works well enough, but if you navigate to another page in the website, the default theme (light, in my case) is re-applied. Let's see how we can use local storage to save the preference for the theme - and just save the theme in local storage when the user changes it:
 
@@ -114,7 +115,7 @@ function setTheme(mode) {
 }
 ```
 
-# Conclusion
+### Conclusion
 
 I managed to add a dark mode to my blog and persist the preference in local storage - all without writing a single line of CSS. It's not perfect, and it needs plenty of more work (for example, images are inverted in an iframe), but I'm happy with the progress I made without much effort.
 

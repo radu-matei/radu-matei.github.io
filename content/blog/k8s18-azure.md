@@ -1,15 +1,15 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "azure"]
+tags = ["kubernetes", "azure"]
 date = "2017-10-06"
 description = "Deploy Kubernetes 1.8 on Azure using acs-engine"
 linktitle = ""
 title = "Kubernetes 1.8 on Azure"
-type = "post"
+# type = "post"
 summary = "In this post you'll see how to deploy Kubernetes 1.8 and later on Azure using ACS Engine, an open-source tool that creates the entire configuration for your orchestration cluster and deploys it on Azure Container Service."
 +++
 
-Table of Content
+<!-- Table of Content
 ================
 
 - [Introduction](#introduction)
@@ -19,7 +19,7 @@ Table of Content
 - [Conclusion and feedback](#conclusion-feedback)
 
 Prerequisites
-=============
+============= -->
 
 This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
 
@@ -32,8 +32,7 @@ This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cos
 ![](/img/article-photos/k8s18-azure/pricing.png)
 
 
-Introduction
-============
+### Introduction
 
 On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. [You can read the full blog post that announces the release here](http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html) and you can see [the release on GitHub](https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0) and the [associated changelog with all new features](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180).
 
@@ -41,8 +40,7 @@ In this article we will explore how to deploy a Kubernetes cluster with version 
 
 If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can [skip the following section and go directly to where the action actually starts.](#getting-the-acs-engine-binary)
 
-Deploying orchestrator clusters in Azure
-========================================
+### Deploying orchestrator clusters in Azure
 
 There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to [deploy a Kubernetes cluster](https://radu-matei.com/blog/kubernetes-jenkins-azure/)). [Azure Container Service](https://azure.microsoft.com/en-us/services/container-service/) allows you to easily [deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the `az` command line](https://docs.microsoft.com/en-us/azure/container-service/). This is the way to go if you don't want to customize your cluster and you are ok with the default values that Azure provides for you.
 
@@ -56,18 +54,21 @@ Kubernetes 1.8 has just been released, and together with it came [v0.8.0 of `acs
 You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).
 
 
-Getting the acs-engine binary
-===============================
+### Getting the `acs-engine` binary
 
 In this step all you need to do is download the the binary associated with v0.8.0 of `acs-engine` for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.
 
 First you need to download the GitHub release archive for Linux:
 
-`wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz`
+```
+wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz
+```
 
 Then, you need to unarchive it:
 
-`tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz`
+```
+tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz
+```
 
 This will create a folder called `acs-engine-v0.8.0-linux-amd64`, and inside it you will find (among the license and the readme) the `acs-engine` binary.
 
@@ -78,8 +79,7 @@ Now you only need to put it in your path (or move it to a directory that is in y
 
 We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.
 
-Deploy the cluster
-==================
+### Deploy the cluster
 
 This is how a typical cluster definition file looks for Kubernetes. Compared to [the example offered in the repo](https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json), this only adds the `orchestratorRelease` property and sets it to `1.8`.
 
@@ -94,9 +94,10 @@ The great thing about this version of `acs-engine` is that you will only need on
 - the cluster definition file from above
 
 ```
-acs-engine deploy --subscription-id <your-subscription-id> \
-    --dns-prefix <your-dns-prefix> --location westeurope \
-    --auto-suffix --api-model kubernetes18.json
+acs-engine deploy
+        --subscription-id <your-subscription-id> \
+        --dns-prefix <your-dns-prefix> --location westeurope \
+        --auto-suffix --api-model kubernetes18.json
 ```
 
 > Note the `orchestratorRelease` property in the JSON file set to `1.8`!
@@ -132,8 +133,7 @@ At this point you can use `kubectl` to get information about your cluster and yo
 
 Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!
 
-Configure `kubectl` from outside the Azure Cloud Shell
-======================================================
+### Configure `kubectl` from outside the Azure Cloud Shell
 
 Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the `_output` directory from where you executed the `acs-engine deploy` command.
 You will want to have access to your cluster from outside the browser (for obvious reasons), so you will have to download the certificates and keys.
@@ -146,9 +146,7 @@ Then, point your local `kubectl` to the `kubeconfig.<azure-location>.json` file 
 
 > Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, [as described in the Bitnami documentation](https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/).
 
-Conclusion, feedback
-====================
+### Conclusion, feedback
 
 In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using `acs-engine` and the Azure Cloud Shell.
-
 If you have any ideas, comments or feedback, please use the comments below :)

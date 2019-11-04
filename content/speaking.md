@@ -2,6 +2,7 @@
 title = "Speaking"
 description = ""
 date = "2017-11-25"
+disable_comments = true
 +++
 
 2019
@@ -9,6 +10,8 @@ date = "2017-11-25"
 
 |  Date          |  Event/Conference                                             |  Talk                                                                  |
 | ---            | ---                                                           | ---                                                                    |
+|November 20          |  [KubeCon San Diego](https://kccncna19.sched.com/event/Uafl/deep-dive-brigade-radu-matei-microsoft-matt-butcher-microsoft)     |  Deep Dive: Brigade - Matt Butcher & Radu Matei     |
+|November 19          |  [KubeCon San Diego](https://kccncna19.sched.com/event/Uahq/intro-brigade-radu-matei-microsoft-matt-butcher-microsoft)         |  Introduction to Brigade - Matt Butcher & Radu Matei	  |
 |May 23          |  [KubeCon Barcelona](https://kccnceu19.sched.com/event/N7N9/deep-dive-brigade-radu-matei-microsoft)     |  [Deep Dive: Brigade](https://www.youtube.com/watch?v=Sd9S6GhUiwM)     |
 |May 22          |  [KubeCon Barcelona](https://kccnceu19.sched.com/event/N7PI/intro-brigade-radu-matei-microsoft)         |  [Introduction to Brigade](https://www.youtube.com/watch?v=NTeJzvtiLWo)	  |
 
@@ -18,7 +21,7 @@ date = "2017-11-25"
 
 |  Date          |  Event/Conference                                             |  Talk                                                                  |
 | ---            | ---                                                           | ---                                                                    |
-|December 12     |  [KubeCon Seattle](https://kccna18.sched.com/event/GrRd/debugging-applications-on-kubernetes-michelle-noorali-radu-matei-microsoft)      |  Debugging apps on Kubernetes - Michelle Noorali & Radu Matei     |
+|December 12     |  [KubeCon Seattle](https://kccna18.sched.com/event/GrRd/debugging-applications-on-kubernetes-michelle-noorali-radu-matei-microsoft)      |  Debugging apps on Kubernetes - Michelle Noorali & Radu Matei |
 |December 10     | [Pre-KubeCon Workshops, Seattle](https://open.microsoft.com/2018/11/21/microsoft-pre-kubecon-community-workshops/)         |  Streamline your Kubernetes app development with Draft & Brigade	  |
 |October 18      | [Microsoft Tech Day](https://www.microsoftevents.com/profile/form/index.cfm?PKformID=0x4925257abcd&ocid=AID_oo_spl100000335585639&ocid=AID_oo_spl100000336204063)         |  Modernize your apps with containers, cloud and Kubernetes  |
 |August 22       | [BucharestJS](https://www.meetup.com/BucharestJS/events/246479417/)         |  Remote debugging for your NodeJS apps on Kubernetes, with VS Code  |
@@ -79,7 +82,7 @@ Photos
 =======
 
 ![](/img/article-photos/speaking/az.jpg "Azure Tech Day")
-![](/img/article-photos/speaking/hoc.jpg "Hour of Code") 
+![](/img/article-photos/speaking/hoc.jpg "Hour of Code")
 ![](/img/article-photos/speaking/codecamp-1.jpg "CodeCamp Cluj")
 ![](/img/article-photos/speaking/codecamp-2.jpg "CodeCamp Cluj")
 ![](/img/article-photos/speaking/jstalks.JPG "JSTalks Sofia")

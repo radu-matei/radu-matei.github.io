@@ -1,14 +1,14 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "azure"]
+tags = ["kubernetes", "azure"]
 date = "2017-10-17"
 description = "Consuming a private API built with Kubernetes from Azure App Service"
 linktitle = ""
 title = "Best of Both worlds: Azure App Service and Kubernetes"
-type = "post"
+# type = "post"
 summary = "In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet. There will be lots of situations when we want to use both the simplicity and features of a PaaS service (such as autoscaling, easy SSL, or any other cool feature) for a component and the flexibility of Kubernetes for others - in this article we will see how to achieve this without exposing services on the Internet."
 +++
-
+<!--
 Table of Contents
 -----------------
 
@@ -24,7 +24,7 @@ Table of Contents
 
 
 Introduction
-------------
+------------ -->
 
 In this article we will explore how to integrate Azure App Service and Kubernetes within the same Azure Virtual Network and consume Kubernetes services from an Azure App Service app without exposing them on the public Internet.
 
@@ -34,8 +34,8 @@ We will start from a just-deployed Kubernetes cluster, will see how to expose se
 
 > Note that in order to deploy a Kubernetes cluster on Azure you can either [use `acs-engine` (a tool that deploys custom clusters on Azure) - here's how to deploy Kubernetes 1.8 on Azure using `acs-engine`](https://radu-matei.com/blog/k8s18-azure/) or [use the `az` command line - here's the official documentation.](https://docs.microsoft.com/en-us/azure/container-service/kubernetes/container-service-kubernetes-walkthrough)
 
-Prerequisites
--------------
+### Prerequisites
+
 
 This tutorial assumes you have a valid Azure subscription that you can use to deploy resources. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
 
@@ -53,8 +53,7 @@ This tutorial will also use an Azure VNet gateway that based on the throughput n
 
 > Here you can [find out more about the Azure VPN Gateway](https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/)
 
-Why not just expose services publicly?
---------------------------------------
+### Why not just expose services publicly?
 
 The alternative to this entire article is simply exposing public services from Kubernetes with a public IP address and just use that public IP address from your App Service application.
 
@@ -67,8 +66,7 @@ Let's explore some of the reasons you might not want to do this:
 > Networking pricing is a complex topic in any cloud provider and I am by no means expert in Azure Networking - you can read more about Azure Networking [pricing for virtual networks](https://azure.microsoft.com/en-us/pricing/details/virtual-network/), for [VPN gateways](https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/) and [bandwidth](https://azure.microsoft.com/en-us/pricing/details/bandwidth/).
 
 
-Deploy Kubernetes services with a private IP
---------------------------------------------
+### Deploy Kubernetes services with a private IP
 
 When you deploy Kubernetes in Azure, all resources (network interfaces of VMs, load balancers) are deployed in a virtual network, and each VM gets a private IP inside that VNet.
 
@@ -101,8 +99,7 @@ And the IP address of the internal load balancer:
 
 
 
-The networking settings
-------------------------
+### The networking settings
 
 So we now have a Kubernetes service accessible from within our virtual network. We now need to integrate an App Service instance in that virtual network to consume the API we deployed.
 
@@ -165,8 +162,7 @@ After you configure point-to-site in the network, you can go back to the App Ser
 
 ![](/img/article-photos/k8s-appsvc/setup.PNG)
 
-Testing the integration
------------------------
+### Testing the integration
 
 Now to the moment of truth: I created a very simple .NET Core app (it can be Node, PHP, Java) that makes requests to a `PrivateAddress` that you can configure in the App Settings in Azure Portal. You can [find the app on GitHub](https://github.com/radu-matei/app-svc-vnet), but all it does is make an HTTP request and return the response.
 
@@ -183,10 +179,9 @@ Here you can see which pod actually responded to the request, and if you refresh
 ![](/img/article-photos/k8s-appsvc/pods.PNG)
 
 
-Current known limitations
--------------------------
+### Current known limitations
 
-Right now you cannot use this article with a Web App on Containers or App Service on Linux, as the VNet integration does not currently support them. 
+Right now you cannot use this article with a Web App on Containers or App Service on Linux, as the VNet integration does not currently support them.
 
 Also, you currently cannot have [DNS name for the internal IP of the load balancer. This is known feature request on Azure Feedback, and according to the Azure Networking team, it represents a key item on the roadmap](https://feedback.azure.com/forums/217313-networking/suggestions/16825357-add-dns-name-label-to-private-ips)
 
@@ -195,15 +190,7 @@ Conclusion
 
 Now you have successfully deployed an application on App Service that uses private APIs from within a non-Internet routable network. You get the best of both worlds: the ease of deployment, autoscaling, SSL and other fun features of App Service, with the flexibility of Kubernetes, all in the same application.
 
-
-Next Steps
------------
-
 A next step would be creating deployment pipelines for both App Service and the Kubernetes apps - [here is an example of a pipeline using Jenkins](https://github.com/azure-devops/movie-db-java-on-azure) for a web app on App Service with the backend in Kubernetes.
 
-Feedback
---------
-
 If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
-
 As always, thanks for reading, and any feedback is highly appreciated :)

@@ -1,17 +1,17 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "draft", "helm", "vscode"]
+tags = ["kubernetes", "draft", "helm", "vscode"]
 date = "2018-04-10"
 description = "Using Draft to simplify your cloud-native application development."
 linktitle = ""
 featured = "draft-logo.png"
 featuredpath = "/img/article-photos/real-world-draft/"
 title = "Using Draft to develop front-end + back-end applications. Experimenting with Draft, VS Code and remote debugging."
-type = "post"
+# type = "post"
 summary = "Application containers have skyrocketed in popularity over the last few years. In recent months, Kubernetes has emerged as a popular solution for orchestrating these containers. While many turn to Kubernetes for its extensible architecture and vibrant open-source community, some still view Kubernetes as too difficult to use. Learn how to use Draft to simplify your cloud-native application development!"
 +++
-
-    + [Introduction](#introduction)
+<!--
+- [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Develop, deploy and debug front-end + back-end apps on Kubernetes](#develop-deploy-and-debug-front-end-back-end-apps-on-kubernetes)
     + [Deploy the Node back-end](#deploy-the-node-back-end)
@@ -20,7 +20,7 @@ summary = "Application containers have skyrocketed in popularity over the last f
     + [Experimenting with VS Code and remote debugging](#experimenting-with-vs-code-and-remote-debugging)
 - [Conclusion](#conclusion)
 
-### Introduction
+### Introduction -->
 
 > Application containers have skyrocketed in popularity over the last few years. In recent months, Kubernetes has emerged as a popular solution for orchestrating these containers. While many turn to Kubernetes for its extensible architecture and vibrant open-source community, some still view Kubernetes as [too difficult to use](https://www.youtube.com/watch?v=aOQwyN0bTk4). - _Taken from [the Draft announcement blog post.](https://azure.microsoft.com/en-us/blog/streamlining-kubernetes-development-with-draft/)_
 
@@ -49,8 +49,7 @@ Essentially, deploying a new Draft application boils down to two simple commands
 >   * Draft will inject values specific to your current iteration in the Helm chart (like the name, image tag and build ID), so you don't have to update them manually.
 >   * After deploying your application on the cluster, you can use `draft connect` to forward the ports exposed by the application locally - this enables developing the front-end of the applications locally, forwarding the connection to the back-end through `localhost` ports. More on this later.
 
-Prerequisites
-=============
+### Prerequisites
 
 In order to follow along with this article, you will need:
 
@@ -69,8 +68,7 @@ Those were the requirements to start using Draft right away. Additionally, to wo
 * NodeJS and [Angular CLI](https://github.com/angular/angular-cli#installation)
 * [VS Code](https://code.visualstudio.com/docs/setup/setup-overview) - we will only truly use VS Code for the debugging part - until then, you can use any text editor you are familiar with.
 
-Develop, deploy and debug front-end + back-end apps on Kubernetes
-=================================================================
+### Develop, deploy and debug front-end + back-end apps on Kubernetes
 
 Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don't want to replicate locally - those can be databases we don't have access to, queues we need to use, or multiple micro-services we simply cannot run locally.
 
@@ -202,7 +200,7 @@ The front-end is already configured to talk to the back-end on `localhost:8080`,
 ![](/img/article-photos/real-world-draft/app.png)
 
 
-> You will surely find bugs with the front-end application, as I modified it to work with my back-end, and my front-end skills are non-existent. For starters, the counter is broken - feel free to open pull-requests for any problems you find :) 
+> You will surely find bugs with the front-end application, as I modified it to work with my back-end, and my front-end skills are non-existent. For starters, the counter is broken - feel free to open pull-requests for any problems you find :)
 
 You can now modify the Angular application, and the live development server will recompile the application.
 
@@ -252,7 +250,7 @@ This command executed the `draft up` cycle again (build and push the container i
 
 It is this easy to iterate through changes in your application - all you have to do is execute `draft up`.
 
-So far, all the features we saw are stable and already used by developers to simplify their development cycle when using Kubernetes. But regardless of what tool you use today, one thing that is either missing, not working correctly or incomplete is debugging the application you deployed to the cluster. In the next section we will experiment with VS Code and remotely debug the back-end we just deployed. 
+So far, all the features we saw are stable and already used by developers to simplify their development cycle when using Kubernetes. But regardless of what tool you use today, one thing that is either missing, not working correctly or incomplete is debugging the application you deployed to the cluster. In the next section we will experiment with VS Code and remotely debug the back-end we just deployed.
 
 ### Experimenting with VS Code and remote debugging
 

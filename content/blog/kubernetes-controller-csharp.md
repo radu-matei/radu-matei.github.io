@@ -1,15 +1,13 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "csharp"]
+tags = ["kubernetes", "dotnet-core"]
 date = "2019-05-06"
 description = "Lightweight controllers for your custom resource definitions, in C#"
 linktitle = ""
 title = "Writing controllers for Kubernetes CRDs with C#"
-type = "post"
+# type = "post"
 summary = "The goal of this article is to show you how to use the Kubernetes C# client to write extremely simple controllers for your Kubernetes custom resources, and start watching resources in a few lines of C#"
 +++
-
-# Introduction
 
 If you want to interact with the Kubernetes cluster API, the most obvious choice for the programming language is Go. Since Kubernetes itself is written in Go, it naturally became the _de facto_ language for interacting with the API, and writing controllers is no exception.
 
@@ -27,7 +25,7 @@ How difficult is it today to build controllers for CRDs in other programming lan
 
 And since I haven't written C# in quite some time, I decided this would be a nice experiment for my Research Friday (although it did continue a bit through the weekend).
 
-# Using the C# client to build a controller
+### Using the C# client to build a controller
 
 There is a [C# client for Kubernetes][kubernetes-csharp], which has great examples, and we are going to use it in building our controller. Besides the usual CRUD operations that you can do with the client, you can also _watch_ for various resources - we listen on a given resource, and then we handle the events that take place:
 
@@ -80,12 +78,12 @@ And because we want to cast the resources we watch to some C# types, we need to 
 This means that we have to add the `spec` and (optionally) `status` for our CRD, and this is (on a high level) what the `CustomResource` class in the project looks like:
 
 ```csharp
-    public abstract class CustomResource<TSpec, TStatus>
-    {
-        public V1ObjectMeta Metadata { get; set; }
-        public TSpec Spec { get; set; }
-        public TStatus Status { get; set; }
-    }
+  public abstract class CustomResource<TSpec, TStatus>
+  {
+      public V1ObjectMeta Metadata { get; set; }
+      public TSpec Spec { get; set; }
+      public TStatus Status { get; set; }
+  }
 ```
 
 > In reality, there is a base, non-generic, [`CustomResource`][custom-resource] class, that contains the metadata, and the class above inherits it. This is merely syntactic sugar to avoid having to meddle with too many generics in the actual controller, and for the purpose of this article, the `CustomResource` class can be considered the one above.
@@ -98,7 +96,7 @@ Creating the type for your CRD comes down to building a C# class that mirrors yo
 
 > While nice to have, both of them fall outside the scope of the article (and like all snarky University professors do, we'll just leave this as homework for the reader, but do let me know if generating these for C# or other languages is of interest to you.).
 
-# Wrapping everything in a `Controller` class
+### Wrapping everything in a `Controller` class
 
 Now that we have the building blocks, we can create a library that contains the custom resource class we see above (and another class that contains some metadata about your CRD, such as group and namespace) and build a [class for our controller][controller].
 
@@ -127,7 +125,7 @@ And so we end up with a really, really simple controller, where for every change
 
 Can this be improved? Sure, it's a rather naive approach to building one, but you can see the building blocks for handling changes for your custom resources. You can find [the current state of this controller library (as of writing this article) in this branch of the GitHub repository][article-branch].
 
-# Conclusion
+### Conclusion
 
 In this article, we used the C# client for Kubernetes to build a very simple controller that watches a custom resource for changes.
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" {{ with .Site.LanguageCode }} lang="{{ . }}" {{ end }}>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> {{ if eq .IsHome false }}
+    <title>{{ .Title }} | {{ .Site.Title }}</title>
+    {{ else }}
+    <title>{{ .Site.Params.Info.homeTitle }}</title>
+    {{ end }} {{ if .Site.Params.Info.enableSocial }} {{- partial "social/opengraph" . -}} {{ end }}
+    {{ if .Site.Params.rss }}
+
+    {{ partial "social/twitter" . }}
+    <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" /> {{ end }}
+
+    {{- range .Site.Params.Assets.customCSS -}}
+    <link rel='stylesheet' href='{{ . | absURL }}'> {{- end -}}
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    <!-- <link rel="manifest" href="/site.webmanifest"> -->
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> {{ if .Params.canonicalUrl }}
+    <link rel="canonical" href="{{ .Params.canonicalUrl }}"> {{ else }}
+    <link rel="canonical" href="{{ .Permalink }}"> {{ end }}
+
+</head>
+
+<body>

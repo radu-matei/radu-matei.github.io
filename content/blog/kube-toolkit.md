@@ -1,16 +1,16 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "golang", "grpc"]
+tags = ["kubernetes", "golang", "grpc"]
 date = "2017-12-18"
 description = "Building tools like Helm and Draft for Kubernetes using gRPC and Go"
 linktitle = ""
 title = "kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go"
-type = "post"
+# type = "post"
 summary = "Building tools like Helm and Draft for Kubernetes using gRPC and Go"
 
 +++
 
-Table of Contents
+<!-- Table of Contents
 =================
 
 - [Introduction](#introduction)
@@ -24,7 +24,7 @@ Table of Contents
 
 
 Introduction
-------------
+------------ -->
 
 If you ever used [Helm](https://github.com/kubernetes/helm) or [Draft](https://github.com/azure/draft), you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.
 
@@ -32,13 +32,12 @@ If you ever used [Helm](https://github.com/kubernetes/helm) or [Draft](https://g
 
 > This project started as a learning experience / small experiment of mine in building a tool for Kubernetes that allowed you to connect to all major cloud providers - then the Open Broker API became mainstream, and I realized I was reinventing the Service Broker wheel - so decided to take the good parts and make them available to anyone starting to build a Kubernetes tool.
 
-Architecture
-------------
+### Architecture
 
 [`kube-toolkit`](https://github.com/radu-matei/kube-toolkit) has two major components:
 
 - `ktk` (short for Kubernetes ToolKit) - client that you install locally
-- `ktkd` (short for Kuberentes ToolKit Daemon) - server-side component that is deployed on your Kubernetes cluster 
+- `ktkd` (short for Kuberentes ToolKit Daemon) - server-side component that is deployed on your Kubernetes cluster
 
 
 The `kube-toolkit` client (`ktk`) interacts with the server-side component (`ktkd`) using the Kubernetes API to create authenticated tunnels back to the cluster, using gRPC as the underlying communication protocol. The server runs as a pod in Kubernetes, and since it is only a starting point for future tools, it only knows how to return its version, and showcases how to stream data back to the client.
@@ -53,8 +52,7 @@ As stated earlier, this tool is based on the great work done by the awesome Helm
 
 Now for the actual implementation and how you can get started, and the first issue I bumped in was gathering the correct dependencies for Kubernetes 1.8:
 
-Vendoring `kube-toolkit`
----------------------------
+### Vendoring `kube-toolkit`
 
 Since this tool was built from the ground-up, the first step was to put together the correct versions of the dependencies to `k8s.io/client-go`, `github.com/kubernetes/helm`, `k8s.io/api`, `k8s.io/apimachinery` and a bunch more. A trivial step you might say, but in the times of Kubernetes 1.8, this was incredibly frustrating...
 
@@ -94,7 +92,6 @@ message StreamingMessage {
 	string message = 1;
 }
 ```
-> The `Empty` message is missing as it is completely uninteresting.
 
 This defines a service with two methods, `GetVersion` and `ServerStream` (which returns a stream of `StreamingMessage` back to the client), and **this is the place where you will first define your service methods!**
 
@@ -179,8 +176,7 @@ With this proto service, you should have a clear understanding on how to write a
 
 Now that you have a pretty good understanding on how to write gRPC client and server methods, let's explore how to connect to the Kubernetes cluster.
 
-Connecting to the Kubernetes cluster
-------------------------------------
+### Connecting to the Kubernetes cluster
 
 For this part, I will [give 100% credits to the Draft team](https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go) as I merely copied their implementation of a port forwarder that uses the Helm packages.
 
@@ -197,7 +193,7 @@ func New(clientset *kubernetes.Clientset, config *restclient.Config, namespace s
 
     // the default port for ktkd is 10000
     const ktkdPort = 10000
-    
+
     // this gets a tunnel to the ktkd pod, port 10000
 	t := kube.NewTunnel(clientset.CoreV1().RESTClient(), config, namespace, podName, ktkdPort)
 	return t, t.ForwardPort()
@@ -208,8 +204,7 @@ This tunnel is created for every executed command, and allows us to execute comm
 
 > Please note that there is no need to publicly expose any port on the pod.
 
-Using cobra, folder structure and adding your own commands
-----------------------------------------------------------
+### Using cobra, folder structure and adding your own commands
 
 Both the client and the server are essentially [`cobra`](https://github.com/spf13/cobra) CLI apps.
 
@@ -313,7 +308,7 @@ func (cmd *versionCmd) run() error {
 
     fmt.Printf("ktk Semver: %s GitCommit: %s\n", version.SemVer, version.GitCommit)
     fmt.Printf("ktkd SemVer:  %s Git Commit: %s\n", ktkdVersion.SemVer, ktkdVersion.GitCommit)
-    
+
 	return nil
 }
 ```
@@ -323,10 +318,9 @@ func (cmd *versionCmd) run() error {
 For every new functionality, we need to add a new cobra command (and remember to add it to the root command) and implement it accordingly.
 
 
-See in in action
-----------------
+### See in in action
 
-First of all, you need to deploy the `ktkd` pod to a Kubernetes cluster. 
+First of all, you need to deploy the `ktkd` pod to a Kubernetes cluster.
 
 
 > As of right now, there isn't an automated way to deploy this to Kubernetes, [but there is an open issue for anyone that wants to contribute!](https://github.com/radu-matei/kube-toolkit/issues/9)

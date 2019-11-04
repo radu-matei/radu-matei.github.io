@@ -1,20 +1,22 @@
 +++
 author = "Radu Matei"
-categories = ["github"]
+tags = ["github"]
 date = "2019-08-23"
 description = "How to build reusable actions using the Actions toolkit"
 linktitle = ""
 title = "Building Reusable GitHub Actions in TypeScript, using the official toolkit"
-type = "post"
+# type = "post"
 featured = "actions-logo.png"
 featuredpath = "/img/article-photos/building-github-actions/"
-summary = "How to build reusable actions using the Actions toolkit"
+summary = "GitHub Actions now supports CI/CD - and while the workers for Actions come pre-configured with support for lots of programming languages and frameworks, you have the option to use an existing action to configure the environment, or build your own. In this article we will see how to build reusable actions using the Actions toolkit"
 images = ["/img/article-photos/building-github-actions/actions-logo.png"]
+image = "/img/article-photos/building-github-actions/actions-logo.png"
 +++
+
+![](/img/article-photos/building-github-actions/actions-logo.png)
 
 > Disclaimer: while [GitHub is now a part of Microsoft][acquisition], and I work at Microsoft, I am not part of the team building Actions, and this is me documenting my experience building one - not the official position of the team building GitHub Actions.
 
-# Introduction
 
 [GitHub Actions now supports CI/CD][actions-announcement] - and while the workers for Actions come [pre-configured with support for lots of programming languages and frameworks][software], you have the option to use an existing action to configure the environment, or build your own.
 
@@ -39,7 +41,7 @@ Our goal for this article is to build our own custom action, with [the same tool
 
 For this article, we're exploring how to build a JavaScript action.
 
-# JavaScript Actions
+### JavaScript Actions
 
 In [a previous article][article] we saw how to configure Kind (Kubernetes in Docker) inside a GitHub Actions job - but what if we want to reuse the setup across tens of repositories? Do we copy-paste the same configuration? How about unit testing? What if there's a change needed? There's a better way - with JavaScript actions, and at the end of the article, we'll see a GitHub action for Kind I built.
 
@@ -71,7 +73,7 @@ This file contains metadata about our action, information about the runtime and 
 The other one is the entrypoint for the action (the transpiled `.js` files are found in `lib/` - the source code that you modify is in `src/` - you can change the destination for the transpiled code, but make sure to change the `.tsconfig`, `action.yml`, and `package.json` files with the appropriate directory.)
 
 ```
-import * as core from '@actions/core';                                                                                                     
+import * as core from '@actions/core';
 async function run() {
   try {
     const myInput = core.getInput('myInput');
@@ -87,14 +89,14 @@ Next, we'll see how to accomplish usual tasks that you might encounter in buildi
 
 ### Inputs for Actions
 
-Custom inputs are defined in the `actions.yml` file (see how `myInput` is defined in the example above), and are passed to the GitHub Actions runtime as environment variables, following the naming schema `INPUT_<input-name>`. 
+Custom inputs are defined in the `actions.yml` file (see how `myInput` is defined in the example above), and are passed to the GitHub Actions runtime as environment variables, following the naming schema `INPUT_<input-name>`.
 
 Then, consumers of the action will set the value for an input in the `with` field of the action:
 
 ```
-    - uses: <org>/<action>@<version>
-        with:
-            myInput: "value for myInput"  
+- uses: <org>/<action>@<version>
+    with:
+        myInput: "value for myInput"
 ```
 
 Reading inputs in the action is done through [the `@action/core` library, which exposes a helper function, `core.getInput`][inputs].
@@ -219,7 +221,7 @@ See the [recommendations for versioning and releasing actions][version].
 
 Publishing to the marketplace is straightforward - cut a release, and check the box for publishing to marketplace - note that the readme of the repository becomes the main page for your action in the marketplace.
 
-# The Kind GitHub Action
+### The Kind GitHub Action
 
 ![](/img/article-photos/building-github-actions/marketplace.PNG)
 
@@ -240,7 +242,7 @@ jobs:
 
 Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to `kind create cluster`:
 
-```
+```shell
 Creating cluster "kind" ...
  ✓ Ensuring node image (kindest/node:v1.15.3) 🖼
  ✓ Preparing nodes 📦📦📦📦📦📦📦
@@ -252,7 +254,7 @@ Creating cluster "kind" ...
  ✓ Joining more control-plane nodes 🎮
  ✓ Joining worker nodes 🚜
  ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
-Cluster creation complete. 
+Cluster creation complete.
 
 Kubernetes master is running at https://127.0.0.1:44867
 KubeDNS is running at https://127.0.0.1:44867/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy

@@ -1,29 +1,29 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes"]
+tags = ["kubernetes"]
 date = "2018-08-20"
 description = "How to remove secrets from the logs of Kubernetes applications?"
 featured = "Kubernetes_logo.svg"
 featuredpath = "/img/article-photos/filter-k8s-logs/"
 title = "Filter secrets from Kubernetes logs"
-type = "post"
+# type = "post"
 summary = ""
 +++
 
-- [Introduction](#introduction)
+<!-- - [Introduction](#introduction)
 - [How to filter the logs of a Kubernetes pod](#how-to-filter-the-logs-of-a-kubernetes-pod)
 - [The filtering process](#the-filtering-process)
 - [The sample application](#the-sample-application)
 - [Conclusion](#conclusion)
 
-# Introduction
+# Introduction -->
 
 Running any non-trivial application on Kubernetes will most likely require authorized access to other components - databases, storage buckets, APIs - all of which require a connection string or some sort of access key. Storing these values in Kubernetes is done through [Secrets][secrets], and while there are plenty of ways to make sure the secrets are [safe while at rest][encryption-rest], as well as how to [configure an external KMS provider][kms-provider], once the secret is injected into your application container, its value will be plain text.
 
 In this article we wil explore how to filter any Kubernetes secrets that end up in application logs - [the entire project for this article can be found on GitHub][gh-project], together with a sample application.
 
 
-# How to filter the logs of a Kubernetes pod
+### How to filter the logs of a Kubernetes pod
 
 One approach could be to run a privileged `DaemonSet` that mounts the logs directory and runs a filtering process on the logs. This presents the immediate advantage of not having to modify your applications at all - however, filtering the logs of _all_ pods deployed on the cluster will be a highly intensive task, and mounting part of the node filesystem inside a pod (that is privileged or not) can prove to be disruptive. That is why, while this approach is mentioned for completeness, is not recommended.
 
@@ -46,7 +46,7 @@ In a nutshell, this is our approach:
 
 The main advantage of this approach is that we don't need to mount parts of the node filesystem in a pod, and we can enable the filter for individual applications, filtering the secrets from a specific namespace. The only mention here is that we should be able to redirect the logs of the main application to a specific file. If that is not possible, explore running the sidecar by sharing the PID namespace and accessing `stdout` directly.
 
-# The filtering process
+### The filtering process
 
 The filtering application is a simple Go application that tails the file where the main application writes the logs, iterates through all Kubernetes secrets in the provided namespace, and checks if any value is present in the logs. If found, it will remove it, then write the redacted log to `stdout`. This container's logs become the application logs:
 
@@ -66,7 +66,7 @@ func filter(line string, secrets []v1.Secret) string {
 
 The filtering algorithm is fairly simple - it only does a `strings.Contains` on the log line for every Kubernetes secret value in the namespace -- this means that the more secrets in the namespace, the more CPU cycles it will take to filter a log -- so be mindful of this when running in a namespace with lots of secrets.
 
-Note that the filtering function above is a simple example on how to process your logs -- for any production-purpose filtering, you should fork the repository and replace the function with your own, and an immediate alternative would be to use regex instead of the loop with`strings.Contains` -- but you are free to come up with virtually any filtering algorithm.
+Note that the filtering function above is a simple example on how to process your logs -- for any production-purpose filtering, you should fork the repository and replace the function with your own, and an immediate alternative would be to use regex instead of the loop with `strings.Contains` -- but you are free to come up with virtually any filtering algorithm.
 
 A Kubernetes cache is used in order to avoid getting all secrets from the API on every filtering request. The resync period for the cache is set to 30 seconds. If a new secret is added, then the application tries to print it before the cache resynced, that log **will** contain the secret value. If your use case demands it, reduce the resync period - but keep in mind the impact this will have on networking and on the API server.
 
@@ -78,7 +78,7 @@ The filtering loop currently runs for for each new line. For a real world scenar
 Important note: **This method only prevents accidental printing of logs from an application output. It is not designed to prevent a potentially malicious attempt of gaining access to Kubernetes secrets -- and it should be used accordingly.**
 
 
-# The sample application
+### The sample application
 
 Now that we saw how the filtering process works, let's see an example of this in action.
 
@@ -168,7 +168,7 @@ $ kubectl logs filter-logs -c filter
   password: '[ redacted ]abc' }
 ```
 
-# Conclusion
+### Conclusion
 
 In this article we saw how to filter Kubernetes secrets from the logs of our applications by running a sidecar container that continuously redacts the secret values from the logs. As mentioned, you are free to write your own filtering algorithm based on the needs of your application, as well as implement filtering in chunks of multiple log lines.
 

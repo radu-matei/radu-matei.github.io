@@ -1,11 +1,11 @@
 +++
 author = "Radu Matei"
-categories = ["aspnet-core", "signalr"]
+tags = ["dotnet-core", "signalr"]
 date = "2017-11-26"
 description = ""
 linktitle = ""
 title = "Getting started with SignalR Alpha 2"
-type = "post"
+# type = "post"
 summary = "In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"
 
 +++
@@ -309,7 +309,7 @@ public async static Task StartStreaming()
         {
             Console.WriteLine($"Message received: {message}");
         }
-    }   
+    }
 }
 ```
 

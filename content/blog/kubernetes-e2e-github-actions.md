@@ -1,11 +1,11 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "github"]
+tags = ["kubernetes", "github"]
 date = "2019-08-21"
 description = ""
 linktitle = ""
 title = "Running Kubernetes end-to-end tests with Kind and GitHub Actions"
-type = "post"
+# type = "post"
 featured = "kind-github.png"
 featuredpath = "/img/article-photos/kubernetes-e2e-github-actions/"
 summary = "Using Kubernetes in Docker in GitHub Actions"
@@ -46,7 +46,7 @@ Creating cluster "kind" ...
  ✓ Joining more control-plane nodes 🎮
  ✓ Joining worker nodes 🚜
  ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
-Cluster creation complete. 
+Cluster creation complete.
 
 Kubernetes master is running at https://127.0.0.1:44867
 KubeDNS is running at https://127.0.0.1:44867/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
@@ -65,7 +65,7 @@ kind-worker3          NotReady   <none>   28s     v1.15.3
 > EDIT: See [the article about building reusable GitHub Actions](https://radu-matei.com/blog/building-github-actions/).
 
 
-# Introduction
+### Introduction
 
 > [Kind, or Kubernetes In Docker][kind], is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).
 
@@ -141,7 +141,7 @@ kube-system   kube-proxy-7gd45           1/1     Running   0          47s
 
 > Note that depending on your cluster configuration you might have to wait for additional resources to be in a _Ready_ state before using it.
 
-# Using Helm 3
+### Using Helm 3
 
 Now that the cluster is ready, you can start configuring your usual toolchain - let's see how we would use the latest Helm 3 pre-release (yay for [no more Tiller][helm-blog]):
 
@@ -163,7 +163,7 @@ $HELM_HOME has been configured at /home/runner/.helm.
 Happy Helming!
 Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "stable" chart repository
-Update Complete. ⎈ Happy Helming!⎈ 
+Update Complete. ⎈ Happy Helming!⎈
 
 NAME: ni
 LAST DEPLOYED: 2019-08-21 10:24:48.635109582 +0000 UTC m=+1.216598463
@@ -194,9 +194,9 @@ ni-nginx-ingress-default-backend-77f8c99775-smr4p   0/1     ContainerCreating   
 
 If your workload is using a persistent volume, the deployment will currently fail, [since Kind does not have support for dynamic volume provisioning][kind-pvc], which is planned for the next version.
 
-# Conclusion
+### Conclusion
 
-Running Kind in GitHub Actions is straightforward - get the right binaries, create a cluster, then configure your usual toolchain. 
+Running Kind in GitHub Actions is straightforward - get the right binaries, create a cluster, then configure your usual toolchain.
 Thanks for reading!
 
 [kind]: https://kind.sigs.k8s.io/

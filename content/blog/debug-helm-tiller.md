@@ -1,17 +1,17 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "draft", "helm", "vscode"]
+tags = ["kubernetes", "draft", "helm", "vscode"]
 date = "2018-04-29"
 description = ""
 linktitle = ""
 featured = "helm_logo_transparent.png"
 featuredpath = "/img/article-photos/debug-helm-tiller/"
 title = "Debug Helm and Tiller using VS Code and Draft"
-type = "post"
-summary = ""
+# type = "post"
+
 +++
 
-- [Introduction](#introduction)
+<!-- - [Introduction](#introduction)
 - [Debugging the Helm CLI](#debugging-the-helm-cli)
 - [Debugging Tiller](#debugging-tiller)
     + [Building the Tiller binary for debugging](#building-the-tiller-binary-for-debugging)
@@ -20,7 +20,8 @@ summary = ""
     + [Putting it all together. Start debugging with VS Code](#putting-it-all-together-start-debugging-with-vs-code)
 - [Conclusion](#conclusion)
 
-# Introduction
+# Introduction -->
+
 In today's article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use [Helm, the package manager for Kubernetes][helm], the newly released [Kubernetes extension for VS Code][kubernetes-extension] and [Draft][draft] to develop, debug and deploy is Helm itself.
 
 > [Helm][helm] helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
@@ -51,7 +52,8 @@ $ git clone -b debugging-draft https://github.com/radu-matei/helm
 
 Before moving to actually debugging, it is worth mentioning that Helm has two components - a client-side CLI, that runs locally on the machine and a server-side component, Tiller, which is deployed in your cluster. We will debug both components.
 
-# Debugging the Helm CLI
+### Debugging the Helm CLI
+
 Debugging the Helm CLI is as simple as debugging any Golang project when using the Golang extension for VS Code and Delve - add a launch configuration and start debugging. The only thing to note here is that we can either build our binary for every change in our code, or attach to a pre-built binary - below and in the repo you'll find both configurations:
 
 This configuration builds Helm from `cmd/helm` and attaches the debugger:
@@ -97,7 +99,7 @@ Server: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920
 
 The server version was executed in the cluster - we did not debug that call simply because we only started debugging the local component of Helm. Let's debug Tiller!
 
-# Debugging Tiller
+### Debugging Tiller
 
 To debug remote components deployed in a Kubernetes cluster you need to:
 
@@ -150,14 +152,14 @@ RUN chmod +x start.sh
 CMD ./start.sh
 ```
 
-- we need a base image that either contains the Golang debugger, Delve, or install it - for simplicity, we're using a pre-built image with Delve, but you can create your own base image for debugging  (**and you should!** - you don't want to trust random images from the Internet) 
+- we need a base image that either contains the Golang debugger, Delve, or install it - for simplicity, we're using a pre-built image with Delve, but you can create your own base image for debugging  (**and you should!** - you don't want to trust random images from the Internet)
 - we copy the Tiller binary we built before
 - we also copy a shell script and use it to start the container - this script will start Tiller and attach the Delve debugger to the Tiller process, creating a headless Delve server and exposing it on port 2345:
 
 ```
-./tiller & 
+./tiller &
 dlv attach $(pgrep -x tiller | head -n 1) tiller --headless --listen=0.0.0.0:2345 --log=true
-``` 
+```
 
 Now we need to configure a couple of things for Draft, in `draft.toml`:
 
@@ -215,22 +217,22 @@ The thing to note for the deployment is the `SYS_PTRACE` capability - this is be
 At this point you need the Kubernetes extension for VS Code and you need to add a `draft` debug configuration, together with a Golang remote debug configuration. This will execute `draft up`, `draft connect` to expose the ports to `localhost`, then will attach the debug configuration you specified:
 
 ```json
-        {
-            "type": "draft",
-            "request": "launch",
-            "name": "Draft Debug Tiller",
-            "original-debug": {
-                "name": "Kubernetes remote debugging",
-                "type": "go",
-                "request": "launch",
-                "mode": "remote",
-                "remotePath": "/go/src/app",
-                "port": 2345,
-                "host": "127.0.0.1",
-                "program": "<YOUR_GOPATH>src/k8s.io/helm/cmd/tiller",
-                "args": []
-            }
-        }
+{
+    "type": "draft",
+    "request": "launch",
+    "name": "Draft Debug Tiller",
+    "original-debug": {
+        "name": "Kubernetes remote debugging",
+        "type": "go",
+        "request": "launch",
+        "mode": "remote",
+        "remotePath": "/go/src/app",
+        "port": 2345,
+        "host": "127.0.0.1",
+        "program": "<YOUR_GOPATH>src/k8s.io/helm/cmd/tiller",
+        "args": []
+    }
+}
 ```
 
 > Remember to correctly add your `$GOPATH` in the `program` field in the configuration - this is a currently known limitation of the extension

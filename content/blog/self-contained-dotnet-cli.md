@@ -1,37 +1,38 @@
 +++
 author = "Radu Matei"
-categories = ["dotnet-core", "cli"]
+tags = ["dotnet-core"]
 date = "2019-09-02"
 description = ".NET Core 3 brings single executable packaging. In this article, we'll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."
 linktitle = ""
 title = "Building self-contained, single executable .NET Core 3 CLI tools"
-type = "post"
+# type = "post"
 featured = "trm.PNG"
 featuredpath = "/img/article-photos/self-contained-dotnet-cli/"
 images = ["/img/article-photos/self-contained-dotnet-cli/trm.PNG"]
 summary = "This is the .NET Core’s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications. But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files."
+image = "/img/article-photos/self-contained-dotnet-cli/trm.PNG"
 +++
+
+![](/img/article-photos/self-contained-dotnet-cli/trm.PNG)
 
 > You can [find the final application we built on GitHub][repo].
 
 > TL; DR: This is the .NET Core's first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications. But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files.
 
 
-# Introduction
-
 I recently watched Carolyn Van Slyck's excellent GopherCon talk about building command-line tools that people love to use - and while the examples are tailored for the Go programming language, the learnings presented here are applicable to any language or framework you are using to build command-line interfaces (and you can find the [slides for the talk here][emote-slides].) If you are working on, or thinking about building CLIs, drop what you're doing and watch Carolyn's talk!
 
 {{< youtube eMz0vni6PAw >}}
 
+<br>
 In her talk, Carolyn points out a few design goals for building CLIs (such as predictability, or testability) - in addition to those, for .NET I would also add another important one: simple distribution - in the past, if you built a tool with .NET, or .NET Core, the target machine running this tool either needed a global installation of .NET or .NET Core, or you needed to distribute around 70 files for the application to run. Not ideal, considering that you can use Go or Rust to build single executable CLIs.
 
 But why build a CLI with .NET Core and not Go, or Rust? If you're building your tool in a framework and language you're happy with, there's absolutely no reason to change it. But if you are already invested in the .NET ecosystem, you could take advantage of it and build your project with the toolchain and ecosystem you are familiar with.
 
 In the following sections, we'll explore different aspects of building a CLI, such as configuration, dependency injection, or packaging.
+The article is written for .NET Core 3 preview 8 - and while the actual package versions are specific to preview 8, in theory there should not be any major breaking changes until the final release.
 
-This article is written for .NET Core 3 preview 8 - and while the actual package versions are specific to preview 8, in theory there should not be any major breaking changes until the final release.
-
-# Configuration
+### Configuration
 
 When you create a new console application with `dotnet new console`, it comes with no dependencies. So if you want to use configuration providers, you have to add the correct NuGet packages. The great part about building your CLI with .NET Core is that you can reuse any configuration provider available with ASP .NET Core (and there are quite a few) - you can [explore all of them on the official documentation][asp-configuration].
 
@@ -48,7 +49,7 @@ There official packages to automatically read configuration from any of the foll
 
 Additionally, you can find community packages for other configuration providers, such as reading from [a YAML file][yaml-provider], or from a [TOML file][toml-provider] (although keep in mind that the TOML configuration provider needs a new release to use it, as of the time of writing this article.)
 
-So how can we add the configuration providers to our application? 
+So how can we add the configuration providers to our application?
 First step is to add the desired NuGet packages to your application project - for example, for JSON and YAML, this is what packages you might use (keep in mind that the current versions of the packages might differ, as the article is written with .NET Core 3 preview 8):
 
 ```xml
@@ -70,15 +71,15 @@ emoticons:
 So how would we consume this configuration?
 
 ```
-{
-    var config = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddYamlFile("appsettings.yaml", true, true)
-        .AddJsonFile("appsettings.json", true, true)
-        .Build();
+var config = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddYamlFile("appsettings.yaml", true, true)
+    .AddJsonFile("appsettings.json", true, true)
+    .Build();
 
-    var emoticons = config.GetSection("emoticons").GetChildren().ToDictionary(x => x.Key, x => x.Value);
-}
+var emoticons = config.GetSection("emoticons")
+    .GetChildren()
+    .ToDictionary(x => x.Key, x => x.Value);
 ```
 
 Here we're passing the `emoticons` configuration into a `Dictionary<string, string>`. If you want to automatically bind your configuration to strongly-typed objects, you can use `Binder` package:
@@ -116,14 +117,14 @@ For custom keys, you can use the `[JsonObject("custom_object")]` and `[JsonPrope
 
 Generally, you could create a top level `YourAppConfiguration` class that holds all of your configuration and bind to that.
 
-# Parsing command line arguments and flags
+### Parsing command line arguments and flags
 
 > If you are not interested in how to use the `System.CommandLine` library to parse command line arguments, feel free to skip to the next section.
 
-There are multiple packages for parsing command line arguments: 
+There are multiple packages for parsing command line arguments:
 
 - [github.com/commandlineparser/commandline][cmdline-parser]
-- [github.com/natemcmaster/CommandLineUtils][mcmaster] - this is a fork  `Microsoft.Extensions.CommandLineUtils`, which became unmaintained
+- [github.com/natemcmaster/CommandLineUtils][mcmaster] - this is a fork of  `Microsoft.Extensions.CommandLineUtils`, which became unmaintained
 - [dotnet/command-line-api][system-cmdline] - the "new" `System.CommandLine` - keep in mind the package is still experimental
 
 Regardless of the actual package you use to parse arguments, the core concepts are the same - you have a root command, subcommands, arguments, flags, and for the rest of this article we will use `System.CommandLine`:
@@ -179,7 +180,7 @@ shrug: ¯\_(ツ)_/¯
 > You can [find the final application we built on GitHub][repo].
 
 
-# Separating the implementation from the CLI handlers
+### Separating the implementation from the CLI handlers
 
 Ideally, we don't want to build our whole application logic in the CLI handlers - for our application to be testable, and potentially reusable in a package by other projects.
 In our case, the application logic consists of retrieving emoticons from _some_ source. It might be .NET configuration, or any source that has a configuration provider, but it can also be a remote source - so our retriever would make some HTTP requests in order to get our emoticon. We don't know all the possible ways of extending our application yet - so let's start by creating a very simple interface:
@@ -233,7 +234,7 @@ public ShowCommandHandler(IEmoticonRetriever emoticons)
 
 This shifts the issue of creating the instance of the emoticon retrieval object up in the main method - here we have two options - actually create a new instance of it, and pass the configuration object we already have, or use _dependency injection_.
 
-# Dependency injection
+### Dependency injection
 
 > You can read about [dependency injection in ASP .NET Core 3 on the official documentation][di] - however, the documentation is tailored for web applications.
 
@@ -281,7 +282,7 @@ Splitting the application logic from the CLI handlers also allows us to easily a
 
 Finally, if you want to include any UI element in your console application, you should really have a look at [`gui.cs`][gui-cs] - it's an incredible package that allows you to create menus, buttons, checkboxes, or progress bars, all within a terminal console.
 
-# Publishing as single binary
+### Publishing as single binary
 
 According to the [release notes of .NET Core 3 Preview 5][preview-5], _this form of single EXE is effectively a self-extracting executable. It contains all dependencies, including native dependencies, as resources. At startup, it copies all dependencies to a temp directory, and loads them for there. It only needs to unpack dependencies once. After that, startup is fast, without any penalty._
 
@@ -317,31 +318,31 @@ Usage:
   emote show [options] <emoticon>
 
 Arguments:
-  <emoticon>    
+  <emoticon>
 
 Options:
   -v, --verbose    if provided, it will also print the name of the emoticon
 
-$ emote show shrug 
+$ emote show shrug
 ¯\_(ツ)_/¯
 ```
 
 > Also note the auto-generated help text.
 
-# Startup time and AOT compilation
+### Startup time and AOT compilation
 
 Let's check the execution time of our tool:
 
 ```
-$ time emote --version                                                                                                                                             
+$ time emote --version
 1.0.0
 emote --version  0.26s user 0.01s
 ```
 On average, the execution time for this tool is just around 0.26 seconds (your timing might differ based on a wide number of factors) - let's compare that to the execution time of a Go based, much more complex program - Helm 3:
 
 ```
-$ time helm version                                                                                                                                                  
-version.BuildInfo{Version:"v3.0.0-beta.2", GitCommit:"26c7338408f8db593f93cd7c963ad56f67f662d4", GitTreeState:"clean", GoVersion:"go1.12.9"}                                             
+$ time helm version
+version.BuildInfo{Version:"v3.0.0-beta.2", GitCommit:"26c7338408f8db593f93cd7c963ad56f67f662d4", GitTreeState:"clean", GoVersion:"go1.12.9"}
 helm version  0.13s user 0.03s
 ```
 Our application is twice as slow as Helm, a Go-based tool, and all of the extra time is because of the slow startup.
@@ -358,21 +359,21 @@ Adding the setting in our project file:
 And creating a new release, we see the size increase to 68M:
 
 ```
-$ ls emote-aot                                                                                                                                                       
+$ ls emote-aot
  .rwxr--r-- 68M radu  2 Sep  8:31 emote-aot
 ```
 
 Let's see what improvement this gets is with the startup time:
 
 ```
-time emote-aot --version                                                                                                                                         
+time emote-aot --version
 1.0.0
 emote-aot --version  0.13s user 0.03s
 ```
 
 The startup performance is drastically improved - however, at the cost of increasing the binary size.
 
-# Conclusion
+### Conclusion
 
 In this article we explored how to use .NET Core 3 to build command line interfaces, and use familiar techniques from .NET Core, such as configuration providers, or dependency injection. We also explored how to parse command line arguments and structure such a project, and in the end investigated how .NET Core 3 publishes a single executable binary for our tool, size, performance, and tradeoffs between size and startup time.
 

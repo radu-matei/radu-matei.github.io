@@ -1,16 +1,13 @@
 +++
 author = "Radu Matei"
-categories = ["docker", "azure", "windows-containers"]
+tags = ["docker", "azure", "windows-containers"]
 date = "2017-07-03"
 description = "Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"
 linktitle = ""
 title = "The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine"
-type = "post"
+# type = "post"
 summary = "We'll explore how to create a hybrid Docker Swarm Mode cluster with Linux and Windows agents, deploy it on Azure Container Service using ACS Engine, see how to connect to the cluster and manage it and finally how to deploy hybrid services with both Linux and Windows Server containers."
 +++
-
-Introduction
-------------
 
 Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.
 
@@ -21,8 +18,7 @@ Here is a list of resources you might want to get started with before diving int
 - [Initializing a Linux+Windows mixed-os cluster - Microsoft docs](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters)
 
 
-How is this article different compared to the docs above?
----------------------------------------------------------
+### How is this article different compared to the docs above?
 
 In this article we will focus on deploying the cluster on Azure programmatically, using [acs-engine](https://github.com/Azure/acs-engine), a tool that generates [ARM (Azure Resource Manager) templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.
 
@@ -30,18 +26,16 @@ In this article we will focus on deploying the cluster on Azure programmatically
 While you can [find more information about acs-engine on the GitHub repo](https://github.com/Azure/acs-engine), in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the [various Azure command-line interfaces](https://azure.github.io/projects/clis/) like Azure CLI 2.0 or Azure PowerShell.
 
 
-Getting started - prerequisites
--------------------------------
+### Getting started - prerequisites
 
 This article will continue under the assumption that you have an active Azure subscription. If you don't, there are various ways to get a free subscription, like [Visual Studio Dev Essentials](https://www.visualstudio.com/dev-essentials/) (see [this link on how to activate your free monthly $25](https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md)), or a [free trial](https://azure.microsoft.com/en-us/free/).
 
 
 > Before you get started, there is a [great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster](https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster) where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.
 
-Understanding all types of containers
--------------------------------------
+### Understanding all types of containers
 
-First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations. 
+First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations.
 
 
 ![](/img/article-photos/hybrid-swarmmode/journey.png)
@@ -66,8 +60,7 @@ This is all possible through the new [LinuxKit project](https://github.com/linux
 
 After we deploy our cluster, we will be able to deploy all types of containers described above.
 
-The acs-engine cluster definition
----------------------------------
+### The `acs-engine` cluster definition
 
 As said earlier, we will use a JSON cluster definition file to, well, define our cluster.
 
@@ -85,8 +78,7 @@ You must also provide a username and public SSH key for the Linux VMs and a user
 
 Compared to the image above, there is an additional VM Scale Set with the Windows agents. All VMs are in the same VNET, with the masters on a private subnet. All VMs are fully accessible to each other.
 
-Deploying the cluster to Azure
-------------------------------
+### Deploying the cluster to Azure
 
 So far we only have a cluster definition (with values for FQDN, usernames and passwords). Before we can actually deploy, we need to generate the ARM templates using acs-engine.
 
@@ -100,14 +92,15 @@ Log into [portal.azure.com](https://portal.azure.com) and request a cloud shell.
 
 ![](/img/article-photos/hybrid-swarmmode/portal-shell.PNG)
 
-
 Now we should [follow the instructions in the acs-engine documentation](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine) and install acs-engine in the Azure Cloud Shell.
 
 First, we need to create a new directory called `go` and set it as `GOPATH`: `mkdir go` and `export GOPATH=/home/{yourusername}/go`.
 
 Then, we need to download the package for acs-engine: `go get github.com/Azure/acs-engine`, then navigate to the source of the package and build it: `go build`.
 
-Then, we add the `bin` folder from the `go` directory in the path: `export PATH=$PATH:/home/{yourusername}/go/bin`
+Then, we add the `bin` folder from the `go` directory in the path:
+
+`export PATH=$PATH:/home/{yourusername}/go/bin`
 
 Now you should be able to execute `acs-engine` from any directory:
 
@@ -116,7 +109,9 @@ Now you should be able to execute `acs-engine` from any directory:
 
 Now let's create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or `wget` the file:
 
-`wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json`
+```
+wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json
+```
 
 After you edit the file with your values, generate the ARM templates using `acs-engine generate swarmmode-hybrid.json`:
 
@@ -131,7 +126,13 @@ First of all, we will create a new resource group: `az group create --location w
 
 Then, using the generated files `azuredeploy.json` and `azuredeploy.parameters.json`, create a new deployment using the `az` command-line interface:
 
-`az group deployment create --name hybrid-swarmmode-deployment --resource-group {your-resource-group} --template-file azuredeploy.json  --parameters azuredeploy.parameters.json`
+```
+az group deployment create
+    --name hybrid-swarmmode-deployment
+    --resource-group {your-resource-group}
+    --template-file azuredeploy.json
+    --parameters azuredeploy.parameters.json
+```
 
 > Note that you can also use a local installation of `az`, or in a container, or any method of deploying ARM templates.
 
@@ -146,16 +147,17 @@ Notice the resources created in the resource group:
 - VM scale sets for the agents and availability sets
 - network interfaces and OS disks for the masters
 
-Connecting to the cluster
--------------------------
+### Connecting to the cluster
 
-After the deployment succeeds, you are now ready to connect to the master. You will SSH into the masters using the user and SSH key you setup in the cluster definition file. The 3 FQDNs will have the following template: 
+After the deployment succeeds, you are now ready to connect to the master. You will SSH into the masters using the user and SSH key you setup in the cluster definition file. The 3 FQDNs will have the following template:
 
 `{yourfqdnname}.{azurelocation}.cloudapp.azure.com`
 
 Each master can be publicly accessed using the FQDN and one of the ports (2200..220x) (So you will access the first master on 2200, the second master on 2201 and so on.). For example, to SSH into the first master, use the following:
 
-`ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200` 
+```
+ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200
+```
 
 Then, if you list all nodes in the cluster you might first see this:
 
@@ -177,8 +179,7 @@ Now you have a full hybrid Swarm Mode cluster, with some Windows agents, as well
 ![](/img/article-photos/hybrid-swarmmode/node-inspect.PNG)
 
 
-Deploying services to the cluster
----------------------------------
+### Deploying services to the cluster
 
 From now on, you can treat this cluster as any other Docker Swarm Mode cluster: with the single mention that you cannot run Linux containers on Windows and Windows containers on Linux. This means that when starting services, we need to put some restrictions in place.
 
@@ -213,20 +214,12 @@ Now since the application that exposes ports is the one running on a Linux node 
 ![](/img/article-photos/hybrid-swarmmode/running.PNG)
 
 
-Conclusion
-----------
+### Conclusion
+
 
 In this article we saw how to deploy a hybrid Swarm Mode cluster on Azure using acs-engine and how to deploy a mixed-OS containerized application on the cluster we created.
-
-Next Steps
-----------
-
 Next, we will explore how to create a consistent CI/CD story with GitHub and Jenkins (with Linux and Windows slaves that are created dynamically for each build).
-
-Feedback
---------
 
 If you think this article could be better, please provide your feedback in the comments below.
 
 Thanks for reading :)
----------------------

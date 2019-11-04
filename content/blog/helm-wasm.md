@@ -1,24 +1,23 @@
 +++
 author = "Radu Matei"
-categories = ["golang", "wasm"]
+tags = ["golang", "wasm", "helm"]
 date = "2019-05-11"
 description = ""
 linktitle = ""
 title = "Rendering Helm templates in the browser, with Web Assembly"
-type = "post"
+# type = "post"
 summary = ""
 featured = "helm-wasm.png"
 featuredpath = "/img/article-photos/helm-wasm/"
 images = ["/img/article-photos/helm-wasm/helm-wasm.png"]
+image = "/img/article-photos/helm-wasm/helm-wasm.png"
 +++
-
-# Introduction
 
 I've been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the _hello world_ examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of `helm template`, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out.
 
 This should _absolutely not_ be used for any serious purpose, since you are about to see some glued pieces of software that happen to work. Now that we have that out of the way, let see _how_ this works.
 
-# Interacting with the DOM from Go
+### Interacting with the DOM from Go
 
 The first thing you learn in JavaScript after the slight amusement of `alert` is gone, is to manipulate the DOM - you are able select elements by their ID or class, then read and write their values.
 This can be done in Go with Web Assembly using the `sycall/js` package, and the syntax is really similar to JavaScript:
@@ -95,7 +94,7 @@ The only thing to note here is the signature for `render`, which has to be `func
 
 > If you want to [get started with Go and Web Assembly, the best resource is from the official Go repository](https://github.com/golang/go/wiki/WebAssembly).
 
-# Building and using the package
+### Building and using the package
 
 In the same way we cross-compile our Go projects for various operating systems and architectures, we need to compile our package for Web Assembly (in this example, `wasm/render.go` is the path to the Go file we have above):
 
@@ -128,7 +127,7 @@ Provided we included the `wasm_exec.js` script and used it to fetch the `lib.was
 
 ![](/img/article-photos/helm-wasm/helm-wasm.gif)
 
-# Conclusion
+### Conclusion
 
 In around 40 lines of code I managed to get package from a fairly complex project written in Go, and execute it in the browser, with Web Assembly. Do I really understand how it works? Not yet, but this is incredibly exciting, both from the technical perspective, but just as important, because of all the possibilities it opens up.
 

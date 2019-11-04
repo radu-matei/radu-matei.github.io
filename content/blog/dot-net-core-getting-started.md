@@ -1,17 +1,17 @@
 +++
 author = "Radu Matei"
-categories = ["dotnet-core"]
+tags = ["dotnet-core"]
 date = "2016-07-17"
 description = ""
 featuredalt = ""
 featuredpath = "date"
 linktitle = ""
 title = "Getting Started with .NET Core and VS Code"
-type = "post"
+# type = "post"
 summary = "We will see how to get started with VS Code and .NET Core"
 +++
 
-**Table of Contents**
+<!-- **Table of Contents**
 
 - [Getting started with .NET Core](#getting-started-with-net-core)
 	- [Installing .NET Core](#installing-net-core)
@@ -23,89 +23,90 @@ summary = "We will see how to get started with VS Code and .NET Core"
 	- [Conclusion](#conclusion)
 
 Getting started with .NET Core
-=========================
+========================= -->
 
-[In the previous article](https://radu.microsoft.pub.ro/dot-net-core-introduction/), we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.
+[In the previous article](/blog/dot-net-core-introduction), we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.
 
 > This tutorial can be done using Windows, Linux or macOS..
 
-Installing .NET Core
-------------------------
+# Installing .NET Core
 
 Wether your OS is Windows, Linux or macOS, you can [go to this page and follow the instructions](https://www.microsoft.com/net/core) for getting .NET Core on your machine.
 
 When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: [`dotnet`](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet).
 
 ![dotnet PowerShell](/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG)
+
 > Output for the [`dotnet`](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet) command in PowerShell. The output is similar for Linux and macOS.
 
 At this point, you have successfully installed .NET Core and you can start building applications.
 
-Building a .NET Core application using the command line interface
--------------------------------------------------------------------------------
+# Building a .NET Core application using the command line interface
 
 In Windows PowerShell or the Linux / macOS Terminal, let's create a new directory. I will call it `dot-net-tutorial` and navigate to it and create a new console application here using the [`dotnet new`](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new) command.
 
-    mkdir dot-net-tutorial
-    cd dot-net-tutorial
-    dotnet new
+```bash
+$ mkdir dot-net-tutorial
+$ cd dot-net-tutorial
+$ dotnet new
+```
 
 This is how it should look like after executing these commands.
+
 ![enter image description here](https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG)
 
-Notice how we got two files after creating the project
+Notice how we got two files after creating the project:
 
 - `Program.cs`- C# file containing the entry point in the console application - the `Main` method
 
-```
+```csharp
 using System;
 
 namespace ConsoleApplication
-{
+  {
     public class Program
-    {
+      {
         public static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
         }
-    }
-}
-
+      }
+  }
 ```
-      
+
 > This is a basic `Hello World` example in C# and you can [find more information about everything in the code in this article](https://radu.microsoft.pub.ro/csharp-fundamentals-01/).
-        
-    
+
+
 - `project.json` - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.
 
 ```
-{
-  "version": "1.0.0-*",
-  "buildOptions": {
-    "debugType": "portable",
-    "emitEntryPoint": true
-  },
-  "dependencies": {},
-  "frameworks": {
-    "netcoreapp1.0": {
-      "dependencies": {
-        "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0"
-        }
+  {
+      "version": "1.0.0-*",
+      "buildOptions": {
+          "debugType": "portable",
+          "emitEntryPoint": true
       },
-      "imports": "dnxcore50"
-    }
+      "dependencies": {},
+      "frameworks": {
+          "netcoreapp1.0": {
+              "dependencies": {
+                  "Microsoft.NETCore.App": {
+                      "type": "platform",
+                      "version": "1.0.0"
+                  }
+              },
+              "imports": "dnxcore50"
+          }
+      }
   }
-}
 ```
 
-> In a future release, the `project` file will return to a `.csproj` extension in order to maintain compatibility with all Visual Studio and Xamarin projects. 
+> In a future release, the `project` file will return to a `.csproj` extension in order to maintain compatibility with all Visual Studio and Xamarin projects.
 
 Calling [`dotnet restore`](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore)  will restore all dependencies of the application.
 
-```
-dotnet restore
+```bash
+$ dotnet restore
 ```
 
 > [`dotnet restore`](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore) calls into NuGet to restore the tree of dependencies. NuGet analyzes the `project.json` file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the `project.lock.json` file. The `project.lock.json` file is necessary to be able to compile and run.
@@ -126,7 +127,7 @@ Installing Visual Studio Code
 
 We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - [Visual Studio Code](https://code.visualstudio.com/).
 
-> [Install Visual Studio code from here](https://code.visualstudio.com/) 
+> [Install Visual Studio code from here](https://code.visualstudio.com/)
 
 In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs [OmniSharp](omnisharp.net/) for IntelliSense.
 
@@ -204,9 +205,7 @@ public class Person
         public string LastName { get; set; }
         public int Age { get; set; }
 
-        public Person()
-        {
-        }
+        public Person(){ }
 
         public Person(string firstName, string lastName, int age)
         {
@@ -219,6 +218,7 @@ public class Person
         {
             Console.WriteLine("First Name: {0}, Last Name: {1}, Age: {2}", FirstName, LastName, Age);
         }
+    }
 ```
 
 It is a very basic class with three properties, two constructors and a method that prints the information to the console.

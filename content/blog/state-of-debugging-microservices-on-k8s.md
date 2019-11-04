@@ -1,15 +1,18 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes"]
+tags = ["kubernetes"]
 date = "2018-05-05"
 description = "What is the state of remote debugging microservices on Kubernetes? How do most people solve their issues, what tools do they use and how can we make this easier?"
 linktitle = ""
 featured = "GopherKubernetes.png"
 featuredpath = "/img/article-photos/state-of-debugging-microservices-on-k8s/"
 title = "The state of debugging microservices on Kubernetes"
-type = "post"
-summary = ""
+# type = "post"
+summary = "For as long as we have been writing software, we have also introduced bugs in our applications. Back when we were developing monoliths, we could simply start the IDE of choice, add a couple of breakpoints, step through the code and hopefully solve the issue. There was a single place where the application was running, where logs were visible and where the application could be diagnosed."
+image = "/img/article-photos/state-of-debugging-microservices-on-k8s/GopherKubernetes.png"
 +++
+
+![](/img/article-photos/state-of-debugging-microservices-on-k8s/GopherKubernetes.png)
 
 > Credit for the image goes to [Ashley McNamara's awesome Gopher collection][gophers]
 
@@ -25,8 +28,6 @@ Having a distributed solution with that many moving parts (ingresses, services, 
 
 When we identify a service as not working properly, we start our journey by first restarting the pods, hoping this will fix the issue.
 
-{{< img-post "/img/article-photos/state-of-debugging-microservices-on-k8s" "turning-off.gif" "Turning off" "center" >}}
-
 
 When that doesn't work, we proceed to adding a bunch of print statements in our code, rebuild the container image, push it to a registry, then update the deployment manifest with the new tag.
 With the new information, we proceed to making a few changes, rebuild and push the image, update the deployment's image tag and hope for the best. Repeat until the problem goes away.
@@ -37,7 +38,7 @@ With the new information, we proceed to making a few changes, rebuild and push t
 
 > There are existing cloud-hosted services that support debugging - but in this article we're interested in open-source solutions that run on any Kubernetes cluster. Both Google and Microsoft have services in preview that allow the users of their managed Kubernetes cluster to attach a debugger:
 
- > - [Announcement of Azure Dev Spaces for Kubernetes][dev-spaces] 
+ > - [Announcement of Azure Dev Spaces for Kubernetes][dev-spaces]
  > - [How to use the Stackdriver debugger on Google Cloud Platform][stackdriver-debugger]
 
 
@@ -57,7 +58,7 @@ Right now, to debug a Kubernetes service we need to:
 
 - build the application for debugging (include the debugging symbols along with the binary)
 - create a container image (include the debugger) and push it to a container registry
-- update the Kubernetes manifest or Helm chart with the correct image tag, a debugger port exposed and the correct security context so the debugger can attach to a process inside your pod 
+- update the Kubernetes manifest or Helm chart with the correct image tag, a debugger port exposed and the correct security context so the debugger can attach to a process inside your pod
 
 > This varies from language to language - in NodeJS simply start the process and pass the `--inspect` flag. For Golang, you need to have the `CAP_SYS_PTRACE` capability for the container running your debugger, so it can `ptrace` the application process.
 
@@ -69,11 +70,11 @@ Right now, to debug a Kubernetes service we need to:
 
 Of course all the steps can be performed manually - and some people have been doing it, some more successfully than others. It is simply not viable to think people are willing to make all the steps manually.
 
-Surely, there are existing tools that simplify parts of the experience: 
+Surely, there are existing tools that simplify parts of the experience:
 
 - [KSync][ksync] synchronizes the file system inside your container and works great with interpreted languages
-- [Telepresence][telepresence] redirects traffic from the cluster to your local machine 
-- [Draft][draft] and [Skaffold][skaffold] help with the process of consistently redeploying your application on each change. 
+- [Telepresence][telepresence] redirects traffic from the cluster to your local machine
+- [Draft][draft] and [Skaffold][skaffold] help with the process of consistently redeploying your application on each change.
 
 > For an introduction to the tools mentioned above, see [Joe Beda's TGI Kubernetes series][joe-tgik].
 
@@ -118,7 +119,7 @@ spec:
       capabilities:
         add:
         - SYS_PTRACE
-    ports:                              
+    ports:
     - containerPort: <application-port>
     - containerPort: <debugging-port>
 ```
@@ -140,7 +141,7 @@ The biggest challenge is working towards having the debugging artifacts (contain
 
 Give [Draft][draft] and the [VS Code Kubernetes][vscode-kubernetes] extension a try!
 
-While there are lots of things to be improved, the process of developing, debugging and deploying microservices on Kubernetes is getting easier, faster. 
+While there are lots of things to be improved, the process of developing, debugging and deploying microservices on Kubernetes is getting easier, faster.
 
 
 [gophers]: https://github.com/ashleymcnamara/gophers

@@ -1,24 +1,24 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "brigade"]
+tags = ["kubernetes", "brigade"]
 date = "2019-08-10"
 description = ""
 linktitle = ""
 title = "Running end-to-end tests on your Kubernetes cluster with Kind and Brigade"
-type = "post"
+# type = "post"
 featured = "kind-brigade.png"
 featuredpath = "/img/article-photos/kubernetes-e2e-kind-brigade/"
 summary = "The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade."
 images = ["/img/article-photos/kubernetes-e2e-kind-brigade/kind-brigade.png"]
-+++
+image = "/img/article-photos/kubernetes-e2e-kind-brigade/kind-brigade.png"
 
-# What is Kind?
++++
 
 [Kind, or Kubernetes In Docker][kind], is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).
 
 > For a [quick guide to Kind, visit the official documentation][kind-quick-start] - essentially, with the `kind` binary and a Docker daemon, all you have to do is run `kind create cluster`, and you get a 1 node Kubernetes cluster.
 
-# End-to-end testing in Kubernetes
+### End-to-end testing in Kubernetes
 
 If you're developing an application that will be deployed on Kubernetes, you want to actually deploy it on a cluster as part of your continuous integration pipeline, ideally on each pull request. So how would you approach this?
 
@@ -26,11 +26,11 @@ Because of its simplicity and easy setup, Kind is also suitable for running in c
 
 But what if you're running your build pipelines _in a Kubernetes cluster_? One option could be to deploy your application on a new namespace, side-by-side the other workloads in the cluster. That works well if the application is contained in a simple namespace and it doesn't interact with the rest of the cluster in a disruptive way - but if you want to isolate the test even more, and run a dedicated cluster with no other workloads and configuration, running Kind might be a good option.
 
-# Configuring Kind in a Kubernetes pod
+### Configuring Kind in a Kubernetes pod
 
 > **DANGER**
 
-> While configuring Kind locally or in a CI environment is straightforward, running in a Kubernetes pod is not that well documented, and bad configuration could potentially harm your cluster. Test all of the instructions presented here before running them in any production cluster, and monitor your environments for potential resource leaks. 
+> While configuring Kind locally or in a CI environment is straightforward, running in a Kubernetes pod is not that well documented, and bad configuration could potentially harm your cluster. Test all of the instructions presented here before running them in any production cluster, and monitor your environments for potential resource leaks.
 
 > For the ongoing discussion on documenting Kind in a Kubernetes pod, [see this issue][kind-303].
 
@@ -83,7 +83,7 @@ Things to note here:
 
 At this point, you would need to take this configuration and automate creating the pod, then actually running your end-to-end testing. Thankfully, Brigade can help us with this part!
 
-# Running Kind jobs with Brigade
+### Running Kind jobs with Brigade
 
 > [Brigade][brigade] is a lightweight Kubernetes-native framework for event-driven scripting. It allows you to respond to certain events (such as a push in a repository, or a custom webhook) and execute a JavaScript script that controls the flow of executing tasks in Kubernetes pods, while also simplifying how to share storage between the jobs, add caches, or handle errors in jobs.
 
@@ -149,7 +149,7 @@ time="2019-08-09T20:24:49.497015690Z" level=info msg="API listen on [::]:2376"
 time="2019-08-09T20:24:49.497119288Z" level=info msg="API listen on /var/run/docker.sock"
 Creating cluster "kind" ...
  ✓ Ensuring node image (kindest/node:v1.15.0) 🖼
-time="2019-08-09T20:28:03.256888458Z" level=info msg="shim containerd-shim started" address="/containerd-shim/moby/7e3918831faeaf1e7992ba07c72ff6c245b2cdeeb21c3c374b7758bb362294ad/shim.sock" debug=false pid=401 
+time="2019-08-09T20:28:03.256888458Z" level=info msg="shim containerd-shim started" address="/containerd-shim/moby/7e3918831faeaf1e7992ba07c72ff6c245b2cdeeb21c3c374b7758bb362294ad/shim.sock" debug=false pid=401
  ✓ Preparing nodes 📦
  ✓ Creating kubeadm config 📜
  ✓ Starting control-plane 🕹️
@@ -169,7 +169,7 @@ kube-system   kube-controller-manager-kind-control-plane   1/1     Running      
 kube-system   kube-proxy-lnj2s                             1/1     Running             0          53s
 ```
 
-# Conclusion
+### Conclusion
 
 We've seen how to configure Kind to run in a pod in a Kubernetes cluster, and how to abstract all of the configuration and automate running jobs with Brigade by simply instantiating a `KindJob` object.
 

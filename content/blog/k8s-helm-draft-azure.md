@@ -1,15 +1,15 @@
 +++
 author = "Radu Matei"
-categories = ["kubernetes", "azure"]
+tags = ["kubernetes", "azure"]
 date = "2017-10-07"
 description = "Easy Kubernetes with Helm and Draft"
 linktitle = ""
 title = "Get started with Helm and Draft for Kubernetes"
-type = "post"
+# type = "post"
 summary = "This post shows you how to automatize and simplify working with multiple Kubernetes clusters and multiple tools such as kubectl, helm or draft - creating a container image with your desired version of the tools and mounting the config files to the container"
 +++
 
-Table of contents
+<!-- Table of contents
 =================
 
 - [Introduction](#introduction)
@@ -24,7 +24,7 @@ Table of contents
 
 
 Prerequisites
-=============
+============= -->
 
 [In the previous tutorial](https://radu-matei.com/blog/k8s18-azure/) I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don't have an Azure subscription you can [create a free account and get $200 for 12 months](https://azure.microsoft.com/en-us/free/?v=17.39a).
 
@@ -36,8 +36,7 @@ I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximat
 
 ![](/img/article-photos/k8s18-azure/pricing.png)
 
-Introduction
-============
+### Introduction
 
 [In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using `acs-engine` and the Azure Cloud Shell](https://radu-matei.com/blog/k8s18-azure/). Now we will use that cluster to get started with Helm and Draft to simplify our development process.
 
@@ -46,8 +45,7 @@ In the next post we will see how to integrate Jenkins with Azure Container Insta
 > If you don't have your `kubeconfig` and SSH keys to your [cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article](https://radu-matei.com/blog/k8s18-azure/).
 
 
-Using kubectl, helm and draft
-=============================
+### Using `kubectl`, `helm` and `draft`
 
 Normally at this point you would manually download and install the latest version for `kubectl`, `helm` and `draft`. Luckily, you can use the Dockerfile below to create yourself an image that already has those installed.
 
@@ -84,8 +82,7 @@ Now simply point `kubectl` to your `kubeconfig` file (in my case in the `_output
 
 ![](/img/article-photos/k8s-helm-draft-azure/export-config.png)
 
-Configure Helm
-==============
+### Configure Helm
 
 > Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes.
 
@@ -107,7 +104,7 @@ Configure Helm
 
 We now need to initialize `helm`. Since we are in a container, once we exit all config files written by `helm` and `draft` will be lost. That's why we have the `cluster` directory, which is mounted from the host.
 
-We will now need to point `helm` to write its config in `/cluster` and run `helm init`: 
+We will now need to point `helm` to write its config in `/cluster` and run `helm init`:
 
 `export HELM_HOME=/cluster/` and `helm init`.
 
@@ -120,8 +117,7 @@ We will now need to point `helm` to write its config in `/cluster` and run `helm
 We now have configured `helm`:
 ![](/img/article-photos/k8s-helm-draft-azure/helm-ls-search.png)
 
-Configure Draft
-===============
+### Configure Draft
 
 > Draft makes it easy to build applications that run on Kubernetes. Draft targets the "inner loop" of a developer's workflow: as they hack on code, but before code is committed to version control.
 
@@ -136,7 +132,6 @@ Configure Draft
 > Once the developer is happy with changes made via Draft, they commit and push to version control, after which a continuous integration (CI) system takes over. Draft builds upon Kubernetes Helm and the Kubernetes Chart format, making it easy to construct CI pipelines from Draft-enabled applications.
 
 > More on [the GitHub repo for Draft](https://github.com/azure/draft)
-
 
 
 Now we are going to use [a very cool feature of Draft called ingress](https://github.com/Azure/draft/blob/master/docs/ingress.md). Basically, this will allow us to use a base domain - `*.draft.yourdomain.com` to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard `A Record` pointing back to an nginx controller in your cluster.
@@ -168,15 +163,14 @@ This will prompt you to enter your container registry credentials and the top le
 
 ![](/img/article-photos/k8s-helm-draft-azure/draft-init.png)
 
-Now if we inspect our cluster we can see the `draftd` server, `tiller` and the ingress controller. 
+Now if we inspect our cluster we can see the `draftd` server, `tiller` and the ingress controller.
 
 ![](/img/article-photos/k8s-helm-draft-azure/inspect.png)
 
 
 > [If you don't manage a domain, please see the instructions here](https://github.com/Azure/draft/blob/master/docs/ingress.md#i-dont-manage-a-domain).
 
-Creating an application
-=======================
+### Creating an application
 
 Remember earlier that we also mounted a local directory where we will write our application. This was to allow us to easily use VS Code to develop the application.
 
@@ -215,7 +209,6 @@ If you change the `watch` property to `true`, it will also look for changes on y
     wait = false
     watch = true
     watch_delay = 2
-
 ```
 
 Executing `draft up` will automatically build the image and push it to the image repository.
@@ -235,8 +228,7 @@ In my case, the public endpoint of my application will be: http://simple-go.draf
 
 Note that for any update of your application (that is you modifying the app locally and saving it) while the `draft up` process is running, you will get the updated version of your application deployed automatically.
 
-Investigating what actually happens
-===================================
+### Investigating what actually happens
 
 Remember that you also exposed port 8080 from the container? Now it's time to start the proxy that will allow us to browse the Kubernetes dashboard locally:
 
@@ -258,25 +250,20 @@ Among other logs, you can see that it pushd the image to the container image rep
 Now you can update the app locally (save the source code) and the app will be automatically updated on your cluster.
 You don't need to have Go (or whatever language you use for developement) locally, not even Docker. Using Draft you don't need to understand how to write a Dockerfile, or a Helm chart - you simply want your app in the cluster.
 
-Exiting the container
-=====================
+### Exiting the container
 
-When you are done working, simply exit the container - no global config was written, no context switching is necessary to change between different clusters - you simply have a directory with all config for your cluster - `kubeconfig` and config for `helm` and `draft`. 
+When you are done working, simply exit the container - no global config was written, no context switching is necessary to change between different clusters - you simply have a directory with all config for your cluster - `kubeconfig` and config for `helm` and `draft`.
 
-The next time you need to work with this cluster, either start this same container, or start a new one with the same command as above and mount the folder with the config. 
+The next time you need to work with this cluster, either start this same container, or start a new one with the same command as above and mount the folder with the config.
 
 Moreover, if you use multiple machines, you can keep the config folders in a file share (Azure Storage, Google Cloud Storage Bucket, S3) and start the container that has all the tools there. No more pasting SSH keys and cluster config files on Slack (guilty here...)
 
 You can also use the same container with a different config folder for another cluster. That easy :)
 
-Conclusion
-==========
+### Conclusion
 
 We saw how to get started with Helm and Draft and tried a new approach at config management for multiple clusters using a config folder for each cluster.
 We configured `helm` and `draft`, set up an ingress controller that used a domain we own, then deployed new apps to the cluster in seconds without writing Dockerfiles, Kubernetes deployment files or Helm charts.  We just worry about our app.
-
-Feedback
-========
 
 If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 As always, thanks for reading, and any feedback is highly appreciated :)
