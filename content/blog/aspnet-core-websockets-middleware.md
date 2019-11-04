@@ -1,6 +1,6 @@
 +++
 author = "Radu Matei"
-tags = ["aspnet-core", "signalr", "websockets"]
+tags = ["dotnet-core", "signalr", "websockets"]
 date = "2016-12-30"
 description = ""
 linktitle = ""

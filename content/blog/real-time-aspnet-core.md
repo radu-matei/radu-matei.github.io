@@ -1,6 +1,6 @@
 +++
 author = "Radu Matei"
-tags = ["aspnet-core", "signalr", "websockets"]
+tags = ["dotnet-core", "signalr", "websockets"]
 date = "2017-02-18"
 description = "websocket-manager library for real-time ASP .NET Core"
 linktitle = ""
