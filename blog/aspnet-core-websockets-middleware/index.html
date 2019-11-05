@@ -4,23 +4,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Creating a WebSockets middleware for ASP .NET Core | radu&#39;s blog</title>
+    <title>Creating a WebSockets middleware for ASP .NET Core 3 | radu&#39;s blog</title>
      
     
 
     <meta name='twitter:card' content='summary'>
 <meta name='twitter:site' content='@matei_radu'>
 <meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Creating a WebSockets middleware for ASP .NET Core" />
+<meta name="twitter:title" content="Creating a WebSockets middleware for ASP .NET Core 3" />
 <meta name="twitter:description" content="" />
-    <meta property='og:title' content='Creating a WebSockets middleware for ASP .NET Core - radu&#39;s blog'>
-<meta property='og:description' content='We&rsquo;ll explore the low-level websockets API in .NET Core, understand the Middleware concept and finally write together a websocket manager middleware that handles communication between various clients and your ASP.NET Core application.'>
+    <meta property='og:title' content='Creating a WebSockets middleware for ASP .NET Core 3 - radu&#39;s blog'>
+<meta property='og:description' content='We&rsquo;ll explore the low-level websockets API in .NET Core, understand the Middleware concept and finally write a websocket manager middleware that handles communication between various clients and your ASP.NET Core application.'>
 <meta property='og:url' content='https://radu-matei.com/blog/aspnet-core-websockets-middleware/'>
 <meta property='og:site_name' content='radu&#39;s blog'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/031fa2ff2832edcb6b30c8ffb61da4d4?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='dotnet-core'><meta property='article:tag' content='signalr'><meta property='article:tag' content='websockets'><meta property='article:published_time' content='2016-12-30T00:00:00Z'/><meta property='article:modified_time' content='2016-12-30T00:00:00Z'/><meta name='twitter:card' content='summary'>
 <meta name='twitter:site' content='@matei_radu'>
 <meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Creating a WebSockets middleware for ASP .NET Core" />
+<meta name="twitter:title" content="Creating a WebSockets middleware for ASP .NET Core 3" />
 <meta name="twitter:description" content="" />
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
@@ -108,7 +108,7 @@
  
         </div>
         
-        <h2 class="subtitle is-6">December 30, 2016. 17 minutes read</h2>
+        <h2 class="subtitle is-6">December 30, 2016. 12 minutes read</h2>
         <style type="text/css">
             .brxsmall {
                 display: block;
@@ -116,86 +116,33 @@
             }
         </style>
         <span class="brxsmall"></span>
-        <h1 class="title">Creating a WebSockets middleware for ASP .NET Core</h1>
+        <h1 class="title">Creating a WebSockets middleware for ASP .NET Core 3</h1>
         
         <div class="content">
             
 
-<h2 id="update-february-2017">UPDATE - February 2017</h2>
-
-<p><strong><a href="https://radu-matei.github.ioblog/real-time-aspnet-core/" target="_blank">This article describes the latest development of websocket-manager and how to use it in your application</a>.</strong></p>
-
-<p>While the general aspects provided in this article about creating a websockets middleware for Asp .Net Core are still valid, the specific information about the websocket-manager project have changed, since I updated a lot of parts.</p>
-
-<p>The version of the project described in this article can still be found in the <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article" target="_blank"><code>blog-article</code></a> branch on GitHub.</p>
-
-<h2 id="introduction">Introduction</h2>
-
 <blockquote>
-<p>WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection.</p>
+<p>This article was originally written in December 2016, and <strong>has been updated in November 2019 to the latest .NET Core 3 version</strong>. The <a href="https://github.com/radu-matei/websocket-manager/tree/dotnetcore3" target="_blank">updated code samples can be found in the <code>dotnetcore3</code> branch of the GitHub repository</a>.</p>
 
-<p>WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol.</p>
+<p>This article explores the low-level websockets API in .NET Core 3, and builds a websockets middleware for ASP.NET Core 3. If you are looking at adding real-time functionality to your .NET application, you should first <a href="https://dotnet.microsoft.com/apps/aspnet/signalr" target="_blank">explore SignalR</a>.</p>
 
-<p>More from <a href="https://en.wikipedia.org/wiki/WebSocket" target="_blank">Wikipedia on WebSockets</a></p>
+<p>This is an educational project with the goal of better understanding how WebSockets are handled at a lower level then SignalR.</p>
 </blockquote>
 
-<p>In the traditional paradigm of the web, the client was the one responsible for initiating the communication with a server, and the server could not send data back unless it had been previously requested by the client.</p>
-
-<p><img src="/img/article-photos/aspnet-core-websockets-middleware/request.png" alt="" /></p>
-
-<p>With WebSockets, you can send data between the server and the client over a single TCP connection, and usually WebSockets are used to provide real-time functionality to modern applications.</p>
+<p>In the traditional paradigm of the web, the client was the one responsible for initiating the communication with a server, and the server could not send data back unless it had been previously requested by the client.
+With WebSockets, you can send data between the server and the client over a single TCP connection, and usually WebSockets are used to provide real-time functionality to modern applications.</p>
 
 <p><img src="/img/article-photos/aspnet-core-websockets-middleware/sockets.png" alt="" /></p>
 
 <blockquote>
 <p><a href="https://www.pubnub.com/wp-content/uploads/2014/09/WebSockets-Diagram.png" target="_blank">Image from pubnub.com</a></p>
+
+<p>You can find a <a href="https://github.com/radu-matei/websocket-manager/tree/dotnetcore3" target="_blank">repository containing the source code of this article on GitHub</a>.</p>
+
+<p>You should first familiarize yourself with WebSockets in .NET Core - <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-3.0" target="_blank">this article provides a great introduction</a>.</p>
 </blockquote>
 
-<h2 id="what-is-this-article-about">What is this article about?</h2>
-
-<p>This article is about WebSockets in ASP.NET Core. We will learn how to use them in a simple web application by building a middleware that manages WebSocket connections and sends messages to multiple clients.</p>
-
-<blockquote>
-<p>You can find a <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article" target="_blank">repository containing the source code of this article on GitHub</a>.</p>
-
-<p>I created a branch for this article since I will most likely update things in the future. For the latest version, check the <code>master</code> or <code>dev</code> branches.</p>
-</blockquote>
-
-<p>For the past few months I&rsquo;ve been meaning to write a middleware for ASP .NET Core but never quite got the right idea for it. <a href="https://radu-matei.github.io/categories/signalr/" target="_blank">I have also been playing with the old SignalR on ASP .NET Core</a> (which by the way, got discontinued and <a href="https://github.com/aspnet/signalr" target="_blank">work is being done in a new repo here</a>), so I was aware of the WebSockets package but didn&rsquo;t have the chance to play with it.</p>
-
-<p>Then I decided that for a side project I would need some real-time functionality, and since I was on ASP .NET Core and SignalR was not yet ready to be played with, I decided to write a simple middleware to manage WebSocket connections.</p>
-
-<p>Now, the middleware we are about to build is at most useful if you know the clients will support WebSocket connectivity (unlike a Windows 7 PC for example) and is only intended as an fun side project, in no case having production in mind.</p>
-
-<p>It was also built on the experience I had using SignalR for a while now, so you if find yourself wondering: <em>Didn&rsquo;t I see something similar with SignalR?</em>, the answer is most likely <em>Yes, you did!</em>. This middleware resembles SignalR in sending real-time data, but only has WebSockets as transport, doesn&rsquo;t handle reconnection events and currently does not support the server and the clients calling each others&rsquo; methods.</p>
-
-<p>That being said, let&rsquo;s start exploring how to use WebSockets in ASP .NET Core.</p>
-
-<h2 id="getting-started-with-websockets-in-asp-net-core">Getting started with WebSockets in ASP .NET Core</h2>
-
-<p>There is no point in writing a &ldquo;WebSockets 101&rdquo; article since there are a few that explain very well what you need in order to get started and I will list the articles I used when getting started:</p>
-
-<ul>
-<li><a href="https://github.com/aspnet/websockets" target="_blank">the WebSockets repository on GitHub contains all source code for this package</a> and it really helps you to understand how everything works</li>
-<li><a href="http://zbrad.github.io/tools/wscore/" target="_blank">article from Brad Merrill that also contains GitHub repository</a></li>
-<li><a href="http://dotnetthoughts.net/using-websockets-in-aspnet-core/" target="_blank">article by Anuraj P from dotnetthoughts</a></li>
-</ul>
-
-<p>Basically, you need to:</p>
-
-<ul>
-<li>add a reference to <code>Microsoft.AspNetCore.WebSockets</code> in <code>project.json</code></li>
-<li>add <code>app.UseWebSockets()</code> in the <code>Configure</code> method inside the <code>Startup</code> class</li>
-<li>create a response pipeline that handles WebSockets requests</li>
-</ul>
-
-<blockquote>
-<p>Both articles referenced above contain step-by-step examples on how to get this working</p>
-
-<p><a href="https://github.com/aspnet/WebSockets/tree/dev/samples/EchoApp" target="_blank">In the official WebSockets repository on GitHub you can find a sample of a full application that echoes all messages received</a>.</p>
-</blockquote>
-
-<h2 id="asp-net-core-middleware">ASP .NET Core Middleware</h2>
+<h3 id="asp-net-core-middleware">ASP .NET Core Middleware</h3>
 
 <p>First of all, it is important to understand what middleware is and how the new request pipeline works in ASP .NET Core, and there is a <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware" target="_blank">great article on that from the Official ASP .NET Core Documentation</a>.</p>
 
@@ -213,215 +160,173 @@
 
 <p>Before writing the middleware itself, we need a few classes that deal with connections and handling messages.</p>
 
-<h2 id="writing-a-websocket-connection-manager">Writing a WebSocket Connection Manager</h2>
+<h3 id="writing-a-websocket-connection-manager">Writing a WebSocket Connection Manager</h3>
 
-<p>The first thing we notice when using the WebSocket package is that everything is low-level: we deal with individual connections, buffers and cancellation tokens. There is no built-in way of storing sockets, nor are they identified in any way. So we will build a class that keeps all active sockets in a thread-safe collection and assigns each a unique ID, while also maintaining the collection (getting, adding and removing sockets).</p>
+<p>The first thing we notice when using the WebSocket package is that everything is low-level: we deal with individual connections, buffers and cancellation tokens. There is no built-in way of storing sockets, nor are they identified in any way. So we&rsquo;re building a class that keeps all active sockets in a thread-safe collection and assigns each a unique ID, while also maintaining the collection (getting, adding and removing sockets).</p>
 
-<pre><code>using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace WebSocketManager
+<pre><code>public class ConnectionManager
 {
-    public class WebSocketConnectionManager
+    private ConcurrentDictionary&lt;string, WebSocket&gt; _sockets = new ConcurrentDictionary&lt;string, WebSocket&gt;();
+
+    public WebSocket GetSocketById(string id)
     {
-        private ConcurrentDictionary&lt;string, WebSocket&gt; _sockets = new ConcurrentDictionary&lt;string, WebSocket&gt;();
+        return _sockets.FirstOrDefault(p =&gt; p.Key == id).Value;
+    }
 
-        public WebSocket GetSocketById(string id)
-        {
-            return _sockets.FirstOrDefault(p =&gt; p.Key == id).Value;
-        }
+    public ConcurrentDictionary&lt;string, WebSocket&gt; GetAll()
+    {
+        return _sockets;
+    }
 
-        public ConcurrentDictionary&lt;string, WebSocket&gt; GetAll()
-        {
-            return _sockets;
-        }
+    public string GetId(WebSocket socket)
+    {
+        return _sockets.FirstOrDefault(p =&gt; p.Value == socket).Key;
+    }
+    public void AddSocket(WebSocket socket)
+    {
+        _sockets.TryAdd(CreateConnectionId(), socket);
+    }
 
-        public string GetId(WebSocket socket)
-        {
-            return _sockets.FirstOrDefault(p =&gt; p.Value == socket).Key;
-        }
-        public void AddSocket(WebSocket socket)
-        {
-            _sockets.TryAdd(CreateConnectionId(), socket);
-        }
+    public async Task RemoveSocket(string id)
+    {
+        WebSocket socket;
+        _sockets.TryRemove(id, out socket);
 
-        public async Task RemoveSocket(string id)
-        {
-            WebSocket socket;
-            _sockets.TryRemove(id, out socket);
+        await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
+                                statusDescription: &quot;Closed by the ConnectionManager&quot;,
+                                cancellationToken: CancellationToken.None);
+    }
 
-            await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
-                                    statusDescription: &quot;Closed by the WebSocketManager&quot;,
-                                    cancellationToken: CancellationToken.None);
-        }
-
-        private string CreateConnectionId()
-        {
-            return Guid.NewGuid().ToString();
-        }
+    private string CreateConnectionId()
+    {
+        return Guid.NewGuid().ToString();
     }
 }
 </code></pre>
 
-<p>As I said, it holds the sockets and the socket IDs in a concurrent dictionary and deals with getting, adding and removing sockets.</p>
+<p>Notice the use of a <code>ConcurrentDictionary</code> for the collection - this is because we will try using the collection from multiple user requests concurrently.</p>
 
-<h2 id="writing-a-websocket-handler">Writing a WebSocket Handler</h2>
+<h3 id="writing-a-websocket-handler">Writing a WebSocket Handler</h3>
 
 <p>Now that we have a way of keeping track of the connected clients, we want a class that handles connection and disconnection events and manages sending and receiving messages from the socket. Let&rsquo;s see how a class like this might look like:</p>
 
-<pre><code>using System;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace WebSocketManager
+<pre><code>public abstract class WebSocketHandler
 {
-    public abstract class WebSocketHandler
+    protected ConnectionManager WebSocketConnectionManager { get; set; }
+
+    public WebSocketHandler(ConnectionManager webSocketConnectionManager)
     {
-        protected WebSocketConnectionManager WebSocketConnectionManager { get; set; }
-
-        public WebSocketHandler(WebSocketConnectionManager webSocketConnectionManager)
-        {
-            WebSocketConnectionManager = webSocketConnectionManager;
-        }
-
-        public virtual async Task OnConnected(WebSocket socket)
-        {
-            WebSocketConnectionManager.AddSocket(socket);
-        }
-
-        public virtual async Task OnDisconnected(WebSocket socket)
-        {
-            await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
-        }
-
-        public async Task SendMessageAsync(WebSocket socket, string message)
-        {
-            if(socket.State != WebSocketState.Open)
-                return;
-
-            await socket.SendAsync(buffer: new ArraySegment&lt;byte&gt;(array: Encoding.ASCII.GetBytes(message),
-                                                                  offset: 0,
-                                                                  count: message.Length),
-                                   messageType: WebSocketMessageType.Text,
-                                   endOfMessage: true,
-                                   cancellationToken: CancellationToken.None);
-        }
-
-        public async Task SendMessageAsync(string socketId, string message)
-        {
-            await SendMessageAsync(WebSocketConnectionManager.GetSocketById(socketId), message);
-        }
-
-        public async Task SendMessageToAllAsync(string message)
-        {
-            foreach(var pair in WebSocketConnectionManager.GetAll())
-            {
-                if(pair.Value.State == WebSocketState.Open)
-                    await SendMessageAsync(pair.Value, message);
-            }
-        }
-
-        public abstract Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer);
+        WebSocketConnectionManager = webSocketConnectionManager;
     }
+
+    public virtual async Task OnConnected(WebSocket socket)
+    {
+        WebSocketConnectionManager.AddSocket(socket);
+    }
+
+    public virtual async Task OnDisconnected(WebSocket socket)
+    {
+        await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
+    }
+
+    public async Task SendMessageAsync(WebSocket socket, string message)
+    {
+        if(socket.State != WebSocketState.Open)
+            return;
+
+        await socket.SendAsync(buffer: new ArraySegment&lt;byte&gt;(array: Encoding.ASCII.GetBytes(message),
+                                                                offset: 0,
+                                                                count: message.Length),
+                                messageType: WebSocketMessageType.Text,
+                                endOfMessage: true,
+                                cancellationToken: CancellationToken.None);
+    }
+
+    public async Task SendMessageAsync(string socketId, string message)
+    {
+        await SendMessageAsync(WebSocketConnectionManager.GetSocketById(socketId), message);
+    }
+
+    public async Task SendMessageToAllAsync(string message)
+    {
+        foreach(var pair in WebSocketConnectionManager.GetAll())
+        {
+            if(pair.Value.State == WebSocketState.Open)
+                await SendMessageAsync(pair.Value, message);
+        }
+    }
+
+    public abstract Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer);
 }
 </code></pre>
 
-<p>The first thing to notice is that the class is <code>abstract</code>. This means <strong>you need to inherit it</strong> and provide actual implementation for the <code>ReceiveAsync</code> method, as well as you can <code>override</code> the methods marked as <code>virtual</code>.</p>
-
-<p>There&rsquo;s the <code>OnConnected</code> and <code>OnDisconnected</code> methods that are executed whenever a new socket connects or an existing one sends a <code>Close</code> message.</p>
-
-<p>These methods are <code>virtual</code>, meaning that you can provide your own functionality for connecting and disconnecting events.</p>
+<p>The first thing to notice is that the class is <code>abstract</code>. This means you need to inherit it and provide actual implementation for the <code>ReceiveAsync</code> method, and that you can override the methods marked as <code>virtual</code> and provide custom logic for the <code>OnConnected</code> and <code>OnDisconnected</code> methods that are executed whenever a new socket connects, or when an existing one sends a <code>Close</code> message.</p>
 
 <p>There is also the <code>SendMessageAsync</code> which sends a message to a specific <code>socketId</code> and <code>SendMessageToAllAsync</code>, which sends a message to all connected clients.</p>
 
-<h2 id="the-middleware-itself">The middleware itself</h2>
+<h3 id="the-middleware-itself">The middleware itself</h3>
 
 <p>So far we built classes that help maintaining a record of connected sockets and handle sending and receiving messages to and from those sockets. Now it&rsquo;s time to build the actual middleware:</p>
 
-<p>As any middleware, it needs to receive a <code>RequestDelegate</code> for the <code>next</code> component in the pipeline, while executing operations on the <code>HttpContext</code> before and after invoking the next component, and it needs an <code>async Task Invoke</code> method. It doesn&rsquo;t have to inherit or implement anything, just to have the <code>Invoke</code> method.</p>
+<p>As any middleware, it needs to receive a <code>RequestDelegate</code> for the next component in the pipeline, while executing operations on the <code>HttpContext</code> before and after invoking the next component, and it needs an <code>async Task Invoke</code> method. It doesn&rsquo;t have to inherit or implement anything, just to have the <code>Invoke</code> method.</p>
 
-<blockquote>
-<p>You will notice in this version of the middleware that the invocation of the <code>next</code> component is commented out. This is because an exception thrown by Kestrel when this is the last middleware registered in the pipeline. I will investigate this and update the class as necessary.</p>
-</blockquote>
-
-<pre><code>using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-
-namespace WebSocketManager
+<pre><code>public class WebSocketManagerMiddleware
 {
-    public class WebSocketManagerMiddleware
+    private readonly RequestDelegate _next;
+    private WebSocketHandler _webSocketHandler { get; set; }
+
+    public WebSocketManagerMiddleware(RequestDelegate next,
+                                        WebSocketHandler webSocketHandler)
     {
-        private readonly RequestDelegate _next;
-        private WebSocketHandler _webSocketHandler { get; set; }
+        _next = next;
+        _webSocketHandler = webSocketHandler;
+    }
 
-        public WebSocketManagerMiddleware(RequestDelegate next,
-                                          WebSocketHandler webSocketHandler)
-        {
-            _next = next;
-            _webSocketHandler = webSocketHandler;
-        }
+    public async Task Invoke(HttpContext context)
+    {
+        if(!context.WebSockets.IsWebSocketRequest)
+            return;
 
-        public async Task Invoke(HttpContext context)
+        var socket = await context.WebSockets.AcceptWebSocketAsync();
+        await _webSocketHandler.OnConnected(socket);
+
+        await Receive(socket, async(result, buffer) =&gt;
         {
-            if(!context.WebSockets.IsWebSocketRequest)
+            if(result.MessageType == WebSocketMessageType.Text)
+            {
+                await _webSocketHandler.ReceiveAsync(socket, result, buffer);
                 return;
-
-            var socket = await context.WebSockets.AcceptWebSocketAsync();
-            await _webSocketHandler.OnConnected(socket);
-
-            await Receive(socket, async(result, buffer) =&gt;
-            {
-                if(result.MessageType == WebSocketMessageType.Text)
-                {
-                    await _webSocketHandler.ReceiveAsync(socket, result, buffer);
-                    return;
-                }
-
-                else if(result.MessageType == WebSocketMessageType.Close)
-                {
-                    await _webSocketHandler.OnDisconnected(socket);
-                    return;
-                }
-
-            });
-
-            //TODO - investigate the Kestrel exception thrown when this is the last middleware
-            //await _next.Invoke(context);
-        }
-
-        private async Task Receive(WebSocket socket, Action&lt;WebSocketReceiveResult, byte[]&gt; handleMessage)
-        {
-            var buffer = new byte[1024 * 4];
-
-            while(socket.State == WebSocketState.Open)
-            {
-                var result = await socket.ReceiveAsync(buffer: new ArraySegment&lt;byte&gt;(buffer),
-                                                       cancellationToken: CancellationToken.None);
-
-                handleMessage(result, buffer);
             }
+
+            else if(result.MessageType == WebSocketMessageType.Close)
+            {
+                await _webSocketHandler.OnDisconnected(socket);
+                return;
+            }
+
+        });
+    }
+
+    private async Task Receive(WebSocket socket, Action&lt;WebSocketReceiveResult, byte[]&gt; handleMessage)
+    {
+        var buffer = new byte[1024 * 4];
+
+        while(socket.State == WebSocketState.Open)
+        {
+            var result = await socket.ReceiveAsync(buffer: new ArraySegment&lt;byte&gt;(buffer),
+                                                    cancellationToken: CancellationToken.None);
+
+            handleMessage(result, buffer);
         }
     }
 }
 </code></pre>
 
-<p>The middleware is passed an implementation of <code>WebSocketHandler</code> and a <code>RequestDelegate</code>. If the request is not a WebSocket request, it just exits the middleware.</p>
+<p>The middleware is passed an implementation of <code>WebSocketHandler</code> and a <code>RequestDelegate</code>. If the request is not a WebSocket request, it is short-circuiting the middleware and return. If it is a WebSockets request, then it accepts the connection and passes the socket to the <code>OnConnected</code> method from the <code>WebSocketHandler</code>.</p>
 
-<p>If it is a WebSockets request, then it accepts the connection and passes the socket to the <code>OnConnected</code> method from the <code>WebSocketHandler</code>.</p>
+<p>Then, while the socket is in the <code>Open</code> state, it awaits for new data. When it receives new data, it decides wether to pass the context to the <code>ReceiveAsync</code> method of <code>WebSocketHandler</code> (notice why you need to pass an actual implementation of the abstract <code>WebSocketHandler</code> class) or to the <code>OnDisconnected</code> method (if the message type is <code>Close</code>).</p>
 
-<p>Then, while the socket is in the <code>Open</code> state, it awaits for the receival of new data. When it receives the data, it decides wether to pass the context to the <code>ReceiveAsync</code> method of <code>WebSocketHandler</code> (notice why you need to pass an actual implementation of the abstract <code>WebSocketHandler</code> class) or to the <code>OnDisconnected</code> method (if the message type is <code>Close</code>).</p>
-
-<p>And basically this is the middleware. There is also a static class for adding extension methods that we will cover briefly.</p>
-
-<h2 id="the-extension-methods-for-adding-the-middleware">The extension methods for adding the middleware</h2>
+<h3 id="the-extension-methods-for-adding-the-middleware">The extension methods for adding the middleware</h3>
 
 <p>Most likely in modern applications you want to send notifications and messages only to clients connected to a specific part of the application (think SignalR Hubs).</p>
 
@@ -429,379 +334,291 @@ namespace WebSocketManager
 
 <p>So mapping the middleware is done using the following extension method on <code>IApplicationBuilder</code>:</p>
 
-<pre><code>        public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app,
-                                                              PathString path,
-                                                              WebSocketHandler handler)
-        {
-            return app.Map(path, (_app) =&gt; _app.UseMiddleware&lt;WebSocketManagerMiddleware&gt;(handler));
-        }
+<pre><code>public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app,
+                                                        PathString path,
+                                                        WebSocketHandler handler)
+{
+    return app.Map(path, (_app) =&gt; _app.UseMiddleware&lt;WebSocketManagerMiddleware&gt;(handler));
+}
 </code></pre>
 
 <p>It receives a path and it maps that path using with the <code>WebSocketManagerMiddleware</code> which is passed the specific implementation of <code>WebSocketHandler</code> you provided as argument for the <code>MapWebSocketManager</code> extension method.</p>
 
 <p>You also need to add some services in order to use them, and this is done in another extension method on <code>IServiceCollection</code>:</p>
 
-<pre><code>        public static IServiceCollection AddWebSocketManager(this IServiceCollection services)
+<pre><code>public static IServiceCollection AddWebSocketManager(this IServiceCollection services)
+{
+    services.AddTransient&lt;ConnectionManager&gt;();
+
+    foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
+    {
+        if(type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
         {
-            services.AddTransient&lt;WebSocketConnectionManager&gt;();
-
-            foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
-            {
-                if(type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
-                {
-                    services.AddSingleton(type);
-                }
-            }
-
-            return services;
+            services.AddSingleton(type);
         }
+    }
+
+    return services;
+}
 </code></pre>
 
 <p>Besides from adding the <code>WebSocketConnectionManager</code> service, it also searches the executing assembly for types that inherit <code>WebSocketHandler</code> and it registers them as singleton (so that every request gets the same instance of the message handler) using reflection.</p>
 
-<p>And this is pretty much the middleware. Now we will take a look at how we would use it in ASP .NET Core applications, and just like in the case of SignalR, there are two scenarios for usage:</p>
+<p>Now we will take a look at how we would use it in ASP .NET Core applications, and just like in the case of SignalR, there are two scenarios for usage:</p>
 
 <ul>
 <li>one where the client actually sends WebSockets requests</li>
-<li>one where the client does some MVC stuff and the other clients get notified</li>
+<li>one where the client does some MVC stuff and other clients get notified</li>
 </ul>
 
-<blockquote>
-<p>At this moment the samples only handle string as messages, but I will handle JSON messages being sent.</p>
-</blockquote>
+<h3 id="scenario-1-client-sending-messages-through-websockets">Scenario 1 - Client Sending messages through WebSockets</h3>
 
-<h2 id="scenario-1-client-sending-messages-through-websockets">Scenario 1 - Client Sending messages through WebSockets</h2>
+<p>Using the middleware we just created we will build a chat application (I know, everybody shows chat applications when playing around with WebSockets).
+In order use the newly created middleware, we need to call the extension method <code>MapWebSocketManager</code> inside a new project&rsquo;s <code>Startup</code> class.</p>
 
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/ChatApplication" target="_blank">find the working application and the source code on GitHub here</a>.</p>
-</blockquote>
-
-<p>Using the middleware we just created we will build a chat application (I know, everybody demoes chat applications when playing around with WebSockets).</p>
-
-<p>Besides being a public chat application, it will also be able to map very basic <em>chat rooms</em> by creating (in this example) two message handlers and isolating clients from one page from the others.</p>
-
-<p>As I said earlier, in order to configure the newly created pipeline, we need to call the extension method <code>MapWebSocketManager</code> in the following way:</p>
-
-<p><code>app.MapWebSocketManager(&quot;/path&quot;, instanceOfWebSocketHandler);</code></p>
-
-<p>Let&rsquo;s see a real project&rsquo;s <code>Startup</code> class:</p>
-
-<pre><code>using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-
-using WebSocketManager;
-
-namespace ChatApplication
+<pre><code>public class Startup
 {
-    public class Startup
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-            app.UseWebSockets();
+        services.AddWebSocketManager();
+    }
 
-            app.MapWebSocketManager(&quot;/ws&quot;, serviceProvider.GetService&lt;ChatMessageHandler&gt;());
-            app.MapWebSocketManager(&quot;/test&quot;, serviceProvider.GetService&lt;TestMessageHandler&gt;());
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        var serviceScopeFactory = app.ApplicationServices.GetRequiredService&lt;IServiceScopeFactory&gt;();
+        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
 
-            app.UseStaticFiles();
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddWebSocketManager();
-        }
+        app.UseWebSockets();
+        app.MapWebSocketManager(&quot;/ws&quot;, serviceProvider.GetService&lt;ChatMessageHandler&gt;());
+        app.UseStaticFiles();
     }
 }
 </code></pre>
 
-<p>First we need to <code>UseWebSockets()</code> (working on putting this inside the extension methods so you don&rsquo;t call it manually), then map the paths you want to be handled by the middleware.</p>
+<p>First we need to <code>UseWebSockets()</code>, then map the paths you want to be handled by the middleware.</p>
 
 <p>We said that we need to pass the <code>MapWebSocketManager</code> method an implementation of <code>WebSocketHandler</code>. Remember that in the extension method we registered all types that inherited <code>WebSocketHandler</code> as singletons in the framework. So at this moment we can use the <code>IServiceProvider</code> to give us instances of those classes.</p>
 
 <p>Let&rsquo;s have a look at an actual implementation of <code>WebSocketHandler</code>, <code>ChatMessageHandler</code>:</p>
 
-<pre><code>using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
-using WebSocketManager;
-
-namespace ChatApplication
+<pre><code>public class ChatMessageHandler : WebSocketHandler
 {
-    public class ChatMessageHandler : WebSocketHandler
+    public ChatMessageHandler(ConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
     {
-        public ChatMessageHandler(WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
-        {
-        }
+    }
 
-        public override async Task OnConnected(WebSocket socket)
-        {
-            await base.OnConnected(socket);
+    public override async Task OnConnected(WebSocket socket)
+    {
+        await base.OnConnected(socket);
 
-            var socketId = WebSocketConnectionManager.GetId(socket);
-            await SendMessageToAllAsync($&quot;{socketId} is now connected&quot;);
-        }
+        var socketId = WebSocketConnectionManager.GetId(socket);
+        await SendMessageToAllAsync($&quot;{socketId} is now connected&quot;);
+    }
 
-        public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
-        {
-            var socketId = WebSocketConnectionManager.GetId(socket);
-            var message = $&quot;{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}&quot;;
+    public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
+    {
+        var socketId = WebSocketConnectionManager.GetId(socket);
+        var message = $&quot;{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}&quot;;
 
-            await SendMessageToAllAsync(message);
-        }
+        await SendMessageToAllAsync(message);
     }
 }
 </code></pre>
 
 <p>It overrides the <code>OnConnected</code> method to send a message to everybody broadcasting that a new client connected and it implements the <code>ReceiveAsync</code> method (by just broadcasting the method to all clients).</p>
 
-<p>Basically, <code>TestMessageHandler</code> does mostly the same things, but in a real world application you would have different functionality.</p>
+<p>At this point, you can create a new message handler to separate the clients connected on a page from another, since there will be separate collections of connections.</p>
 
 <p>Now let&rsquo;s add a web client that connects through WebSockets:</p>
 
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
+<pre><code>&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
+&lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
 
-&lt;head&gt;
-	&lt;meta charset=&quot;utf-8&quot; /&gt;
-	&lt;title&gt;Real-Time Notifications&lt;/title&gt;
-&lt;/head&gt;
+&lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
 
-&lt;body&gt;
-    &lt;h1&gt;This should be mapped to &quot;/ws&quot;&lt;/h1&gt;
-	&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
-	&lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
+    &lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
+    var uri = &quot;ws://&quot; + window.location.host + &quot;/ws&quot;;
+    function connect() {
+        socket = new WebSocket(uri);
+        socket.onopen = function(event) {
+            console.log(&quot;opened connection to &quot; + uri);
+        };
+        socket.onclose = function(event) {
+            console.log(&quot;closed connection from &quot; + uri);
+        };
+        socket.onmessage = function(event) {
+            appendItem(list, event.data);
+            console.log(event.data);
+        };
+        socket.onerror = function(event) {
+            console.log(&quot;error: &quot; + event.data);
+        };
+    }
+    connect();
+    var list = document.getElementById(&quot;messages&quot;);
+    var button = document.getElementById(&quot;sendButton&quot;);
+    button.addEventListener(&quot;click&quot;, function() {
 
-	&lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
+        var input = document.getElementById(&quot;textInput&quot;);
+        sendMessage(input.value);
 
-    	&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
-        var uri = &quot;ws://&quot; + window.location.host + &quot;/ws&quot;;
-        function connect() {
-            socket = new WebSocket(uri);
-            socket.onopen = function(event) {
-                console.log(&quot;opened connection to &quot; + uri);
-            };
-            socket.onclose = function(event) {
-                console.log(&quot;closed connection from &quot; + uri);
-            };
-            socket.onmessage = function(event) {
-                appendItem(list, event.data);
-                console.log(event.data);
-            };
-            socket.onerror = function(event) {
-                console.log(&quot;error: &quot; + event.data);
-            };
-        }
-        connect();
-        var list = document.getElementById(&quot;messages&quot;);
-        var button = document.getElementById(&quot;sendButton&quot;);
-        button.addEventListener(&quot;click&quot;, function() {
-
-            var input = document.getElementById(&quot;textInput&quot;);
-            sendMessage(input.value);
-
-            input.value = &quot;&quot;;
-        });
-        function sendMessage(message) {
-            console.log(&quot;Sending: &quot; + message);
-            socket.send(message);
-        }
-        function appendItem(list, message) {
-            var item = document.createElement(&quot;li&quot;);
-            item.appendChild(document.createTextNode(message));
-            list.appendChild(item);
-        }
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+        input.value = &quot;&quot;;
+    });
+    function sendMessage(message) {
+        console.log(&quot;Sending: &quot; + message);
+        socket.send(message);
+    }
+    function appendItem(list, message) {
+        var item = document.createElement(&quot;li&quot;);
+        item.appendChild(document.createTextNode(message));
+        list.appendChild(item);
+    }
+&lt;/script&gt;
 </code></pre>
 
-<p>This is a very simple web page that has an input form and a button. It connects to the server on the &ldquo;/ws&rdquo; path, so all requests will be mapped to <code>ChatMessageHandler</code>.</p>
+<p>This is a very simple web page that has an input form and a button. It connects to the server on the &ldquo;/ws&rdquo; path, so all requests will be mapped to <code>ChatMessageHandler</code> (recall how <code>ChatMessageHandler</code> was mapped to receive requests on the <code>/ws</code> path).</p>
 
 <p><img src="/img/article-photos/aspnet-core-websockets-middleware/chat.gif" alt="" /></p>
 
-<p>We can see that messages are passed real-time to all connected clients. Let&rsquo;s add another page that connects to a different path - &ldquo;/test&rdquo; and pass another handler, <code>TestMessageHandler</code> and another client, <code>test.html</code>.</p>
+<p>We can see that messages are passed real-time to all connected clients.</p>
 
-<blockquote>
-<p>Remember that you can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/ChatApplication" target="_blank">find the full working sample on GitHub here</a>.</p>
-</blockquote>
-
-<p>Let&rsquo;s see what happens now:</p>
-
-<p><img src="/img/article-photos/aspnet-core-websockets-middleware/separate-chat.gif" alt="" /></p>
-
-<p>You can clearly see that clients receive messages based on the page they are connected to.</p>
-
-<p>In this case, clients would send data directly through a websocket and the socket events would get handled directly in the specific implementation of <code>WebSocketHandler</code>.</p>
-
-<h2 id="scenario-2-receiving-real-time-notifications-from-a-controller">Scenario 2 - Receiving real-time notifications from a controller</h2>
+<h3 id="scenario-2-receiving-real-time-notifications-from-a-controller">Scenario 2 - Receiving real-time notifications from a controller</h3>
 
 <p>This time we will build an MVC application and have client send data through the MVC pipeline. Then, the notifications would get fired from within the controller.</p>
 
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/websocket-manager/tree/blog-article/samples/MvcSample" target="_blank">find the sample on GitHub, in the <code>MvcSample</code> folder</a>.</p>
-</blockquote>
+<p>We will build a standard MVC application and we will add the <code>WebSocketManagerMiddleware</code> we created. Here&rsquo;s the <code>Startup</code> class of this application:</p>
 
-<p>We will build a standard MVC application and we will add the <code>WebSocketManagerMiddleware</code> we created. <a href="https://github.com/radu-matei/websocket-manager/blob/blog-article/samples/MvcSample/Startup.cs" target="_blank">Here&rsquo;s the <code>Startup</code> class of this application</a>:</p>
+<pre><code>public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    var serviceScopeFactory = app.ApplicationServices.GetRequiredService&lt;IServiceScopeFactory&gt;();
+    var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
 
-<pre><code>    public class Startup
+    app.UseWebSockets();
+    app.MapWebSocketManager(&quot;/ws&quot;, serviceProvider.GetService&lt;NotificationsMessageHandler&gt;());
+    app.UseStaticFiles();
+    app.UseEndpoints(endpoints =&gt;
     {
-        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
-        {
-            app.UseStaticFiles();
-            app.UseWebSockets();
-
-            app.UseMvc(routes =&gt;
-            {
-                routes.MapRoute(
-                    name: &quot;default&quot;,
-                    template: &quot;api/{controller}/{action}/{id?}&quot;
-                );
-            });
-
-            app.MapWebSocketManager(&quot;/notifications&quot;, serviceProvider.GetService&lt;NotificationsMessageHandler&gt;());
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc();
-            services.AddWebSocketManager();
-        }
-    }
+        endpoints.MapControllers();
+    });
+}
 </code></pre>
 
 <p>Since this time the handler class only manages the connected clients and will not handle requests itself, we can leave the <code>ReceiveAsync</code> method unimplemented:</p>
 
-<pre><code>    public class NotificationsMessageHandler : WebSocketHandler
+<pre><code>public class NotificationsMessageHandler : WebSocketHandler
+{
+    public NotificationsMessageHandler(WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
     {
-        public NotificationsMessageHandler(WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
-        {
-        }
-
-        public override Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
-        {
-            throw new NotImplementedException();
-        }
     }
+
+    public override Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
+    {
+        throw new NotImplementedException();
+    }
+}
 </code></pre>
 
 <p>And the controller:</p>
 
-<pre><code>    public class MessagesController : Controller
+<pre><code>public class MessagesController : Controller
+{
+    private NotificationsMessageHandler _notificationsMessageHandler { get; set; }
+
+    public MessagesController(NotificationsMessageHandler notificationsMessageHandler)
     {
-        private NotificationsMessageHandler _notificationsMessageHandler { get; set; }
-
-        public MessagesController(NotificationsMessageHandler notificationsMessageHandler)
-        {
-            _notificationsMessageHandler = notificationsMessageHandler;
-        }
-
-        [HttpGet]
-        public async Task SendMessage([FromQueryAttribute]string message)
-        {
-           await _notificationsMessageHandler.SendMessageToAllAsync(message);
-        }
+        _notificationsMessageHandler = notificationsMessageHandler;
     }
+
+    [HttpGet]
+    public async Task SendMessage([FromQueryAttribute]string message)
+    {
+        await _notificationsMessageHandler.SendMessageToAllAsync(message);
+    }
+}
 </code></pre>
 
 <p>In the controller we will have a <code>NotificationsMessageHandler</code> instance that will handle the sending of notifications to all connected clients.</p>
 
-<p>The HTML page is very similar to the previous ones, but this time the message will be sent using the API we created, so through HTTP and not WebSockets, so basically only the <code>sendMessage</code> method is different:</p>
+<p>The HTML page is very similar to the previous ones, but this time the message will be sent using the API we created, so through HTTP and not WebSockets, so only the <code>sendMessage</code> method is different:</p>
 
-<pre><code>        function sendMessage(message) {
-            console.log(&quot;Sending: &quot; + message);
+<pre><code>function sendMessage(message) {
+    console.log(&quot;Sending: &quot; + message);
 
-            $.ajax({
-                url: &quot;http://&quot; + window.location.host + &quot;/api/messages/sendmessage?message=&quot; + message,
-                method: 'GET'
-            });
-        }
+    $.ajax({
+        url: &quot;http://&quot; + window.location.host + &quot;/api/messages/sendmessage?message=&quot; + message,
+        method: 'GET'
+    });
+}
 </code></pre>
-
-<blockquote>
-<p>Notice I only added <code>jQuery</code> so the HTTP request would be simpler (using <code>AJAX</code>), it has noting to do with the WebSockets.</p>
-</blockquote>
 
 <p>Let&rsquo;s see how it works:</p>
 
 <p><img src="/img/article-photos/aspnet-core-websockets-middleware/mvc-sample.gif" alt="" /></p>
 
-<p>Basically, the user doesn&rsquo;t see any difference, but the client is sending data through an HTTP request and receiving it through WebSockets.</p>
+<p>The user doesn&rsquo;t notice any difference, but the client is sending data through an HTTP request and receiving notifications through WebSockets.</p>
 
-<h2 id="extra-console-client">Extra - Console client</h2>
+<h3 id="extra-console-client">Extra - Console client</h3>
 
 <p>You can also use a C# console client to connect to the application we created.</p>
 
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/websocket-manager/blob/blog-article/samples/EchoConsoleClient/Program.cs" target="_blank">find the source code of this sample on GitHub here</a></p>
+<p>This sample uses the <code>System.Net.WebSockets</code> namespace which contains the <code>ClientWebSocket</code> class:</p>
 
-<p>Note that this console client is pretty much <a href="https://github.com/aspnet/SignalR/blob/dev/samples/WebSocketSample/Program.cs" target="_blank">a clone of a WebSocket sample from the SignalR repository</a></p>
-</blockquote>
-
-<p>This sample uses the <code>System.Net.WebSockets</code> namespace which contains the <code>ClientWebSocket</code> class (pretty weird name if you ask me).</p>
-
-<pre><code>using System;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace EchoConsoleClient
+<pre><code>public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        RunWebSockets().GetAwaiter().GetResult();
+    }
+
+    private static async Task RunWebSockets()
+    {
+        var client = new ClientWebSocket();
+        await client.ConnectAsync(new Uri(&quot;ws://localhost:5000/ws&quot;), CancellationToken.None);
+
+        Console.WriteLine(&quot;Connected!&quot;);
+
+        var sending = Task.Run(async() =&gt;
         {
-            RunWebSockets().GetAwaiter().GetResult();
-        }
-
-        private static async Task RunWebSockets()
-        {
-            var client = new ClientWebSocket();
-            await client.ConnectAsync(new Uri(&quot;ws://localhost:5000/test&quot;), CancellationToken.None);
-
-            Console.WriteLine(&quot;Connected!&quot;);
-
-            var sending = Task.Run(async() =&gt;
+            string line;
+            while((line = Console.ReadLine()) != null &amp;&amp; line != String.Empty)
             {
-                string line;
-                while((line = Console.ReadLine()) != null &amp;&amp; line != String.Empty)
-                {
-                    var bytes = Encoding.UTF8.GetBytes(line);
+                var bytes = Encoding.UTF8.GetBytes(line);
+                await client.SendAsync(new ArraySegment&lt;byte&gt;(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
 
-                    await client.SendAsync(new ArraySegment&lt;byte&gt;(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
-                }
+            await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &quot;&quot;, CancellationToken.None);
+        });
 
+        var receiving = Receiving(client);
+
+        await Task.WhenAll(sending, receiving);
+    }
+
+    private static async Task Receiving(ClientWebSocket client)
+    {
+        var buffer = new byte[1024 * 4];
+
+        while(true)
+        {
+            var result = await client.ReceiveAsync(new ArraySegment&lt;byte&gt;(buffer), CancellationToken.None);
+
+            if(result.MessageType == WebSocketMessageType.Text)
+                Console.WriteLine(Encoding.UTF8.GetString(buffer, 0, result.Count));
+
+            else if(result.MessageType == WebSocketMessageType.Close)
+            {
                 await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &quot;&quot;, CancellationToken.None);
-            });
-
-            var receiving = Receiving(client);
-
-            await Task.WhenAll(sending, receiving);
-        }
-
-        private static async Task Receiving(ClientWebSocket client)
-        {
-            var buffer = new byte[1024 * 4];
-
-            while(true)
-            {
-                var result = await client.ReceiveAsync(new ArraySegment&lt;byte&gt;(buffer), CancellationToken.None);
-
-                if(result.MessageType == WebSocketMessageType.Text)
-                    Console.WriteLine(Encoding.UTF8.GetString(buffer, 0, result.Count));
-
-                else if(result.MessageType == WebSocketMessageType.Close)
-                {
-                    await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &quot;&quot;, CancellationToken.None);
-                    break;
-                }
+                break;
             }
         }
     }
 }
 </code></pre>
 
-<p>At this point there is no high level client for WebSockets, so this is how you manage the connection from the client perspective.</p>
+<p>At this point there is no high level client for WebSockets, so this is how you manage the connection in a .NET client application.</p>
 
 <blockquote>
 <p>Note that both the Chat application and this console client sample must be running.</p>
@@ -809,47 +626,11 @@ namespace EchoConsoleClient
 
 <p><img src="/img/article-photos/aspnet-core-websockets-middleware/console-sample.gif" alt="" /></p>
 
-<blockquote>
-<p>Note that in order for a Terminal console to appear when starting the application you need to set the <code>&quot;externalConsole&quot;: true</code> in <code>launch.json</code> in VS Code.</p>
-</blockquote>
+<h3 id="conclusion">Conclusion</h3>
 
-<h2 id="next-steps">Next Steps</h2>
+<p>In this article we started from the low-level API for managing WebSocket connections, and created a connection manager that can be used as an ASP .NET Core 3 middleware. While the result itself should <em>not</em> be used for any production purposes, it served as a good experiment for understanding how to manage WebSocket connections in .NET Core 3.</p>
 
-<p>In the first place, I should investigate why Kestrel throws an exception when this is the last middleware in the pipeline (maybe it is the intended behaviour?). Then, I should also decide wether I have to create a class that wraps the socket ID and the socket itself in a single object (not sure wether I need this or not).</p>
-
-<p>Another thing I want to do is to see if there is a way to know wether a middleware has been added to the pipeline (so I place <code>app.UseWebSockets()</code> in the extension method and not have the user add it). I know that <a href="https://github.com/aspnet/HttpAbstractions/blob/master/src/Microsoft.AspNetCore.Http/Internal/ApplicationBuilder.cs/#L16" target="_blank">there is a private field on <code>ApplicationBuilder</code> called <code>_components</code> that holds all added middleware, but it is not accessible from <code>app</code></a>, and also understand what happens if you add the same middleware twice.</p>
-
-<p>This started as a fun side project (and I am pretty sure it will stay this way once SignalR becomes ready for production). Still, if I found the time, I would love to <strong>implement the client and server calling each others&rsquo; methods bit from SignalR</strong>. I find it to be really cool and think there are some cool things to learn from there.</p>
-
-<p>And last but not least, I will investigate sending JSON objects as messages rather than simple strings and the necessity of writing JavaScript and C# clients. Most likely that won&rsquo;t happen, but it would be nice if I had the time.</p>
-
-<h2 id="conclusion">Conclusion</h2>
-
-<p>Let&rsquo;s take a step back and see what we have done:</p>
-
-<ul>
-<li>we&rsquo;ve started by investigating the <code>WebSockets</code> package from ASP .NET Core</li>
-<li>we&rsquo;ve taken a look at ASP .NET Core middleware</li>
-<li>we&rsquo;ve written a connection manager for WebSocket connections</li>
-<li>we&rsquo;ve written an abstract handler class that deals with connection and disconnection events, while also sending and receiving messages</li>
-<li>we&rsquo;ve built the actual middleware</li>
-<li>we&rsquo;ve added some extension methods to register services and add the middleware in the pipeline</li>
-<li>then we built some samples that demonstrate:
-
-<ul>
-<li>how to write a pure-sockets chat application</li>
-<li>how to integrate this middleware with MVC and send notifications to connected clients</li>
-<li>how to build a very simple console client written in C#</li>
-</ul></li>
-</ul>
-
-<h2 id="feedback-wanted">Feedback wanted</h2>
-
-<p>If you stumbled upon this article, please take a moment and provide some feedback both on the middleware itself and on the way the article is written. Any feedback is immensely appreciated, as well as questions and observations.</p>
-
-<p>Also, if you want to <a href="https://github.com/radu-matei/websocket-manager" target="_blank">contribute to this middleware, you can find the repository on GitHub</a>. Any contribution is greatly appreciated.</p>
-
-<h2 id="thanks-for-reading">Thanks for reading! :)</h2>
+<p>Thanks for reading!</p>
 
 
             
