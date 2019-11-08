@@ -2,9 +2,9 @@
 author = "Radu Matei"
 tags = ["wsl"]
 date = "2019-11-07"
-title = "Version control for your WSL filesystem with a Dockerfile"
-description = ""
-summary = ""
+title = "Version control for your WSL distribution with a Dockerfile"
+description = "In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration."
+summary = "In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration."
 image = "/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png"
 +++
 
