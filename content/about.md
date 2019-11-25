@@ -12,7 +12,7 @@ I used to work as a cloud engineer at Microsoft, and helped startups and softwar
 
 I absolutely love music (and really excited about learning to play the piano), and enjoy a good bicycle ride.
 
-This is the place I'll write about stuff I'm working on - this includes (but is not limited to): containers, Kubernetes, Go, Rust, or WebAssembly. Sometimes I also write about non-technical topics - you can find all of them under the [#personal(/tags/non-tech/) tag.
+This is the place I'll write about stuff I'm working on - this includes (but is not limited to): containers, Kubernetes, Go, Rust, or WebAssembly. Sometimes I also write about non-technical topics - you can find all of them under the [#personal](/tags/personal/) tag.
 
 If you need to, you can find me on the Internet:
 
