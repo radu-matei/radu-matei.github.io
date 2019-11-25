@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Random WSL tips &amp; tricks | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary_large_image'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png">
+<meta name="twitter:title" content="Random WSL tips &amp; tricks" />
+<meta name="twitter:description" content="If you&#39;re getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution." />
+    <meta property='og:title' content='Random WSL tips &amp; tricks - radu&#39;s blog'>
+<meta property='og:description' content='If you&#39;re getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution.'>
+<meta property='og:url' content='https://radu-matei.com/blog/random-wsl-tips/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://radu-matei.com/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png'><meta property='article:published_time' content='2019-11-09T00:00:00Z'/><meta property='article:modified_time' content='2019-11-09T00:00:00Z'/><meta name='twitter:card' content='summary_large_image'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png">
+<meta name="twitter:title" content="Random WSL tips &amp; tricks" />
+<meta name="twitter:description" content="If you&#39;re getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution." />
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/random-wsl-tips/"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wsl">#wsl</a>
+
+
+ 
+        </div>
+        
+        <h2 class="subtitle is-6">November 9, 2019. 5 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Random WSL tips &amp; tricks</h1>
+        
+        <div class="content">
+            
+
+
+            
+
+<p>If you&rsquo;re getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution.</p>
+
+<h3 id="1-running-gui-applications-with-an-x-server">1. Running GUI applications with an X server</h3>
+
+<p>There are lots of situations when you might need to run a graphical application from WSL - I&rsquo;m not talking about a full desktop environment (although <a href="https://github.com/QMonkey/wsl-tutorial" target="_blank">that also works</a>), but individual applications - for developing Electron applications, or running end-to-end browser tests for your web application.</p>
+
+<p>You can achieve this in WSL in two steps:</p>
+
+<ul>
+<li>install an X server on Windows - I&rsquo;m using <a href="https://sourceforge.net/projects/vcxsrv/" target="_blank">VcXsrv</a>, and you can either launch it right before starting your GUI app on Linux, or have it run at start-up.</li>
+
+<li><p>export the <code>DISPLAY</code> environment variable on Linux with the IP address of the WSL virtual machine. Because the virtual machine gets an IP address dynamically, you need to get it every time you start WSL - but you can get it dynamically from <code>/etc/resolv.conf</code>:</p>
+
+<pre><code>export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0
+</code></pre></li>
+</ul>
+
+<p>At this point you can start the application on Linux, and if everything is configured properly, the X server should create the application window:</p>
+
+<p><img src="/img/article-photos/random-wsl-tips/gui.gif" alt="" /></p>
+
+<p>Don&rsquo;t expect perfect animations or 60 FPS - it works well enough to accomplish very specific tasks, but you should probably not use this setup for any resource intensive applications.</p>
+
+<h3 id="2-cross-distribution-temporary-directory">2. Cross distribution temporary directory</h3>
+
+<p>If you used WSL, you probably know that your <code>C:/</code> drive is accessible from WSL in <code>/mnt/c</code> - what you might now know, however, is that <a href="https://docs.microsoft.com/en-us/windows/wsl/release-notes#build-19018" target="_blank">starting with build 19018</a>, there is a <em>temporary</em> directory that is shared by all your WSL instances - <code>/mnt/wsl</code>:</p>
+
+<p><img src="/img/article-photos/random-wsl-tips/shared.gif" alt="" /></p>
+
+<p>Keep in mind, however, that by default the directory is temporary, and everything gets removed when the WSL virtual machine restarts.
+(Interestingly enough, Docker Desktop for Windows <a href="https://engineering.docker.com/2019/10/new-docker-desktop-wsl2-backend/" target="_blank">leverages cross-distro support</a> to expose the Docker daemon across distributions.)</p>
+
+<h3 id="3-running-native-docker-and-a-kubernetes-cluster">3. Running native Docker and a Kubernetes cluster</h3>
+
+<p>Docker released a <a href="https://docs.docker.com/docker-for-windows/wsl-tech-preview/" target="_blank">tech preview on Docker for Windows and WSL2</a> - this removes the Moby Linux VM and runs Docker in a WSL distribution. If you need to use Docker across Windows and WSL, and even between multiple WSL distributions, you should really give it a try!</p>
+
+<p>But if you only need to use Docker within a single WSL distribution, it might be easier to just install Docker natively, <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/" target="_blank">according to the docs</a>, and just start and stop it as you need:</p>
+
+<pre><code class="language-shell">$ sudo /etc/init.d/docker start
+ * Starting Docker: docker         [ OK ]
+
+# do your Docker work
+
+$ sudo /etc/init.d/docker stop
+ * Stopping Docker: docker         [ OK ]
+</code></pre>
+
+<p>This way, you&rsquo;re only using resources when you actually need them.</p>
+
+<p>If you have Docker installed, you can use <a href="https://kind.sigs.k8s.io/" target="_blank">Kind</a> to create a local Kubernetes cluster. You can start using any tools you want to interact with your cluster, including <a href="https://github.com/vmware-tanzu/octant" target="_blank">Octant</a>, a very nice dashboard and explorer for clusters. At this point, you can either start a browser instance on Windows, or if you&rsquo;re using an X server, on Linux.
+(You can use the same method to start the <a href="https://github.com/linkerd/linkerd2" target="_blank">Linkerd</a>, or <a href="https://github.com/brigadecore/brigade" target="_blank">Brigade</a> dashboards.)</p>
+
+<p><img src="/img/article-photos/random-wsl-tips/oct.gif" alt="" /></p>
+
+<h3 id="4-explorer-exe-starts-windows-explorer-in-the-current-directory">4. <code>explorer.exe .</code> starts Windows Explorer in the current directory</h3>
+
+<p>If you need a file explorer, you can use the built-in Windows Explorer - from any terminal console, if you type <code>explorer.exe .</code>, Windows Explorer will start in the current directory, allowing you to navigate the entire Linux filesystem. If you have multiple running distributions, you can see and interact with all of their filesystems:</p>
+
+<p><img src="/img/article-photos/random-wsl-tips/exp2.gif" alt="" /></p>
+
+<h3 id="5-code-starts-vs-code-remote-wsl-in-the-current-directory">5. <code>code .</code> starts VS Code Remote WSL in the current directory</h3>
+
+<p>If you are using <a href="https://code.visualstudio.com/docs/remote/wsl" target="_blank">VS Code Remote WSL</a>, you can directly start a new instance of VS Code from any terminal console by using the <code>code</code>, or <code>code-insiders</code> commands, followed by the directory you want to open. If you want to reuse a currently opened VS Code instance, you can pass the <code>-r</code> flag:</p>
+
+<p><img src="/img/article-photos/random-wsl-tips/c.gif" alt="" /></p>
+
+<p>This is an easy way of quickly editing Linux files by opening them directly in VS Code, for example: <code>code ~/.bashrc</code>.</p>
+
+<h3 id="6-use-windows-applications-with-wsl-paths">6. Use Windows applications with WSL paths</h3>
+
+<p>We&rsquo;ve seen earlier that the WSL filesystem is accessible from Windows Explorer - but you can use it from any Windows application - keeping in mind that <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-ux-changes#cross-os-file-speed-will-be-slower-in-initial-preview-builds" target="_blank">file access speeds across operating systems will be slower</a>, you can pass the WSL directory path to the Windows application and you can start using it.</p>
+
+<p>Here&rsquo;s GitHub Desktop running on Windows, with a repository from WSL - ideally, you might want to use Linux <code>git</code> command line, but this is a great way to review PRs, or view diffs:</p>
+
+<p><img src="/img/article-photos/random-wsl-tips/gh.PNG" alt="" /></p>
+
+<h3 id="7-cleanup-processes-terminate-instances-shutdown-the-vm">7. Cleanup processes, terminate instances, shutdown the VM</h3>
+
+<p><a href="https://github.com/microsoft/vscode-remote-release/issues/1244" target="_blank">Sometimes</a> after closing a window, VS Code doesn&rsquo;t stop all the server processes immediately in WSL - if you want to terminate all VS Code processes, you can use <code>pkill</code> to manually terminate all of them:</p>
+
+<pre><code class="language-shell">$ pkill -f vscode
+</code></pre>
+
+<p>There was a recent <a href="https://devblogs.microsoft.com/commandline/memory-reclaim-in-the-windows-subsystem-for-linux-2/" target="_blank">blog post</a> by the WSL team about improvements to memory reclaim - this is much better in the latest build, but I still find myself manually terminating a distribution, or the entire virtual machine, after a resource intensive operation, or when I finished working within WSL:</p>
+
+<pre><code class="language-shell">$ powershell.exe wsl.exe --terminate &lt;your-distro&gt;
+# OR
+$ powershell.exe wsl.exe --shutdown
+</code></pre>
+
+<h3 id="8-exporting-importing-and-duplicating-distributions">8. Exporting, importing, and duplicating distributions</h3>
+
+<p>In the <a href="/blog/wsl-versioned-filesystem-docker/">previous article</a> we explored how to build a WSL distribution based on a Dockerfile, by building a container, then exporting its filesystem, then importing it with <code>wsl --import</code>. This is also the simplest way of running a newer Ubuntu version (you can download 16.04 and 18.04 from the Store, but if you want anything newer, export the filesystem from a container based on that distribution.)</p>
+
+<p>You can create multiple instances of the same distribution by importing the same filesystem multiple times. However, if you want to duplicate your current environment:</p>
+
+<pre><code>$ wsl --export &lt;distribution&gt; &lt;archive-file-name&gt;
+$ wsl --import &lt;new-distribution&gt; &lt;install-location&gt; &lt;archive-file-name&gt;
+</code></pre>
+
+<p>Now you have two identical distributions - you can do any potential harmful testing in one environment, then delete it.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
