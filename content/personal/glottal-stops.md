@@ -3,7 +3,7 @@ title = "Glottal stops and alveolar taps as a non-native English speaker"
 description = "If English is three languages in a trenchcoat pretending to be a language, then pronunciation is that trenchcoat made of hundreds of patches from different fabric."
 summary = "Because of the notoriously confusing nature of English pronunciation in terms of phonemes, rather than letters of the alphabet, one must be aware, for example, that the word ‘enough’ begins with the same vowel phoneme as the beginning of the word ‘inept’, and ends with the same consonant as ‘stuff’."
 date = "2019-09-07"
-tags = ["non-tech"]
+tags = ["personal"]
 draft = false
 +++
 

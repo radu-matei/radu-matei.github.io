@@ -3,10 +3,12 @@ author = "Radu Matei"
 tags = ["wsl"]
 date = "2019-11-09"
 title = "Random WSL tips & tricks"
-description = ""
-summary = ""
+description = "If you're getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution."
+summary = "If you're getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution."
 image = "/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png"
 +++
+
+If you're getting started with using WSL2, here are a few tips for making the most of your experience - from running Linux GUI apps, to accessing the Linux filesystem from Windows Explorer or exporting your distribution.
 
 ### 1. Running GUI applications with an X server
 
@@ -54,7 +56,7 @@ $ sudo /etc/init.d/docker stop
 
 This way, you're only using resources when you actually need them.
 
-If you have Docker installed, you can use [Kind][kind] to create a local Kubernetes cluster. You can start using any tools you want to interact with your cluster, including [Octant][octant], a very nice dashboard and explorer for clusters - the catch here is that Octant starts a web server locally, then opens the browser - so if you want to run it, you should look at the how to set up an X server.
+If you have Docker installed, you can use [Kind][kind] to create a local Kubernetes cluster. You can start using any tools you want to interact with your cluster, including [Octant][octant], a very nice dashboard and explorer for clusters. At this point, you can either start a browser instance on Windows, or if you're using an X server, on Linux.
 (You can use the same method to start the [Linkerd][linkerd], or [Brigade][brigade] dashboards.)
 
 ![](/img/article-photos/random-wsl-tips/oct.gif)
@@ -71,15 +73,17 @@ If you are using [VS Code Remote WSL][remote-wsl], you can directly start a new 
 
 ![](/img/article-photos/random-wsl-tips/c.gif)
 
-### 5. Use Windows applications with WSL paths
+This is an easy way of quickly editing Linux files by opening them directly in VS Code, for example: `code ~/.bashrc`.
 
-We've seen earlier that the WSL filesystem is accessible from Windows Explorer - but you can use it from any Windows application - keeping in mind that [cross operating speeds will be slower][speed], you can simply pass the WSL directory path to the Windows application and you can start using it.
+### 6. Use Windows applications with WSL paths
+
+We've seen earlier that the WSL filesystem is accessible from Windows Explorer - but you can use it from any Windows application - keeping in mind that [file access speeds across operating systems will be slower][speed], you can pass the WSL directory path to the Windows application and you can start using it.
 
 Here's GitHub Desktop running on Windows, with a repository from WSL - ideally, you might want to use Linux `git` command line, but this is a great way to review PRs, or view diffs:
 
 ![](/img/article-photos/random-wsl-tips/gh.PNG)
 
-### 6. Cleanup processes, terminate instances, shutdown the VM
+### 7. Cleanup processes, terminate instances, shutdown the VM
 
 [Sometimes][code-issue] after closing a window, VS Code doesn't stop all the server processes immediately in WSL - if you want to terminate all VS Code processes, you can use `pkill` to manually terminate all of them:
 
@@ -94,6 +98,19 @@ $ powershell.exe wsl.exe --terminate <your-distro>
 # OR
 $ powershell.exe wsl.exe --shutdown
 ```
+
+### 8. Exporting, importing, and duplicating distributions
+
+In the [previous article][article] we explored how to build a WSL distribution based on a Dockerfile, by building a container, then exporting its filesystem, then importing it with `wsl --import`. This is also the simplest way of running a newer Ubuntu version (you can download 16.04 and 18.04 from the Store, but if you want anything newer, export the filesystem from a container based on that distribution.)
+
+You can create multiple instances of the same distribution by importing the same filesystem multiple times. However, if you want to duplicate your current environment:
+
+```
+$ wsl --export <distribution> <archive-file-name>
+$ wsl --import <new-distribution> <install-location> <archive-file-name>
+```
+
+Now you have two identical distributions - you can do any potential harmful testing in one environment, then delete it.
 
 [xfce]: https://github.com/QMonkey/wsl-tutorial
 [x]: https://sourceforge.net/projects/vcxsrv/

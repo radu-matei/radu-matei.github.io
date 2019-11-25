@@ -16,6 +16,13 @@
         <h1 class="title">{{ .Title }}</h1>
         {{ if and (.Site.Params.Info.adsense) (.Params.adsenseTop) }} {{ partial "adsense" . }} {{ end }}
         <div class="content">
+            <!-- {{- with .Content -}}
+            <div>
+                {{ . | replaceRE "(<h[1-9] id=\"([^\"]+)\".+)(</h[1-9]+>)" `${1}<a href="#${2}" class="hanchor fa fa-link" ariaLabel="Anchor"></a> ${3}` | safeHTML }}
+            </div>
+            {{- end -}} -->
+
+
             {{ .Content }}
 
             {{ if in .Params.tags "stories" }}
