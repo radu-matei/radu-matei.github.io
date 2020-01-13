@@ -116,78 +116,54 @@
             
 
 
-            
-
-<!-- **Table of Contents**
-
-- [Introduction](#introduction)
-- [Getting Started with ASP .NET Core 1.0](#getting-started-with-asp-net-core-10)
-- [Make the project a web application](#make-the-project-a-web-application)
-- [Conclusion](#conclusion)
-
-Introduction
---------------- -->
-
+            <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <blockquote>
 <ul>
-<li><p>ASP.NET Core is a new open-source and cross-platform framework for building modern cloud based internet connected applications, such as web apps, IoT apps and mobile backends.</p></li>
-
-<li><p>ASP.NET Core apps can run on .NET Core or on the full .NET Framework. It was architected to provide an optimized development framework for apps that are deployed to the cloud or run on-premises. It consists of modular components with minimal overhead, so you retain flexibility while constructing your solutions. You can develop and run your ASP.NET Core apps cross-platform on Windows, Mac and Linux. ASP.NET Core is open source at GitHub.</p></li>
-
-<li><p>The best resource to understand what ASP.NET Core is and why it was built is the <a href="https://docs.asp.net/en/latest/intro.html" target="_blank">official ASP .NET Core documentation</a>.</p></li>
+<li>ASP.NET Core is a new open-source and cross-platform framework for building modern cloud based internet connected applications, such as web apps, IoT apps and mobile backends.</li>
 </ul>
 </blockquote>
-
+<blockquote>
+<ul>
+<li>ASP.NET Core apps can run on .NET Core or on the full .NET Framework. It was architected to provide an optimized development framework for apps that are deployed to the cloud or run on-premises. It consists of modular components with minimal overhead, so you retain flexibility while constructing your solutions. You can develop and run your ASP.NET Core apps cross-platform on Windows, Mac and Linux. ASP.NET Core is open source at GitHub.</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>The best resource to understand what ASP.NET Core is and why it was built is the <a href="https://docs.asp.net/en/latest/intro.html">official ASP .NET Core documentation</a>.</li>
+</ul>
+</blockquote>
 <p>ASP .NET Core is a complete re-write of the 4.6 framework that was launched out last year and comes with a completely new architecture based on .NET Core.
 ASP .NET Core is no longer based on<code>System.Web</code>. Instead, everything in the framework is modular and comes as NuGet packages which allows you to only include in your application the packages that you will use, resulting in a smaller application footprint and better performance.</p>
-
-<p>It comes with integrated <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html" target="_blank">dependency injection</a>, a new request pipeline middleware and the ability to plug in your own web server (IIS - Windows only or Kestrel inside your own process in Windows, macOS and Linux) and run across operating systems with very similar development processes and tools.</p>
-
-<p>Together with <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>, the client-side framework of your choice (Angular 2, React, Aurelia etc), familiar tools for web developers (that didn&rsquo;t have very good support on Windows until very recently) like Grunt, Gulp or Bower and with a superior performance compared to Node, for example, Microsoft bets on ASP .NET Core to become one of the preferred frameworks when building modern web and cloud applications.</p>
-
+<p>It comes with integrated <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html">dependency injection</a>, a new request pipeline middleware and the ability to plug in your own web server (IIS - Windows only or Kestrel inside your own process in Windows, macOS and Linux) and run across operating systems with very similar development processes and tools.</p>
+<p>Together with <a href="https://www.typescriptlang.org/">TypeScript</a>, the client-side framework of your choice (Angular 2, React, Aurelia etc), familiar tools for web developers (that didn't have very good support on Windows until very recently) like Grunt, Gulp or Bower and with a superior performance compared to Node, for example, Microsoft bets on ASP .NET Core to become one of the preferred frameworks when building modern web and cloud applications.</p>
 <blockquote>
-<p>For the complete section on client-side development with ASP .NET Core see <a href="https://docs.asp.net/en/latest/client-side/index.html" target="_blank">the Official ASP .NET Core Documentation</a>.</p>
+<p>For the complete section on client-side development with ASP .NET Core see <a href="https://docs.asp.net/en/latest/client-side/index.html">the Official ASP .NET Core Documentation</a>.</p>
 </blockquote>
-
-<p>The ASP .NET Core team made a priority building a great development experience for client-side frameworks and you can see the work-in-progress on the <a href="https://github.com/aspnet/JavaScriptServices/" target="_blank">JavaScriptServices repository on GitHub</a>.</p>
-
-<h1 id="getting-started-with-asp-net-core-1-0">Getting Started with ASP .NET Core 1.0</h1>
-
-<p>The first step in beginning development is to install .NET Core. You should <a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md" target="_blank">follow this tutorial on how to get started with .NET Core and build a basic console application</a>.</p>
-
+<p>The ASP .NET Core team made a priority building a great development experience for client-side frameworks and you can see the work-in-progress on the <a href="https://github.com/aspnet/JavaScriptServices/">JavaScriptServices repository on GitHub</a>.</p>
+<h1 id="getting-started-with-asp-net-core-10">Getting Started with ASP .NET Core 1.0</h1>
+<p>The first step in beginning development is to install .NET Core. You should <a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md">follow this tutorial on how to get started with .NET Core and build a basic console application</a>.</p>
 <p>After installing .NET Core, open a command-line prompt, create a new directory and add a <code>dotnet</code> application.</p>
-
-<pre><code class="language-bash">$ mkdir aspnet-core-tutorial
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir aspnet-core-tutorial
 $ cd aspnet-core-tutorial
 $ dotnet new
-</code></pre>
-
-<p><img src="/img/article-photos/aspnet-core-getting-started/powershell-dotnet-new.JPG" alt="" /></p>
-
+</code></pre></div><p><img src="/img/article-photos/aspnet-core-getting-started/powershell-dotnet-new.JPG" alt=""></p>
 <blockquote>
 <p>The same commands work across Windows PowerShell and the macOS and Linux Terminal</p>
 </blockquote>
-
 <p>To check if everything is in place, execute the following commands:</p>
-
-<pre><code class="language-bash">$ dotnet restore
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ dotnet restore
 $ dotnet run
-</code></pre>
-
-<p><img src="/img/article-photos/aspnet-core-getting-started/powershell-dotnet-restore-run.JPG" alt="" /></p>
-
+</code></pre></div><p><img src="/img/article-photos/aspnet-core-getting-started/powershell-dotnet-restore-run.JPG" alt=""></p>
 <blockquote>
-<p><a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md" target="_blank">This tutorial</a> explains all commands involved here.</p>
-
-<p><a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md#installing-visual-studio-code" target="_blank">Install Visual Studio Code</a> and open the project you created.</p>
+<p><a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md">This tutorial</a> explains all commands involved here.</p>
 </blockquote>
-
+<blockquote>
+<p><a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md#installing-visual-studio-code">Install Visual Studio Code</a> and open the project you created.</p>
+</blockquote>
 <h2 id="make-the-project-a-web-application">Make the project a web application</h2>
-
 <p>As we established earlier, every library in the new .NET Core is a package. So in order to use some packages, we will add them in <code>project.json</code> and at compile time, the packages get downloaded from NuGet.</p>
-
 <p>In order to host a web application, we need to have a dependency on the web server - Kestrel. After adding this dependency, the <code>project.json</code> file should look like this:</p>
-
 <pre><code>{
   &quot;version&quot;: &quot;1.0.0-*&quot;,
   &quot;buildOptions&quot;: {
@@ -208,14 +184,10 @@ $ dotnet run
     }
   }
 }
-</code></pre>
-
-<blockquote>
-<p>When running on Windows, we can choose between the classic IIS web server and the new web server Kestrel web server (based on <a href="https://github.com/libuv/libuv" target="_blank">libuv</a>) that runs across operating systems.</p>
+</code></pre><blockquote>
+<p>When running on Windows, we can choose between the classic IIS web server and the new web server Kestrel web server (based on <a href="https://github.com/libuv/libuv">libuv</a>) that runs across operating systems.</p>
 </blockquote>
-
 <p>In <code>Program.cs</code> we add the following:</p>
-
 <pre><code>using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -240,42 +212,29 @@ namespace ConsoleApplication
         }
     }
 }
-</code></pre>
-
-<p>In <code>Main</code> we create an instance of <code>WebHostBuilder</code>, which follows the <a href="https://en.wikipedia.org/wiki/Builder_pattern" target="_blank">builder pattern</a> to create a web application host, which then is used to define which web server to use - <code>.UseKestrel()</code>.</p>
-
+</code></pre><p>In <code>Main</code> we create an instance of <code>WebHostBuilder</code>, which follows the <a href="https://en.wikipedia.org/wiki/Builder_pattern">builder pattern</a> to create a web application host, which then is used to define which web server to use - <code>.UseKestrel()</code>.</p>
 <p>The <code>.Build()</code> and <code>.Run()</code> methods will start listening for HTTP requests.</p>
-
 <blockquote>
 <p>Even if we create a web app, we started with a console application and added elements that allowed it to start listening for incoming HTTP requests.</p>
-
+</blockquote>
+<blockquote>
 <p>The entry point for web applications in ASP .NET Core is also the <code>Main</code> method.</p>
 </blockquote>
-
 <p>This is a very basic web application. For every request, it will simply respond with <code>Hello, Universe!</code> and the current time of the server. It is the most simple application logic and in further examples we will examine handling more complex requests.</p>
-
 <pre><code> .Configure(app =&gt; app.Run(context =&gt;
    {
       var response = String.Format(&quot;Hello, Universe! It is {0}&quot;, DateTime.Now);
       return context.Response.WriteAsync(response);
     }))
 
-</code></pre>
-
-<p>This is the part that actually creates the response - it is a <a href="https://msdn.microsoft.com/en-us/library/bb397687.aspx" target="_blank">Lambda Expression</a> that takes the <code>context</code> as parameter and writes the response asynchronous and is called a <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html#what-is-middleware" target="_blank">request delegate</a>.</p>
-
+</code></pre><p>This is the part that actually creates the response - it is a <a href="https://msdn.microsoft.com/en-us/library/bb397687.aspx">Lambda Expression</a> that takes the <code>context</code> as parameter and writes the response asynchronous and is called a <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html#what-is-middleware">request delegate</a>.</p>
 <p>You can either run the application from the command line (<code>dotnet run</code>) or from VS Code.
 To run it from VS Code, go to the debugging pane (or press Ctrl/Cmd + Shift + D) and start the application.</p>
-
-<p>After the application starts, open a browser and navigate to <a href="http://localhost:5000" target="_blank">http://localhost:5000</a>.
+<p>After the application starts, open a browser and navigate to http://localhost:5000.
 If everything worked as expected, you should see the following:</p>
-
-<p><img src="/img/article-photos/aspnet-core-getting-started//aspnet-core-hello-universe-browser.JPG" alt="" /></p>
-
+<p><img src="/img/article-photos/aspnet-core-getting-started//aspnet-core-hello-universe-browser.JPG" alt=""></p>
 <h2 id="conclusion">Conclusion</h2>
-
 <p>We built a very basic web application starting from the console application template by adding the Kestrel dependency and by using <code>WebHostBuilder</code> to create the application host.</p>
-
 <p>For each request we built the response containing a simple message and the current time of the server.</p>
 
 
@@ -326,7 +285,7 @@ If everything worked as expected, you should see the following:</p>
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

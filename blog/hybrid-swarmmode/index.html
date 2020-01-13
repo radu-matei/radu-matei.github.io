@@ -122,231 +122,134 @@
             
 
 
-            
-
-<p>Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.</p>
-
+            <p>Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.</p>
 <p>Here is a list of resources you might want to get started with before diving into this article:</p>
-
 <ul>
-<li><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/" target="_blank">Getting started with Swarm Mode and Linux Containers - Docker docs</a></li>
-<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode" target="_blank">Getting started with Swarm Mode and Windows Containers - Microsoft docs</a></li>
-<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters" target="_blank">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a></li>
+<li><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/">Getting started with Swarm Mode and Linux Containers - Docker docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode">Getting started with Swarm Mode and Windows Containers - Microsoft docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a></li>
 </ul>
-
 <h3 id="how-is-this-article-different-compared-to-the-docs-above">How is this article different compared to the docs above?</h3>
-
-<p>In this article we will focus on deploying the cluster on Azure programmatically, using <a href="https://github.com/Azure/acs-engine" target="_blank">acs-engine</a>, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview" target="_blank">ARM (Azure Resource Manager) templates</a> for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
-
-<p>While you can <a href="https://github.com/Azure/acs-engine" target="_blank">find more information about acs-engine on the GitHub repo</a>, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/" target="_blank">various Azure command-line interfaces</a> like Azure CLI 2.0 or Azure PowerShell.</p>
-
-<h3 id="getting-started-prerequisites">Getting started - prerequisites</h3>
-
-<p>This article will continue under the assumption that you have an active Azure subscription. If you don&rsquo;t, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/" target="_blank">Visual Studio Dev Essentials</a> (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md" target="_blank">this link on how to activate your free monthly $25</a>), or a <a href="https://azure.microsoft.com/en-us/free/" target="_blank">free trial</a>.</p>
-
+<p>In this article we will focus on deploying the cluster on Azure programmatically, using <a href="https://github.com/Azure/acs-engine">acs-engine</a>, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview">ARM (Azure Resource Manager) templates</a> for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
+<p>While you can <a href="https://github.com/Azure/acs-engine">find more information about acs-engine on the GitHub repo</a>, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/">various Azure command-line interfaces</a> like Azure CLI 2.0 or Azure PowerShell.</p>
+<h3 id="getting-started---prerequisites">Getting started - prerequisites</h3>
+<p>This article will continue under the assumption that you have an active Azure subscription. If you don't, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/">Visual Studio Dev Essentials</a> (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md">this link on how to activate your free monthly $25</a>), or a <a href="https://azure.microsoft.com/en-us/free/">free trial</a>.</p>
 <blockquote>
-<p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster" target="_blank">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a> where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
+<p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a> where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
 </blockquote>
-
 <h3 id="understanding-all-types-of-containers">Understanding all types of containers</h3>
-
 <p>First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations.</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/journey.png" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/journey.png" alt=""></p>
 <blockquote>
-<p><a href="https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/" target="_blank">Photo credits to Bruno Terkaly, from this article</a></p>
+<p><a href="https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/">Photo credits to Bruno Terkaly, from this article</a></p>
 </blockquote>
-
-<p>Linux containers use the host kernel to run &ldquo;containerized&rdquo; workloads - that is execute the process inside the container using Linux kernel features like cgroups and namespaces. Of course, to run Linux containers you need a Linux kernel - this hasn&rsquo;t changed and will not change any time soon.</p>
-
-<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank">When we talk about the Windows ecosystem</a>, we have Windows Server Containers and Hyper-V Containers.</p>
-
-<p>Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank">source - Microsoft docs</a>)</p>
-
-<p>Hyper-V Containers - &ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank">source - Microsoft docs</a>)</p>
-
-<p>However, there&rsquo;s a twist: announced at DockerCon 2017, you will be able to run Linux containers on Windows hosts using Hyper-V Isolation</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg" alt="" /></p>
-
+<p>Linux containers use the host kernel to run &ldquo;containerized&rdquo; workloads - that is execute the process inside the container using Linux kernel features like cgroups and namespaces. Of course, to run Linux containers you need a Linux kernel - this hasn't changed and will not change any time soon.</p>
+<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">When we talk about the Windows ecosystem</a>, we have Windows Server Containers and Hyper-V Containers.</p>
+<p>Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">source - Microsoft docs</a>)</p>
+<p>Hyper-V Containers - &ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">source - Microsoft docs</a>)</p>
+<p>However, there's a twist: announced at DockerCon 2017, you will be able to run Linux containers on Windows hosts using Hyper-V Isolation</p>
+<p><img src="/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg" alt=""></p>
 <blockquote>
-<p><a href="https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/" target="_blank">Image from The New Stack</a></p>
+<p><a href="https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/">Image from The New Stack</a></p>
 </blockquote>
-
-<p>This is all possible through the new <a href="https://github.com/linuxkit/linuxkit" target="_blank">LinuxKit project</a>, but more on this on a separate article in the future.</p>
-
+<p>This is all possible through the new <a href="https://github.com/linuxkit/linuxkit">LinuxKit project</a>, but more on this on a separate article in the future.</p>
 <p>After we deploy our cluster, we will be able to deploy all types of containers described above.</p>
-
 <h3 id="the-acs-engine-cluster-definition">The <code>acs-engine</code> cluster definition</h3>
-
 <p>As said earlier, we will use a JSON cluster definition file to, well, define our cluster.</p>
-
 <script type="application/javascript" src="https://gist.github.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f.js"></script>
 
-
 <p>This is a pretty standard cluster definition file for acs-engine, except for the addition of <code>windowspool</code>, a pool of Windows Server agents in our cluster.</p>
-
 <blockquote>
-<p>You can find <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md" target="_blank">in-depth documentation for the cluster definition on the acs-engine GitHub repo here.</a></p>
+<p>You can find <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md">in-depth documentation for the cluster definition on the acs-engine GitHub repo here.</a></p>
 </blockquote>
-
 <p>From the definition file, we see that we have a Swarm Mode cluster, with 3 Linux masters, 3 Linux agents and 3 Windows Server 2016 agents. Before we can use this definition file, we need to add the required values for <code>dnxPrefix</code> for the masters, Linux and Windows agents.</p>
-
 <p>You must also provide a username and public SSH key for the Linux VMs and a username and password for the Windows VMs, and you can change the default number of 3 for the agent and master count.</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/acs-swarmmode.png" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/acs-swarmmode.png" alt=""></p>
 <p>Compared to the image above, there is an additional VM Scale Set with the Windows agents. All VMs are in the same VNET, with the masters on a private subnet. All VMs are fully accessible to each other.</p>
-
 <h3 id="deploying-the-cluster-to-azure">Deploying the cluster to Azure</h3>
-
 <p>So far we only have a cluster definition (with values for FQDN, usernames and passwords). Before we can actually deploy, we need to generate the ARM templates using acs-engine.</p>
-
-<p>In order to do this, we will use the <code>acs-engine</code> tool. After we have the ARM template, we will use the <code>az</code> CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the <a href="https://docs.microsoft.com/en-us/azure/cloud-shell/overview" target="_blank">Azure Cloud Shell</a>.</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/cloud-shell.png" alt="" /></p>
-
+<p>In order to do this, we will use the <code>acs-engine</code> tool. After we have the ARM template, we will use the <code>az</code> CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the <a href="https://docs.microsoft.com/en-us/azure/cloud-shell/overview">Azure Cloud Shell</a>.</p>
+<p><img src="/img/article-photos/hybrid-swarmmode/cloud-shell.png" alt=""></p>
 <blockquote>
 <p>List of tools and languages supported in the Azure Cloud Shell</p>
 </blockquote>
-
-<p>Log into <a href="https://portal.azure.com" target="_blank">portal.azure.com</a> and request a cloud shell. You should see something like this:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/portal-shell.PNG" alt="" /></p>
-
-<p>Now we should <a href="https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine" target="_blank">follow the instructions in the acs-engine documentation</a> and install acs-engine in the Azure Cloud Shell.</p>
-
+<p>Log into <a href="https://portal.azure.com">portal.azure.com</a> and request a cloud shell. You should see something like this:</p>
+<p><img src="/img/article-photos/hybrid-swarmmode/portal-shell.PNG" alt=""></p>
+<p>Now we should <a href="https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine">follow the instructions in the acs-engine documentation</a> and install acs-engine in the Azure Cloud Shell.</p>
 <p>First, we need to create a new directory called <code>go</code> and set it as <code>GOPATH</code>: <code>mkdir go</code> and <code>export GOPATH=/home/{yourusername}/go</code>.</p>
-
 <p>Then, we need to download the package for acs-engine: <code>go get github.com/Azure/acs-engine</code>, then navigate to the source of the package and build it: <code>go build</code>.</p>
-
 <p>Then, we add the <code>bin</code> folder from the <code>go</code> directory in the path:</p>
-
 <p><code>export PATH=$PATH:/home/{yourusername}/go/bin</code></p>
-
 <p>Now you should be able to execute <code>acs-engine</code> from any directory:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/acs-engine.PNG" alt="" /></p>
-
-<p>Now let&rsquo;s create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or <code>wget</code> the file:</p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/acs-engine.PNG" alt=""></p>
+<p>Now let's create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or <code>wget</code> the file:</p>
 <pre><code>wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json
-</code></pre>
-
-<p>After you edit the file with your values, generate the ARM templates using <code>acs-engine generate swarmmode-hybrid.json</code>:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/acs-engine-generate.PNG" alt="" /></p>
-
+</code></pre><p>After you edit the file with your values, generate the ARM templates using <code>acs-engine generate swarmmode-hybrid.json</code>:</p>
+<p><img src="/img/article-photos/hybrid-swarmmode/acs-engine-generate.PNG" alt=""></p>
 <p>This will create an <code>_output</code> directory that will contain the ARM template tht we will use for the deployment.</p>
-
 <p>First of all, we will create a new resource group: <code>az group create --location westeurope --name your-resourcegroup-name</code></p>
-
 <blockquote>
 <p>Note that you should choose the region closest to your location.</p>
 </blockquote>
-
 <p>Then, using the generated files <code>azuredeploy.json</code> and <code>azuredeploy.parameters.json</code>, create a new deployment using the <code>az</code> command-line interface:</p>
-
 <pre><code>az group deployment create
     --name hybrid-swarmmode-deployment
     --resource-group {your-resource-group}
     --template-file azuredeploy.json
     --parameters azuredeploy.parameters.json
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>Note that you can also use a local installation of <code>az</code>, or in a container, or any method of deploying ARM templates.</p>
 </blockquote>
-
 <p>After the deployment started, here is how the resource group should look like:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/rg.PNG" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/rg.PNG" alt=""></p>
 <p>Notice the resources created in the resource group:</p>
-
 <ul>
 <li>3 public IPs for masters, Linux agents and Windows agents</li>
 <li>load balancers for masters, Linux agents and Windows agents</li>
 <li>VM scale sets for the agents and availability sets</li>
 <li>network interfaces and OS disks for the masters</li>
 </ul>
-
 <h3 id="connecting-to-the-cluster">Connecting to the cluster</h3>
-
 <p>After the deployment succeeds, you are now ready to connect to the master. You will SSH into the masters using the user and SSH key you setup in the cluster definition file. The 3 FQDNs will have the following template:</p>
-
 <p><code>{yourfqdnname}.{azurelocation}.cloudapp.azure.com</code></p>
-
 <p>Each master can be publicly accessed using the FQDN and one of the ports (2200..220x) (So you will access the first master on 2200, the second master on 2201 and so on.). For example, to SSH into the first master, use the following:</p>
-
 <pre><code>ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200
-</code></pre>
-
-<p>Then, if you list all nodes in the cluster you might first see this:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/docker-node-ls.PNG" alt="" /></p>
-
+</code></pre><p>Then, if you list all nodes in the cluster you might first see this:</p>
+<p><img src="/img/article-photos/hybrid-swarmmode/docker-node-ls.PNG" alt=""></p>
 <p>This means we only see the 3 masters and the 3 Linux agents. This means that even though the Windows nodes were deployed, they did not join the swarm.</p>
-
 <p>A very quick solution is to reimage the Windows agents. This means restoring them to the initial state and executing all scripts that were executed when initializing the cluster.</p>
-
 <blockquote>
-<p>A very probable cause of this could be that <a href="https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1" target="_blank">the script that joins the Windows agents to the cluster</a> might get executed before the masters actually start.</p>
+<p>A very probable cause of this could be that <a href="https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1">the script that joins the Windows agents to the cluster</a> might get executed before the masters actually start.</p>
 </blockquote>
-
 <p>After reimaging or restarting the VMs, your cluster should look like this:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/node-ls-wc.PNG" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/node-ls-wc.PNG" alt=""></p>
 <p>Now you have a full hybrid Swarm Mode cluster, with some Windows agents, as well as Linux ones:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/node-inspect.PNG" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/node-inspect.PNG" alt=""></p>
 <h3 id="deploying-services-to-the-cluster">Deploying services to the cluster</h3>
-
 <p>From now on, you can treat this cluster as any other Docker Swarm Mode cluster: with the single mention that you cannot run Linux containers on Windows and Windows containers on Linux. This means that when starting services, we need to put some restrictions in place.</p>
-
 <p>We will deploy a simple Python web application on Linux that will use a Redis data store that we will run on Windows.</p>
-
 <blockquote>
-<p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis" target="_blank">The Python application can be found here</a> and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/" target="_blank">Docker Compose one from the Official Docker Docs</a></p>
+<p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis">The Python application can be found here</a> and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/">Docker Compose one from the Official Docker Docs</a></p>
 </blockquote>
-
 <script type="application/javascript" src="https://gist.github.com/radu-matei/7543e906e3633075cd32231e46628bf1.js"></script>
 
-
 <p>The most important thing to notice in the stack file is the deployment constraint on the node operating system. As stated earlier, this is very important in the stack file as a Linux service will not run in a Windows host and vice-versa.</p>
-
 <p>You can see that the <code>redis</code> service is based on the Windows version of Redis (not something that you would use in production, here just for showcase) and is based on the Nano Server image.</p>
-
 <p>To deploy this on the master, you need the file above. You can copy it, or <code>wget</code> it directly: <code>wget https://gist.githubusercontent.com/radu-matei/7543e906e3633075cd32231e46628bf1/raw/f5e06e372c9a5c57f555e8580eee1c1a5ccb635e/hybrid-stack.yml</code></p>
-
-<p>Then, you need to <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/" target="_blank">create a new stack deployment</a>:</p>
-
+<p>Then, you need to <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/">create a new stack deployment</a>:</p>
 <p><code>docker stack deploy --compose-file hybrid-stack.yml python-redis</code></p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/stack-deploy.PNG" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/stack-deploy.PNG" alt=""></p>
 <p>This will create two new services, the web and Redis ones, and a new network for them.</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/service-ls.PNG" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/service-ls.PNG" alt=""></p>
 <blockquote>
-<p><a href="https://hub.docker.com/r/library/redis/" target="_blank">Since the Nanoserver Redis image</a> is around 340 MB, it will take a little to pull it, then start a container.</p>
+<p><a href="https://hub.docker.com/r/library/redis/">Since the Nanoserver Redis image</a> is around 340 MB, it will take a little to pull it, then start a container.</p>
 </blockquote>
-
 <p>Now since the application that exposes ports is the one running on a Linux node (the web application), we will access it on the port 80 (the one exposed) of the Linux agent FQDN:</p>
-
-<p><img src="/img/article-photos/hybrid-swarmmode/running.PNG" alt="" /></p>
-
+<p><img src="/img/article-photos/hybrid-swarmmode/running.PNG" alt=""></p>
 <h3 id="conclusion">Conclusion</h3>
-
 <p>In this article we saw how to deploy a hybrid Swarm Mode cluster on Azure using acs-engine and how to deploy a mixed-OS containerized application on the cluster we created.
 Next, we will explore how to create a consistent CI/CD story with GitHub and Jenkins (with Linux and Windows slaves that are created dynamically for each build).</p>
-
 <p>If you think this article could be better, please provide your feedback in the comments below.</p>
-
 <p>Thanks for reading :)</p>
 
 
@@ -397,7 +300,7 @@ Next, we will explore how to create a consistent CI/CD story with GitHub and Jen
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

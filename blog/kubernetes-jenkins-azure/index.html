@@ -122,190 +122,121 @@
             
 
 
-            
-
-<!-- Table of Contents
-------------------
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Deploying Jenkins with Helm](#deploying-jenkins-with-helm)
-- [Create credentials for your image repository](#create-credentials-for-your-image-repository)
-- [The Jenkinsfile](#the-jenkinsfile)
-- [Using the Jenkinsfile](#using-the-jenkinsfile)
-- [Investigating what actually happens in the cluster](#investigating-what-actually-happens-in-the-cluster)
-- [Conclusion](#conclusion)
-- [Feedback](#feedback)
-
-Introduction
-------------- -->
-
-<p>In previous articles <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank">we deployed a Kubernetes 1.8 cluster to Azure using acs-engine</a>, then <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/" target="_blank">configured Helm and Draft to simplify testing applications</a>.</p>
-
+            <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>In previous articles <a href="https://radu-matei.com/blog/k8s18-azure/">we deployed a Kubernetes 1.8 cluster to Azure using acs-engine</a>, then <a href="https://radu-matei.com/blog/k8s-helm-draft-azure/">configured Helm and Draft to simplify testing applications</a>.</p>
 <p>In this article we will explore how to deploy Jenkins using Helm and how to configure Jenkins pipelines that build containers, push images to an image repository and update Kubernetes deployments.</p>
-
 <p>To follow along with this article, <em>you need a Kubernetes cluster</em> (we will use Kubernetes v1.8.0, but the instructions were also tested with v1.7.0) with Helm installed and a terminal with <code>kubectl</code> and <code>helm</code> installed and configured.</p>
-
 <blockquote>
-<p><a href="https://radu-matei.com/blog/k8s-helm-draft-azure" target="_blank">This article picks up where the last one ended, so you will need a Kubernetes cluster with <code>helm</code> installed. Here you can find very simple instructions on how to achieve it.</a></p>
+<p><a href="https://radu-matei.com/blog/k8s-helm-draft-azure">This article picks up where the last one ended, so you will need a Kubernetes cluster with <code>helm</code> installed. Here you can find very simple instructions on how to achieve it.</a></p>
 </blockquote>
-
 <p>My cluster is deployed into Azure, West Europe, but you can do the exact same steps using the Google Container Engine or your on-prem cluster (note that you will not be given public IP addresses as is the case with Azure or GKE).</p>
-
 <p>Now to check that everything is configured, verify your cluster information and versions. This is my starting point:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/cluster-info.png" alt="" /></p>
-
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/cluster-info.png" alt=""></p>
 <h3 id="deploying-jenkins-with-helm">Deploying Jenkins with Helm</h3>
-
 <p>Using Helm you can easily deploy well-know applications (like Hadoop, Grafana, MongoDB, Redis) easily on your Kubernetes cluster using charts.</p>
-
 <blockquote>
 <p>Charts are curated application definitions for Kubernetes Helm.</p>
-
-<p>More information on <a href="https://github.com/kubernetes/helm" target="_blank">Helm</a> and <a href="https://github.com/kubernetes/charts" target="_blank">charts</a> on GitHub</p>
 </blockquote>
-
-<p>If we search for <a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Jenkins in the list of stable charts</a>, we find very clear instructions on how to deploy it.</p>
-
+<blockquote>
+<p>More information on <a href="https://github.com/kubernetes/helm">Helm</a> and <a href="https://github.com/kubernetes/charts">charts</a> on GitHub</p>
+</blockquote>
+<p>If we search for <a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins">Jenkins in the list of stable charts</a>, we find very clear instructions on how to deploy it.</p>
 <p>A chart is composed of some templates (Kubernetes deployment files) and a file that holds our specific values for Jenkins - Docker image for master and agents, plugins to install, persistent volumes - basically all configurable values we can get for our Jenkins deployment.</p>
-
 <p>This is the only file we will need to edit ourselves. Below you can find the one I use.</p>
-
 <script type="application/javascript" src="https://gist.github.com/radu-matei/466ae82b4b269d6bb762b088683bf9e6.js"></script>
 
-
 <blockquote>
-<p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" target="_blank">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
+<p><a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins">Here you can find all possible configuration for the values file, adjust it to your specific needs</a>!</p>
 </blockquote>
-
 <p>Note that this version mounts the <code>/var/run/docker.sock</code> socket inside the agent pods so we can built Docker images on our agents. There is a debate on wether you want to actually do that (basically you expose the Docker engine of the Kubernetes agent the pod is running inside), so do it at your own risk.</p>
-
 <blockquote>
 <p>This also installs other plugins - such as Jenkins Blue Ocean.</p>
-
-<p><a href="https://github.com/kubernetes/charts/blob/master/stable/jenkins/values.yaml" target="_blank">The default values for Jenkins (that you can find in this repo)</a> does not expose it, you can use that, but note that some features we will use later (basically <code>docker build</code> inside the worker pod) will not work.</p>
 </blockquote>
-
+<blockquote>
+<p><a href="https://github.com/kubernetes/charts/blob/master/stable/jenkins/values.yaml">The default values for Jenkins (that you can find in this repo)</a> does not expose it, you can use that, but note that some features we will use later (basically <code>docker build</code> inside the worker pod) will not work.</p>
+</blockquote>
 <p>Get this file locally, then execute:</p>
-
 <p><code>helm install --name jenkins -f jenkins-values.yaml stable/jenkins</code></p>
-
 <p>After you deploy the chart, you will get instructions on how to get the initial admin password:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/instructions.png" alt="" /></p>
-
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/instructions.png" alt=""></p>
 <blockquote>
 <p>Note that the initial admin username is <code>admin</code> and you should probably change it :)</p>
 </blockquote>
-
 <p>If you take a look at the state of your cluster, you can see that <code>helm</code> deployed <code>jenkins</code>, which resulted in two services in Kubernetes, one for the master and one for the agents.</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/deployed.png" alt="" /></p>
-
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/deployed.png" alt=""></p>
 <p>Using the initial admin password (follow the instructions you had as output from Helm after deploying Jenkins), go to the public IP of your service and login.</p>
-
 <blockquote>
 <p>You can find the command I used to get the initial admin password, but note that it will vary in your case based on the name you provided and the namespace where you deployed Jenkins.</p>
-
+</blockquote>
+<blockquote>
 <p><code>printf $(kubectl get secret --namespace default jenkins-jenkins -o jsonpath=&quot;{.data.jenkins-admin-password}&quot; | base64 --decode);echo</code></p>
 </blockquote>
-
 <p>Now you have deployed an instance of Jenkins on your Kubernetes cluster using Helm, already configured with all plugins you specified in your <code>jenkins-values.yaml</code> file and with the ability to execute builds on your cluster.</p>
-
 <h3 id="create-credentials-for-your-image-repository">Create credentials for your image repository</h3>
-
 <p>The goal is to have end to end automatic deployment to our Kubernetes cluster. This means we need to push images to an image repository (like Docker Hub, Azure Container Repository, Google Container Repository) as part of our Jenkins build.</p>
-
-<p>Since all the repositories need some sort of authentication, we need to create a credential binding in Jenkins so that we don&rsquo;t keep credentials in source control</p>
-
+<p>Since all the repositories need some sort of authentication, we need to create a credential binding in Jenkins so that we don't keep credentials in source control</p>
 <blockquote>
 <p>Never, ever keep credentials in source control. Or connection strings, or any sort of sensitive information!</p>
-
+</blockquote>
+<blockquote>
 <p>We can keep them as Kuberentes secrets, or as Jenkins secrets. In this case we will use Jenkins secrets, and we will reference them in our Jenkinsfile.</p>
 </blockquote>
-
 <p>Now create new credentials in Jenkins:</p>
-
 <blockquote>
 <p>Click the <strong>Credentials</strong> link in the sidebar</p>
-
-<p>Click on the <strong>Global credentials</strong> domain</p>
-
-<p>Click [<strong>Add Credential</strong>]</p>
-
-<p><a href="https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs" target="_blank">Full Cloudbees article that explains credentials and credential bindings in Jenkins</a></p>
 </blockquote>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/credentials.png" alt="" /></p>
-
-<p>Now that you have the credentials in place (don&rsquo;t forget to also add an intuitive ID for your credentials in the place I left blank!), you can create a new pipeline.</p>
-
-<h3 id="the-jenkinsfile">The <code>Jenkinsfile</code></h3>
-
-<p>The initial goal was to create Jenkins pipelines that we can later store in source control. This pipeline describes our build process, and a usual process when we work with Kubernetes is to build a Docker image, push it to a image repository then to some work with <code>kubectl</code> (like update the image for a deployment), or with <code>helm</code> (update a chart, or deploy a new one).</p>
-
-<p>We will now look at how to write the simplest Jenkinsfile that will to exactly that: build and push an image to a repo and do work with <code>kubectl</code> and <code>helm</code>.</p>
-
 <blockquote>
-<p><a href="https://github.com/jenkinsci/kubernetes-plugin" target="_blank">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
+<p>Click on the <strong>Global credentials</strong> domain</p>
 </blockquote>
-
+<blockquote>
+<p>Click [<strong>Add Credential</strong>]</p>
+</blockquote>
+<blockquote>
+<p><a href="https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs">Full Cloudbees article that explains credentials and credential bindings in Jenkins</a></p>
+</blockquote>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/credentials.png" alt=""></p>
+<p>Now that you have the credentials in place (don't forget to also add an intuitive ID for your credentials in the place I left blank!), you can create a new pipeline.</p>
+<h3 id="the-jenkinsfile">The <code>Jenkinsfile</code></h3>
+<p>The initial goal was to create Jenkins pipelines that we can later store in source control. This pipeline describes our build process, and a usual process when we work with Kubernetes is to build a Docker image, push it to a image repository then to some work with <code>kubectl</code> (like update the image for a deployment), or with <code>helm</code> (update a chart, or deploy a new one).</p>
+<p>We will now look at how to write the simplest Jenkinsfile that will to exactly that: build and push an image to a repo and do work with <code>kubectl</code> and <code>helm</code>.</p>
+<blockquote>
+<p><a href="https://github.com/jenkinsci/kubernetes-plugin">Here you can read all about writing Jenkinsfiles with the Kubernetes plugin for Jenkins</a></p>
+</blockquote>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/376f5a2b042b0df82d7d905c9c6cf8ff.js"></script>
 
-
 <blockquote>
-<p>Don&rsquo;t forget to use your credential ID in the Jenkinsfile!</p>
+<p>Don't forget to use your credential ID in the Jenkinsfile!</p>
 </blockquote>
-
 <p>This Jenkinsfile makes use of having multiple containers in the same Kubernetes pod - we will have 3 containers - one based on a Docker image, one based on <code>kubectl</code> and the last based on <code>helm</code>.</p>
-
 <blockquote>
-<p>You can create your own containers - in this case I used the official one for Docker and the images built by <a href="https://twitter.com/LachlanEvenson" target="_blank">Lachie Evenson</a>, since are widely used on Docker Hub and I kind of trust Lachie :)</p>
-
+<p>You can create your own containers - in this case I used the official one for Docker and the images built by <a href="https://twitter.com/LachlanEvenson">Lachie Evenson</a>, since are widely used on Docker Hub and I kind of trust Lachie :)</p>
+</blockquote>
+<blockquote>
 <p>Use images from the Internet at your own risk!</p>
 </blockquote>
-
-<p>Note that we are mounting the Docker socket inside our pod so the Docker container has access to the Docker engine - this step is debatable for using in production (but it is arguably better than using Docker-in-Docker - <a href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/" target="_blank">read this article</a>).</p>
-
+<p>Note that we are mounting the Docker socket inside our pod so the Docker container has access to the Docker engine - this step is debatable for using in production (but it is arguably better than using Docker-in-Docker - <a href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/">read this article</a>).</p>
 <p>Since we are already running in the cluster, the other two containers are already authenticated.</p>
-
 <p>You can test this Jenkinsfile by creating a simple Jenkins pipeline and pasting this Jenkinsfile directly there (ugly, but the easiest way to do it).</p>
-
 <p>This is part of the output for the Jenkinsfile above. Please note that from within this container you have access to the real cluster!
 You might want to take a look at the new 1.8 RBAC features in Kubernetes, but keep in mind that <em>with great power comes great responsibility!</em></p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/real-cluster.png" alt="" /></p>
-
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/real-cluster.png" alt=""></p>
 <h3 id="using-the-jenkinsfile">Using the <code>Jenkinsfile</code></h3>
-
 <p>Basically, now all you need to do is replace the dummy steps I wrote for each step and you have yourself a fully functional Jenkins pipeline!</p>
-
 <p>Put it side by side with your code in the repository and take care of it just as you would with your source code!</p>
-
 <h3 id="investigating-what-actually-happens-in-the-cluster">Investigating what actually happens in the cluster</h3>
-
-<p>We see that the steps in our Jenkinsfile are executed, but let&rsquo;s explore a bit where that really happens.</p>
-
-<p>Whenever there&rsquo;s a new build, the master will dynamically create agent pods based on your Jenkinsfile. There will always be a <code>jnlp</code> container there that knows how to connect to the master, among with whatever containers you specify.</p>
-
-<p>Let&rsquo;s see that pod in action:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/pod.png" alt="" /></p>
-
+<p>We see that the steps in our Jenkinsfile are executed, but let's explore a bit where that really happens.</p>
+<p>Whenever there's a new build, the master will dynamically create agent pods based on your Jenkinsfile. There will always be a <code>jnlp</code> container there that knows how to connect to the master, among with whatever containers you specify.</p>
+<p>Let's see that pod in action:</p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/pod.png" alt=""></p>
 <p>Here you can see all containers inside the pod (with their image, tag and environment variables).</p>
-
-<p>The cool thing about this plugin is you only see resources being used (CPU + memory) when there&rsquo;s a build in progress. Once that build is done, your resources are freed:</p>
-
-<p><img src="/img/article-photos/kubernetes-jenkins-azure/spike.png" alt="" /></p>
-
+<p>The cool thing about this plugin is you only see resources being used (CPU + memory) when there's a build in progress. Once that build is done, your resources are freed:</p>
+<p><img src="/img/article-photos/kubernetes-jenkins-azure/spike.png" alt=""></p>
 <blockquote>
 <p>The short spike at the end corresponds to a build being executed</p>
 </blockquote>
-
 <h1 id="conclusion">Conclusion</h1>
-
 <p>We deployed Jenkins on our Kubernetes cluster using Helm (in a reproducible way, you can deploy it again with the same plugins at any time - keep this in a source control as well), then saw how to configure credentials and write Jenkinsfiles pipelines.</p>
-
 <p>If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
@@ -357,7 +288,7 @@ As always, thanks for reading, and any feedback is highly appreciated :)</p>
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

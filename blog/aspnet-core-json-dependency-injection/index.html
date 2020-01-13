@@ -116,70 +116,36 @@
             
 
 
-            
-
-<!--
-Table of Content
-----------------
-
-- [Introduction](#introduction)
-- [The need for registering services through a JSON file](#the-need-for-registering-services-through-a-json-file)
-- [Adding the required packages](#adding-the-required-packages)
-- [Creating a dummy service](#creating-a-dummy-service)
-- [How to inject an `ITest` service](#how-to-inject-an-itest-service)
-- [The JSON file](#the-json-file)
-- [The `Service` class](#the-service-class)
-- [Adding the services](#adding-the-services)
-- [Testing the application](#testing-the-application)
-- [The `Startup` class](#the-startup-class)
-- [Conclusion](#conclusion)
-
-
-Introduction
------------- -->
-
+            <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <p>&ldquo;Back in the days&rdquo; of ASP.NET 4.x, each of the framework components (MVC, WebAPI, OWIN, SignalR) had its own dependency resolver and its own way of integrating with the framework.</p>
-
-<p>For example, if you had an application that used MVC/WebAPI, OWIN and SignalR and you wanted to use <a href="http://autofac.readthedocs.io/en/latest/index.html" target="_blank">Autofac</a>, you would have needed individual integrations, with different method names (see <a href="http://autofac.readthedocs.io/en/latest/integration/mvc.html#register-controllers" target="_blank"><code>RegisterControllers</code></a> for MVC and <a href="http://autofac.readthedocs.io/en/latest/integration/webapi.html#register-controllers" target="_blank"><code>RegisterApiControllers</code></a> for WebAPI), different NuGet packages (see <a href="https://www.nuget.org/packages/Autofac.WebApi2/" target="_blank">the package for WebAPI</a> and <a href="https://www.nuget.org/packages/Autofac.Mvc5/" target="_blank">the package for MVC</a>) and different dependency resolvers and you even needed to take care at the order in which you replaced the dependency resolvers for these components.</p>
-
-<p>ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework &ldquo;and most consumer applications built on it&rdquo; (<a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html#replacing-the-default-services-container" target="_blank">as the documentation states</a>).</p>
-
-<p>Of course, you can replace the default DI engine that comes with the framework and use <a href="http://autofac.readthedocs.io/en/latest/integration/aspnetcore.html" target="_blank">Autofac</a>, <a href="https://www.nuget.org/packages/DryIoc.Microsoft.DependencyInjection" target="_blank">Dryloc</a>, <a href="https://www.nuget.org/packages/Grace.DependencyInjection.Extensions" target="_blank">Grace</a>, <a href="https://github.com/seesharper/LightInject.Microsoft.DependencyInjection" target="_blank">LightInject</a> or <a href="https://github.com/structuremap/StructureMap.Microsoft.DependencyInjection" target="_blank">StructureMap</a> and in a future article, we will probably explore a couple of them.</p>
-
+<p>For example, if you had an application that used MVC/WebAPI, OWIN and SignalR and you wanted to use <a href="http://autofac.readthedocs.io/en/latest/index.html">Autofac</a>, you would have needed individual integrations, with different method names (see <a href="http://autofac.readthedocs.io/en/latest/integration/mvc.html#register-controllers"><code>RegisterControllers</code></a> for MVC and <a href="http://autofac.readthedocs.io/en/latest/integration/webapi.html#register-controllers"><code>RegisterApiControllers</code></a> for WebAPI), different NuGet packages (see <a href="https://www.nuget.org/packages/Autofac.WebApi2/">the package for WebAPI</a> and <a href="https://www.nuget.org/packages/Autofac.Mvc5/">the package for MVC</a>) and different dependency resolvers and you even needed to take care at the order in which you replaced the dependency resolvers for these components.</p>
+<p>ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework &ldquo;and most consumer applications built on it&rdquo; (<a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html#replacing-the-default-services-container">as the documentation states</a>).</p>
+<p>Of course, you can replace the default DI engine that comes with the framework and use <a href="http://autofac.readthedocs.io/en/latest/integration/aspnetcore.html">Autofac</a>, <a href="https://www.nuget.org/packages/DryIoc.Microsoft.DependencyInjection">Dryloc</a>, <a href="https://www.nuget.org/packages/Grace.DependencyInjection.Extensions">Grace</a>, <a href="https://github.com/seesharper/LightInject.Microsoft.DependencyInjection">LightInject</a> or <a href="https://github.com/structuremap/StructureMap.Microsoft.DependencyInjection">StructureMap</a> and in a future article, we will probably explore a couple of them.</p>
 <blockquote>
 <p>In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code.</p>
-
-<p>This is a feature in Autofac for ASP.NET and you can <a href="http://docs.autofac.org/en/latest/configuration/xml.html" target="_blank">find it documented here</a>, but we will implement a very basic way of adding services using only the built-in mechanism.</p>
-
-<p>Also, it will not use the <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/" target="_blank">JSON configuration provider</a>.</p>
 </blockquote>
-
-<h3 id="the-need-for-registering-services-through-a-json-file">The need for registering services through a JSON file</h3>
-
-<p>A very simple reason to think about using a JSON file when registering DI services is because you might not know (or cannot choose) the concrete implementation at compile-time.</p>
-
-<p>Another reason could be for switching implementations for testing purposes.</p>
-
 <blockquote>
-<p>You can also <a href="https://docs.asp.net/en/latest/fundamentals/environments.html" target="_blank">work with multiple environments</a> and have <code>Startup{EnvironmentName}</code> class for each environment - dev, testing, production and set the environment variable before running the application.</p>
+<p>This is a feature in Autofac for ASP.NET and you can <a href="http://docs.autofac.org/en/latest/configuration/xml.html">find it documented here</a>, but we will implement a very basic way of adding services using only the built-in mechanism.</p>
 </blockquote>
-
+<blockquote>
+<p>Also, it will not use the <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">JSON configuration provider</a>.</p>
+</blockquote>
+<h3 id="the-need-for-registering-services-through-a-json-file">The need for registering services through a JSON file</h3>
+<p>A very simple reason to think about using a JSON file when registering DI services is because you might not know (or cannot choose) the concrete implementation at compile-time.</p>
+<p>Another reason could be for switching implementations for testing purposes.</p>
+<blockquote>
+<p>You can also <a href="https://docs.asp.net/en/latest/fundamentals/environments.html">work with multiple environments</a> and have <code>Startup{EnvironmentName}</code> class for each environment - dev, testing, production and set the environment variable before running the application.</p>
+</blockquote>
 <p>But for this article, I thought it would be cool to inject the required dependencies based on a JSON file without using any DI engine other than the built-in one from ASP.NET Core.</p>
-
 <p>Since this is going to be a web app, we need the Kestrel web server package. As I said earlier, we are not going to use the JSON Configuration provider (at this point), so we will only need a library to deserialize (part of) JSON, and we will use Newtonsoft.Json.</p>
-
 <h3 id="creating-a-dummy-service">Creating a dummy service</h3>
-
 <p>We are going to need a very simple service to inject in our application:</p>
-
 <pre><code>public interface ITest
 {
     string DoSomething(string parameter);
 }
-</code></pre>
-
-<p>And an even simpler implementation:</p>
-
+</code></pre><p>And an even simpler implementation:</p>
 <pre><code>public class Test : ITest
 {
     public string DoSomething(string parameter)
@@ -187,26 +153,17 @@ Introduction
         return $&quot;Message from Test with { parameter }&quot;;
     }
 }
-</code></pre>
-
-<h3 id="how-to-inject-an-itest-service">How to inject an <code>ITest</code> service</h3>
-
+</code></pre><h3 id="how-to-inject-an-itest-service">How to inject an <code>ITest</code> service</h3>
 <p>In order to inject a service of type <code>ITest</code>, you need to add a function in <code>Startup</code> called <code>ConfigureServices</code> that has a parameter of type <code>IServiceCollection</code> and add the service in this collection.</p>
-
 <pre><code>public void ConfigureServices(IServiceCollection services)
 {
     services.Add(new ServiceDescriptor(serviceType: typeof(ITest),
                                        implementationType: typeof(Test),
                                        lifetime: ServiceLifetime.Transient));
 }
-</code></pre>
-
-<p>Now, every time a component will request an instance of <code>ITest</code>, the framework will provide <em>another</em> instance of <code>Test</code>, since the lifetime is passed as <em>Transient</em>. (<a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html" target="_blank">Transient objects are always different; a new instance is provided to every controller and every service.</a>_</p>
-
+</code></pre><p>Now, every time a component will request an instance of <code>ITest</code>, the framework will provide <em>another</em> instance of <code>Test</code>, since the lifetime is passed as <em>Transient</em>. (<a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html">Transient objects are always different; a new instance is provided to every controller and every service.</a>_</p>
 <h3 id="the-json-file">The JSON File</h3>
-
 <p>Since we will use a JSON file, it might as well be the one we use for other configurations (or a completely different one). Regardless of what you choose, you can extract only the relevant part of the JSON file using a section name.</p>
-
 <pre><code>{
     &quot;services&quot;: [
         {
@@ -221,16 +178,10 @@ Introduction
         &quot;otherKey&quot;: &quot;otherValue&quot;
     }
 }
-</code></pre>
-
-<p>In this case, the JSON section we are interested in is <code>services</code>. At this key, we have an array of JSON objects with 3 properties: <code>serviceType</code>, <code>implementationType</code> and <code>lifetime</code>, which correspond to the parameters passed to the <code>ServiceDescriptor</code> when adding the service.</p>
-
+</code></pre><p>In this case, the JSON section we are interested in is <code>services</code>. At this key, we have an array of JSON objects with 3 properties: <code>serviceType</code>, <code>implementationType</code> and <code>lifetime</code>, which correspond to the parameters passed to the <code>ServiceDescriptor</code> when adding the service.</p>
 <h3 id="the-service-class">The <code>Service</code> class</h3>
-
 <p>These 3 properties are mapped into a class called <code>Service</code>. For simplicity, the <code>ServiceType</code> and <code>ImplementationType</code> properties are of type <code>string</code>, but you can always implement a <code>JsonConverter</code> that maps them to the type <code>Type</code> (There is no immediate conversion from <code>string</code> to <code>Type</code>).</p>
-
 <p>Since <code>Newtonsoft</code> has implemented the conversion from <code>string</code> to <code>enum</code>, we used it here to convert to <code>ServiceLifetime</code> enum from <code>Microsoft.Extensions.DependencyInjection</code>.</p>
-
 <pre><code>using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -244,12 +195,8 @@ public class Service
     [JsonConverter(typeof(StringEnumConverter))]
     public ServiceLifetime Lifetime { get; set; }
 }
-</code></pre>
-
-<h3 id="adding-the-services">Adding the services</h3>
-
+</code></pre><h3 id="adding-the-services">Adding the services</h3>
 <p>Next, in the <code>Startup</code> class we will simply deserialize the JSON section into a <code>List&lt;Service&gt;</code>, iterate through it and add the services:</p>
-
 <pre><code>private void ConfigureJsonServices(IServiceCollection services)
 {
     var jsonServices = JObject.Parse(File.ReadAllText(&quot;appSettings.json&quot;))[&quot;services&quot;];
@@ -262,20 +209,12 @@ public class Service
                                             lifetime: service.Lifetime));
     }
 }
-</code></pre>
-
-<p>Then, in the <code>ConfigureServices</code> method, call this method with the <code>services</code> argument.</p>
-
+</code></pre><p>Then, in the <code>ConfigureServices</code> method, call this method with the <code>services</code> argument.</p>
 <h3 id="testing-the-application">Testing the application</h3>
-
 <p>The first thing we can do is to add a breakpoint after executing the <code>ConfigureJsonServices</code> method.</p>
-
-<p><img src="/img/article-photos/aspnet-core-json-dependency-injection/services-breakpoint.JPG" alt="" /></p>
-
+<p><img src="/img/article-photos/aspnet-core-json-dependency-injection/services-breakpoint.JPG" alt=""></p>
 <p>We can see that our <code>ITest</code> service was added and now we can inject it anywhere in our application.</p>
-
 <p>At this point, we can also inject an instance of the service in the <code>Configure</code> method and have a message returned from the service:</p>
-
 <pre><code>public void Configure(IApplicationBuilder app, ITest test)
 {
     app.Run(context =&gt;
@@ -284,14 +223,9 @@ public class Service
         return context.Response.WriteAsync(response);
     });
 }
-</code></pre>
-
-<p>Every time you need to provide another implementation for a service, you don&rsquo;t have to recompile the entire application, simply modify the JSON file and start the application again.</p>
-
+</code></pre><p>Every time you need to provide another implementation for a service, you don't have to recompile the entire application, simply modify the JSON file and start the application again.</p>
 <h3 id="conclusion">Conclusion</h3>
-
-<p>This is a very basic and rudimentary way of injecting dependencies in the application. It is by no means production ready, it doesn&rsquo;t deal with exceptions, services that don&rsquo;t exist or incorrect lifetimes.</p>
-
+<p>This is a very basic and rudimentary way of injecting dependencies in the application. It is by no means production ready, it doesn't deal with exceptions, services that don't exist or incorrect lifetimes.</p>
 <p>It is only a simple alternative to registering each service manually, in code, recompiling the entire application every time you needed to swap some services.</p>
 
 
@@ -342,7 +276,7 @@ public class Service
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

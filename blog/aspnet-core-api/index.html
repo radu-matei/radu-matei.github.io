@@ -116,55 +116,31 @@
             
 
 
-            
-
-<!-- Table of Content
-----------------
-
-- [Introduction](#introduction)
-- [Adding the MVC services to our application](#adding-the-mvc-services-to-our-application)
-- [Adding the `Post` class](#adding-the-post-class)
-- [Creating an `IPostRepository` interface](#creating-an-ipostrepository-interface)
-- [Creating an in-memory implementation of `IPostRepository`](#creating-an-in-memory-implementation-of-ipostrepository)
-- [The `PostController` class](#the-postcontroller-class)
-- [Registering the repository service in `Startup`](#registering-the-repository-service-in-startup)
-- [`Startup.cs`](#startup-cs)
-- [Testing the application](#testing-the-application)
-- [Conclusion](#conclusion)
-
-Introduction
----------------- -->
-
-<p>Up to this point, we have been learning about <a href="https://radu-matei.github.io/blog/dot-net-core-introduction/" target="_blank">.NET Core</a> and <a href="https://radu-matei.github.io/blog/dot-net-core-getting-started/" target="_blank">VS Code</a>, about <a href="https://radu-matei.github.io/blog/aspnet-core-getting-started/" target="_blank">ASP .NET Core</a>, the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank"><code>Startup</code> class</a>, <a href="https://radu-matei.github.io/blog/aspnet-core-routing/" target="_blank">Routing</a> and <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/" target="_blank">how to use JSON Configuration</a>.</p>
-
+            <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>Up to this point, we have been learning about <a href="https://radu-matei.github.io/blog/dot-net-core-introduction/">.NET Core</a> and <a href="https://radu-matei.github.io/blog/dot-net-core-getting-started/">VS Code</a>, about <a href="https://radu-matei.github.io/blog/aspnet-core-getting-started/">ASP .NET Core</a>, the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/"><code>Startup</code> class</a>, <a href="https://radu-matei.github.io/blog/aspnet-core-routing/">Routing</a> and <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">how to use JSON Configuration</a>.</p>
 <p>In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.</p>
-
 <p>We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data.</p>
-
-<p>We will start this article by building on the code form the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank">Startup class</a> tutorial.</p>
-
+<p>We will start this article by building on the code form the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">Startup class</a> tutorial.</p>
 <h3 id="adding-the-mvc-services-to-our-application">Adding the MVC services to our application</h3>
-
 <p>The first thing we have to do is add the <code>&quot;Microsoft.AspNetCore.Mvc&quot;: &quot;1.0.0&quot;</code> dependency in <code>project.json</code>, then add the <code>ConfigureServices</code> method in the <code>Startup</code> class.</p>
-
 <pre><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
 }
-</code></pre>
-
-<p>Now we have to register some routes for the incoming requests, in this case, any incoming requests that match <code>/api/{controller}/{action}/{id?}</code>.</p>
-
+</code></pre><p>Now we have to register some routes for the incoming requests, in this case, any incoming requests that match <code>/api/{controller}/{action}/{id?}</code>.</p>
 <blockquote>
 <p><code>{controller}</code> - the name of the controller (for example, <code>TestController</code> - <code>/api/test</code>)</p>
-
+</blockquote>
+<blockquote>
 <p><code>{action}</code> - the name of the method from the controller</p>
-
+</blockquote>
+<blockquote>
 <p><code>{id?}</code> - optional parameter passed to the method</p>
-
+</blockquote>
+<blockquote>
 <p>So a request for <code>/api/test/hello/3</code> will be mapped to <code>TestController</code> in the <code>Hello</code> method which will have 3 as parameter for <code>id</code>.</p>
 </blockquote>
-
 <pre><code>public void Configure(IApplicationBuilder app)
 {
     app.UseMvc(routes =&gt;
@@ -175,14 +151,10 @@ Introduction
         );
     });
 }
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>Note that you can customize your route template in any way, I chose the <code>/api</code> option because in previous versions of ASP .NET (Web Api) this was the default route for creating an API.</p>
 </blockquote>
-
-<p>At this point, we can add a controller and make some requests to test our framework. So let&rsquo;s add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p>
-
+<p>At this point, we can add a controller and make some requests to test our framework. So let's add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p>
 <pre><code>using Microsoft.AspNetCore.Mvc;
 
 public class PostsController : Controller
@@ -192,14 +164,9 @@ public class PostsController : Controller
 		return &quot;Hello from MVC!&quot;;
 	}
 }
-</code></pre>
-
-<p>To run the application, execute <code>dotnet restore</code> and <code>dotnet run</code> in the root of the project and browse to <code>http://localhost:5000/api/Posts/Hello</code>. If everything works, you should see the message received from the controller.</p>
-
+</code></pre><p>To run the application, execute <code>dotnet restore</code> and <code>dotnet run</code> in the root of the project and browse to <code>http://localhost:5000/api/Posts/Hello</code>. If everything works, you should see the message received from the controller.</p>
 <h3 id="adding-the-post-class">Adding the <code>Post</code> class</h3>
-
 <p>As we said earlier, each user that enters can publish a post containing his user name and a text, so our <code>Post</code> class only contains two properties for the <code>UserName</code> and <code>Text</code> of the post and an <code>Id</code>.</p>
-
 <pre><code>public class Post
 {
     public int Id { get; set; }
@@ -215,20 +182,13 @@ public class PostsController : Controller
 
     public Post() {}
 }
-</code></pre>
-
-<p>There is also a constructor without arguments, and one that takes arguments the three properties.</p>
-
+</code></pre><p>There is also a constructor without arguments, and one that takes arguments the three properties.</p>
 <blockquote>
 <p>If you add a constructor in a C# class, the compiler will no longer create the default  constructor, and JSON serialization needs a parameterless constructor when serializing and deserializing objects.</p>
 </blockquote>
-
 <h3 id="creating-an-ipostrepository-interface">Creating an <code>IPostRepository</code> interface</h3>
-
 <p>In order for our API to work, we are going to need a way for it to store data. Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, <code>IPostRepository</code>, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p>
-
 <p>So the interface should look like this:</p>
-
 <pre><code>using System.Collections.Generic;
 
 public interface IPostRepository
@@ -237,23 +197,15 @@ public interface IPostRepository
     Post GetPost(int id);
     void AddPost(Post post);
 }
-</code></pre>
-
-<p>Since this is a very simple example, we are going to store the data in a list in memory, but regardless of the location, the publicly available methods will be exactly the same, making any modifications to the data store easy to implement (more on this later).</p>
-
+</code></pre><p>Since this is a very simple example, we are going to store the data in a list in memory, but regardless of the location, the publicly available methods will be exactly the same, making any modifications to the data store easy to implement (more on this later).</p>
 <h3 id="creating-an-in-memory-implementation-of-ipostrepository">Creating an in-memory implementation of <code>IPostRepository</code></h3>
-
 <p>We will implement the <code>IPostRepository</code> interface through an in-memory class we will call <code>PostRepository</code> that will hold the data in a list.</p>
-
 <pre><code>private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
 {
     new Post(1, &quot;Obi-Wan Kenobi&quot;,&quot;These are not the droids you're looking for&quot;),
     new Post(2, &quot;Darth Vader&quot;,&quot;I find your lack of faith disturbing&quot;)
 };
-</code></pre>
-
-<p>Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it will be private. Besides the list, we only need to implement the three methods from the interface, so here is the full <code>PostRepository</code> class:</p>
-
+</code></pre><p>Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it will be private. Besides the list, we only need to implement the three methods from the interface, so here is the full <code>PostRepository</code> class:</p>
 <pre><code>using System.Collections.Generic;
 using System.Linq;
 
@@ -279,16 +231,10 @@ public class PostRepository : IPostRepository
         return _posts.FirstOrDefault(p =&gt; p.Id == id);
     }
 }
-</code></pre>
-
-<h3 id="the-postcontroller-class">The <code>PostController</code> class</h3>
-
+</code></pre><h3 id="the-postcontroller-class">The <code>PostController</code> class</h3>
 <p>ASP .NET (MVC Core and other versions) maps requests to classes called controllers that are responsible for processing incoming requests, handling user input and generating the response (by themselves or by calling other services).</p>
-
 <p>We will create a very simple <code>PostController</code>  that will have methods to get all posts, add a post and retrieve a single post based on the id.</p>
-
 <p>The controller will have some instance of <code>IPostRepository</code>(we will see shortly how it will have it) and will call methods from the repository.</p>
-
 <pre><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
@@ -316,33 +262,22 @@ public class PostsController : Controller
         _postRepository.AddPost(post);
     }
 }
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>Notice how the <code>AddPost</code> method accepts a <code>Post</code> parameter. Because it has the <code>FromBody</code> attribute, the framework will automatically try to map the body of the request to an object of type <code>Post</code> that is deserialized from JSON.</p>
 </blockquote>
-
 <p>Besides from the publicly exposed methods of the API (any public method placed in a controller is publicly accessible from the web), we also have a constructor through which we can provide the appropriate implementation of <code>IPostRepository</code> and we will specify this in the <code>Startup</code> of our application.</p>
-
 <h3 id="registering-the-repository-service-in-startup">Registering the repository service in <code>Startup</code></h3>
-
-<p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven&rsquo;t specified what instance of <code>IPostRepository</code> our application is supposed to use.</p>
-
+<p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven't specified what instance of <code>IPostRepository</code> our application is supposed to use.</p>
 <pre><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
     services.AddSingleton&lt;IPostRepository, PostRepository&gt;();
 }
-</code></pre>
-
-<p>We only need to specify that whenever someone needs an <code>IPostRepository</code>, the framework should provide them (the same) instance of <code>PostRepository</code>. So when the <code>PostController</code> constructor has a parameter of type <code>IPostRepository</code>, the framework will provide an instance of <code>PostRepository</code>.</p>
-
+</code></pre><p>We only need to specify that whenever someone needs an <code>IPostRepository</code>, the framework should provide them (the same) instance of <code>PostRepository</code>. So when the <code>PostController</code> constructor has a parameter of type <code>IPostRepository</code>, the framework will provide an instance of <code>PostRepository</code>.</p>
 <blockquote>
 <p>We added the repository as singleton because of the in-memory implementation: if we made a new instance of <code>PostRepository</code> for every request, then the post list would be instantiated every time, not saving the modifications.</p>
 </blockquote>
-
-<h3 id="startup-cs"><code>Startup.cs</code></h3>
-
+<h3 id="startupcs"><code>Startup.cs</code></h3>
 <pre><code>using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -365,52 +300,33 @@ public class Startup
         });
     }
 }
-</code></pre>
-
-<h3 id="testing-the-application">Testing the application</h3>
-
+</code></pre><h3 id="testing-the-application">Testing the application</h3>
 <p>At this point, we can either execute <code>dotnet run</code> in the root of our project or press <code>F5</code> in Visual Studio Code.</p>
-
 <blockquote>
-<p>We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop" target="_blank">PostMan for Google Chrome</a> in order to test the functionality of our API.</p>
+<p>We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">PostMan for Google Chrome</a> in order to test the functionality of our API.</p>
 </blockquote>
-
 <p>If we open PostMan and create a GET request to <code>http://localhost:5000/api/Posts/GetPosts</code>, we will see the two posts that we used to populate the list in <code>PostRepository</code>.</p>
-
-<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get.JPG" alt="" /></p>
-
+<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get.JPG" alt=""></p>
 <p>We can see that the response was JSON and it returned a 200 OK HTML code.</p>
-
 <p>In order to test the post functionality, we create a POST request to <code>http://localhost:5000/api/Posts/AddPost</code> with a JSON object containing the properties of a <code>Post</code>.</p>
-
 <pre><code>{
     &quot;Id&quot;: 3,
     &quot;UserName&quot;: &quot;Darth Vader&quot;,
     &quot;Text&quot;: &quot;Luke, I am your father!&quot;
 }
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>You can either use the upper camel case or the lower camel case notation (as you saw in the response from the server, the objects were in lower camel case), but the name and type of the properties must match the ones on the server:</p>
 </blockquote>
-
 <pre><code>{
     &quot;id&quot;: 3,
     &quot;userName&quot;: &quot;Darth Vader&quot;,
     &quot;text&quot;: &quot;Luke, I am your father!&quot;
 }
-</code></pre>
-
-<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-post.JPG" alt="" /></p>
-
+</code></pre><p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-post.JPG" alt=""></p>
 <p>Now, if we create another request to <code>http://localhost:5000/api/Posts/GetPosts</code> we can see that the post we added was saved.</p>
-
-<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get-posts.JPG" alt="" /></p>
-
+<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get-posts.JPG" alt=""></p>
 <h3 id="conclusion">Conclusion</h3>
-
 <p>So far we created an API that adds and reads posts from an in-memory data store. A real-life application would have a different type of data store (SQL/NoSQL database) and most certainly an application that consumes this data rather than using it from PostMan.</p>
-
 <p>This API can be consumed from a web application (HTML + JavaScript), a mobile application (virtually any type of mobile application, regardless of the OS), a desktop application (again, any type of desktop application for any OS), even console applications.</p>
 
 
@@ -461,7 +377,7 @@ public class Startup
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

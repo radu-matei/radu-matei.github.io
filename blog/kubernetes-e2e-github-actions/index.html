@@ -120,14 +120,9 @@
             
 
 
-            
-
-<h1 id="the-kind-github-action-kind"><a href="https://kind.sigs.k8s.io/" target="_blank">The Kind GitHub Action</a></h1>
-
-<p><a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action" target="_blank"><img src="/img/article-photos/building-github-actions/marketplace.PNG" alt="" /></a></p>
-
-<p>To configure a Kubernetes cluster in your GitHub Actions in a single step, you can use the new <a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action" target="_blank"><code>@engineerd/setup-kind</code></a> action:</p>
-
+            <h1 id="the-kind-github-actionkind"><a href="https://kind.sigs.k8s.io/">The Kind GitHub Action</a></h1>
+<p><a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action"><img src="/img/article-photos/building-github-actions/marketplace.PNG" alt=""></a></p>
+<p>To configure a Kubernetes cluster in your GitHub Actions in a single step, you can use the new <a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action"><code>@engineerd/setup-kind</code></a> action:</p>
 <pre><code>jobs:
   kind:
     runs-on: ubuntu-latest
@@ -138,10 +133,7 @@
       run: |
         export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
         kubectl cluster-info
-</code></pre>
-
-<p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
-
+</code></pre><p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
 <pre><code>Creating cluster &quot;kind&quot; ...
  ✓ Ensuring node image (kindest/node:v1.15.3) 🖼
  ✓ Preparing nodes 📦📦📦📦📦📦📦
@@ -166,33 +158,26 @@ kind-control-plane3   Ready      master   65s     v1.15.3
 kind-worker           NotReady   &lt;none&gt;   28s     v1.15.3
 kind-worker2          NotReady   &lt;none&gt;   28s     v1.15.3
 kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>When creating multi-node clusters, make sure you wait for the nodes to become available - this is still a work in progress that will be fixed in future versions.</p>
-
-<p>EDIT: See <a href="https://radu-matei.com/blog/building-github-actions/" target="_blank">the article about building reusable GitHub Actions</a>.</p>
 </blockquote>
-
+<blockquote>
+<p>EDIT: See <a href="https://radu-matei.com/blog/building-github-actions/">the article about building reusable GitHub Actions</a>.</p>
+</blockquote>
 <h3 id="introduction">Introduction</h3>
-
 <blockquote>
-<p><a href="https://kind.sigs.k8s.io/" target="_blank">Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p>
-
-<p>For a <a href="https://kind.sigs.k8s.io/docs/user/quick-start/" target="_blank">quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p>
+<p><a href="https://kind.sigs.k8s.io/">Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p>
 </blockquote>
-
-<p>A few weeks ago, I wrote an <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/" target="_blank">article about running Kind in a Kubernetes cluster</a>. But you don&rsquo;t need to have an existing Kubernetes cluster in order to use Kind - you can <a href="https://github.com/kind-ci/examples" target="_blank">configure your favorite CI</a> to start a cluster using Kind, and in this short article, we&rsquo;ll have a look at how to use the latest beta of GitHub Actions to do this.</p>
-
 <blockquote>
-<p>If you&rsquo;re not in the GitHub Actions beta already, <a href="https://github.com/features/actions/signup/" target="_blank">you can sign up here</a>.</p>
+<p>For a <a href="https://kind.sigs.k8s.io/docs/user/quick-start/">quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p>
 </blockquote>
-
-<h1 id="tl-dr-it-just-works">TL; DR - It just works</h1>
-
-<p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let&rsquo;s see how the configuration looks like:</p>
-
-<pre><code class="language-yaml">name: Kind
+<p>A few weeks ago, I wrote an <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">article about running Kind in a Kubernetes cluster</a>. But you don't need to have an existing Kubernetes cluster in order to use Kind - you can <a href="https://github.com/kind-ci/examples">configure your favorite CI</a> to start a cluster using Kind, and in this short article, we'll have a look at how to use the latest beta of GitHub Actions to do this.</p>
+<blockquote>
+<p>If you're not in the GitHub Actions beta already, <a href="https://github.com/features/actions/signup/">you can sign up here</a>.</p>
+</blockquote>
+<h1 id="tl-dr---it-just-works">TL; DR - It just works</h1>
+<p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let's see how the configuration looks like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">name: Kind
 on: [push, pull_request]
 
 jobs:
@@ -201,28 +186,24 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Kind
-      run: |
-        export GOBIN=$(go env GOPATH)/bin
+      run: <span style="color:#e6db74">|
+</span><span style="color:#e6db74">       </span><span style="color:#e6db74"> </span><span style="color:#e6db74">export GOBIN=$(go env GOPATH)/bin</span>
         export PATH=$PATH:$GOBIN
         mkdir -p $GOBIN
 
         curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
-        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
+        chmod +x kubectl <span style="color:#75715e">&amp;&amp;</span> mv kubectl $GOBIN
+        wget https://github.com/kubernetes-sigs/kind/releases/download/v0<span style="color:#ae81ff">.5</span><span style="color:#ae81ff">.0</span>/kind-linux-amd64 <span style="color:#75715e">&amp;&amp;</span> chmod +x kind-linux-amd64 <span style="color:#75715e">&amp;&amp;</span> mv kind-linux-amd64 $GOBIN/kind
 
         kind create cluster --wait 300s
-        export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
+        export KUBECONFIG=<span style="color:#e6db74">&#34;$(kind get kubeconfig-path)&#34;</span>
         kubectl wait --for=condition=Ready pods --all --namespace kube-system
         kubectl cluster-info
         kubectl get pods -n kube-system
-</code></pre>
-
-<blockquote>
-<p>Note that you don&rsquo;t need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p>
+</code></pre></div><blockquote>
+<p>Note that you don't need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p>
 </blockquote>
-
 <p>Breaking down the the configuration file, we have:</p>
-
 <ul>
 <li>a workflow called <code>Kind</code></li>
 <li>it runs on all <code>push</code> or <code>pull_request</code> events</li>
@@ -232,9 +213,7 @@ jobs:
 <li><code>kind create cluster</code></li>
 <li>wait for the cluster to come up</li>
 </ul>
-
-<p>The only slightly interesting thing we&rsquo;re doing here is waiting for the cluster to be ready - <code>kind create cluster --wait</code> waits until the resources are ready, but just to be sure (and to show you how to wait for resources in a given namespace so you might use it later), we wait for all pods in <code>kube-system</code> to be in a <em>Ready</em> state using <code>kubectl</code>.</p>
-
+<p>The only slightly interesting thing we're doing here is waiting for the cluster to be ready - <code>kind create cluster --wait</code> waits until the resources are ready, but just to be sure (and to show you how to wait for resources in a given namespace so you might use it later), we wait for all pods in <code>kube-system</code> to be in a <em>Ready</em> state using <code>kubectl</code>.</p>
 <pre><code> ✓ Installing StorageClass 💾
  ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
  ✓ Ready after 53s 💚
@@ -253,28 +232,19 @@ kube-system   coredns-5c98db65d4-658bm   1/1     Running   0          47s
 kube-system   coredns-5c98db65d4-bjcfh   1/1     Running   0          47s
 kube-system   kindnet-wdglm              1/1     Running   1          47s
 kube-system   kube-proxy-7gd45           1/1     Running   0          47s
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>Note that depending on your cluster configuration you might have to wait for additional resources to be in a <em>Ready</em> state before using it.</p>
 </blockquote>
-
 <h3 id="using-helm-3">Using Helm 3</h3>
-
-<p>Now that the cluster is ready, you can start configuring your usual toolchain - let&rsquo;s see how we would use the latest Helm 3 pre-release (yay for <a href="https://helm.sh/blog/helm-3-preview-pt2/" target="_blank">no more Tiller</a>):</p>
-
+<p>Now that the cluster is ready, you can start configuring your usual toolchain - let's see how we would use the latest Helm 3 pre-release (yay for <a href="https://helm.sh/blog/helm-3-preview-pt2/">no more Tiller</a>):</p>
 <pre><code>export HELM_PLATFORM=linux-amd64 &amp;&amp; export HELM_VERSION=helm-v3.0.0-alpha.2
 wget https://get.helm.sh/$HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; tar -xvzf $HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; rm -rf $HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; mv $HELM_PLATFORM/helm $GOBIN/helm3 &amp;&amp; chmod +x $GOBIN/helm3
 helm3 init &amp;&amp; helm3 repo update &amp;&amp; helm3 install ni stable/nginx-ingress
 kubectl get pods
-</code></pre>
-
-<blockquote>
-<p>Note that if you&rsquo;re using Helm 2, <a href="https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions" target="_blank">it already comes configured on the GitHub workers</a>.</p>
+</code></pre><blockquote>
+<p>Note that if you're using Helm 2, <a href="https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions">it already comes configured on the GitHub workers</a>.</p>
 </blockquote>
-
 <p>In this example, we just install a chart from the stable repository:</p>
-
 <pre><code>$HELM_HOME has been configured at /home/runner/.helm.
 Happy Helming!
 Hang tight while we grab the latest from your chart repositories...
@@ -306,12 +276,8 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 NAME                                                READY   STATUS              RESTARTS   AGE
 ni-nginx-ingress-controller-64845d9cd4-fzqjt        0/1     ContainerCreating   0          0s
 ni-nginx-ingress-default-backend-77f8c99775-smr4p   0/1     ContainerCreating   0          0s
-</code></pre>
-
-<p>If your workload is using a persistent volume, the deployment will currently fail, <a href="https://github.com/kubernetes-sigs/kind/issues/118" target="_blank">since Kind does not have support for dynamic volume provisioning</a>, which is planned for the next version.</p>
-
+</code></pre><p>If your workload is using a persistent volume, the deployment will currently fail, <a href="https://github.com/kubernetes-sigs/kind/issues/118">since Kind does not have support for dynamic volume provisioning</a>, which is planned for the next version.</p>
 <h3 id="conclusion">Conclusion</h3>
-
 <p>Running Kind in GitHub Actions is straightforward - get the right binaries, create a cluster, then configure your usual toolchain.
 Thanks for reading!</p>
 
@@ -363,7 +329,7 @@ Thanks for reading!</p>
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

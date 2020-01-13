@@ -116,47 +116,29 @@
             
 
 
-            
-
-<p><img src="/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png" alt="" /></p>
-
+            <p><img src="/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png" alt=""></p>
 <blockquote>
 <p>Disclaimer: I do not work on the WSL team at Microsoft, and this article represents my experience using WSL in the past months and creating custom distributions.</p>
 </blockquote>
-
-<p>I&rsquo;ve been using <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install" target="_blank">WSL2</a> as my primary development environment ever since its launch, together with <a href="https://code.visualstudio.com/docs/remote/wsl" target="_blank">VS Code Remote WSL</a> and the <a href="https://github.com/microsoft/terminal" target="_blank">new Windows terminal</a>. My particular workflows allow me to exclusively use the WSL filesystem and tools, so almost my entire work happens to be a combination of the terminal and VS Code. This means I rely on the configuration of my WSL distribution quite a bit, and I want to be able to quickly re-create it in case of a re-install, or replicate my environment for testing.</p>
-
-<p>Up to this point I didn&rsquo;t have major issues with Windows or WSL, so I didn&rsquo;t need to re-install my system yet. I also don&rsquo;t claim that the experience is perfect, and since WSL2 requires Windows Insiders, proceed with care and at your own risk. This article is not trying to convince you to switch to WSL2, nor it is a step-by-step tutorial on how to configure it. Rather, it is me documenting a declarative approach to creating distributions already configured with the tools for your workflows, and how to version control them.</p>
-
+<p>I've been using <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install">WSL2</a> as my primary development environment ever since its launch, together with <a href="https://code.visualstudio.com/docs/remote/wsl">VS Code Remote WSL</a> and the <a href="https://github.com/microsoft/terminal">new Windows terminal</a>. My particular workflows allow me to exclusively use the WSL filesystem and tools, so almost my entire work happens to be a combination of the terminal and VS Code. This means I rely on the configuration of my WSL distribution quite a bit, and I want to be able to quickly re-create it in case of a re-install, or replicate my environment for testing.</p>
+<p>Up to this point I didn't have major issues with Windows or WSL, so I didn't need to re-install my system yet. I also don't claim that the experience is perfect, and since WSL2 requires Windows Insiders, proceed with care and at your own risk. This article is not trying to convince you to switch to WSL2, nor it is a step-by-step tutorial on how to configure it. Rather, it is me documenting a declarative approach to creating distributions already configured with the tools for your workflows, and how to version control them.</p>
 <h3 id="back-up-your-wsl-distribution">Back-up your WSL distribution</h3>
-
 <p>The <code>wsl.exe</code> tool comes with an <code>--export</code> command that allows you to export the file system of your distribution to an archive. This is the easiest way to back-up your distribution if you plan on re-installing your system. Additionally, if you manually configured your instance, you can back-up the entire virtual hard disk.</p>
-
 <p>In both cases, you are creating a snapshot of your file system that contains all files, including temporary files - meaning that your back-up could be tens of GB in size. You could start cleaning up temporary files, downloads, and other unnecessary files, but if you only want a clean environment that contains all of your tools, there could be an easier solution.</p>
-
 <h3 id="import-a-distribution-from-a-filesystem">Import a distribution from a filesystem</h3>
-
-<p>You can import a distribution from an archived filesystem. That filesystem can be generated using the <code>--export</code> command, but this is not a requirement - any valid Linux filesystem should be able to be imported as a WSL distribution (I haven&rsquo;t found documentation yet on things required in the filesystem - I&rsquo;ve been able to import distributions based on both Debian and Arch - but check <a href="https://github.com/microsoft/WSL/issues/4371#issuecomment-521107556" target="_blank">this issue</a> if your distribution has symlinks for tools in <code>/bin</code> or <code>/sbin</code>).</p>
-
+<p>You can import a distribution from an archived filesystem. That filesystem can be generated using the <code>--export</code> command, but this is not a requirement - any valid Linux filesystem should be able to be imported as a WSL distribution (I haven't found documentation yet on things required in the filesystem - I've been able to import distributions based on both Debian and Arch - but check <a href="https://github.com/microsoft/WSL/issues/4371#issuecomment-521107556">this issue</a> if your distribution has symlinks for tools in <code>/bin</code> or <code>/sbin</code>).</p>
 <p>A very neat way of defining a Linux filesystem is to create a container (which is made up of a filesystem, among others), then export its filesystem as a <code>.tar</code> file - which is exactly what you can import in WSL. This would allow you to:</p>
-
 <ul>
 <li>create a Dockerfile containing the desired state of the distribution</li>
 <li>build a container image based on the Dockerfile</li>
 <li>run a container based on that image and export its filesystem as an archive</li>
 <li>import the archive as a WSL distribution</li>
 </ul>
-
 <p>Put the Dockerfile and configuration files in a git repository, and you built yourself version control for your distribution.</p>
-
 <h3 id="writing-a-dockerfile-for-a-wsl-distribution">Writing a Dockerfile for a WSL distribution</h3>
-
-<p>For a complete example have a look at <a href="https://github.com/radu-matei/dotfiles/blob/master/Dockerfile" target="_blank">this repo</a> - but you can start from a base distribution - Ubuntu 18.04 in this case, and install all the tools you need.</p>
-
-<p>The example below is based on my Dockerfile for building distributions - because I don&rsquo;t want to always run as <code>root</code>, this creates another user, adds it to the <code>sudo</code> group, and gives the new user ownership over <code>/home/radu</code>. I still get <code>sudo</code> access, but the password is required. (Setting up the additional user is optional, and not a required step for a working WSL distribution.)</p>
-
+<p>For a complete example have a look at <a href="https://github.com/radu-matei/dotfiles/blob/master/Dockerfile">this repo</a> - but you can start from a base distribution - Ubuntu 18.04 in this case, and install all the tools you need.</p>
+<p>The example below is based on my Dockerfile for building distributions - because I don't want to always run as <code>root</code>, this creates another user, adds it to the <code>sudo</code> group, and gives the new user ownership over <code>/home/radu</code>. I still get <code>sudo</code> access, but the password is required. (Setting up the additional user is optional, and not a required step for a working WSL distribution.)</p>
 <p>The user password is provided as a build argument - using the <code>--build-arg pwd=&lt;password&gt;</code> flag. While this is better than hard-coding the value in the Dockerfile, keep in mind that the value is present in the layers of the built image - so be careful if you are publishing the image to a container registry. You can always put a generic password and change it after booting up the distribution.</p>
-
 <pre><code>FROM ubuntu:18.04
 ENV HOME /home/radu
 
@@ -172,45 +154,26 @@ RUN sudo chown -R radu /home/radu
 ARG pwd
 RUN echo radu:${pwd} | chpasswd
 USER radu
-</code></pre>
-
-<p>Finally, one thing this Dockerfile does not handle is configuring private keys and passwords. If you are absolutely sure the image will never leave your machine, there is nothing stopping you from copying signing keys, or tokens, or passwords and configuring them.</p>
-
+</code></pre><p>Finally, one thing this Dockerfile does not handle is configuring private keys and passwords. If you are absolutely sure the image will never leave your machine, there is nothing stopping you from copying signing keys, or tokens, or passwords and configuring them.</p>
 <h3 id="importing-the-distribution-into-wsl">Importing the distribution into WSL</h3>
-
 <p>First, build the image based on your Dockerfile:</p>
-
-<pre><code class="language-shell">$ docker build -t my-custom-fs .
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker build -t my-custom-fs .
 $ docker run --name fs -it -d my-custom-fs
 $ docker export --output my-custom-fs.tar fs
-</code></pre>
-
-<p>The size of the filesystem depends on what tools you configured. A blank Ubuntu 18.04 filesystem starts at around 60MB, and for example, my configuration is around 4 GB (but it contains multiple SDKs and frameworks, a container runtime, and a full browser, among others).</p>
-
+</code></pre></div><p>The size of the filesystem depends on what tools you configured. A blank Ubuntu 18.04 filesystem starts at around 60MB, and for example, my configuration is around 4 GB (but it contains multiple SDKs and frameworks, a container runtime, and a full browser, among others).</p>
 <p>At this point, you can import the distribution:</p>
-
-<pre><code class="language-shell">$ wsl --import my-custom-distro .\my-custom-distro-location\ .\my-custom-fs.tar
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wsl --import my-custom-distro .<span style="color:#ae81ff">\m</span>y-custom-distro-location<span style="color:#ae81ff">\ </span>.<span style="color:#ae81ff">\m</span>y-custom-fs.tar
 $ wsl --list --verbose
   NAME                STATE           VERSION
-  my-custom-distro    Stopped         2
-</code></pre>
-
-<p>If the version of your distribution is 1, you can convert it using <code>wsl</code>, or directly set the default version to be 2. Check <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install#set-a-distro-to-be-backed-by-wsl-2-using-the-command-line" target="_blank">the WSL documentation</a> for more on this topic.
+  my-custom-distro    Stopped         <span style="color:#ae81ff">2</span>
+</code></pre></div><p>If the version of your distribution is 1, you can convert it using <code>wsl</code>, or directly set the default version to be 2. Check <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install#set-a-distro-to-be-backed-by-wsl-2-using-the-command-line">the WSL documentation</a> for more on this topic.
 If you are using the new Windows terminal, the distribution should be automatically added to your configuration list after restarting the terminal. Otherwise, you can manually open a shell to your distribution using <code>wsl</code>:</p>
-
-<pre><code class="language-shell">$ wsl --distribution my-custom-distro
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wsl --distribution my-custom-distro
 root@surface:~#
-</code></pre>
-
-<p>If you configured a user, you can pass it to the <code>wsl</code> command using the <code>--user</code> flag, or you can configure the Windows terminal to always login as that user:</p>
-
-<pre><code class="language-json">&quot;commandline&quot;: &quot;wsl.exe --distribution my-custom-distro --user radu&quot;,
-</code></pre>
-
-<h3 id="conclusion">Conclusion</h3>
-
+</code></pre></div><p>If you configured a user, you can pass it to the <code>wsl</code> command using the <code>--user</code> flag, or you can configure the Windows terminal to always login as that user:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#e6db74">&#34;commandline&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#e6db74">&#34;wsl.exe --distribution my-custom-distro --user radu&#34;</span><span style="color:#960050;background-color:#1e0010">,</span>
+</code></pre></div><h3 id="conclusion">Conclusion</h3>
 <p>In this article, we explored a way of pre-configuring a WSL distribution using a Dockerfile. You can use this method to configure all the tools you use regularly, and version your environment using git.</p>
-
 <p>Thanks for reading!</p>
 
 
@@ -261,7 +224,7 @@ root@surface:~#
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

@@ -122,55 +122,37 @@
             
 
 
-            
-
-<h2 id="notice">NOTICE</h2>
-
-<p><a href="https://radu-matei.com/blog/signalr-core" target="_blank"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
-
+            <h2 id="notice">NOTICE</h2>
+<p><a href="https://radu-matei.com/blog/signalr-core"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
 <h2 id="introduction">Introduction</h2>
-
-<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server" target="_blank"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
-
+<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
 <blockquote>
-<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
-
-<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/" target="_blank">take a look at this article</a>.</p>
+<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
 </blockquote>
-
-<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank">this application</a> and add real time functionality to it.</p>
-
+<blockquote>
+<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/">take a look at this article</a>.</p>
+</blockquote>
+<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/">this application</a> and add real time functionality to it.</p>
 <p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p>
-
 <h2 id="configure-the-application">Configure the application</h2>
-
 <p>NuGet has the ability to get packages from more than one source, and we need it to download alpha packages that are only available on the MyGet server of the ASP.NET team, besides the ASP.NET Core packages available on NuGet. So in the root of the application add a file called <code>NuGet.Config</code> with the following content:</p>
-
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;configuration&gt;
-    &lt;packageSources&gt;
-        &lt;clear/&gt;
-            &lt;add key=&quot;aspnetcidev&quot; value=&quot;https://dotnet.myget.org/F/aspnetcore-ci-dev/api/v3/index.json&quot;/&gt;
-            &lt;add key=&quot;api.nuget.org&quot; value=&quot;https://api.nuget.org/v3/index.json&quot;/&gt;
-    &lt;/packageSources&gt;
+   &lt;packageSources&gt;
+       &lt;clear/&gt;
+           &lt;add key=&quot;aspnetcidev&quot; value=&quot;https://dotnet.myget.org/F/aspnetcore-ci-dev/api/v3/index.json&quot;/&gt;
+           &lt;add key=&quot;api.nuget.org&quot; value=&quot;https://api.nuget.org/v3/index.json&quot;/&gt;
+   &lt;/packageSources&gt;
 &lt;/configuration&gt;
-</code></pre>
-
-<h2 id="add-the-required-packages">Add the required packages</h2>
-
+</code></pre><h2 id="add-the-required-packages">Add the required packages</h2>
 <p>For this application, we will need the Kestrel web server (of course), the MVC packages so we can use controllers, static files so we can have HTML and JavaScript files served, SignalR and WebSockets:</p>
-
 <pre><code>&quot;Microsoft.AspNetCore.Server.Kestrel&quot;: &quot;1.0.0&quot;,
 &quot;Microsoft.AspNetCore.Mvc&quot;: &quot;1.0.0&quot;,
 &quot;Microsoft.AspNetCore.StaticFiles&quot;: &quot;1.0.0&quot;,
 &quot;Microsoft.AspNetCore.SignalR.Server&quot;: &quot;0.2.0-*&quot;,
 &quot;Microsoft.AspNetCore.WebSockets&quot;: &quot;0.2.0-*&quot;
-</code></pre>
-
-<h2 id="program-cs"><code>Program.cs</code></h2>
-
+</code></pre><h2 id="programcs"><code>Program.cs</code></h2>
 <p>Besides adding the <code>UseContentRoot</code> statement, the <code>Main</code> method is pretty much standard for an ASP.NET Core application.</p>
-
 <pre><code> public static void Main(string[] args)
  {
      var host = new WebHostBuilder()
@@ -181,12 +163,8 @@
 
      host.Run();
  }
-</code></pre>
-
-<h2 id="post-ipostrepository-and-postrepository"><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2>
-
-<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank">This article</a> explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
-
+</code></pre><h2 id="post-ipostrepository-and-postrepository"><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2>
+<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> explains all these components thoroughly, but let's see briefly what each one does:</p>
 <pre><code>public class Post
 {
     public int Id { get; set; }
@@ -204,14 +182,10 @@
     {
     }
 }
-</code></pre>
-
-<p><code>Post</code> will be the model that users add in the application. It is a straightforward C# class with three auto-implemented properties and two constructors.</p>
-
+</code></pre><p><code>Post</code> will be the model that users add in the application. It is a straightforward C# class with three auto-implemented properties and two constructors.</p>
 <blockquote>
 <p>Each user that enters can publish a post containing his user name and a text, so our Post class only contains two properties for the UserName and Text of the post and an Id.</p>
 </blockquote>
-
 <pre><code>using System.Collections.Generic;
 
 public interface IPostRepository
@@ -220,12 +194,9 @@ public interface IPostRepository
     Post GetPost(int id);
     void AddPost(Post post);
 }
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, IPostRepository, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p>
 </blockquote>
-
 <pre><code>using System.Collections.Generic;
 using System.Linq;
 
@@ -251,14 +222,10 @@ public class PostRepository : IPostRepository
         return _posts.FirstOrDefault(p =&gt; p.Id == id);
     }
 }
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>We implemented the <code>IPostRepository</code> interface through an in-memory class called <code>PostRepository</code> that holds the data in a list. Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it is be private. Besides the list, we only need to implement the three methods from the interface.</p>
 </blockquote>
-
 <h2 id="the-postscontroller">The <code>PostsController</code></h2>
-
 <pre><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
@@ -291,37 +258,22 @@ public class PostsController : Controller
     }
 }
 
-</code></pre>
-
-<p>From this controller, we will update all clients when a post was added using SignalR by getting the context of the hub and calling client methods  using a <code>ConnectionManager</code>. We will see later how to achieve this.</p>
-
+</code></pre><p>From this controller, we will update all clients when a post was added using SignalR by getting the context of the hub and calling client methods  using a <code>ConnectionManager</code>. We will see later how to achieve this.</p>
 <h2 id="add-a-hub">Add a hub</h2>
-
 <p>In this application, we will use the hub as a proxy: clients will not call hub methods directly. SignalR will be used to provide server updates - that is the server notifies all clients that something happened, so the clients must first connect to a hub.</p>
-
 <p>So the hub class will be incredibly simple:</p>
-
 <pre><code>using Microsoft.AspNetCore.SignalR;
 
 public class PostsHub : Hub
 {
 }
-</code></pre>
-
-<p>We will see how to use the hub context outside of the hub a little later.</p>
-
+</code></pre><p>We will see how to use the hub context outside of the hub a little later.</p>
 <h2 id="camel-case-issues-and-custom-contract-resolvers">Camel case issues and custom contract resolvers</h2>
-
 <p>At this moment, MVC uses camel case notation to pass JSON to clients. That means that even if on the server you write your class properties with Pascal case notation (as you should!), JavaScript clients would get Camel cased objects.</p>
-
 <p>This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse methods across the JavaScript client, thing we cannot tolerate.</p>
-
-<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751" target="_blank">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
-
+<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
 <h2 id="add-a-custom-contract-resolvers">Add a custom contract resolvers</h2>
-
 <p>A first try could be to change the default contract resolver to a <code>CamelCasePropertyNamesContractResolver()</code> inside the <code>ConfigureServices</code> method:</p>
-
 <pre><code>var settings = new JsonSerializerSettings();
 settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
@@ -330,16 +282,10 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
              provider =&gt; serializer,
              ServiceLifetime.Transient));
 
-</code></pre>
-
-<p>While this is not far from what we are going to do, at this moment we simply cannot force all components to pass camel case objects because it would break current conventions in place.</p>
-
+</code></pre><p>While this is not far from what we are going to do, at this moment we simply cannot force all components to pass camel case objects because it would break current conventions in place.</p>
 <p>Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is transformed to camel case.</p>
-
 <p>We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified.</p>
-
 <p>We will write a custom contract resolver that looks at the assembly of the object type and if it is not an internal SignalR object (if it is not from the same assembly as <code>Connection</code>, a class from SignalR), then it modifies it to be camel case:</p>
-
 <pre><code>using System;
 using System.Reflection;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
@@ -369,10 +315,7 @@ using Newtonsoft.Json.Serialization;
 
     }
 
-</code></pre>
-
-<p>So in <code>ConfigureServices</code> we register our contract resolver very similarly to what we had earlier:</p>
-
+</code></pre><p>So in <code>ConfigureServices</code> we register our contract resolver very similarly to what we had earlier:</p>
 <pre><code>var settings = new JsonSerializerSettings();
 settings.ContractResolver = new SignalRContractResolver();
 
@@ -380,16 +323,11 @@ var serializer = JsonSerializer.Create(settings);
 services.Add(new ServiceDescriptor(typeof(JsonSerializer),
              provider =&gt; serializer,
              ServiceLifetime.Transient));
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>Note that most likely, this will be done more elegantly in future releases.</p>
 </blockquote>
-
 <h2 id="the-configure-method">The <code>Configure</code> method</h2>
-
 <p>Again, the <code>Configure</code> method is pretty straightforward: we add static files support, configure MVC and add WebSockets and SignalR.</p>
-
 <pre><code>    public void Configure(IApplicationBuilder app)
     {
         app.UseStaticFiles();
@@ -405,18 +343,11 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
         app.UseWebSockets();
         app.UseSignalR();
     }
-</code></pre>
-
-<h2 id="calling-client-methods-outside-hubs">Calling client methods outside hubs</h2>
-
+</code></pre><h2 id="calling-client-methods-outside-hubs">Calling client methods outside hubs</h2>
 <p>In the previous versions of SignalR, in order to call client methods and manage groups outside a hub you would need to make use of the <code>GlobalHost</code>, which is no longer available in the new version.</p>
-
 <p>So we will use an instance of <code>ConnectionManager</code>, specifically the <code>GetHubContext&lt;&gt;()</code> method. We need to register this service so we can use it in the controller:</p>
-
 <p><code>_connectionManager.GetHubContext&lt;PostsHub&gt;().someClientMethod(parameters)</code></p>
-
 <h2 id="the-configureservices-method">The <code>ConfigureServices</code> method</h2>
-
 <pre><code>    public void ConfigureServices(IServiceCollection services)
     {
         var settings = new JsonSerializerSettings();
@@ -437,12 +368,8 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
 
         services.AddMvc();
     }
-</code></pre>
-
-<p>We added the new contract resolver, we added the <code>PostRepository</code> and we added SignalR. Now we need to use it in the controller:</p>
-
+</code></pre><p>We added the new contract resolver, we added the <code>PostRepository</code> and we added SignalR. Now we need to use it in the controller:</p>
 <h2 id="the-updated-controller">The updated controller</h2>
-
 <pre><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
@@ -477,14 +404,9 @@ public class PostsController : Controller
         _connectionManager.GetHubContext&lt;PostsHub&gt;().Clients.All.publishPost(post);
     }
 }
-</code></pre>
-
-<p>Every time someone adds a new post, all connected users will be notified and will call the <code>publishPost</code> method.</p>
-
+</code></pre><p>Every time someone adds a new post, all connected users will be notified and will call the <code>publishPost</code> method.</p>
 <h2 id="the-client">The client</h2>
-
 <p>The client will be exactly the same as in SignalR 2.2.x:</p>
-
 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -547,14 +469,9 @@ public class PostsController : Controller
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-</code></pre>
-
-<p>Now if you open two browser tabs and start adding messages, you can see all pages updating in real time.</p>
-
+</code></pre><p>Now if you open two browser tabs and start adding messages, you can see all pages updating in real time.</p>
 <h2 id="conclusion">Conclusion</h2>
-
 <p>In this article we saw how to use MVC Core and SignalR for providing real time data to users.</p>
-
 <p>Since SignalR is still in alpha, at this moment there are some issues to be addressed and many breaking changes to come and I will try to keep this example up-to-date.</p>
 
 
@@ -605,7 +522,7 @@ public class PostsController : Controller
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 

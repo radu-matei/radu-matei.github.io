@@ -120,46 +120,27 @@
             
 
 
-            
-
-<p><img src="/img/article-photos/wasm-to-oci/wasm-to-oci.png" alt="" /></p>
-
-<p><a href="https://webassembly.org" target="_blank">WebAssembly (WASM)</a> <em>is a binary instruction format for a stack-based virtual machine.</em> In familiar terms, WASM is used as a compilation target for various programming languages (C, C++, Rust, or Golang, for example), generating a compact binary with a known format. <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts" target="_blank">Mozilla Developer Network describes</a> WebAssembly as having <em>huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so.</em></p>
-
+            <p><img src="/img/article-photos/wasm-to-oci/wasm-to-oci.png" alt=""></p>
+<p><a href="https://webassembly.org">WebAssembly (WASM)</a> <em>is a binary instruction format for a stack-based virtual machine.</em> In familiar terms, WASM is used as a compilation target for various programming languages (C, C++, Rust, or Golang, for example), generating a compact binary with a known format. <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts">Mozilla Developer Network describes</a> WebAssembly as having <em>huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so.</em></p>
 <p>The very big implication here is being able to execute modules on the web <em>at near native speed</em>. Tasks that have historically had low performance when written in JavaScript can be rewritten in high performance programming languages, like C++, or Rust.</p>
-
-<p>But WebAssembly isn&rsquo;t only for the web. The <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank">WebAssembly System Interface project (WASI)</a> aims to standardize WebAssembly to run outside of the web by providing an abstraction over the tasks of the operating system. This brings two major advantages: portability, and security. Today, you can use runtimes like <a href="https://github.com/CraneStation/wasmtime" target="_blank"><code>wasmtime</code></a> to execute WASM modules on a variety of operating systems (Linux, macOS, Windows), in a sandboxed environment with granular access to the file system and network.</p>
-
-<p>And if you&rsquo;re thinking: <em>wait a second - aren&rsquo;t those advantages also mentioned when talking about containers?</em></p>
-
+<p>But WebAssembly isn't only for the web. The <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">WebAssembly System Interface project (WASI)</a> aims to standardize WebAssembly to run outside of the web by providing an abstraction over the tasks of the operating system. This brings two major advantages: portability, and security. Today, you can use runtimes like <a href="https://github.com/CraneStation/wasmtime"><code>wasmtime</code></a> to execute WASM modules on a variety of operating systems (Linux, macOS, Windows), in a sandboxed environment with granular access to the file system and network.</p>
+<p>And if you're thinking: <em>wait a second - aren't those advantages also mentioned when talking about containers?</em></p>
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">If WASM+WASI existed in 2008, we wouldn&#39;t have needed to created Docker. That&#39;s how important it is. Webassembly on the server is the future of computing. A standardized system interface was the missing link. Let&#39;s hope WASI is up to the task! <a href="https://t.co/wnXQg4kwa4">https://t.co/wnXQg4kwa4</a></p>&mdash; Solomon Hykes (@solomonstre) <a href="https://twitter.com/solomonstre/status/1111004913222324225?ref_src=twsrc%5Etfw">March 27, 2019</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-
 <p>WASI could provide a very interesting alternative to the container ecosystem - but for this article, we are only interested in discussing how to distribute WebAssembly modules.</p>
-
 <blockquote>
-<p>Read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank">the WASI announcement blog post</a> if you want to learn more about how it works, and the principles behind WASI.</p>
+<p>Read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">the WASI announcement blog post</a> if you want to learn more about how it works, and the principles behind WASI.</p>
 </blockquote>
-
 <h3 id="distributing-webassembly-modules-using-oci-registries">Distributing WebAssembly modules using OCI registries</h3>
-
-<p>Right now there are a couple of ways to distribute WebAssembly modules - <a href="https://rustwasm.github.io/wasm-pack/book/commands/pack-and-publish.html" target="_blank"><code>wasm-pack</code></a> (which uses NPM to store modules), or <a href="https://wapm.io/" target="_blank">WAPM</a> (independent of programming language and toolchain, but still a very early stage tool, without much adoption yet outside of the Wasmer ecosystem), to name a few. But if we consider WebAssembly as a potential cross-platform alternative to Linux containers, then we also need a way to distribute them, independent of programming language and toolchain. And why not use exactly the method for distributing container images, OCI registries?</p>
-
-<p>Additionally, OCI recently announced <a href="https://github.com/opencontainers/artifacts" target="_blank">the OCI Artifacts project</a>, which aims to extend the OCI registry specification and store other cloud native artifacts (think about Helm charts, or CNAB bundles). This has immediate advantages - a consistent way to distribute multiple artifacts type, using already existing registry services, or reusing and extending the current security model (like <a href="https://theupdateframework.github.io/" target="_blank">TUF</a>).</p>
-
-<p><a href="https://github.com/deislabs/oras" target="_blank">ORAS</a> (OCI Registry as Storage) is a proposed implementation for the OCI Artifacts project, and significantly simplifies storing arbitrary content in OCI registries. So we could use the ORAS client library to build a really simple tool to push and pull WebAssembly modules to OCI registries.</p>
-
-<p>Note however, that currently, most registry services reject an unknown artifact type - and ORAS has been tested with <a href="https://github.com/docker/distribution" target="_blank">the open source Docker Distribution project</a> and <a href="https://docs.microsoft.com/en-us/azure/container-registry" target="_blank">Azure Container Registry</a>.</p>
-
+<p>Right now there are a couple of ways to distribute WebAssembly modules - <a href="https://rustwasm.github.io/wasm-pack/book/commands/pack-and-publish.html"><code>wasm-pack</code></a> (which uses NPM to store modules), or <a href="https://wapm.io/">WAPM</a> (independent of programming language and toolchain, but still a very early stage tool, without much adoption yet outside of the Wasmer ecosystem), to name a few. But if we consider WebAssembly as a potential cross-platform alternative to Linux containers, then we also need a way to distribute them, independent of programming language and toolchain. And why not use exactly the method for distributing container images, OCI registries?</p>
+<p>Additionally, OCI recently announced <a href="https://github.com/opencontainers/artifacts">the OCI Artifacts project</a>, which aims to extend the OCI registry specification and store other cloud native artifacts (think about Helm charts, or CNAB bundles). This has immediate advantages - a consistent way to distribute multiple artifacts type, using already existing registry services, or reusing and extending the current security model (like <a href="https://theupdateframework.github.io/">TUF</a>).</p>
+<p><a href="https://github.com/deislabs/oras">ORAS</a> (OCI Registry as Storage) is a proposed implementation for the OCI Artifacts project, and significantly simplifies storing arbitrary content in OCI registries. So we could use the ORAS client library to build a really simple tool to push and pull WebAssembly modules to OCI registries.</p>
+<p>Note however, that currently, most registry services reject an unknown artifact type - and ORAS has been tested with <a href="https://github.com/docker/distribution">the open source Docker Distribution project</a> and <a href="https://docs.microsoft.com/en-us/azure/container-registry">Azure Container Registry</a>.</p>
 <p>First step is defining the media types we are going to associate WebAssembly modules - this helps identifying the artifact type, and can be used when configuring a registry to explicitly allow or disallow storing them.</p>
-
 <pre><code>ConfigMediaType       = &quot;application/vnd.wasm.config.v1+json&quot;
 ContentLayerMediaType = &quot;application/vnd.wasm.content.layer.v1+wasm&quot;
-</code></pre>
-
-<p>In order to push, we read the contents of the module, add them as a single layer in an OCI descriptor, then use <code>oras.Push</code>:</p>
-
+</code></pre><p>In order to push, we read the contents of the module, add them as a single layer in an OCI descriptor, then use <code>oras.Push</code>:</p>
 <pre><code>contents, err := ioutil.ReadFile(module)
 
 desc := store.Add(module, ContentLayerMediaType, contents)
@@ -171,10 +152,7 @@ pushOpts := []oras.PushOpt{
 }
 
 manifest, err := oras.Push(ctx, resolver, ref, store, layers, pushOpts...)
-</code></pre>
-
-<p>Pulling is similarly straightforward - we use <code>oras.Pull</code> to get the OCI manifest and actual module, then write it to a file:</p>
-
+</code></pre><p>Pulling is similarly straightforward - we use <code>oras.Pull</code> to get the OCI manifest and actual module, then write it to a file:</p>
 <pre><code>pullOpts := []oras.PullOpt{
 	oras.WithAllowedMediaType(ContentLayerMediaType),
 	oras.WithPullEmptyNameAllowed(),
@@ -183,14 +161,9 @@ manifest, err := oras.Push(ctx, resolver, ref, store, layers, pushOpts...)
 _, layers, err := oras.Pull(ctx, resolver, ref, store, pullOpts...)
 manifest, contents, _ := store.Get(layers[0])
 ioutil.WriteFile(outFile, contents, 0755)
-</code></pre>
-
-<p>The Go package and a <code>wasm-to-oci</code> utility <a href="https://github.com/engineerd/wasm-to-oci" target="_blank">can be found on GitHub</a>.</p>
-
+</code></pre><p>The Go package and a <code>wasm-to-oci</code> utility <a href="https://github.com/engineerd/wasm-to-oci">can be found on GitHub</a>.</p>
 <h3 id="testing-with-an-oci-registry">Testing with an OCI registry</h3>
-
-<p>We have a local module (which can be found in the <code>testdata</code> directory of the <a href="https://github.com/engineerd/wasm-to-oci" target="_blank">repo</a>), and we use the <code>wasm-to-oci</code> to push to an Azure Container Registry repository that we are currently logged in to (using the Docker CLI):</p>
-
+<p>We have a local module (which can be found in the <code>testdata</code> directory of the <a href="https://github.com/engineerd/wasm-to-oci">repo</a>), and we use the <code>wasm-to-oci</code> to push to an Azure Container Registry repository that we are currently logged in to (using the Docker CLI):</p>
 <pre><code>$ ls
 .rwxr-xr-x 1.6M radu  hello.wasm
 
@@ -198,10 +171,7 @@ $ wasm-to-oci push hello.wasm &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1
 Pushed: &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1
 Size: 1624962
 Digest: sha256:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-</code></pre>
-
-<p>At this point, we can use the same utility to pull from the repository we just pushed, then use a WebAssembly runtime of choice to execute the module:</p>
-
+</code></pre><p>At this point, we can use the same utility to pull from the repository we just pushed, then use a WebAssembly runtime of choice to execute the module:</p>
 <pre><code>$ wasm-to-oci pull &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1 --out test.wasm
 
 Pulled: &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1
@@ -213,10 +183,7 @@ Hello from WebAssembly!
 
 $ wasmer run test.wasm
 Hello from WebAssembly!
-</code></pre>
-
-<p>We can inspect the generated OCI manifest, and see the media types we set earlier, together with the digests and size of the manifest and actual module:</p>
-
+</code></pre><p>We can inspect the generated OCI manifest, and see the media types we set earlier, together with the digests and size of the manifest and actual module:</p>
 <pre><code>{
   &quot;schemaVersion&quot;: 2,
   &quot;config&quot;: {
@@ -232,11 +199,8 @@ Hello from WebAssembly!
     }
   ]
 }
-</code></pre>
-
-<h3 id="conclusion">Conclusion</h3>
-
-<p>This was an interesting proof of concept for storing WASM in OCI registries. Most likely you don&rsquo;t need this if you&rsquo;re using WebAssembly on the web right now, but it can be useful in the context of WASI, and particularly considering this extremely cool <a href="https://github.com/dmcgowan/containerd-wasm" target="_blank">containerd shim for WebAssembly</a>.</p>
+</code></pre><h3 id="conclusion">Conclusion</h3>
+<p>This was an interesting proof of concept for storing WASM in OCI registries. Most likely you don't need this if you're using WebAssembly on the web right now, but it can be useful in the context of WASI, and particularly considering this extremely cool <a href="https://github.com/dmcgowan/containerd-wasm">containerd shim for WebAssembly</a>.</p>
 
 
             
@@ -286,7 +250,7 @@ Hello from WebAssembly!
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2019</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" target="_blank">Radu M</a> 2020</p>
     
   </div>
 
