@@ -4,6 +4,7 @@ description: "In this series, we explore the state of the Cloud Native Applicati
 summary: "In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation."
 date: 2019-09-04 00:00:00 +0000 UTC
 author: "Radu Matei"
+tags: ["cnab"]
 image: "/img/article-photos/cnab/cnab-twitter-card.png"
 canonicalUrl: "https://deislabs.io/posts/state-of-cnab-part-1"
 ---
