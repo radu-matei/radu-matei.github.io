@@ -21,7 +21,7 @@ of a module so that different hosts can inter-operate using the higher level
 types. For a comprehensive explainer of the problems interface types are
 supposed to solve, [Lin Clark][lin] has an [excellent article on the Mozilla
 Hacks blog][interface-types-article], with a demo of using the same markdown
-renderer compiled to WebAssembly from using native strings from languages like
+renderer compiled to WebAssembly, and using native strings from languages like
 Rust, Python, or JavaScript:
 
 {{< youtube Qn_4F3foB3Q >}}
