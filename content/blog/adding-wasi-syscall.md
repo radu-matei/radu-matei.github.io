@@ -169,7 +169,7 @@ WASI.
 If we now build the main repository, we should have a version of Wasmtime that
 contains the `print_greet` function in the `wasi_snapshot_preview1` module.
 
-### Using the `print_greet` function from a WebAssembly module
+### Using the `print_greeting` function from a WebAssembly module
 
 At this point, we can write a WebAssembly module that imports the
 `print_greeting` function and calls it:
