@@ -14,7 +14,7 @@
 <meta name="twitter:title" content="Debug Helm and Tiller using VS Code and Draft" />
 <meta name="twitter:description" content="" />
     <meta property='og:title' content='Debug Helm and Tiller using VS Code and Draft - radu&#39;s blog'>
-<meta property='og:description' content='In today&#39;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes, the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
+<meta property='og:description' content='In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes , the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
  Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.'>
 <meta property='og:url' content='https://radu-matei.com/blog/debug-helm-tiller/'>
 <meta property='og:site_name' content='radu&#39;s blog'>
@@ -26,16 +26,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -131,16 +131,24 @@
 
             <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>In today's article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use <a href="https://github.com/kubernetes/helm">Helm, the package manager for Kubernetes</a>, the newly released <a href="https://github.com/azure/vscode-kubernetes-tools">Kubernetes extension for VS Code</a> and <a href="https://github.com/azure/draft">Draft</a> to develop, debug and deploy is Helm itself.</p>
+<p>In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use <a href="https://github.com/kubernetes/helm" target="_blank" rel="noreferrer noopener">Helm, the package manager for Kubernetes</a>
+, the newly released <a href="https://github.com/azure/vscode-kubernetes-tools" target="_blank" rel="noreferrer noopener">Kubernetes extension for VS Code</a>
+ and <a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
+ to develop, debug and deploy is Helm itself.</p>
 <blockquote>
-<p><a href="https://github.com/kubernetes/helm">Helm</a> helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
+<p><a href="https://github.com/kubernetes/helm" target="_blank" rel="noreferrer noopener">Helm</a>
+ helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
 Charts are easy to create, version, share, and publish — so start using Helm and stop the copy-and-paste madness.
 The latest version of Helm is maintained by the CNCF - in collaboration with Microsoft, Google, Bitnami and the Helm contributor community.
-More about Helm in <a href="https://docs.helm.sh">the official documentation</a>.</p>
+More about Helm in <a href="https://docs.helm.sh" target="_blank" rel="noreferrer noopener">the official documentation</a>
+.</p>
 </blockquote>
 <blockquote>
-<p><a href="https://github.com/azure/draft">Draft</a> is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.
-To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md">follow the official Draft documentation</a> or watch an <a href="https://www.youtube.com/watch?v=DvaT3H8Wyf8">introduction to Draft from Azure Friday</a>.</p>
+<p><a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
+ is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.
+To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">follow the official Draft documentation</a>
+ or watch an <a href="https://www.youtube.com/watch?v=DvaT3H8Wyf8" target="_blank" rel="noreferrer noopener">introduction to Draft from Azure Friday</a>
+.</p>
 </blockquote>
 <p>In a nutshell, Draft performs the following steps automatically for each iteration of your application:</p>
 <ul>
@@ -148,16 +156,21 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 <li>pushes the container image to a registry</li>
 <li>pushes the application to any Kubernetes cluster using a Helm chart</li>
 </ul>
-<p>We will use Draft (which uses Helm, but more on that later!) to develop, debug and deploy Helm itself. Here's what we're going to achieve:</p>
+<p>We will use Draft (which uses Helm, but more on that later!) to develop, debug and deploy Helm itself. Here&rsquo;s what we&rsquo;re going to achieve:</p>
 <ul>
-<li>build and debug the Helm CLI using VS Code, the <a href="https://github.com/Microsoft/vscode-go">Golang extension for VS Code</a> and <a href="https://github.com/derekparker/delve">Delve, the Golang debugger</a></li>
-<li>build, deploy and debug Helm's server-side component, Tiller, using the <a href="https://github.com/azure/vscode-kubernetes-tools">VS Code Kubernetes extension</a> and <a href="https://github.com/azure/draft">Draft</a></li>
+<li>build and debug the Helm CLI using VS Code, the <a href="https://github.com/Microsoft/vscode-go" target="_blank" rel="noreferrer noopener">Golang extension for VS Code</a>
+ and <a href="https://github.com/derekparker/delve" target="_blank" rel="noreferrer noopener">Delve, the Golang debugger</a>
+</li>
+<li>build, deploy and debug Helm&rsquo;s server-side component, Tiller, using the <a href="https://github.com/azure/vscode-kubernetes-tools" target="_blank" rel="noreferrer noopener">VS Code Kubernetes extension</a>
+ and <a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
+</li>
 </ul>
-<p>To follow along this article, you can use <a href="https://github.com/radu-matei/helm/tree/debugging-draft">my branch of Helm</a> which contains all the assets necessary assets for debugging:</p>
+<p>To follow along this article, you can use <a href="https://github.com/radu-matei/helm/tree/debugging-draft" target="_blank" rel="noreferrer noopener">my branch of Helm</a>
+ which contains all the assets necessary assets for debugging:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone -b debugging-draft https://github.com/radu-matei/helm
 </code></pre></div><p>Before moving to actually debugging, it is worth mentioning that Helm has two components - a client-side CLI, that runs locally on the machine and a server-side component, Tiller, which is deployed in your cluster. We will debug both components.</p>
 <h3 id="debugging-the-helm-cli">Debugging the Helm CLI</h3>
-<p>Debugging the Helm CLI is as simple as debugging any Golang project when using the Golang extension for VS Code and Delve - add a launch configuration and start debugging. The only thing to note here is that we can either build our binary for every change in our code, or attach to a pre-built binary - below and in the repo you'll find both configurations:</p>
+<p>Debugging the Helm CLI is as simple as debugging any Golang project when using the Golang extension for VS Code and Delve - add a launch configuration and start debugging. The only thing to note here is that we can either build our binary for every change in our code, or attach to a pre-built binary - below and in the repo you&rsquo;ll find both configurations:</p>
 <p>This configuration builds Helm from <code>cmd/helm</code> and attaches the debugger:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Build and Debug Helm CLI&#34;</span>,
@@ -180,7 +193,7 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
         <span style="color:#e6db74">&#34;version&#34;</span>
     ]
 }
-</code></pre></div><p>In both cases, the default command executed will be <code>helm version</code> - note that you can customize the command and arguments passed to your binary, and you can set breakpoints in your Helm CLI's code. If you select the desired configuration and start debugging (F5), the execution of <code>helm version</code> will start. If you setup breakpoints in VS Code, the execution will be stopped and you can step in, out and over method executions or evaluate expressions and variable values:</p>
+</code></pre></div><p>In both cases, the default command executed will be <code>helm version</code> - note that you can customize the command and arguments passed to your binary, and you can set breakpoints in your Helm CLI&rsquo;s code. If you select the desired configuration and start debugging (F5), the execution of <code>helm version</code> will start. If you setup breakpoints in VS Code, the execution will be stopped and you can step in, out and over method executions or evaluate expressions and variable values:</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/qUbkGq-RygM" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
@@ -190,22 +203,24 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 Notice that we are debugging the local component of Helm - the <code>helm version</code> command is executed part locally (what we debugged) and part on the cluster:</p>
 <pre><code>Client: &amp;version.Version{SemVer:&quot;v2.8+unreleased&quot;, GitCommit:&quot;&quot;, GitTreeState:&quot;&quot;}
 Server: &amp;version.Version{SemVer:&quot;v2.8.2&quot;, GitCommit:&quot;a80231648a1473929271764b920a8e346f6de844&quot;, GitTreeState:&quot;clean&quot;}
-</code></pre><p>The server version was executed in the cluster - we did not debug that call simply because we only started debugging the local component of Helm. Let's debug Tiller!</p>
+</code></pre><p>The server version was executed in the cluster - we did not debug that call simply because we only started debugging the local component of Helm. Let&rsquo;s debug Tiller!</p>
 <h3 id="debugging-tiller">Debugging Tiller</h3>
 <p>To debug remote components deployed in a Kubernetes cluster you need to:</p>
 <ul>
 <li>build your application for debugging (include the debugging symbols)</li>
 <li>create a Docker image and push it to a container registry</li>
-<li>update your Kubernetes manifest or Helm chart with the correct image tag, a debugger port exposed and the correct security context so the debugger can attach to a process inside your pod (in the case of NodeJS you don't have to do anything; for Go you need the <code>SYS_PTRACE</code> capability)</li>
+<li>update your Kubernetes manifest or Helm chart with the correct image tag, a debugger port exposed and the correct security context so the debugger can attach to a process inside your pod (in the case of NodeJS you don&rsquo;t have to do anything; for Go you need the <code>SYS_PTRACE</code> capability)</li>
 <li>wait for a pod to be running</li>
 <li>forward all application and debugger ports from your pod to <code>localhost</code></li>
 <li>attach the local debugger to the remote target on the <code>localhost</code> port exposed by port forwarding</li>
 </ul>
-<p>The entire concept of <em>debugging</em> means that most likely you will have to to this process multiple times, which can be incredibly time consuming, repetitive and annoying. This is where Draft and the VS Code Kubernetes extension come in extremely handy - Draft will automate the process of building and pushing the container image, then releasing the new version of your application, and the VS Code Kubernetes extension makes sure to attach the correct debugger after all the ports in your pod are forwarded. Let's see how to setup the process specifically for Tiller - we will take each step above and particularize it for the current version of Helm:</p>
+<p>The entire concept of <em>debugging</em> means that most likely you will have to to this process multiple times, which can be incredibly time consuming, repetitive and annoying. This is where Draft and the VS Code Kubernetes extension come in extremely handy - Draft will automate the process of building and pushing the container image, then releasing the new version of your application, and the VS Code Kubernetes extension makes sure to attach the correct debugger after all the ports in your pod are forwarded. Let&rsquo;s see how to setup the process specifically for Tiller - we will take each step above and particularize it for the current version of Helm:</p>
 <h3 id="building-the-tiller-binary-for-debugging">Building the Tiller binary for debugging</h3>
-<p>The <a href="https://github.com/kubernetes/helm/blob/master/Makefile#L59">Helm's Makefile</a> contains a target called <code>docker-binary</code> which will create a Linux binary. Since that binary is intended for production use, it will omit the debugging symbols (the <code>-w</code> flag is passed, more information below).</p>
+<p>The <a href="https://github.com/kubernetes/helm/blob/master/Makefile#L59" target="_blank" rel="noreferrer noopener">Helm&rsquo;s Makefile</a>
+ contains a target called <code>docker-binary</code> which will create a Linux binary. Since that binary is intended for production use, it will omit the debugging symbols (the <code>-w</code> flag is passed, more information below).</p>
 <blockquote>
-<p>Pass the &lsquo;-w&rsquo; flag to the linker to omit the debug information (for example, go build -ldflags=-w prog.go). - from <a href="https://golang.org/doc/gdb">the Golang documentation on debugging</a></p>
+<p>Pass the &lsquo;-w&rsquo; flag to the linker to omit the debug information (for example, go build -ldflags=-w prog.go). - from <a href="https://golang.org/doc/gdb" target="_blank" rel="noreferrer noopener">the Golang documentation on debugging</a>
+</p>
 </blockquote>
 <p>We will not be able to use this binary for debugging, so we simply create a new Make target where we pass the desired Golang build flags:</p>
 <pre><code>.PHONY: docker-debug
@@ -213,13 +228,14 @@ docker-debug: BINDIR = ./rootfs
 docker-debug:
 	GOOS=linux GOARCH=amd64 $(GO) build -o $(BINDIR)/tiller k8s.io/helm/cmd/tiller
 </code></pre><blockquote>
-<p>For simplicity I also removed some other flags from building the binary - to be as close as possible to production, pass the desired flags, while also making sure you're not breaking the Delve debugger.</p>
+<p>For simplicity I also removed some other flags from building the binary - to be as close as possible to production, pass the desired flags, while also making sure you&rsquo;re not breaking the Delve debugger.</p>
 </blockquote>
-<p>Before we get to building the image and push it to a registry, we need a way to <code>make docker-debug</code>. Draft has a feature called <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-008.md">Draft tasks</a> which we will use to build the Tiller binary -  add a <code>.draft-tasks.toml</code> file which contains a <code>pre-up</code> task:</p>
+<p>Before we get to building the image and push it to a registry, we need a way to <code>make docker-debug</code>. Draft has a feature called <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-008.md" target="_blank" rel="noreferrer noopener">Draft tasks</a>
+ which we will use to build the Tiller binary -  add a <code>.draft-tasks.toml</code> file which contains a <code>pre-up</code> task:</p>
 <pre><code>[pre-up]
     build-tiller = &quot;make docker-debug&quot;
 </code></pre><blockquote>
-<p>Note that if you don't want to create a new binary every time you attach the debugger you can comment the step above and simply <code>make docker-debug</code> when you want a new Tiller binary.</p>
+<p>Note that if you don&rsquo;t want to create a new binary every time you attach the debugger you can comment the step above and simply <code>make docker-debug</code> when you want a new Tiller binary.</p>
 </blockquote>
 <h3 id="creating-the-docker-image-pushing-it-to-a-registry">Creating the Docker image, pushing it to a registry</h3>
 <p>In the repo you can find <code>Dockerfile.tiller.debug</code>, which we will use to build the container image:</p>
@@ -231,7 +247,7 @@ COPY rootfs/start.sh .
 RUN chmod +x start.sh
 CMD ./start.sh
 </code></pre><ul>
-<li>we need a base image that either contains the Golang debugger, Delve, or install it - for simplicity, we're using a pre-built image with Delve, but you can create your own base image for debugging  (<strong>and you should!</strong> - you don't want to trust random images from the Internet)</li>
+<li>we need a base image that either contains the Golang debugger, Delve, or install it - for simplicity, we&rsquo;re using a pre-built image with Delve, but you can create your own base image for debugging  (<strong>and you should!</strong> - you don&rsquo;t want to trust random images from the Internet)</li>
 <li>we copy the Tiller binary we built before</li>
 <li>we also copy a shell script and use it to start the container - this script will start Tiller and attach the Delve debugger to the Tiller process, creating a headless Delve server and exposing it on port 2345:</li>
 </ul>
@@ -247,7 +263,7 @@ dlv attach $(pgrep -x tiller | head -n 1) tiller --headless --listen=0.0.0.0:234
     chart = &quot;tiller&quot;
 </code></pre><ul>
 <li>the name and namespace of our application</li>
-<li>how to expose the pod's ports locally on <code>localhost</code></li>
+<li>how to expose the pod&rsquo;s ports locally on <code>localhost</code></li>
 <li>the Dockerfile and chart to use</li>
 </ul>
 <h3 id="the-helm-template-for-our-deployment">The Helm template for our deployment</h3>
@@ -307,7 +323,7 @@ spec:
   <iframe src="https://www.youtube.com/embed/z6mWx4C3p7I" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
 </div>
 
-<p>Now as you saw in the video, we're attached to Tiller which is deployed in Kubernetes.</p>
+<p>Now as you saw in the video, we&rsquo;re attached to Tiller which is deployed in Kubernetes.</p>
 <blockquote>
 <p>Note that because of a current know limitation of the extension and VS Code we have to use a different window to debug the CLI - we hope to eliminate this limitation very soon, and then you will be able to use a single instance of VS Code to debug both the CLI and Tiller.</p>
 </blockquote>

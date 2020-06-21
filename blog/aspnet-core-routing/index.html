@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -128,10 +128,12 @@
 </blockquote>
 <p>However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI.</p>
 <blockquote>
-<p>The best place to start learning about Routing is the <a href="https://docs.asp.net/en/latest/fundamentals/routing.html">Official ASP .NET Core Documentation</a>.</p>
+<p>The best place to start learning about Routing is the <a href="https://docs.asp.net/en/latest/fundamentals/routing.html" target="_blank" rel="noreferrer noopener">Official ASP .NET Core Documentation</a>
+.</p>
 </blockquote>
 <blockquote>
-<p>Since we haven't started talking about MVC, the routing discussed here will not include any MVC-specific routing on controllers, actions or parameters, but routing done using <a href="https://docs.asp.net/en/latest/fundamentals/routing.html#using-routing-middleware">Routing Middleware</a>.</p>
+<p>Since we haven&rsquo;t started talking about MVC, the routing discussed here will not include any MVC-specific routing on controllers, actions or parameters, but routing done using <a href="https://docs.asp.net/en/latest/fundamentals/routing.html#using-routing-middleware" target="_blank" rel="noreferrer noopener">Routing Middleware</a>
+.</p>
 </blockquote>
 <h3 id="installing-the-routing-package">Installing the <code>Routing</code> package</h3>
 <p>First of all, we need to add the <code>Microsoft.AspNetCore.Routing</code> dependency from NuGet.</p>
@@ -145,7 +147,8 @@
 }
 </code></pre></div><p>This is how the <code>dependencies</code> node of <code>project.json</code> should look like.</p>
 <blockquote>
-<p>The difference form the <a href="/blog/aspnet-core-startup#building-the-hello-world-web-application-with-startup">previous example</a> is just the addition of the <code>Routing</code> package.</p>
+<p>The difference form the <a href="/blog/aspnet-core-startup#building-the-hello-world-web-application-with-startup">previous example</a>
+ is just the addition of the <code>Routing</code> package.</p>
 </blockquote>
 <blockquote>
 <p>From now on, when adding a new dependency from NuGet the full <code>project.json</code> will not be shown anymore, but only the new package added.</p>
@@ -154,7 +157,8 @@
 <p>At the time of writing this article, the latest version for all ASP .NET Core libraries is <code>1.0.0</code>. As newer versions are released, check the release notes to see if there are any breaking changes when updating packages.</p>
 </blockquote>
 <h3 id="adding-the-routing-service-in-startup">Adding the <code>Routing</code> Service in <code>Startup</code></h3>
-<p>When we discussed <a href="/blog/aspnet-core-startup#the-anatomy-of-the-startup-class">the anatomy of the <code>Startup</code> class</a>, besides the <code>Configure</code> method we have used before, there was also a method called <code>ConfigureServices</code> used for configuring services that our application needs.</p>
+<p>When we discussed <a href="/blog/aspnet-core-startup#the-anatomy-of-the-startup-class">the anatomy of the <code>Startup</code> class</a>
+, besides the <code>Configure</code> method we have used before, there was also a method called <code>ConfigureServices</code> used for configuring services that our application needs.</p>
 <p>Since we are going to use Routing, we should add it as a service in <code>Startup</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
 {
@@ -171,14 +175,15 @@
 </code></pre></div><p>We can create paths that contain multiple elements and we can extract the parameters entered when making the request. For example, when requesting on <code>hello/{name}</code>, we can extract the parameter <code>{name}</code> and use it when constructing the response:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello/{name}&#34;</span>, context =&gt; context.Response
     .WriteAsync(<span style="color:#e6db74">$&#34;Hello, {context.GetRouteValue(&#34;</span>name<span style="color:#e6db74">&#34;)}&#34;</span>));
-</code></pre></div><p>We can also add constrains on the parameters. For example, let's create a respond for requests coming to the path <code>/square/{number}</code>, where <code>{number}</code> is an <code>int</code> and responds with the square of the number.</p>
+</code></pre></div><p>We can also add constrains on the parameters. For example, let&rsquo;s create a respond for requests coming to the path <code>/square/{number}</code>, where <code>{number}</code> is an <code>int</code> and responds with the square of the number.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;square/{number:int}&#34;</span>, context =&gt;
     {
         <span style="color:#66d9ef">int</span> number = Convert.ToInt32(context.GetRouteValue(<span style="color:#e6db74">&#34;number&#34;</span>));
         <span style="color:#66d9ef">return</span> context.Response.WriteAsync(<span style="color:#e6db74">$&#34;The square of {number} is {number * number}&#34;</span>);
     });
 </code></pre></div><blockquote>
-<p>For a full list of parameter constraints, see this table from <a href="https://docs.asp.net/en/latest/fundamentals/routing.html#id7">the Official ASP .NET Core Documentation</a>.</p>
+<p>For a full list of parameter constraints, see this table from <a href="https://docs.asp.net/en/latest/fundamentals/routing.html#id7" target="_blank" rel="noreferrer noopener">the Official ASP .NET Core Documentation</a>
+.</p>
 </blockquote>
 <p>In order to test wether the routing works properly, open a browser and navigate to your custom route and check if the output is the desired one.</p>
 <blockquote>
@@ -191,7 +196,8 @@ http://localhost:5000/square/3
 </code></pre><p>So far we only created routing mapped for the <code>GET</code> method, so we can test the output from a browser tab.
 Now we will add routing for a <code>POST</code> method (so we will not be able to test it by navigating to the URL in the browser).</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapPost(<span style="color:#e6db74">&#34;post&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Posting!&#34;</span>));
-</code></pre></div><p>In order to test this route, we need to use a tool that sends <code>HTTP</code> requests to our application. We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">PostMan for Google Chrome</a>.</p>
+</code></pre></div><p>In order to test this route, we need to use a tool that sends <code>HTTP</code> requests to our application. We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop" target="_blank" rel="noreferrer noopener">PostMan for Google Chrome</a>
+.</p>
 <p><img src="/img/article-photos/aspnet-core-routing/routing-postman.JPG" alt=""></p>
 <blockquote>
 <p>If we try and change the method type in PostMan from <code>POST</code> to <code>GET</code>, we notice how the request fails.</p>

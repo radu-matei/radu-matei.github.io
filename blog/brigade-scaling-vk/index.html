@@ -14,7 +14,7 @@
 <meta name="twitter:title" content="Instant Scaling on Demand: Serverless Kubernetes with Brigade" />
 <meta name="twitter:description" content="" />
     <meta property='og:title' content='Instant Scaling on Demand: Serverless Kubernetes with Brigade - radu&#39;s blog'>
-<meta property='og:description' content='This article originally appeared on the Microsoft open source blog.
+<meta property='og:description' content='This article originally appeared on the Microsoft open source blog .
 Microservices built on Kubernetes are fast becoming one of the core scenarios where computing is done, and Kubernetes development and operations skills are therefore becoming a larger part of any cloud-native toolset. This article shows how to use some of the Cloud Native Computing Foundation (CNCF) and CNCF sandbox projects together to build a Kubernetes-native application that listens for events and then runs serverless pipelines on Virtual Kubelet instances, each of which are dynamically created (and recycled when the pipeline is done).'>
 <meta property='og:url' content='https://radu-matei.com/blog/brigade-scaling-vk/'>
 <meta property='og:site_name' content='radu&#39;s blog'>
@@ -26,16 +26,16 @@ Microservices built on Kubernetes are fast becoming one of the core scenarios wh
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -117,53 +117,123 @@ Microservices built on Kubernetes are fast becoming one of the core scenarios wh
             
 
 
-            <p><em><a href="https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial">This article originally appeared on the Microsoft open source blog</a></em>.</p>
-<p>Microservices built on Kubernetes are fast becoming one of the core scenarios where computing is done, and Kubernetes development and operations skills are therefore becoming a larger part of any cloud-native toolset. This article shows how to use some of the Cloud Native Computing Foundation (CNCF) and <a href="https://www.cncf.io/sandbox-projects/">CNCF sandbox projects</a> together to build a Kubernetes-native application that listens for events and then runs serverless pipelines on Virtual Kubelet instances, each of which are dynamically created (and recycled when the pipeline is done).</p>
+            <p><em><a href="https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial" target="_blank" rel="noreferrer noopener">This article originally appeared on the Microsoft open source blog</a>
+</em>.</p>
+<p>Microservices built on Kubernetes are fast becoming one of the core scenarios
+where computing is done, and Kubernetes development and operations skills are
+therefore becoming a larger part of any cloud-native toolset. This article shows
+how to use some of the Cloud Native Computing Foundation (CNCF) and
+<a href="https://www.cncf.io/sandbox-projects/" target="_blank" rel="noreferrer noopener">CNCF sandbox projects</a>
+ together to build
+a Kubernetes-native application that listens for events and then runs serverless
+pipelines on Virtual Kubelet instances, each of which are dynamically created
+(and recycled when the pipeline is done).</p>
 <p>The CNCF Sandbox projects used in this article are:</p>
 <ol>
-<li><a href="https://cloudevents.io">Cloud Events</a>, a specification for describing event data in a common way</li>
-<li><a href="https://brigade.sh">Brigade</a>, a Kubernetes-native service that creates structured container pipelines</li>
-<li><a href="https://virtual-kubelet.io/">Virtual Kubelet</a>, an open-source Kubernetes kubelet implementation that defers its internal execution to another system.</li>
+<li><a href="https://cloudevents.io" target="_blank" rel="noreferrer noopener">Cloud Events</a>
+, a specification for describing event
+data in a common way</li>
+<li><a href="https://brigade.sh" target="_blank" rel="noreferrer noopener">Brigade</a>
+, a Kubernetes-native service that creates
+structured container pipelines</li>
+<li><a href="https://virtual-kubelet.io/" target="_blank" rel="noreferrer noopener">Virtual Kubelet</a>
+, an open-source Kubernetes
+kubelet implementation that defers its internal execution to another system.</li>
 </ol>
-<p>Both Brigade and an implementation of Virtual Kubelet based on Azure Container Instances (ACI) are installed using the CNCF <a href="https://helm.sh">Helm</a> project, an installer for Kubernetes applications.</p>
+<p>Both Brigade and an implementation of Virtual Kubelet based on Azure Container
+Instances (ACI) are installed using the CNCF <a href="https://helm.sh" target="_blank" rel="noreferrer noopener">Helm</a>
+ project, an
+installer for Kubernetes applications.</p>
 <blockquote>
-<p>In addition, we are <a href="https://cloudblogs.microsoft.com/opensource/2019/03/28/announcing-brigade-1-0-new-kind-of-distributed-application/">happy to announce that Brigade</a> is now a CNCF <a href="https://www.cncf.io/sandbox-projects/">sandbox</a> project, a major step for the Brigade community, collaborating on a first-class scripting runtime for constructing container pipelines.</p>
+<p>In addition, we are
+<a href="https://cloudblogs.microsoft.com/opensource/2019/03/28/announcing-brigade-1-0-new-kind-of-distributed-application/" target="_blank" rel="noreferrer noopener">happy to announce that Brigade</a>
+
+is now a CNCF <a href="https://www.cncf.io/sandbox-projects/" target="_blank" rel="noreferrer noopener">sandbox</a>
+ project, a
+major step for the Brigade community, collaborating on a first-class scripting
+runtime for constructing container pipelines.</p>
 </blockquote>
-<p>Why these projects? The nature of event-driven applications is that the load is often unpredictable, and allocating compute power for a specific workload can be quite difficult, and inefficient from a cost perspective. Brigade listens for Cloud Events and manages the pipelines in a Kubernetes cluster, but handling unexpected load is where we introduce Virtual Kubelet — a CNCF project that allows us to schedule Kubernetes pods on virtual nodes, backed by components other than VMs. Virtual Kubelet has multiple providers available, with one of them being Azure Container Instances (ACI) — a service that allows you to schedule and execute containers on Azure’s infrastructure, billed by the second. It turns out that this is a really good match, since Brigade allows you to execute container pipelines, and events often do not require long periods of compute; they can be &ldquo;bursty&rdquo;.</p>
+<p>Why these projects? The nature of event-driven applications is that the load is
+often unpredictable, and allocating compute power for a specific workload can be
+quite difficult, and inefficient from a cost perspective. Brigade listens for
+Cloud Events and manages the pipelines in a Kubernetes cluster, but handling
+unexpected load is where we introduce Virtual Kubelet — a CNCF project that
+allows us to schedule Kubernetes pods on virtual nodes, backed by components
+other than VMs. Virtual Kubelet has multiple providers available, with one of
+them being Azure Container Instances (ACI) — a service that allows you to
+schedule and execute containers on Azure’s infrastructure, billed by the second.
+It turns out that this is a really good match, since Brigade allows you to
+execute container pipelines, and events often do not require long periods of
+compute; they can be &ldquo;bursty&rdquo;.</p>
 <h3 id="how-does-brigade-work">How does Brigade work?</h3>
 <p>Brigade uses a few components to work:</p>
 <ul>
 <li>a controller, which looks for events in a certain namespace.</li>
-<li>a gateway, which translates external events (which can come from a git repo, webhooks, or any other event source).</li>
+<li>a gateway, which translates external events (which can come from a git repo,
+webhooks, or any other event source).</li>
 <li>optionally, an API to help us interact with CLIs or web frontends.</li>
 </ul>
-<p>Then, when an event is fired, the Brigade controller will schedule a worker pod, which executes the JavaScript pipeline of your project, and starts scheduling all the jobs defined.</p>
-<p>This is the interesting part — you don’t have to provision infrastructure for the jobs you define — they can be scheduled by Virtual Kubelet on Azure Container Instances, and be billed by the second for the time when your jobs run.</p>
-<p>You can have a number of nodes for your regular workloads, and use Brigade with Virtual Kubelet for the event-driven pipelines. You can run as many jobs in parallel as needed, without worrying about provisioning infrastructure, or the cost associated with it.
-On top of that, you can use any Kubernetes in any cloud, or on-premises, and scale through Azure when needed.</p>
-<p>By the end of this article, we will have a Kubernetes cluster with one actual VM node, a Virtual Kubelet node backed by ACI, and Brigade, configured to schedule jobs on the virtual node.</p>
+<p>Then, when an event is fired, the Brigade controller will schedule a worker pod,
+which executes the JavaScript pipeline of your project, and starts scheduling
+all the jobs defined.</p>
+<p>This is the interesting part — you don’t have to provision infrastructure for
+the jobs you define — they can be scheduled by Virtual Kubelet on Azure
+Container Instances, and be billed by the second for the time when your jobs
+run.</p>
+<p>You can have a number of nodes for your regular workloads, and use Brigade with
+Virtual Kubelet for the event-driven pipelines. You can run as many jobs in
+parallel as needed, without worrying about provisioning infrastructure, or the
+cost associated with it. On top of that, you can use any Kubernetes in any
+cloud, or on-premises, and scale through Azure when needed.</p>
+<p>By the end of this article, we will have a Kubernetes cluster with one actual VM
+node, a Virtual Kubelet node backed by ACI, and Brigade, configured to schedule
+jobs on the virtual node.</p>
 <blockquote>
-<p>If you are interested, you can <a href="https://docs.brigade.sh/topics/design/">read more about the Brigade architecture in this document</a>.</p>
+<p>If you are interested, you can <a href="https://docs.brigade.sh/topics/design/" target="_blank" rel="noreferrer noopener">read more about the Brigade architecture in
+this document</a>
+.</p>
 </blockquote>
 <h3 id="configuring-brigade-virtual-kubelet-and-aci">Configuring Brigade, Virtual Kubelet, and ACI</h3>
 <p>Here’s a list of the things we are going to need:</p>
 <ul>
-<li>first, you need a Kubernetes cluster — if you don’t already have one, you can <a href="https://helm.sh/docs/using_helm/">get started with a free Azure subscription here</a>, use a Minikube cluster, or any other cloud-hosted Kubernetes cluster.</li>
+<li>first, you need a Kubernetes cluster — if you don’t already have one, you can
+<a href="https://helm.sh/docs/using_helm/" target="_blank" rel="noreferrer noopener">get started with a free Azure subscription here</a>
+,
+use a Minikube cluster, or any other cloud-hosted Kubernetes cluster.</li>
 </ul>
 <blockquote>
-<p>Note that if you use a Minikube cluster, you won’t be able to create services with public IPs, or publicly exposed ingress objects. You can still follow along, and manually trigger jobs through the Brigade CLI.</p>
+<p>Note that if you use a Minikube cluster, you won’t be able to create services
+with public IPs, or publicly exposed ingress objects. You can still follow
+along, and manually trigger jobs through the Brigade CLI.</p>
 </blockquote>
 <ul>
-<li>we also need to <a href="https://helm.sh/docs/using_helm/">configure Helm</a>.</li>
-<li>optionally, you can configure an <a href="https://github.com/kubernetes/ingress-nginx">Nginx ingress controller</a> and <a href="https://github.com/jetstack/cert-manager/">Cert-Manager</a> to automatically provision TLS ingress objects in your cluster, <a href="https://docs.brigade.sh/topics/ingress/">as described in the Brigade documentation</a>.</li>
-<li>the document above also explains how to deploy Brigade if you configure a cluster with ingress and TLS. If you don't want to configure an ingress controller, deploying Brigade can be done with Helm:</li>
+<li>we also need to <a href="https://helm.sh/docs/using_helm/" target="_blank" rel="noreferrer noopener">configure Helm</a>
+.</li>
+<li>optionally, you can configure an <a href="https://github.com/kubernetes/ingress-nginx" target="_blank" rel="noreferrer noopener">Nginx ingress controller</a>
+ and
+<a href="https://github.com/jetstack/cert-manager/" target="_blank" rel="noreferrer noopener">Cert-Manager</a>
+ to automatically provision TLS ingress objects in
+your cluster, <a href="https://docs.brigade.sh/topics/ingress/" target="_blank" rel="noreferrer noopener">as described in the Brigade
+documentation</a>
+.</li>
+<li>the document above also explains how to deploy Brigade if you configure a
+cluster with ingress and TLS. If you don&rsquo;t want to configure an ingress
+controller, deploying Brigade can be done with Helm:</li>
 </ul>
 <pre><code>$ helm repo add brigade https://azure.github.io/brigade-charts
 $ helm install brigade/brigade --name brigade --set genericGateway.enabled=true --set genericGateway.service.type=&lt;LoadBalancer/ClusterIP&gt;
 </code></pre><blockquote>
-<p>If you have a cloud-hosted Kubernetes cluster, it should be able to automatically provision <code>LoadBalancer</code> type services with a public IP. If not, you can choose a <code>ClusterIP</code> type service, but keep in mind that this service will <em>not</em> be publicly exposed, and triggering jobs will only be available through the <code>brig</code> CLI, or from inside the cluster.</p>
+<p>If you have a cloud-hosted Kubernetes cluster, it should be able to
+automatically provision <code>LoadBalancer</code> type services with a public IP. If not,
+you can choose a <code>ClusterIP</code> type service, but keep in mind that this service
+will <em>not</em> be publicly exposed, and triggering jobs will only be available
+through the <code>brig</code> CLI, or from inside the cluster.</p>
 </blockquote>
-<p>The setup we are using for this article is the one described in <a href="https://docs.brigade.sh/topics/ingress/">the Brigade documentation that covers configuring ingress objects with TLS</a>. Here's how the <code>brigade</code> namespace should look:</p>
+<p>The setup we are using for this article is the one described in <a href="https://docs.brigade.sh/topics/ingress/" target="_blank" rel="noreferrer noopener">the Brigade
+documentation that covers configuring ingress objects with
+TLS</a>
+. Here&rsquo;s how the <code>brigade</code> namespace should
+look:</p>
 <pre><code>$ kubectl get deployment,service,ingress --namespace brigade
 NAME                                                    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 deployment.extensions/brigade-brigade-api               1         1         1            1           62m
@@ -180,13 +250,23 @@ NAME                                                 HOSTS                      
 ingress.extensions/brigade-brigade-generic-gateway   brigade-events-test.kube.radu.sh             80, 443   62m
 
 </code></pre><blockquote>
-<p>Note that the subdomain used for provisioning ingress objects is <code>*.kube.radu.sh</code> &ndash; if you own a domain, and have access to configuring the DNS for it, you should be able to setup the ingress controller according to the document referenced above.</p>
+<p>Note that the subdomain used for provisioning ingress objects is
+<code>*.kube.radu.sh</code> &ndash; if you own a domain, and have access to configuring the
+DNS for it, you should be able to setup the ingress controller according to
+the document referenced above.</p>
 </blockquote>
 <blockquote>
-<p>This ingress endpoint allows Brigade to accept events in the <a href="https://cloudevents.io/">CloudEvents v2 format</a>, a CNCF industry specification which formalizes event schemas used for different systems.</p>
+<p>This ingress endpoint allows Brigade to accept events in the <a href="https://cloudevents.io/" target="_blank" rel="noreferrer noopener">CloudEvents v2
+format</a>
+, a CNCF industry specification which formalizes event
+schemas used for different systems.</p>
 </blockquote>
 <blockquote>
-<p>Note that there is another endpoint in the same Brigade gateway which allows arbitrary JSON schema events, so if your system produces other JSON schemas, you can use them without changing the format. See the <a href="https://docs.brigade.sh/topics/genericgateway/">document about the Brigade generic gateway</a>.</p>
+<p>Note that there is another endpoint in the same Brigade gateway which allows
+arbitrary JSON schema events, so if your system produces other JSON schemas,
+you can use them without changing the format. See the <a href="https://docs.brigade.sh/topics/genericgateway/" target="_blank" rel="noreferrer noopener">document about the
+Brigade generic gateway</a>
+.</p>
 </blockquote>
 <p>The cluster provisioned for this article is a 1 node AKS cluster:</p>
 <pre><code>$ kubectl get nodes
@@ -196,20 +276,32 @@ aks-agentpool-35064155-0   Ready    agent   19h   v1.12.6
 $ kubectl top nodes
 NAME                       CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
 aks-agentpool-35064155-0   1110m        57%    1579Mi          30%
-</code></pre><p>This means we're only paying for 1 virtual machine node (as the Kubernetes control plane in AKS is free). So how would we schedule tens, or hundreds of jobs on this small, 1 node cluster, which is already at 57% CPU load? We are going to do this using Virtual Kubelet and Azure Container Instances.</p>
-<p>For the next part, you will need an <a href="TODO">Azure subscription</a> which has access to creating Container Instances, as well as access to creating an Azure Service Principal.</p>
-<p>If you are running your Kubernetes cluster on AKS, deploying Virtual Kubelet is extremely easy:</p>
+</code></pre><p>This means we&rsquo;re only paying for 1 virtual machine node (as the Kubernetes
+control plane in AKS is free). So how would we schedule tens, or hundreds of
+jobs on this small, 1 node cluster, which is already at 57% CPU load? We are
+going to do this using Virtual Kubelet and Azure Container Instances.</p>
+<p>For the next part, you will need an <a href="TODO">Azure subscription</a>
+ which has
+access to creating Container Instances, as well as access to creating an Azure
+Service Principal.</p>
+<p>If you are running your Kubernetes cluster on AKS, deploying Virtual Kubelet is
+extremely easy:</p>
 <pre><code>$ az aks install-connector --resource-group &lt;aks cluster rg&gt; --name &lt;aks cluster name&gt;
-</code></pre><p>For any other Kubernetes clusters, you can follow <a href="https://github.com/virtual-kubelet/virtual-kubelet/tree/master/providers/azure#manual-set-up">the official instructions from the Virtual Kubelet repo for the ACI provider</a>.</p>
+</code></pre><p>For any other Kubernetes clusters, you can follow <a href="https://github.com/virtual-kubelet/virtual-kubelet/tree/master/providers/azure#manual-set-up" target="_blank" rel="noreferrer noopener">the official instructions
+from the Virtual Kubelet repo for the ACI provider</a>
+.</p>
 <blockquote>
-<p>Keep in mind that your subscription must be able to create container instances &ndash; to enable this provider, run <code>az provider register -n Microsoft.ContainerInstance</code>.</p>
+<p>Keep in mind that your subscription must be able to create container instances
+&ndash; to enable this provider, run
+<code>az provider register -n Microsoft.ContainerInstance</code>.</p>
 </blockquote>
-<p>Now, if everything worked correctly, we should have a second node in our cluster, <code>virtual-kubelet</code>:</p>
+<p>Now, if everything worked correctly, we should have a second node in our
+cluster, <code>virtual-kubelet</code>:</p>
 <pre><code>$ kubectl get nodes
 NAME                       STATUS   ROLES   AGE   VERSION
 aks-agentpool-35064155-0   Ready    agent   40h   v1.12.6
 virtual-kubelet            Ready    agent   11h   v1.13.1-vk-v0.7.4-44-g4f3bd20e-dev
-</code></pre><p>Now that everything is up and running, let's create a new Brigade project:</p>
+</code></pre><p>Now that everything is up and running, let&rsquo;s create a new Brigade project:</p>
 <pre><code>$ brig project create
 ? Project Name testing/brigade-vk
 
@@ -218,12 +310,17 @@ NAME              	ID
 testing/brigade-vk	brigade-f21cf24721ff5303ba21dd5360af71d447d0549b844329206d780c
 </code></pre><p>There are a couple of thing to note here:</p>
 <ul>
-<li>we are not going to create a CI pipeline, so we are not going to use the clone URL, and we are setting the VCS Sidecar to <code>NONE</code>.</li>
+<li>we are not going to create a CI pipeline, so we are not going to use the clone
+URL, and we are setting the VCS Sidecar to <code>NONE</code>.</li>
 </ul>
 <blockquote>
-<p>If you plan to use the Brigade gateway for CloudEvents, you can find more details about it in <a href="https://docs.brigade.sh/topics/genericgateway/">the Brigade documentation</a>.</p>
+<p>If you plan to use the Brigade gateway for CloudEvents, you can find more
+details about it in <a href="https://docs.brigade.sh/topics/genericgateway/" target="_blank" rel="noreferrer noopener">the Brigade documentation</a>
+.</p>
 </blockquote>
-<p>Now let's use the project we just created to test a pipeline. We need a JavaScript pipeline that creates a Brigade job, and schedules it on the <code>virtual-kubelet</code> node we just created:</p>
+<p>Now let&rsquo;s use the project we just created to test a pipeline. We need a
+JavaScript pipeline that creates a Brigade job, and schedules it on the
+<code>virtual-kubelet</code> node we just created:</p>
 <pre><code class="language-javascript=" data-lang="javascript=">// save this as brigade.js
 const { events, Job } = require(&quot;@azure/brigadier&quot;);
 
@@ -240,12 +337,18 @@ events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
 });
 </code></pre><p>Breaking down the <code>brigade.js</code> file:</p>
 <ul>
-<li>we first import <a href="https://www.npmjs.com/package/@azure/brigadier"><code>@azure/brigadier</code></a> library, which contains all Brigade job definitions.</li>
-<li>then, when an <code>exec</code> event is triggered, we create a new Job, and we run a single task, which echoes a message.</li>
-<li>we schedule the job to run on the virtual node we created, and set resource requests for CPU and memory.</li>
+<li>we first import <a href="https://www.npmjs.com/package/@azure/brigadier" target="_blank" rel="noreferrer noopener"><code>@azure/brigadier</code></a>
+ library, which contains
+all Brigade job definitions.</li>
+<li>then, when an <code>exec</code> event is triggered, we create a new Job, and we run a
+single task, which echoes a message.</li>
+<li>we schedule the job to run on the virtual node we created, and set resource
+requests for CPU and memory.</li>
 <li>then we run start the job.</li>
 </ul>
-<p>Triggering an <code>exec</code> event can be done through the <code>brig</code> CLI, so if your setup doesn't include public IP services, or ingresses, you can still test this, provided you configured Virtual Kubelet correctly:</p>
+<p>Triggering an <code>exec</code> event can be done through the <code>brig</code> CLI, so if your setup
+doesn&rsquo;t include public IP services, or ingresses, you can still test this,
+provided you configured Virtual Kubelet correctly:</p>
 <pre><code>$ brig exec testing/brigade-vk -f brigade.js
 Event created. Waiting for worker pod named &quot;brigade-worker-01d5c5g11spb27fzjwkjs7gktw&quot;.
 Build: 01d5c5g11spb27fzjwkjs7gktw, Worker: brigade-worker-01d5c5g11spb27fzjwkjs7gktw
@@ -259,30 +362,48 @@ prestart: loading script from /etc/brigade/script
 [brigade:k8s] brigade/linux-job-01d5c5g11spb27fzjwkjs7gktw phase Pending
 [brigade:k8s] brigade/linux-job-01d5c5g11spb27fzjwkjs7gktw phase Succeeded
 done
-</code></pre><p>So let's see what is happening in our cluster when a job is scheduled:</p>
+</code></pre><p>So let&rsquo;s see what is happening in our cluster when a job is scheduled:</p>
 <pre><code>$ kubectl get pods
 NAME                                               READY   STATUS       RESTARTS   AGE
 brigade-worker-01d5c58r90v5ernrsy6dkvcf5n          0/1     Completed    0          65s
 linux-job-01d5c58r90v5ernrsy6dkvcf5n               0/1     Terminated   0          29s
 </code></pre><p>The pods that we are interested in are:</p>
 <ul>
-<li>the Brigade worker &ndash; as we said before, this pod is scheduled whenever an event is triggered, it executes the <code>brigade.js</code> file associated with a project, and creates all the jobs defined.</li>
+<li>the Brigade worker &ndash; as we said before, this pod is scheduled whenever an
+event is triggered, it executes the <code>brigade.js</code> file associated with a
+project, and creates all the jobs defined.</li>
 <li>the <code>linux-job</code> pod is our job that was scheduled on the Virtual Kubelet node.</li>
 </ul>
 <p>Checking the logs of the job pod:</p>
 <pre><code>$ kubectl logs linux-job-01d5c58r90v5ernrsy6dkvcf5n
 Hello Brigade from Azure
-</code></pre><p>Since the pod was scheduled on the Virtual Kubelet node, which is backed by Azure Container Instances, we should also see the container created in the Azure portal:</p>
+</code></pre><p>Since the pod was scheduled on the Virtual Kubelet node, which is backed by
+Azure Container Instances, we should also see the container created in the Azure
+portal:</p>
 <p><img src="https://i.imgur.com/6598Rdl.png" alt=""></p>
 <p>So at this point, we have all pieces put together.</p>
 <h3 id="scaling-parallelized-jobs-with-brigade-and-virtual-kubelet">Scaling parallelized jobs with Brigade and Virtual Kubelet</h3>
-<p>Now let's assume we have a parallel job that we need to execute &ndash; it could be <a href="https://github.com/seanmck/aci-wordcount">counting utterances of words in a given text</a>, it could be training a machine learning model using a large data set, or any job that can be parallelized.</p>
-<p>If we only have a relatively small number of executions (countdown, word count, data set size), the job can be performed sequentially, by a single instance &ndash; otherwise, we can parallelize the job, and see vastly improved results.</p>
-<p>To keep things simple, for our example, we only need a counter &ndash; and see how to parallelize this using multiple Brigade jobs. The container we are going to run as a Brigade job reads two environment variables, <code>COUNTDOWN_FROM</code>, and <code>COUNTDOWN_TO</code>, and starts a loop where it echoes the current count, then sleeps for one second, simulating a process that takes one second to complete.</p>
-<p>So let's say we need to execute the process 200 times &ndash; sequentially, it would take 200 seconds, plus the time needed to schedule the pod, pull the image, and start the execution.</p>
-<p>In the following pipeline, we will simulate the execution of the process 200 times &ndash; in two ways:</p>
+<p>Now let&rsquo;s assume we have a parallel job that we need to execute &ndash; it could be
+<a href="https://github.com/seanmck/aci-wordcount" target="_blank" rel="noreferrer noopener">counting utterances of words in a given text</a>
+, it could be
+training a machine learning model using a large data set, or any job that can be
+parallelized.</p>
+<p>If we only have a relatively small number of executions (countdown, word count,
+data set size), the job can be performed sequentially, by a single instance &ndash;
+otherwise, we can parallelize the job, and see vastly improved results.</p>
+<p>To keep things simple, for our example, we only need a counter &ndash; and see how to
+parallelize this using multiple Brigade jobs. The container we are going to run
+as a Brigade job reads two environment variables, <code>COUNTDOWN_FROM</code>, and
+<code>COUNTDOWN_TO</code>, and starts a loop where it echoes the current count, then sleeps
+for one second, simulating a process that takes one second to complete.</p>
+<p>So let&rsquo;s say we need to execute the process 200 times &ndash; sequentially, it would
+take 200 seconds, plus the time needed to schedule the pod, pull the image, and
+start the execution.</p>
+<p>In the following pipeline, we will simulate the execution of the process 200
+times &ndash; in two ways:</p>
 <ul>
-<li>in parallel, by starting 20 Brigade jobs, and splitting the work evenly between the two</li>
+<li>in parallel, by starting 20 Brigade jobs, and splitting the work evenly
+between the two</li>
 <li>in a sequential job, which does all 200 executions one after the other</li>
 </ul>
 <p>Notice how we are using two core Brigade concepts - a Job, and a Group.</p>
@@ -299,12 +420,12 @@ events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
     job.image = &quot;ubuntu&quot;;
     job.shell = &quot;bash&quot;;
     job.tasks = [
-      &quot;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&quot;
+      &quot;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&quot;,
     ];
 
     job.env = {
       COUNTDOWN_FROM: (i * 10).toString(),
-      COUNTDOWN_TO: (i * 10 + 9).toString()
+      COUNTDOWN_TO: (i * 10 + 9).toString(),
     };
 
     job.host.name = &quot;virtual-kubelet&quot;;
@@ -318,12 +439,12 @@ events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
   seq.image = &quot;ubuntu&quot;;
   seq.shell = &quot;bash&quot;;
   seq.tasks = [
-    &quot;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&quot;
+    &quot;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&quot;,
   ];
 
   seq.env = {
     COUNTDOWN_FROM: (0).toString(),
-    COUNTDOWN_TO: (199).toString()
+    COUNTDOWN_TO: (199).toString(),
   };
 
   seq.host.name = &quot;virtual-kubelet&quot;;
@@ -336,27 +457,48 @@ events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
   g.runAll();
 });
 </code></pre><blockquote>
-<p>In this scenario, we only start the jobs &ndash; however, with Brigade, we can get the result of the execution, and take different actions based on it.</p>
+<p>In this scenario, we only start the jobs &ndash; however, with Brigade, we can get
+the result of the execution, and take different actions based on it.</p>
 </blockquote>
-<p>After we run this pipeline with <code>brig</code>, we can see both the parallel jobs, and the sequential one starting at around the same time &ndash; then, the parralel jobs start finishing, and the sequential one takes around 3 minutes longer to finish.</p>
+<p>After we run this pipeline with <code>brig</code>, we can see both the parallel jobs, and
+the sequential one starting at around the same time &ndash; then, the parralel jobs
+start finishing, and the sequential one takes around 3 minutes longer to finish.</p>
 <p><img src="https://i.imgur.com/m0R7yit.gif" alt=""></p>
 <blockquote>
-<p>The tool used to visualize the pipeline is <a href="https://github.com/slok/brigadeterm">Brigadeterm</a>, which can also be used to get the job logs.
-There is currently a known bug which marks job duration wrong.</p>
+<p>The tool used to visualize the pipeline is <a href="https://github.com/slok/brigadeterm" target="_blank" rel="noreferrer noopener">Brigadeterm</a>
+, which
+can also be used to get the job logs. There is currently a known bug which
+marks job duration wrong.</p>
 </blockquote>
-<p>Brigade also comes with a web dashboard &ndash; you can access it by executing <code>brig dashboard</code> (and, if deployed in a different namespace, by passing the <code>--namespace</code> flag). We can also see the difference between the parallel and sequential execution:</p>
+<p>Brigade also comes with a web dashboard &ndash; you can access it by executing
+<code>brig dashboard</code> (and, if deployed in a different namespace, by passing the
+<code>--namespace</code> flag). We can also see the difference between the parallel and
+sequential execution:</p>
 <p><img src="https://i.imgur.com/9c7rZxy.png" alt=""></p>
 <blockquote>
-<p>Keep in mind that we have a 1 node cluster, and all jobs are scheduled on top of Azure Container Instances, allowing us to only pay for the few tens of seconds our jobs are running.</p>
+<p>Keep in mind that we have a 1 node cluster, and all jobs are scheduled on top
+of Azure Container Instances, allowing us to only pay for the few tens of
+seconds our jobs are running.</p>
 </blockquote>
 <blockquote>
-<p>By default, Azure Container Instances have a quota of 100 container groups per subscription &ndash; if you need more, a simple request with Azure Support can help. For more information, see <a href="https://docs.microsoft.com/azure/azure-subscription-service-limits#container-instances-limits">azure-quotas</a>.</p>
+<p>By default, Azure Container Instances have a quota of 100 container groups per
+subscription &ndash; if you need more, a simple request with Azure Support can
+help. For more information, see <a href="https://docs.microsoft.com/azure/azure-subscription-service-limits#container-instances-limits" target="_blank" rel="noreferrer noopener">azure-quotas</a>
+.</p>
 </blockquote>
-<p>In this example, we are using an <code>ubuntu</code> container, with a few commands &ndash; keep in mind that you can use any container to run Brigade jobs, and you can run any command that is available inside that container.</p>
-<p>Now that we have everything working, we can programmatically call the Brigade endpoint we configured with TLS and have our <code>brigade.js</code> file handle the event, executing our pipeline.</p>
-<p>The<code>brigade.js</code> file will have access to the incoming event, as well as to the project information (notice the <code>brigadeEvent</code> and <code>project</code> objects in the event handler).</p>
-<p>At this point, you can use the <code>/cloudevents/v02/project-id/secret</code> endpoint in the Brigade gateway we just exposed to send POST requests in the CloudEvents format:</p>
-<pre><code class="language-jsonld=" data-lang="jsonld=">{
+<p>In this example, we are using an <code>ubuntu</code> container, with a few commands &ndash; keep
+in mind that you can use any container to run Brigade jobs, and you can run any
+command that is available inside that container.</p>
+<p>Now that we have everything working, we can programmatically call the Brigade
+endpoint we configured with TLS and have our <code>brigade.js</code> file handle the event,
+executing our pipeline.</p>
+<p>The<code>brigade.js</code> file will have access to the incoming event, as well as to the
+project information (notice the <code>brigadeEvent</code> and <code>project</code> objects in the
+event handler).</p>
+<p>At this point, you can use the <code>/cloudevents/v02/project-id/secret</code> endpoint in
+the Brigade gateway we just exposed to send POST requests in the CloudEvents
+format:</p>
+<pre><code>{
     &quot;specversion&quot; : &quot;0.2&quot;,
     &quot;type&quot; : &quot;your.custom.event.type&quot;,
     &quot;source&quot; : &quot;event source&quot;,
@@ -366,16 +508,22 @@ There is currently a known bug which marks job duration wrong.</p>
     &quot;contenttype&quot; : &quot;json&quot;,
     &quot;data&quot; : {}
 }
-</code></pre><p>Then, simply listen for <code>cloudevent</code> or <code>simpleevent</code> events in <code>brigade.js</code>, and you can execute your pipelines.</p>
+</code></pre><p>Then, simply listen for <code>cloudevent</code> or <code>simpleevent</code> events in <code>brigade.js</code>,
+and you can execute your pipelines.</p>
 <h2 id="get-started-with-brigade">Get started with Brigade</h2>
 <p>Here are the best places to get involved with Brigade and the community:</p>
 <ul>
-<li><a href="https://github.com/Azure/brigade">the Brigade GitHub repository</a></li>
-<li><a href="https://docs.brigade.sh">the official documentation</a></li>
+<li><a href="https://github.com/Azure/brigade" target="_blank" rel="noreferrer noopener">the Brigade GitHub repository</a>
+</li>
+<li><a href="https://docs.brigade.sh" target="_blank" rel="noreferrer noopener">the official documentation</a>
+</li>
 <li>the #brigade channel in the Kubernetes Slack</li>
-<li>participate in the <a href="https://zoom.us/j/280806496">weekly community Brigade community meeting, Tuesdays, 9:30AM PST</a></li>
+<li>participate in the <a href="https://zoom.us/j/280806496" target="_blank" rel="noreferrer noopener">weekly community Brigade community meeting, Tuesdays,
+9:30AM PST</a>
+</li>
 </ul>
-<p>We're always happy to help if you have questions, and we'd love to see what you build with Brigade!</p>
+<p>We&rsquo;re always happy to help if you have questions, and we&rsquo;d love to see what you
+build with Brigade!</p>
 
 
             

@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -125,10 +125,38 @@
 
 
             <p><img src="/img/article-photos/wasm-to-oci/wasm-to-oci.png" alt=""></p>
-<p><a href="/blog/wasm-to-oci">In the previous article</a> we started exploring how the <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">WebAssembly System Interface project (WASI)</a> aims to standardize WebAssembly to run outside of the web by bringing a portable and sandboxed environment, and how runtimes like <a href="https://github.com/CraneStation/wasmtime"><code>wasmtime</code></a> come closer and closer to being a viable alternative to the current container ecosystem. In order to achieve this, we need a way to distribute WebAssembly modules that is independent of toolchain - and we used the <a href="https://github.com/opencontainers/artifacts">OCI Artifacts</a> project to distribute them using container registries. Taking this line of thought one step further, we also need a way to ensure the secure delivery of modules between publishers, registries, and clients - and in this article we will explore how to use <a href="https://github.com/theupdateframework/specification">The Update Framework</a> and <a href="https://github.com/theupdateframework/notary">Notary</a> to sign and validate WebAssembly modules.</p>
+<p><a href="/blog/wasm-to-oci">In the previous article</a>
+ we started exploring how the <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank" rel="noreferrer noopener">WebAssembly
+System Interface project (WASI)</a>
+ aims to standardize
+WebAssembly to run outside of the web by bringing a portable and sandboxed
+environment, and how runtimes like <a href="https://github.com/CraneStation/wasmtime" target="_blank" rel="noreferrer noopener"><code>wasmtime</code></a>
+ come closer and closer
+to being a viable alternative to the current container ecosystem. In order to
+achieve this, we need a way to distribute WebAssembly modules that is
+independent of toolchain - and we used the <a href="https://github.com/opencontainers/artifacts" target="_blank" rel="noreferrer noopener">OCI Artifacts</a>
+
+project to distribute them using container registries. Taking this line of
+thought one step further, we also need a way to ensure the secure delivery of
+modules between publishers, registries, and clients - and in this article we
+will explore how to use <a href="https://github.com/theupdateframework/specification" target="_blank" rel="noreferrer noopener">The Update Framework</a>
+ and <a href="https://github.com/theupdateframework/notary" target="_blank" rel="noreferrer noopener">Notary</a>
+ to sign
+and validate WebAssembly modules.</p>
 <h3 id="tuf-and-notary">TUF and Notary</h3>
-<p>Consider the general scenario of a client pulling a target file from a repository. While the use of SSL / TLS protects the client from man-in-the-middle attacks, the system is not compromise-resilient - if an attacker compromises the infrastructure of the registry, they can modify or change the target file. In other words, the use of SSL / TLS secures the target file while in transit, but not at rest. This is where <a href="https://github.com/theupdateframework/specification">The Update Framework</a> comes into play - a CNCF Incubation project that provides a <em>flexible framework and specification that developers can adopt into any software update system, which helps protect even against attackers that compromise the repository or signing keys</em>.</p>
-<p>If we were to use TUF to securely distribute WebAssembly modules, the publisher of a module would:</p>
+<p>Consider the general scenario of a client pulling a target file from a
+repository. While the use of SSL / TLS protects the client from
+man-in-the-middle attacks, the system is not compromise-resilient - if an
+attacker compromises the infrastructure of the registry, they can modify or
+change the target file. In other words, the use of SSL / TLS secures the target
+file while in transit, but not at rest. This is where <a href="https://github.com/theupdateframework/specification" target="_blank" rel="noreferrer noopener">The Update
+Framework</a>
+ comes into play - a CNCF Incubation project that provides a
+<em>flexible framework and specification that developers can adopt into any
+software update system, which helps protect even against attackers that
+compromise the repository or signing keys</em>.</p>
+<p>If we were to use TUF to securely distribute WebAssembly modules, the publisher
+of a module would:</p>
 <ul>
 <li>sign the content digest of the module using a private key</li>
 <li>push the content digest and the public key used to sign it to a trust server</li>
@@ -136,25 +164,56 @@
 </ul>
 <p>Then, a client tool that wished to use the module would:</p>
 <ul>
-<li>pull the content digest and public key from the trust server (by performing all necessary steps in the <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#5-detailed-workflows">TUF workflow</a>)</li>
+<li>pull the content digest and public key from the trust server (by performing
+all necessary steps in the <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#5-detailed-workflows" target="_blank" rel="noreferrer noopener">TUF workflow</a>
+)</li>
 <li>pull the WebAssembly module from the OCI registry</li>
-<li>compare the signed digest pulled from the trust server with the actual content digest of the pulled module. If any verification fails, the client would stop execution and abort any further usage of the module.</li>
+<li>compare the signed digest pulled from the trust server with the actual content
+digest of the pulled module. If any verification fails, the client would stop
+execution and abort any further usage of the module.</li>
 </ul>
-<p>Following this workflow guarantees protection against a <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction">wide range of possible attacks</a>, and ultimately ensures that the original content of a module reaches a client unaltered.
-Of course, there are numerous other types of attacks that TUF doesn't protect against, and if you are interested in the goals and non-goals of the TUF project, I recommend you read <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction">the introduction of the specification</a>.
-<a href="https://github.com/theupdateframework/notary">Notary</a> is an implementation of TUF used by multiple container registries through <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker Content Trust</a>, and we will use it to perform the TUF workflows for WebAssembly modules.</p>
+<p>Following this workflow guarantees protection against a <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction" target="_blank" rel="noreferrer noopener">wide range of possible
+attacks</a>
+, and ultimately ensures that the original content of a
+module reaches a client unaltered. Of course, there are numerous other types of
+attacks that TUF doesn&rsquo;t protect against, and if you are interested in the goals
+and non-goals of the TUF project, I recommend you read <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction" target="_blank" rel="noreferrer noopener">the introduction of the
+specification</a>
+. <a href="https://github.com/theupdateframework/notary" target="_blank" rel="noreferrer noopener">Notary</a>
+ is an implementation of TUF used
+by multiple container registries through <a href="https://docs.docker.com/engine/security/trust/content_trust/" target="_blank" rel="noreferrer noopener">Docker Content Trust</a>
+, and we
+will use it to perform the TUF workflows for WebAssembly modules.</p>
 <blockquote>
-<p>Work to implement the TUF workflows for PyPi is underway in <a href="https://www.python.org/dev/peps/pep-0458/">PEP 458</a> and <a href="https://www.python.org/dev/peps/pep-0480/">PEP 480</a>.</p>
+<p>Work to implement the TUF workflows for PyPi is underway in <a href="https://www.python.org/dev/peps/pep-0458/" target="_blank" rel="noreferrer noopener">PEP 458</a>
+
+and <a href="https://www.python.org/dev/peps/pep-0480/" target="_blank" rel="noreferrer noopener">PEP 480</a>
+.</p>
 </blockquote>
 <blockquote>
-<p>The <a href="https://cnab.io">Cloud Native Application Bundles project (CNAB)</a> also proposes the use of TUF to ensure the integrity of bundles between registries and clients. You can find the <a href="https://github.com/deislabs/cnab-spec/pull/253">work in progress for the CNAB specification here</a>, as well as draft implementations in <a href="https://github.com/engineerd/signy">Go</a> and <a href="https://github.com/engineerd/pysigny/pull/1">Python</a>. The example for WebAssembly modules in this article is based on the Go integration of Notary done for CNAB.</p>
+<p>The <a href="https://cnab.io" target="_blank" rel="noreferrer noopener">Cloud Native Application Bundles project (CNAB)</a>
+ also proposes the
+use of TUF to ensure the integrity of bundles between registries and clients.
+You can find the <a href="https://github.com/deislabs/cnab-spec/pull/253" target="_blank" rel="noreferrer noopener">work in progress for the CNAB specification
+here</a>
+, as well as draft implementations in <a href="https://github.com/engineerd/signy" target="_blank" rel="noreferrer noopener">Go</a>
+ and
+<a href="https://github.com/engineerd/pysigny/pull/1" target="_blank" rel="noreferrer noopener">Python</a>
+. The example for WebAssembly modules in this article is
+based on the Go integration of Notary done for CNAB.</p>
 </blockquote>
 <h3 id="signing-and-validating-webassembly-modules-using-tuf">Signing and validating WebAssembly modules using TUF</h3>
-<p>In the next section we will see how to expand the <a href="https://github.com/engineerd/wasm-to-oci"><code>wasm-to-oci</code></a> tool we started in the previous article to perform TUF signatures and verifications.</p>
-<p>At a very high level, before pushing the module we're using the Notary client libraries to:</p>
+<p>In the next section we will see how to expand the <a href="https://github.com/engineerd/wasm-to-oci" target="_blank" rel="noreferrer noopener"><code>wasm-to-oci</code></a>
+ tool we
+started in the previous article to perform TUF signatures and verifications.</p>
+<p>At a very high level, before pushing the module we&rsquo;re using the Notary client
+libraries to:</p>
 <ul>
-<li>initialize a new trust repository - this will generate the signing keys and add them to the repository</li>
-<li>add the target WebAssembly module to the repository - specifically, this step will compute the content digest of the module, then add it to the <code>targets</code> role of the collection, with the public part of the key</li>
+<li>initialize a new trust repository - this will generate the signing keys and
+add them to the repository</li>
+<li>add the target WebAssembly module to the repository - specifically, this step
+will compute the content digest of the module, then add it to the <code>targets</code>
+role of the collection, with the public part of the key</li>
 <li>publish the repository to the trust server</li>
 </ul>
 <pre><code>// initialize a new TUF repository
@@ -166,73 +225,98 @@ err = notaryRepo.AddTarget(target,...)
 
 // publish the repository to the TUF server
 err = notaryRepo.Publish()
-</code></pre><p>The main difference to note here compared to Docker Content Trust is that we are signing the content digest of the actual WebAssembly module, not of the OCI manifest, so the signature is persisted regardless of any compression or archiving operation done by the registry.
-Integrating this to our existing functionality, we first push the signed content digest to the trust server, then push the module to the OCI registry:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sha256sum testdata/hello.wasm
+</code></pre><p>The main difference to note here compared to Docker Content Trust is that we are
+signing the content digest of the actual WebAssembly module, not of the OCI
+manifest, so the signature is persisted regardless of any compression or
+archiving operation done by the registry. Integrating this to our existing
+functionality, we first push the signed content digest to the trust server, then
+push the module to the OCI registry:</p>
+<pre><code>$ sha256sum testdata/hello.wasm
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510  testdata/hello.wasm
 
 $ wasm-to-oci push testdata/hello.wasm localhost:5000/hello-wasm-signed:v1
     --sign
-    --tlscacert<span style="color:#f92672">=</span>$NOTARY_CA
+    --tlscacert=$NOTARY_CA
     --server https://localhost:4443
 
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pushed trust data <span style="color:#66d9ef">for</span> localhost:5000/hello-wasm-signed:v1:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pushed: localhost:5000/hello-wasm-signed:v1
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Size: <span style="color:#ae81ff">1624962</span>
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Digest: sha256:9c82cbe576ee947c00435ac8053a800a1969f4757ae4a81f870f714674afc91a
-</code></pre></div><p>Then, a client that wishes to consume the module will pull the module from the OCI registry and the trust data from the TUF server, then will compare the two content digests - if the digests match, the client can further use the module:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
+INFO[0000] Pushed trust data for localhost:5000/hello-wasm-signed:v1:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
+INFO[0000] Pushed: localhost:5000/hello-wasm-signed:v1
+INFO[0000] Size: 1624962
+INFO[0000] Digest: sha256:9c82cbe576ee947c00435ac8053a800a1969f4757ae4a81f870f714674afc91a
+</code></pre><p>Then, a client that wishes to consume the module will pull the module from the
+OCI registry and the trust data from the TUF server, then will compare the two
+content digests - if the digests match, the client can further use the module:</p>
+<pre><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
     --sign
-    --tlscacert<span style="color:#f92672">=</span>$NOTARY_CA
+    --tlscacert=$NOTARY_CA
     --server https://localhost:4443
     --output test.wasm
 
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pulled: localhost:5000/hello-wasm-signed:v1
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Size: <span style="color:#ae81ff">1624962</span>
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Digest: sha256:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pulled trust data <span style="color:#66d9ef">for</span> localhost:5000/hello-wasm-signed:v1, with role targets
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pulled SHA256: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Computed SHA: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> The SHA sums are equal: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
+INFO[0000] Pulled: localhost:5000/hello-wasm-signed:v1
+INFO[0000] Size: 1624962
+INFO[0000] Digest: sha256:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
+INFO[0000] Pulled trust data for localhost:5000/hello-wasm-signed:v1, with role targets
+INFO[0000] Pulled SHA256: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
+INFO[0000] Computed SHA: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
+INFO[0000] The SHA sums are equal: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
 
 $ wasmtime test.wasm
 Hello from WebAssembly!
-</code></pre></div><p>But let's explore what happens if the registry infrastructure has been compromised, and the initial module we published has been either modified, or replaced with a vulnerable one.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># we&#39;re inside the OCI registry - we see the module that we pushed earlier</span>
+</code></pre><p>But let&rsquo;s explore what happens if the registry infrastructure has been
+compromised, and the initial module we published has been either modified, or
+replaced with a vulnerable one.</p>
+<pre><code># we're inside the OCI registry - we see the module that we pushed earlier
 $ sha256sum blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510  blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 
-<span style="color:#75715e"># now let&#39;s tamper with the module</span>
-<span style="color:#75715e"># replace it with a vulnerable module and update the OCI manifest</span>
+# now let's tamper with the module
+# replace it with a vulnerable module and update the OCI manifest
 
-<span style="color:#75715e"># of course the content digest of the module changed</span>
-<span style="color:#75715e"># sha256sum blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data</span>
+# of course the content digest of the module changed
+# sha256sum blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5  blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
-</code></pre></div><p>Assuming that the attacker also updated the manifests (trivial, if they had access to the registry), a client can pull the vulnerable module and start using it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1 -o hacked
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pulled: localhost:5000/hello-wasm-signed:v1
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Digest: sha256:b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
+</code></pre><p>Assuming that the attacker also updated the manifests (trivial, if they had
+access to the registry), a client can pull the vulnerable module and start using
+it:</p>
+<pre><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1 -o hacked
+INFO[0000] Pulled: localhost:5000/hello-wasm-signed:v1
+INFO[0000] Digest: sha256:b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
 
 $ wasmtime hacked
 YOU HAVE BEEN HACKED
-</code></pre></div><p>Now let's perform the same operation, this time by performing the signature verification first:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
-    --sign --tlscacert<span style="color:#f92672">=</span>$NOTARY_CA
+</code></pre><p>Now let&rsquo;s perform the same operation, this time by performing the signature
+verification first:</p>
+<pre><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
+    --sign --tlscacert=$NOTARY_CA
     --server https://localhost:4443
 
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pulled: localhost:5000/hello-wasm-signed:v1
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Size: <span style="color:#ae81ff">1624962</span>
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Digest: sha256:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Pulled trust data <span style="color:#66d9ef">for</span> localhost:5000/hello-wasm-signed:v1, with role targets -
+INFO[0000] Pulled: localhost:5000/hello-wasm-signed:v1
+INFO[0000] Size: 1624962
+INFO[0000] Digest: sha256:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
+INFO[0000] Pulled trust data for localhost:5000/hello-wasm-signed:v1, with role targets -
 SHA256: 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
-INFO<span style="color:#f92672">[</span>0000<span style="color:#f92672">]</span> Computed SHA: b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
+INFO[0000] Computed SHA: b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
 Error: the digest sum of the artifact from the trusted collection is not equal to the computed digest
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
 b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
-</code></pre></div><p>We see that the use of TUF prevents us from using a module that has been tampered with.</p>
+</code></pre><p>We see that the use of TUF prevents us from using a module that has been
+tampered with.</p>
 <h3 id="conclusion">Conclusion</h3>
-<p><a href="https://github.com/theupdateframework/pip/wiki/Attacks-on-software-repositories">Attacks on software repositories</a> happen all the time, and any future WebAssembly repository and client tooling should be prepared to mitigate these attacks. What we explored in this article represents a minimum security model in the event of an attack, and while the particular implementations used here for registry and TUF server (OCI registry and Notary) will most likely not end up being popular for WebAssembly, the concept of using TUF, or any other framework that ensures the integrity of modules should be considered for future implementations.</p>
-<p>This concludes the experiment of trying to securely distribute WebAssembly modules OCI registries and TUF. You can <a href="https://github.com/engineerd/wasm-to-oci/pull/1">find the complete implementation of <code>wasm-to-oci</code> used in the articles on GitHub</a>. Let me know if you have thoughts on using the methods presented here, or other ideas on ensuring the integrity when distributing WebAssembly modules.</p>
+<p><a href="https://github.com/theupdateframework/pip/wiki/Attacks-on-software-repositories" target="_blank" rel="noreferrer noopener">Attacks on software repositories</a>
+ happen all the time, and any future
+WebAssembly repository and client tooling should be prepared to mitigate these
+attacks. What we explored in this article represents a minimum security model in
+the event of an attack, and while the particular implementations used here for
+registry and TUF server (OCI registry and Notary) will most likely not end up
+being popular for WebAssembly, the concept of using TUF, or any other framework
+that ensures the integrity of modules should be considered for future
+implementations.</p>
+<p>This concludes the experiment of trying to securely distribute WebAssembly
+modules OCI registries and TUF. You can <a href="https://github.com/engineerd/wasm-to-oci/pull/1" target="_blank" rel="noreferrer noopener">find the complete implementation of
+<code>wasm-to-oci</code> used in the articles on GitHub</a>
+. Let me know if you have
+thoughts on using the methods presented here, or other ideas on ensuring the
+integrity when distributing WebAssembly modules.</p>
 <p>Thanks for reading!</p>
 
 

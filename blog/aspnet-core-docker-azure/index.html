@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -129,7 +129,8 @@
             <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <p>In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.</p>
-<p>If you don't want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, <a href="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">you might want to skip to the part we start creating the CI/CD workflow.</a></p>
+<p>If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, <a href="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">you might want to skip to the part we start creating the CI/CD workflow.</a>
+</p>
 <h3 id="moving-parts-and-used-components">Moving parts and used components</h3>
 <p>The main part of a CI/CD workflow like this is the application itself. It can be however complicated, but in this case I want to emphasize the workflow itself and will only build a very simple application with ASP.NET Core.</p>
 <blockquote>
@@ -143,15 +144,18 @@
 <p>Docker Hub is a cloud-based registry service which allows you to link to code repositories, build your images and test them, stores manually pushed images, and links to Docker Cloud so you can deploy images to your hosts. It provides a centralized resource for container image discovery, distribution and change management, user and team collaboration, and workflow automation throughout the development pipeline.</p>
 </blockquote>
 <blockquote>
-<p>More information about Docker Hub on <a href="https://docs.docker.com/docker-hub/">the Official Docker Documentation</a>.</p>
+<p>More information about Docker Hub on <a href="https://docs.docker.com/docker-hub/" target="_blank" rel="noreferrer noopener">the Official Docker Documentation</a>
+.</p>
 </blockquote>
 <p>Then, we will configure an Azure VM to be a node for Docker Cloud and Docker Cloud will automatically publish containers to that VM. Then, every time there are changes in the GitHub repository, Docker Cloud will build the image and publish the container again automatically.</p>
 <blockquote>
-<p>More information about Docker Cloud on <a href="https://docs.docker.com/docker-cloud/overview/">the Official Docker Documentation</a>.</p>
+<p>More information about Docker Cloud on <a href="https://docs.docker.com/docker-cloud/overview/" target="_blank" rel="noreferrer noopener">the Official Docker Documentation</a>
+.</p>
 </blockquote>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/ci-cd-workflow.png" alt=""></p>
 <blockquote>
-<p><a href="https://blog.docker.com/2016/04/cicd-with-docker-cloud/">Photo source on the Docker Blog</a></p>
+<p><a href="https://blog.docker.com/2016/04/cicd-with-docker-cloud/" target="_blank" rel="noreferrer noopener">Photo source on the Docker Blog</a>
+</p>
 </blockquote>
 <h3 id="create-a-github-repository">Create a GitHub repository</h3>
 <p>First, we need a GitHub repository. If you already have a repo with an application you want to use you can do that. However, I will create a new repo and clone it on my computer.</p>
@@ -167,9 +171,13 @@
 <h3 id="creating-the-aspnet-core-application">Creating the ASP.NET Core application</h3>
 <p>This will be the part with the least focus in this article, since we have covered building ASP.NET Core applications for a while now and you can find a lot resources on this topic, including some on this site.</p>
 <blockquote>
-<p>For ASP.NET Core tutorials, you can <a href="https://radu-matei.github.io/categories/aspnet-core/">take a look at some resources on this blog</a>, consult the <a href="https://docs.microsoft.com/en-us/aspnet/core/">official documentation</a>, or you can watch this <a href="https://mva.microsoft.com/en-US/training-courses/introduction-to-aspnet-core-10-16841">Microsoft Virtual Academy course presented by Scott Hanselman and Maria Naggaga</a>.</p>
+<p>For ASP.NET Core tutorials, you can <a href="https://radu-matei.github.io/categories/aspnet-core/" target="_blank" rel="noreferrer noopener">take a look at some resources on this blog</a>
+, consult the <a href="https://docs.microsoft.com/en-us/aspnet/core/" target="_blank" rel="noreferrer noopener">official documentation</a>
+, or you can watch this <a href="https://mva.microsoft.com/en-US/training-courses/introduction-to-aspnet-core-10-16841" target="_blank" rel="noreferrer noopener">Microsoft Virtual Academy course presented by Scott Hanselman and Maria Naggaga</a>
+.</p>
 </blockquote>
-<p>Basically, we will create the same application as explained in <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">this blog post</a>, but we will build it against .NET Core 1.0.1 (which is the latest stable version at the moment of writing this article).</p>
+<p>Basically, we will create the same application as explained in <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank" rel="noreferrer noopener">this blog post</a>
+, but we will build it against .NET Core 1.0.1 (which is the latest stable version at the moment of writing this article).</p>
 <blockquote>
 <p>While .NET Core 1.0.1 is the latest version at the moment of writing this article, you can also use other versions, since the Docker images are available on Docker Hub.</p>
 </blockquote>
@@ -203,10 +211,12 @@
 <p>Docker can build images automatically by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image. Using docker build users can create an automated build that executes several command-line instructions in succession.</p>
 </blockquote>
 <blockquote>
-<p><a href="https://docs.docker.com/engine/reference/builder/">More information on the Dockerfile on the Official Docker Documentation</a></p>
+<p><a href="https://docs.docker.com/engine/reference/builder/" target="_blank" rel="noreferrer noopener">More information on the Dockerfile on the Official Docker Documentation</a>
+</p>
 </blockquote>
 <p>Basically, the Dockerfile is like a recipe for building container images. It is a script composed of multiple commands executed successively to create images based on other images.</p>
-<p>You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you <a href="https://code.visualstudio.com/Docs/languages/dockerfile">install the VS Code Docker extension</a>, press F1 and search for Docker, you should see something similar to:</p>
+<p>You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you <a href="https://code.visualstudio.com/Docs/languages/dockerfile" target="_blank" rel="noreferrer noopener">install the VS Code Docker extension</a>
+, press F1 and search for Docker, you should see something similar to:</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/vscode-docker.png" alt=""></p>
 <p>In this case, we will write the Dockerfile manually, mainly because we want to understand all the things involved.</p>
 <p>Create a new file called <code>Dockerfile</code> (without extension) to the root of the application (in this case in the same folder as <code>project.json</code> and <code>Program.cs</code>) with the following content:</p>
@@ -236,23 +246,23 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <p>In this case, we both build and run the application inside the container. In a production environment, we would only use the <code>dotnet runtime</code> image from Microsoft that is only able to execute applications and not build them. This would result in a much smaller footprint of the image.</p>
 </blockquote>
 <h3 id="building-the-image">Building the image</h3>
-<p>At this point, we have configured the application (which wasn't that hard), we have a definition for Docker, our Dockerfile, but we haven't built an image or a container so far.</p>
+<p>At this point, we have configured the application (which wasn&rsquo;t that hard), we have a definition for Docker, our Dockerfile, but we haven&rsquo;t built an image or a container so far.</p>
 <p>The end result is for us to start a container. Every container is built upon an image, that is composed of the application itself and its dependencies.</p>
 <p>To build the image, simply run the following command in the same folder with the Dockerfile:</p>
 <p><code>docker build -t aspnet-core-docker-azure</code></p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/docker-build-1.png" alt="">
 <img src="/img/article-photos/aspnet-core-docker-azure/docker-build-2.png" alt=""></p>
-<p>You can clearly see how each step in the Dockerfile is executed successively and how at every step an intermediate container gets created. This is done so that if the execution fails at let's say STEP 7, all progress made up to that point doesn't get lost. After every successful step executed, the previous container is removed.</p>
+<p>You can clearly see how each step in the Dockerfile is executed successively and how at every step an intermediate container gets created. This is done so that if the execution fails at let&rsquo;s say STEP 7, all progress made up to that point doesn&rsquo;t get lost. After every successful step executed, the previous container is removed.</p>
 <p>Running <code>docker images</code> should show you the newly created image containing your application and its dependencies (among other images that you might have).</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/docker-images.png" alt=""></p>
 <p>Notice though that the base for our image also got pulled from Docker Hub - <code>microsoft/dotnet:1.0.1-sdk-projectjson</code>.</p>
 <h3 id="running-a-new-container">Running a new container</h3>
-<p>Now that we built our image it's time to run a new container based on that image.</p>
+<p>Now that we built our image it&rsquo;s time to run a new container based on that image.</p>
 <p><code>docker run -d -p 8080:5000 -t aspnet-core-docker-azure</code></p>
-<p>Let's examine the arguments passed along the <code>docker run</code> command:</p>
+<p>Let&rsquo;s examine the arguments passed along the <code>docker run</code> command:</p>
 <ul>
 <li>
-<p><code>-d</code> - the container will run in <code>detached</code> mode, so we won't see logs from the container as output</p>
+<p><code>-d</code> - the container will run in <code>detached</code> mode, so we won&rsquo;t see logs from the container as output</p>
 </li>
 <li>
 <p><code>-p 8080:5000</code> - this will map the 5000 port inside the container (that the application is running on</p>
@@ -271,7 +281,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <p>We can see the id of the container, the image it is based on, the command used as entrypoint and the port mapping: 8080 on the host to 5000 inside the container.</p>
 <p>So if we navigate to <code>http://localhost:8080</code> we should see our application running:</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/docker-run-browser.png" alt=""></p>
-<p>So far we created a very simple ASP .NET Core application and we ran it locally inside Docker.We  haven't used the GitHub repo, Docker Hub, Docker Cloud or Azure just yet. This is where we start doing so.</p>
+<p>So far we created a very simple ASP .NET Core application and we ran it locally inside Docker.We  haven&rsquo;t used the GitHub repo, Docker Hub, Docker Cloud or Azure just yet. This is where we start doing so.</p>
 <h3 id="setup-an-azure-vm-as-node-for-docker-cloud">Setup an Azure VM as node for Docker Cloud</h3>
 <p>While Docker Cloud allows you to run containers and build images on some free tier servers, you would most likely want to do it on your own machine.</p>
 <p>If you link the Docker Cloud account with your cloud subscription (in this case Azure), you can create nodes and clusters directly from the Docker Cloud portal.</p>
@@ -279,7 +289,8 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <p><img src="/img/article-photos/aspnet-core-docker-azure/docker-cloud-bring-node.png" alt=""></p>
 <p>I created an Ubuntu Server 14.04 VM (at the moment of writing this article, only Ubuntu 14.04 and 15.04 are supported by Docker Cloud).</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/azure-create-vm-1.png" alt=""></p>
-<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal">In this article you can see the detailed process on how to open ports for Azure VMs.</a></p>
+<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal" target="_blank" rel="noreferrer noopener">In this article you can see the detailed process on how to open ports for Azure VMs.</a>
+</p>
 <blockquote>
 <p><strong>We recommend you open incoming port 2375 in your firewall for Docker Cloud to communicate with the Docker daemon running in the node. For the overlay network to work, you must open port 6783/tcp and 6783/udp.</strong></p>
 </blockquote>
@@ -291,7 +302,7 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <blockquote>
 <p>If you plan to run multiple containers at the same time that expose ports on this machine, you should open more ports to be accessible from outside the VM.</p>
 </blockquote>
-<p>I will also setup a DNS name for the VM so that I don't have to remember the IP of the machine:</p>
+<p>I will also setup a DNS name for the VM so that I don&rsquo;t have to remember the IP of the machine:</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/azure-vm-dns.png" alt=""></p>
 <p>At this point, you should be able to SSH into the machine and install the Docker Cloud agent.</p>
 <p>On macOS, Linux or Bash on Windows, to SSH into a machine:</p>
@@ -345,7 +356,8 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 </ol>
 </blockquote>
 <blockquote>
-<p>More on Docker Cloud services on <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/">the Official Docker Documentation</a>.</p>
+<p>More on Docker Cloud services on <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/" target="_blank" rel="noreferrer noopener">the Official Docker Documentation</a>
+.</p>
 </blockquote>
 <p>We will create a service based on the image we just created.</p>
 <p>The only custom settings will be to enable the <code>AUTOREDEPLOY</code> option and to specify the port to be 80 on the machine.</p>
@@ -357,12 +369,12 @@ ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
 <p><img src="/img/article-photos/aspnet-core-docker-azure/containers.png" alt=""></p>
 <h3 id="testing-the-application">Testing the application</h3>
 <p>Remember the DNS we assigned to the Azure VM? In my case it was <code>http://ubuntu-docker-cloud.westeurope.cloudapp.azure.com/</code>. Normally, the container should have started on port 80 (the default HTTP port) on this machine.</p>
-<p>Let's try and access that exact URL:</p>
+<p>Let&rsquo;s try and access that exact URL:</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/public-app.png" alt=""></p>
 <p>At this point, you can create additional service and start containers on this machine, provided you open ports on the VM with the procedure described above.</p>
 <h3 id="updating-the-application">Updating the application</h3>
 <p>Because we setup the image based on the GitHub repository and we checked the <code>AUTOREDEPLOY</code> option, every time we will push on the master branch of the repository, the entire system will update itself.</p>
-<p>Let's slightly modify the application and push the modifications. This should trigger the auto build and auto redeploy of the container and without us doing anything, the modifications should be live.</p>
+<p>Let&rsquo;s slightly modify the application and push the modifications. This should trigger the auto build and auto redeploy of the container and without us doing anything, the modifications should be live.</p>
 <p>I just changed the message the application responds with and pushed the modifications to the master branch. This should trigger the build and redeploy of the container.</p>
 <p>You should see the new build in the <code>Recent Builds</code> tab from the <code>Repositories</code> page:</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/recent-builds.png" alt=""></p>

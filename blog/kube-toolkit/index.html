@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -128,13 +128,17 @@
 
             <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>If you ever used <a href="https://github.com/kubernetes/helm">Helm</a> or <a href="https://github.com/azure/draft">Draft</a>, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p>
-<p><a href="https://github.com/radu-matei/kube-toolkit"><code>kube-toolkit</code></a> aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.</p>
+<p>If you ever used <a href="https://github.com/kubernetes/helm" target="_blank" rel="noreferrer noopener">Helm</a>
+ or <a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
+, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p>
+<p><a href="https://github.com/radu-matei/kube-toolkit" target="_blank" rel="noreferrer noopener"><code>kube-toolkit</code></a>
+ aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.</p>
 <blockquote>
 <p>This project started as a learning experience / small experiment of mine in building a tool for Kubernetes that allowed you to connect to all major cloud providers - then the Open Broker API became mainstream, and I realized I was reinventing the Service Broker wheel - so decided to take the good parts and make them available to anyone starting to build a Kubernetes tool.</p>
 </blockquote>
 <h3 id="architecture">Architecture</h3>
-<p><a href="https://github.com/radu-matei/kube-toolkit"><code>kube-toolkit</code></a> has two major components:</p>
+<p><a href="https://github.com/radu-matei/kube-toolkit" target="_blank" rel="noreferrer noopener"><code>kube-toolkit</code></a>
+ has two major components:</p>
 <ul>
 <li><code>ktk</code> (short for Kubernetes ToolKit) - client that you install locally</li>
 <li><code>ktkd</code> (short for Kuberentes ToolKit Daemon) - server-side component that is deployed on your Kubernetes cluster</li>
@@ -152,7 +156,8 @@
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>Essentially, during a 4 hour period (is was probably much more than that&hellip;), I was in the process of swapping git commit hashes and plugging them into <code>dep</code>, then trying to compile the project&hellip; Word of advice - check various release branches when working with vendored dependencies of Kubernetes!</p>
-<p>After finally getting it to work, <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml">I ended up with a  Gopkg.toml you can find here</a> and I simply included the <code>vendor</code> folder in the repo to ensure reproducible builds.</p>
+<p>After finally getting it to work, <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml" target="_blank" rel="noreferrer noopener">I ended up with a  Gopkg.toml you can find here</a>
+ and I simply included the <code>vendor</code> folder in the repo to ensure reproducible builds.</p>
 <blockquote>
 <p>Please note that this setup is for Kubernetes release 1.8 - you are more than welcome to port the dependencies to release 1.9!</p>
 </blockquote>
@@ -161,9 +166,12 @@
 </blockquote>
 <h2 id="defining-and-using-grpc-services">Defining and using gRPC services</h2>
 <blockquote>
-<p>If you're not familiar with gRPC for Go, there is a <a href="https://grpc.io/docs/tutorials/basic/go.html">great basics tutorial you can get started with</a> and understand how to use the client and server.</p>
+<p>If you&rsquo;re not familiar with gRPC for Go, there is a <a href="https://grpc.io/docs/tutorials/basic/go.html" target="_blank" rel="noreferrer noopener">great basics tutorial you can get started with</a>
+ and understand how to use the client and server.</p>
 </blockquote>
-<p>In its current form, <a href="https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1"><code>v0.1</code></a>, the service is able to return the server and client version and showcase how to stream some data - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto">essentially, the <code>.proto</code> looks like this</a>:</p>
+<p>In its current form, <a href="https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1" target="_blank" rel="noreferrer noopener"><code>v0.1</code></a>
+, the service is able to return the server and client version and showcase how to stream some data - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto" target="_blank" rel="noreferrer noopener">essentially, the <code>.proto</code> looks like this</a>
+:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">syntax</span> = <span style="color:#e6db74">&#34;proto3&#34;</span>;
 
 <span style="color:#f92672">package</span> <span style="color:#a6e22e">rpc</span>;
@@ -182,13 +190,16 @@
 	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">message</span> = <span style="color:#ae81ff">1</span>;
 }
 </code></pre></div><p>This defines a service with two methods, <code>GetVersion</code> and <code>ServerStream</code> (which returns a stream of <code>StreamingMessage</code> back to the client), and <strong>this is the place where you will first define your service methods!</strong></p>
-<p>Now if we take a look at the <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Makefile"><code>Makefile</code></a>, there is an <code>rpc</code> target that will use the <code>protoc</code> compiler and build the client and server in Golang for our service in <code>pkg/rpc</code> (as defined in the <code>Makefile</code>).</p>
-<p>Now it's about creating actual implementations for the client and server. <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40">For example, the client implementation for <code>GetVersion</code> is as straightforward as simply as calling the <code>GetVersion</code> on the generated client</a>:</p>
+<p>Now if we take a look at the <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Makefile" target="_blank" rel="noreferrer noopener"><code>Makefile</code></a>
+, there is an <code>rpc</code> target that will use the <code>protoc</code> compiler and build the client and server in Golang for our service in <code>pkg/rpc</code> (as defined in the <code>Makefile</code>).</p>
+<p>Now it&rsquo;s about creating actual implementations for the client and server. <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40" target="_blank" rel="noreferrer noopener">For example, the client implementation for <code>GetVersion</code> is as straightforward as simply as calling the <code>GetVersion</code> on the generated client</a>
+:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// GetVersion returns the ktk version
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">RPC</span>.<span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>{})
 }
-</code></pre></div><p>This function call will simply return the version from the server - note that we have to <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74">implement the server method as below</a>:</p>
+</code></pre></div><p>This function call will simply return the version from the server - note that we have to <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74" target="_blank" rel="noreferrer noopener">implement the server method as below</a>
+:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// GetVersion returns the current version of the server.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">server</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;executing ktkd version&#34;</span>)
@@ -199,7 +210,8 @@
 </code></pre></div><blockquote>
 <p>The version and commit hash are injected at build time through compile flags. See Makefile.</p>
 </blockquote>
-<p>Now let's take a look at some streaming messages - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82">first the server</a>:</p>
+<p>Now let&rsquo;s take a look at some streaming messages - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82" target="_blank" rel="noreferrer noopener">first the server</a>
+:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ServerStream starts a new stream from the server
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">server</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">_</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>, <span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">KTK_ServerStreamServer</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;received server stream command&#34;</span>)
@@ -217,7 +229,8 @@
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div><p>This will send 5 messages back to the client, 2 seconds apart.</p>
-<p><a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49">Receiving the stream is done like this</a>:</p>
+<p><a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49" target="_blank" rel="noreferrer noopener">Receiving the stream is done like this</a>
+:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ServerStream starts a stream from the server
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">CallOption</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;called InitializeCloud client method...&#34;</span>)
@@ -243,9 +256,10 @@
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div><p>With this proto service, you should have a clear understanding on how to write additional methods for the gRPC service and implement the client and the server.</p>
-<p>Now that you have a pretty good understanding on how to write gRPC client and server methods, let's explore how to connect to the Kubernetes cluster.</p>
+<p>Now that you have a pretty good understanding on how to write gRPC client and server methods, let&rsquo;s explore how to connect to the Kubernetes cluster.</p>
 <h3 id="connecting-to-the-kubernetes-cluster">Connecting to the Kubernetes cluster</h3>
-<p>For this part, I will <a href="https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go">give 100% credits to the Draft team</a> as I merely copied their implementation of a port forwarder that uses the Helm packages.</p>
+<p>For this part, I will <a href="https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go" target="_blank" rel="noreferrer noopener">give 100% credits to the Draft team</a>
+ as I merely copied their implementation of a port forwarder that uses the Helm packages.</p>
 <p>Essentially, this creates a new &ldquo;SSH-like tunnel&rdquo; back to a pod in the Kubernetes cluster - normally, the pod is the one running our server-side component, <code>ktkd</code> (you have to specify the name and labels for it):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//New returns a tunnel to the ktkd pod.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">clientset</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">kubernetes</span>.<span style="color:#a6e22e">Clientset</span>, <span style="color:#a6e22e">config</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">restclient</span>.<span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">kube</span>.<span style="color:#a6e22e">Tunnel</span>, <span style="color:#66d9ef">error</span>) {
@@ -267,34 +281,36 @@
 <p>Please note that there is no need to publicly expose any port on the pod.</p>
 </blockquote>
 <h3 id="using-cobra-folder-structure-and-adding-your-own-commands">Using cobra, folder structure and adding your own commands</h3>
-<p>Both the client and the server are essentially <a href="https://github.com/spf13/cobra"><code>cobra</code></a> CLI apps.</p>
+<p>Both the client and the server are essentially <a href="https://github.com/spf13/cobra" target="_blank" rel="noreferrer noopener"><code>cobra</code></a>
+ CLI apps.</p>
 <blockquote>
-<p>If you are not familiar with cobra, it is a library created by <a href="https://github.com/spf13">Steve Francia, or @spf13</a> for creating CLI apps, and tools like Kubernetes, Docker, rkt, etcd or Hugo are built upon cobra.</p>
+<p>If you are not familiar with cobra, it is a library created by <a href="https://github.com/spf13" target="_blank" rel="noreferrer noopener">Steve Francia, or @spf13</a>
+ for creating CLI apps, and tools like Kubernetes, Docker, rkt, etcd or Hugo are built upon cobra.</p>
 </blockquote>
-<p>Let's have a look at the folder structure:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">b</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">t</span>
-<span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#960050;background-color:#1e0010">d</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">k</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">S</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">d</span>
-<span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">g</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">k</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">k</span><span style="color:#960050;background-color:#1e0010">d</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">w</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">w</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">c</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">|</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">|</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">b</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">─</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">-</span> <span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">o</span>
+<p>Let&rsquo;s have a look at the folder structure:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#960050;background-color:#1e0010">kube-toolkit</span>
+<span style="color:#960050;background-color:#1e0010">└───cmd</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktk</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">ktk.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">serverStream.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">version.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktkd</span>
+<span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">ktkd.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">start.go</span>
+<span style="color:#960050;background-color:#1e0010">└───pkg</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktk</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">client.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktkd</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">server.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───portforwarder</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">portforwarder.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───rpc</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">rpc.proto</span>
+<span style="color:#960050;background-color:#1e0010">|</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">|---</span> <span style="color:#960050;background-color:#1e0010">rpc.pb.go</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───version</span>
+<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">version.go</span>
 </code></pre></div><p>In the <code>cmd</code> directory we have the CLIs for <code>ktk</code> and <code>ktkd</code>, and in <code>pkg</code> we have all packages that we use throughout the tool - the implementations for the gRPC client and server, the port forwarder, the generated Go service and proto.</p>
-<p>Let's take a look at how everything works together for the version command:</p>
+<p>Let&rsquo;s take a look at how everything works together for the version command:</p>
 <ul>
 <li>first of all, I briefly mentioned that the version and git commit are injected at build time using compilation flags - the <code>LFFLAGS</code> inject into <code>GitCommit</code>and <code>SemVer</code> the respective values from the <code>version</code> package from <code>pkg</code> into both the client and the server (which can have different versions!):</li>
 </ul>
@@ -302,12 +318,13 @@
 LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(</span>VERSION_PACKAGE<span style="color:#66d9ef">)</span>.GitCommit<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>GIT_COMMIT<span style="color:#e6db74">}</span>
 LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(</span>VERSION_PACKAGE<span style="color:#66d9ef">)</span>.SemVer<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SEMVER<span style="color:#e6db74">}</span>
 </code></pre></div><blockquote>
-<p>There is a <a href="https://blog.alexellis.io/inject-build-time-vars-golang/">great article by Alex Ellis explaining everything about injecting build-time variables</a></p>
+<p>There is a <a href="https://blog.alexellis.io/inject-build-time-vars-golang/" target="_blank" rel="noreferrer noopener">great article by Alex Ellis explaining everything about injecting build-time variables</a>
+</p>
 </blockquote>
 <ul>
 <li>earlier we saw the client and the server implementation of <code>GetVersion</code></li>
 </ul>
-<p>Now let's see how to put together the server app:</p>
+<p>Now let&rsquo;s see how to put together the server app:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newStartCmd</span>(<span style="color:#a6e22e">out</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span> {
 	<span style="color:#a6e22e">startCmd</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">startCmd</span>{}
 
@@ -367,7 +384,8 @@ LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(<
 <h3 id="see-in-in-action">See in in action</h3>
 <p>First of all, you need to deploy the <code>ktkd</code> pod to a Kubernetes cluster.</p>
 <blockquote>
-<p>As of right now, there isn't an automated way to deploy this to Kubernetes, <a href="https://github.com/radu-matei/kube-toolkit/issues/9">but there is an open issue for anyone that wants to contribute!</a></p>
+<p>As of right now, there isn&rsquo;t an automated way to deploy this to Kubernetes, <a href="https://github.com/radu-matei/kube-toolkit/issues/9" target="_blank" rel="noreferrer noopener">but there is an open issue for anyone that wants to contribute!</a>
+</p>
 </blockquote>
 <p>First, you need to <code>make ktkd-linux</code> - this will create the linux binary that we will then package into a Docker container and deploy to the cluster - <code>docker build -t your-username/ktkd</code>. Then, deploy this to Kubernetes:</p>
 <p><img src="/img/article-photos/kube-toolkit/pod.jpg" alt=""></p>
@@ -385,8 +403,10 @@ LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(<
 <h2 id="conclusion">Conclusion</h2>
 <p>And just like this, we managed to get a tool that connects to a Kubernetes cluster from a CLI application through tunnels and gRPC! You can now build your own functionality on top of this, extend the proto service and implement the client and server!</p>
 <p>This started with me looking at Helm and Draft and trying to understand how to build a similar tool and trying to understand all concepts involved. It is by no means as complex as Helm and Draft (it actually removes some abstraction compared to Draft, in that this tool uses directly the generated gRPC client) and it should serve as a starting point building the next awesome tool for Kubernetes!</p>
-<p>You are invited to <a href="https://github.com/radu-matei/kube-toolkit">contribute on the GitHub repo, tackle some of the issues there and provide your feedback!</a></p>
-<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a></p>
+<p>You are invited to <a href="https://github.com/radu-matei/kube-toolkit" target="_blank" rel="noreferrer noopener">contribute on the GitHub repo, tackle some of the issues there and provide your feedback!</a>
+</p>
+<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a>
+</p>
 
 
             

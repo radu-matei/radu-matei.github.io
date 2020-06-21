@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -127,16 +127,21 @@
 
 
             <h2 id="notice">NOTICE</h2>
-<p><a href="https://radu-matei.com/blog/signalr-core"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
+<p><a href="https://radu-matei.com/blog/signalr-core" target="_blank" rel="noreferrer noopener"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a>
+</p>
 <h2 id="introduction">Introduction</h2>
-<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
+<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server" target="_blank" rel="noreferrer noopener"><code>0.2.0-alpha1-22107</code></a>
+) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
 <blockquote>
-<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
+<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank" rel="noreferrer noopener">This article</a>
+ does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
 </blockquote>
 <blockquote>
-<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/">take a look at this article</a>.</p>
+<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/" target="_blank" rel="noreferrer noopener">take a look at this article</a>
+.</p>
 </blockquote>
-<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/">this application</a> and add real time functionality to it.</p>
+<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank" rel="noreferrer noopener">this application</a>
+ and add real time functionality to it.</p>
 <p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p>
 <h2 id="configure-the-application">Configure the application</h2>
 <p>NuGet has the ability to get packages from more than one source, and we need it to download alpha packages that are only available on the MyGet server of the ASP.NET team, besides the ASP.NET Core packages available on NuGet. So in the root of the application add a file called <code>NuGet.Config</code> with the following content:</p>
@@ -168,7 +173,8 @@
      host.Run();
  }
 </code></pre><h2 id="post-ipostrepository-and-postrepository"><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2>
-<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> explains all these components thoroughly, but let's see briefly what each one does:</p>
+<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank" rel="noreferrer noopener">This article</a>
+ explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
 <pre><code>public class Post
 {
     public int Id { get; set; }
@@ -275,7 +281,8 @@ public class PostsHub : Hub
 <h2 id="camel-case-issues-and-custom-contract-resolvers">Camel case issues and custom contract resolvers</h2>
 <p>At this moment, MVC uses camel case notation to pass JSON to clients. That means that even if on the server you write your class properties with Pascal case notation (as you should!), JavaScript clients would get Camel cased objects.</p>
 <p>This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse methods across the JavaScript client, thing we cannot tolerate.</p>
-<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
+<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751" target="_blank" rel="noreferrer noopener">this old SignalR GitHub issue</a>
+ and adapt it to our versions of ASP.NET and SignalR.</p>
 <h2 id="add-a-custom-contract-resolvers">Add a custom contract resolvers</h2>
 <p>A first try could be to change the default contract resolver to a <code>CamelCasePropertyNamesContractResolver()</code> inside the <code>ConfigureServices</code> method:</p>
 <pre><code>var settings = new JsonSerializerSettings();

@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -122,7 +122,8 @@
 
             <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>In the <a href="/blog/aspnet-core-getting-started">previous article</a> we built a very basic web application that for every request had the same response - <code>Hello, Universe</code> with the server current time and date.
+<p>In the <a href="/blog/aspnet-core-getting-started">previous article</a>
+ we built a very basic web application that for every request had the same response - <code>Hello, Universe</code> with the server current time and date.
 Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the <code>Startup</code> class, which is also the entry point for any incoming HTTP request.</p>
 <h3 id="the-anatomy-of-the-startup-class">The anatomy of the <code>Startup</code> class</h3>
 <p>The <code>Startup</code> class needs to have two methods:</p>
@@ -130,8 +131,10 @@ Any non-trivial application is going to need a mechanism to handle different typ
 <li><code>Configure</code> - this method will respond to each incoming HTTP request. In the following example, we will use it to have the same functionality as in our previous example - returning a message with the current server time.</li>
 </ul>
 <blockquote>
-<p>However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html">middleware</a> and added using extension methods on <code>IApplicationBuilder</code>.</p>
-<p>Your <code>Configure</code> method must accept an <a href="https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html"><code>IApplicationBuilder</code></a> parameter. Additional services, like <code>IHostingEnvironment</code> and <code>ILoggerFactory</code> may also be specified, in which case these services will be injected by the server if they are available.</p>
+<p>However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html" target="_blank" rel="noreferrer noopener">middleware</a>
+ and added using extension methods on <code>IApplicationBuilder</code>.</p>
+<p>Your <code>Configure</code> method must accept an <a href="https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html" target="_blank" rel="noreferrer noopener"><code>IApplicationBuilder</code></a>
+ parameter. Additional services, like <code>IHostingEnvironment</code> and <code>ILoggerFactory</code> may also be specified, in which case these services will be injected by the server if they are available.</p>
 </blockquote>
 <ul>
 <li><code>ConfigureServices</code> - this <strong>optional</strong> method is used for configuring services used by the application and is called before the <code>Configure</code> method.</li>

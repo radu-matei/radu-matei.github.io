@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -122,10 +122,17 @@
 
             <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>Up to this point, we have been learning about <a href="https://radu-matei.github.io/blog/dot-net-core-introduction/">.NET Core</a> and <a href="https://radu-matei.github.io/blog/dot-net-core-getting-started/">VS Code</a>, about <a href="https://radu-matei.github.io/blog/aspnet-core-getting-started/">ASP .NET Core</a>, the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/"><code>Startup</code> class</a>, <a href="https://radu-matei.github.io/blog/aspnet-core-routing/">Routing</a> and <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">how to use JSON Configuration</a>.</p>
+<p>Up to this point, we have been learning about <a href="https://radu-matei.github.io/blog/dot-net-core-introduction/" target="_blank" rel="noreferrer noopener">.NET Core</a>
+ and <a href="https://radu-matei.github.io/blog/dot-net-core-getting-started/" target="_blank" rel="noreferrer noopener">VS Code</a>
+, about <a href="https://radu-matei.github.io/blog/aspnet-core-getting-started/" target="_blank" rel="noreferrer noopener">ASP .NET Core</a>
+, the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank" rel="noreferrer noopener"><code>Startup</code> class</a>
+, <a href="https://radu-matei.github.io/blog/aspnet-core-routing/" target="_blank" rel="noreferrer noopener">Routing</a>
+ and <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/" target="_blank" rel="noreferrer noopener">how to use JSON Configuration</a>
+.</p>
 <p>In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.</p>
 <p>We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data.</p>
-<p>We will start this article by building on the code form the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">Startup class</a> tutorial.</p>
+<p>We will start this article by building on the code form the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank" rel="noreferrer noopener">Startup class</a>
+ tutorial.</p>
 <h3 id="adding-the-mvc-services-to-our-application">Adding the MVC services to our application</h3>
 <p>The first thing we have to do is add the <code>&quot;Microsoft.AspNetCore.Mvc&quot;: &quot;1.0.0&quot;</code> dependency in <code>project.json</code>, then add the <code>ConfigureServices</code> method in the <code>Startup</code> class.</p>
 <pre><code>public void ConfigureServices(IServiceCollection services)
@@ -158,7 +165,7 @@
 </code></pre><blockquote>
 <p>Note that you can customize your route template in any way, I chose the <code>/api</code> option because in previous versions of ASP .NET (Web Api) this was the default route for creating an API.</p>
 </blockquote>
-<p>At this point, we can add a controller and make some requests to test our framework. So let's add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p>
+<p>At this point, we can add a controller and make some requests to test our framework. So let&rsquo;s add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p>
 <pre><code>using Microsoft.AspNetCore.Mvc;
 
 public class PostsController : Controller
@@ -271,7 +278,7 @@ public class PostsController : Controller
 </blockquote>
 <p>Besides from the publicly exposed methods of the API (any public method placed in a controller is publicly accessible from the web), we also have a constructor through which we can provide the appropriate implementation of <code>IPostRepository</code> and we will specify this in the <code>Startup</code> of our application.</p>
 <h3 id="registering-the-repository-service-in-startup">Registering the repository service in <code>Startup</code></h3>
-<p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven't specified what instance of <code>IPostRepository</code> our application is supposed to use.</p>
+<p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven&rsquo;t specified what instance of <code>IPostRepository</code> our application is supposed to use.</p>
 <pre><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
@@ -307,7 +314,8 @@ public class Startup
 </code></pre><h3 id="testing-the-application">Testing the application</h3>
 <p>At this point, we can either execute <code>dotnet run</code> in the root of our project or press <code>F5</code> in Visual Studio Code.</p>
 <blockquote>
-<p>We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">PostMan for Google Chrome</a> in order to test the functionality of our API.</p>
+<p>We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop" target="_blank" rel="noreferrer noopener">PostMan for Google Chrome</a>
+ in order to test the functionality of our API.</p>
 </blockquote>
 <p>If we open PostMan and create a GET request to <code>http://localhost:5000/api/Posts/GetPosts</code>, we will see the two posts that we used to populate the list in <code>PostRepository</code>.</p>
 <p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get.JPG" alt=""></p>

@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -106,7 +106,7 @@
  
         </div>
         
-        <h2 class="subtitle is-6">September 5, 2019. 12 minutes read</h2>
+        <h2 class="subtitle is-6">September 5, 2019. 13 minutes read</h2>
         <style type="text/css">
             .brxsmall {
                 display: block;
@@ -121,21 +121,31 @@
 
 
             <p><img src="/img/article-photos/cnab/cnab-twitter-card.png" alt=""></p>
-<p><em><a href="https://deislabs.io/posts/state-of-cnab-part-2/">This article originally appeared on the DeisLabs blog</a></em>.</p>
-<p>In <a href="https://deislabs.io/posts/state-of-cnab-part-1/">the previous entry, we discussed the CNAB Core specification</a>, which does not dictate how bundles should be distributed. This is intentional, so organizations that need the bundle representation CNAB brings, but already have a way of distributing artifacts may continue to use it.</p>
+<p><em><a href="https://deislabs.io/posts/state-of-cnab-part-2/" target="_blank" rel="noreferrer noopener">This article originally appeared on the DeisLabs blog</a>
+</em>.</p>
+<p>In <a href="https://deislabs.io/posts/state-of-cnab-part-1/" target="_blank" rel="noreferrer noopener">the previous entry, we discussed the CNAB Core specification</a>
+, which does not dictate how bundles should be distributed. This is intentional, so organizations that need the bundle representation CNAB brings, but already have a way of distributing artifacts may continue to use it.</p>
 <p>That being said, the CNAB Registries specification wants to propose a standard way of using OCI registries to distribute bundles, which we will explore in this article.</p>
-<p>In August, <a href="https://github.com/opencontainers/tob/pull/60">the OCI Technical Oversight Board adopted the artifacts proposal</a>, which aims to use OCI registries to store additional artifacts (in addition to container images), such as Helm charts, or Singularity charts.</p>
-<p>Let's take a step back and think about what a CNAB bundle is - a collection of metadata and container images that are needed for an application. It is not a <em>single</em> new artifact, but it represents a <em>collection of multiple artifacts</em>.</p>
-<p>An <a href="https://github.com/opencontainers/image-spec/blob/master/image-index.md">OCI image index (or simply OCI index)</a> represents a collection of container images stored in a repository - so rather than using a new artifact, we could use an OCI index to represent CNAB and store the bundle file and referenced images.</p>
-<h2 id="storing-bundles-in-oci-registries-using-cnab-to-ocicnab-to-oci">Storing bundles in OCI registries using <a href="https://github.com/docker/cnab-to-oci"><code>cnab-to-oci</code></a></h2>
+<p>In August, <a href="https://github.com/opencontainers/tob/pull/60" target="_blank" rel="noreferrer noopener">the OCI Technical Oversight Board adopted the artifacts proposal</a>
+, which aims to use OCI registries to store additional artifacts (in addition to container images), such as Helm charts, or Singularity charts.</p>
+<p>Let&rsquo;s take a step back and think about what a CNAB bundle is - a collection of metadata and container images that are needed for an application. It is not a <em>single</em> new artifact, but it represents a <em>collection of multiple artifacts</em>.</p>
+<p>An <a href="https://github.com/opencontainers/image-spec/blob/master/image-index.md" target="_blank" rel="noreferrer noopener">OCI image index (or simply OCI index)</a>
+ represents a collection of container images stored in a repository - so rather than using a new artifact, we could use an OCI index to represent CNAB and store the bundle file and referenced images.</p>
+<h2 id="storing-bundles-in-oci-registries-using-cnab-to-ocicnab-to-oci">Storing bundles in OCI registries using <a href="https://github.com/docker/cnab-to-oci" target="_blank" rel="noreferrer noopener"><code>cnab-to-oci</code></a>
+</h2>
 <blockquote>
-<p>Note that in the following sections we are not going to discuss the distribution of CNAB bundles across disconnected (&ldquo;air-gapped&rdquo;) environments - this is not because the scenario isn't supported by CNAB, but because its implementation is closely connected with bundle verification and attestation. If you are interested in this scenario, <a href="https://cnab.io/community-meetings/#registry-and-security-community-meeting">please join the CNAB community</a> and the group working on this issue.</p>
+<p>Note that in the following sections we are not going to discuss the distribution of CNAB bundles across disconnected (&ldquo;air-gapped&rdquo;) environments - this is not because the scenario isn&rsquo;t supported by CNAB, but because its implementation is closely connected with bundle verification and attestation. If you are interested in this scenario, <a href="https://cnab.io/community-meetings/#registry-and-security-community-meeting" target="_blank" rel="noreferrer noopener">please join the CNAB community</a>
+ and the group working on this issue.</p>
 </blockquote>
-<p>And this is exactly the approach of <a href="https://github.com/docker/cnab-to-oci"><code>cnab-to-oci</code></a> - the proposed implementation to store bundles in OCI registries. But before diving into how <code>cnab-to-oci</code> works, and how to use it, it is worth exploring some requirements we collected for any implementation that would store bundles in OCI registries:</p>
+<p>And this is exactly the approach of <a href="https://github.com/docker/cnab-to-oci" target="_blank" rel="noreferrer noopener"><code>cnab-to-oci</code></a>
+ - the proposed implementation to store bundles in OCI registries. But before diving into how <code>cnab-to-oci</code> works, and how to use it, it is worth exploring some requirements we collected for any implementation that would store bundles in OCI registries:</p>
 <ol>
 <li>Signing and verifying CNAB bundles must be possible for any distribution method, as the core specification does not mandate the use of OCI registries.</li>
 </ol>
-<p>To support this, any implementation must represent the <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md">CNAB bundle file</a> in <a href="http://wiki.laptop.org/go/Canonical_JSON">canonical JSON</a> form, which can be used to compute the content digest consistently, regardless of the distribution method used. The <a href="https://github.com/docker/cnab-to-oci/pull/65">proposed changes to the <code>cnab-to-oci</code></a> ensure that bundles are stored in canonical JSON.</p>
+<p>To support this, any implementation must represent the <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md" target="_blank" rel="noreferrer noopener">CNAB bundle file</a>
+ in <a href="http://wiki.laptop.org/go/Canonical_JSON" target="_blank" rel="noreferrer noopener">canonical JSON</a>
+ form, which can be used to compute the content digest consistently, regardless of the distribution method used. The <a href="https://github.com/docker/cnab-to-oci/pull/65" target="_blank" rel="noreferrer noopener">proposed changes to the <code>cnab-to-oci</code></a>
+ ensure that bundles are stored in canonical JSON.</p>
 <ol start="2">
 <li>Moving a bundle across repositories (and potentially compliant registries) must not invalidate the bundle signature.</li>
 </ol>
@@ -161,7 +171,8 @@
 <blockquote>
 <p>Note that the same scenario also applies when all images referenced in a bundle have been pushed to the same repository, and we want to move them to a new repository.</p>
 </blockquote>
-<p>This is where the <a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md#image-relocation">CNAB Core specification comes to help</a>:</p>
+<p>This is where the <a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md#image-relocation" target="_blank" rel="noreferrer noopener">CNAB Core specification comes to help</a>
+:</p>
 <blockquote>
 <p>Images referenced by a CNAB bundle MAY be relocated, for example by copying them to a private registry. A relocation mapping is a JSON map of original image references to relocated image references. The purpose of a relocation mapping is to enable an invocation image to substitute relocated image references for their original values.</p>
 </blockquote>
@@ -173,21 +184,25 @@
 <blockquote>
 <p>This happens because you cannot control the archiving algorithm used by registries - so the same content (image) can be archived in two different ways, yielding two different content digests, resulting in different OCI descriptors (manifests).</p>
 </blockquote>
-<p>By moving the images to new repositories / registries and generating a relocation map, we ensure we can safely move bundles and their images without invalidating the initial bundle signature - and <a href="https://github.com/docker/cnab-to-oci/pull/65">the proposed changes to <code>cnab-to-oci</code></a> ensure that.</p>
+<p>By moving the images to new repositories / registries and generating a relocation map, we ensure we can safely move bundles and their images without invalidating the initial bundle signature - and <a href="https://github.com/docker/cnab-to-oci/pull/65" target="_blank" rel="noreferrer noopener">the proposed changes to <code>cnab-to-oci</code></a>
+ ensure that.</p>
 <ol start="3">
 <li>Continue to enable bundle authors to choose how to store referenced artifacts in registries.</li>
 </ol>
 <p>If you build a bundle right now, you can reference images from any combination of registries and repositories (for example, some organizations want to push all artifacts referenced in a bundle in the same repository, while others want separate repositories, or even separate registries).</p>
-<p>Ideally, an implementation for storing bundles in OCI registries would continue to support the scenarios described above. Currently, however, this area hasn't been fully explored in <code>cnab-to-oci</code>, which pushes all images referenced in a bundle in the same repository (more on being able to reference artifacts outside of a repository from an OCI index later).</p>
-<p>That being said, there has been extensive work in the community, on <a href="https://github.com/pivotal/image-relocation">image relocation</a> and <a href="https://github.com/google/go-containerregistry">registry utilities</a>, to ensure images can be moved across registries and repositories. Ideally, we could use this work in <code>cnab-to-oci</code> and give users a choice of how to push the images referenced in a bundle - in the same repository, or in different repositories.</p>
+<p>Ideally, an implementation for storing bundles in OCI registries would continue to support the scenarios described above. Currently, however, this area hasn&rsquo;t been fully explored in <code>cnab-to-oci</code>, which pushes all images referenced in a bundle in the same repository (more on being able to reference artifacts outside of a repository from an OCI index later).</p>
+<p>That being said, there has been extensive work in the community, on <a href="https://github.com/pivotal/image-relocation" target="_blank" rel="noreferrer noopener">image relocation</a>
+ and <a href="https://github.com/google/go-containerregistry" target="_blank" rel="noreferrer noopener">registry utilities</a>
+, to ensure images can be moved across registries and repositories. Ideally, we could use this work in <code>cnab-to-oci</code> and give users a choice of how to push the images referenced in a bundle - in the same repository, or in different repositories.</p>
 <h2 id="using-cnab-to-oci-today">Using <code>cnab-to-oci</code> today</h2>
 <blockquote>
-<p>For the purpose of this article, we are going to use the <a href="https://github.com/docker/cnab-to-oci/pull/65">the proposed changes to <code>cnab-to-oci</code></a> that ensure points 1 and 2 - bundle files are stored in canonical JSON form, and a relocation map is generated when pushing images to new repositories.</p>
+<p>For the purpose of this article, we are going to use the <a href="https://github.com/docker/cnab-to-oci/pull/65" target="_blank" rel="noreferrer noopener">the proposed changes to <code>cnab-to-oci</code></a>
+ that ensure points 1 and 2 - bundle files are stored in canonical JSON form, and a relocation map is generated when pushing images to new repositories.</p>
 </blockquote>
 <blockquote>
 <p>Also note that the actual user experience when pushing and pulling bundles will most likely differ between various tools. The <code>cnab-to-oci</code> CLI is one implementation of what arguments and parameters can be passed, and of how users would interact with the tool.</p>
 </blockquote>
-<p>Let's explore how to use <code>cnab-to-oci</code> right now, and how a bundle and its artifacts are represented in the registry:</p>
+<p>Let&rsquo;s explore how to use <code>cnab-to-oci</code> right now, and how a bundle and its artifacts are represented in the registry:</p>
 <pre><code>$ cnab-to-oci push examples/helloworld-cnab/bundle.json
             --target localhost:5000/cnab-test:v1
             --log-level debug
@@ -272,7 +287,7 @@ Pushed successfully, with digest &quot;sha256:93fd4727cd317c3e035a3ce02e2201a013
 <li>finally, the index is constructed and pushed - in the <code>manifests</code> list, it contains an entry for the bundle descriptor, and entries for all images and invocation images referenced in the bundle</li>
 <li>the final digest of the index descriptor is returned</li>
 </ul>
-<p>Now let's explore what happens when we pull the bundle we just pushed:</p>
+<p>Now let&rsquo;s explore what happens when we pull the bundle we just pushed:</p>
 <pre><code>$ cnab-to-oci pull localhost:5000/cnab-test:v1 --log-level debug
 DEBU[0000] Pulling CNAB Bundle localhost:5000/cnab-test:v1
 DEBU[0000] Getting OCI Index Descriptor
@@ -371,24 +386,31 @@ DEBU[0004] Relocation map map[cnab/helloworld:0.1.1:localhost:5000/cnab-test@sha
 <h2 id="changes-to-the-oci-index">Changes to the OCI Index</h2>
 <p>But how is the OCI index we are using to store CNAB bundles identified as representing a CNAB bundle? Right now, <code>cnab-to-oci</code> relies on an annotation to achieve this:</p>
 <pre><code>&quot;org.opencontainers.artifactType&quot;: &quot;application/vnd.cnab.manifest.v1&quot;
-</code></pre><p>But as <a href="https://github.com/opencontainers/image-spec/blob/master/annotations.md">annotations are an optional part of the OCI specification</a>, using them to identify a bundle cannot be a long-term solution.
+</code></pre><p>But as <a href="https://github.com/opencontainers/image-spec/blob/master/annotations.md" target="_blank" rel="noreferrer noopener">annotations are an optional part of the OCI specification</a>
+, using them to identify a bundle cannot be a long-term solution.
 Moreover, without additional ways of reliably identifying that an index is used to represent a CNAB bundle, tools or platforms that assume an OCI index is a multi-architecture container image might unintentionally fail.</p>
 <p>But why were annotations chosen in the first place?</p>
-<p>An OCI index lacks a top-level mechanism for communicating its type - this is one of the topics <a href="https://hackmd.io/w6pY2gAVSq6tD_exH7_f0g#Index-Conversations">discussed during KubeCon in Barcelona at a meeting about OCI artifacts and CNAB registries</a>, and the general consensus was to propose a top-level <code>config</code> object for the OCI index that would provide <em>deterministic understanding of the artifact type</em>.</p>
+<p>An OCI index lacks a top-level mechanism for communicating its type - this is one of the topics <a href="https://hackmd.io/w6pY2gAVSq6tD_exH7_f0g#Index-Conversations" target="_blank" rel="noreferrer noopener">discussed during KubeCon in Barcelona at a meeting about OCI artifacts and CNAB registries</a>
+, and the general consensus was to propose a top-level <code>config</code> object for the OCI index that would provide <em>deterministic understanding of the artifact type</em>.</p>
 <blockquote>
-<p><a href="https://hackmd.io/w6pY2gAVSq6tD_exH7_f0g#Index-Conversations">You can find complete notes from that meeting here</a>.</p>
+<p><a href="https://hackmd.io/w6pY2gAVSq6tD_exH7_f0g#Index-Conversations" target="_blank" rel="noreferrer noopener">You can find complete notes from that meeting here</a>
+.</p>
 </blockquote>
 <p>Setting a <code>mediaType</code> on the <code>config</code> object for an OCI index would allow CNAB tooling to stop relying on optional annotations from identifying one, and enable registries to either allow or reject CNAB artifacts.
-<a href="https://github.com/radu-matei/image-spec/pull/1">This change is coming, and you can see the progress and comment on it here</a>.</p>
+<a href="https://github.com/radu-matei/image-spec/pull/1" target="_blank" rel="noreferrer noopener">This change is coming, and you can see the progress and comment on it here</a>
+.</p>
 <p>Another change we could explore once the OCI index contains a <code>config</code> object is storing the <code>bundle.json</code> file in this object - this would allow us to stop storing the bundle config (the <code>bundle.json</code> file) as a separate artifact (see the <code>application/vnd.cnab.config.v1+json</code> descriptor), and entirely rely on the new capabilities of the OCI index. Such a change, however, must not interfere with storing the bundle in its canonical JSON form, and we must ensure sure the content of the bundle file (and thus its signature) is persisted as well in this scenario. This is a change we will explore in <code>cnab-to-oci</code> after the OCI index contains a <code>config</code> object.</p>
 <p>The second set of changes that was discussed for the OCI index is related to how artifacts referenced in a CNAB bundle should be stored in a registry / repository. As mentioned, <code>cnab-to-oci</code> currently pushes all images in a single repository - but as we have seen in requirement 3, ideally users could choose to use a different model to store the images (and individual registries could restrict how they allow images to be pushed).</p>
 <p>At the same time, an OCI index can only reference manifests that are in the same repository - this means that while <code>bundle.json</code> can reference artifacts in any number of registries and repositories, without them being referenced in the index, that information is opaque to the registry.
 This does <em>not</em> affect any CNAB functionality, but having a list of all artifacts used by a CNAB bundle, even if they are <em>not</em> in the same repository, would allow registries to perform much more interesting tasks - such as garbage collection, or security analysis on all components of a bundle.</p>
-<p>Essentially, we're looking for a way that an OCI index could point to a manifest that is outside of the repository (or potentially even outside of the registry). This is a more complex change, and all implications have not been explored yet.</p>
+<p>Essentially, we&rsquo;re looking for a way that an OCI index could point to a manifest that is outside of the repository (or potentially even outside of the registry). This is a more complex change, and all implications have not been explored yet.</p>
 <h2 id="cnab-registries---next-steps">CNAB Registries - next steps</h2>
 <p>The current state of <code>cnab-to-oci</code> unblocks our immediate use case of representing CNAB bundles in registries using the OCI index - but as implementations and real-world use cases for this scenario mature, we need a reliable way of identifying an OCI index - and we believe the addition of the <code>config</code> object to be extremely important.</p>
-<p>Moving forward, the conversations around the OCI index also become relevant in the context of representing collections of cloud-native artifacts (see the <a href="https://github.com/opencontainers/tob/pull/60">artifacts project</a> mentioned at the beginning of the article).</p>
-<p>If you are interested in this discussion, please <a href="https://cnab.io/community-meetings/#registry-and-security-community-meeting">join the weekly CNAB meetings</a>, as well as the <a href="https://www.opencontainers.org/community">OCI weekly meetings</a>.</p>
+<p>Moving forward, the conversations around the OCI index also become relevant in the context of representing collections of cloud-native artifacts (see the <a href="https://github.com/opencontainers/tob/pull/60" target="_blank" rel="noreferrer noopener">artifacts project</a>
+ mentioned at the beginning of the article).</p>
+<p>If you are interested in this discussion, please <a href="https://cnab.io/community-meetings/#registry-and-security-community-meeting" target="_blank" rel="noreferrer noopener">join the weekly CNAB meetings</a>
+, as well as the <a href="https://www.opencontainers.org/community" target="_blank" rel="noreferrer noopener">OCI weekly meetings</a>
+.</p>
 <p>Now that we have a validated implementation for storing CNAB bundles in OCI registries, and the discussions with the OCI community around formalizing the usage of the OCI index for this scenario are underway, the next step is to begin capturing the intended workflows and behaviors in the official CNAB Registries specification.</p>
 <p>Finally, CNAB is a community project. The work done so far in the registry space has been highly collaborative, and we would like to thank everyone involved with the project, and everyone who reviewed this article!</p>
 <p>In the next article, we will explore the security aspects of CNAB - signing, verifying, and attesting bundles, and how it integrates with the registry work we just presented.</p>

@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -131,17 +131,23 @@
             <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <blockquote>
-<p>Application containers have skyrocketed in popularity over the last few years. In recent months, Kubernetes has emerged as a popular solution for orchestrating these containers. While many turn to Kubernetes for its extensible architecture and vibrant open-source community, some still view Kubernetes as <a href="https://www.youtube.com/watch?v=aOQwyN0bTk4">too difficult to use</a>. - <em>Taken from <a href="https://azure.microsoft.com/en-us/blog/streamlining-kubernetes-development-with-draft/">the Draft announcement blog post.</a></em></p>
+<p>Application containers have skyrocketed in popularity over the last few years. In recent months, Kubernetes has emerged as a popular solution for orchestrating these containers. While many turn to Kubernetes for its extensible architecture and vibrant open-source community, some still view Kubernetes as <a href="https://www.youtube.com/watch?v=aOQwyN0bTk4" target="_blank" rel="noreferrer noopener">too difficult to use</a>
+. - <em>Taken from <a href="https://azure.microsoft.com/en-us/blog/streamlining-kubernetes-development-with-draft/" target="_blank" rel="noreferrer noopener">the Draft announcement blog post.</a>
+</em></p>
 </blockquote>
-<p><a href="https://github.com/azure/draft">Draft</a> is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.</p>
-<p>To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md">follow the official Draft documentation</a> and watch a short episode on Azure Friday:</p>
+<p><a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
+ is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.</p>
+<p>To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">follow the official Draft documentation</a>
+ and watch a short episode on Azure Friday:</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/DvaT3H8Wyf8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
 </div>
 
-<p>If you ever developed an application that you later deployed on Kubernetes, you know that this is not a trivial task: you need to write a Dockerfile, push it to a container registry, then create Kubernetes manifest files for the deployment and the service and then apply them using <code>kubectl</code>, <code>helm</code> or other deployment tools - <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">and we haven't even started to think about continuous integration and deployment</a>.</p>
-<p>And the steps above become even more painful when you're making small changes to your application and redeploying it - you have to rebuild and push your image, then remember to update your deployment manifest with the new image tag (<a href="https://kubernetes.io/docs/concepts/configuration/overview/#container-images">you should <em>really</em> avoid using <code>latest</code> as your image tag</a>).</p>
+<p>If you ever developed an application that you later deployed on Kubernetes, you know that this is not a trivial task: you need to write a Dockerfile, push it to a container registry, then create Kubernetes manifest files for the deployment and the service and then apply them using <code>kubectl</code>, <code>helm</code> or other deployment tools - <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/" target="_blank" rel="noreferrer noopener">and we haven&rsquo;t even started to think about continuous integration and deployment</a>
+.</p>
+<p>And the steps above become even more painful when you&rsquo;re making small changes to your application and redeploying it - you have to rebuild and push your image, then remember to update your deployment manifest with the new image tag (<a href="https://kubernetes.io/docs/concepts/configuration/overview/#container-images" target="_blank" rel="noreferrer noopener">you should <em>really</em> avoid using <code>latest</code> as your image tag</a>
+).</p>
 <p>And this is where Draft comes in - it is a command-line application that:</p>
 <ul>
 <li>builds your container image</li>
@@ -151,10 +157,14 @@
 <p>Essentially, deploying a new Draft application boils down to two simple commands: <code>draft create</code> and <code>draft up</code>.</p>
 <blockquote>
 <ul>
-<li>Draft comes with <a href="https://github.com/Azure/draft/tree/master/packs">a set of existing <em>packs</em> for some common programming languages and development frameworks</a> - essentially, these are just templates consisting of a Dockerfile and a Helm chart for your application that eliminates the part where you have to actually write your Dockerfile and Kubernetes manifest files - here you can <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-003.md">read all about the Draft pack format</a>.</li>
-<li>Draft also comes with <a href="https://github.com/Azure/draft/tree/master/examples">a set of example applications for those packs</a> that you can easily deploy on your cluster using <code>draft create</code> and <code>draft up</code>.</li>
-<li>You can either start working from an existing pack and customize it to your needs (changes to Dockerfile and the Helm chart), or you can <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-004.md">create your own pack repository</a> for you and your team to use.</li>
-<li>Draft will inject values specific to your current iteration in the Helm chart (like the name, image tag and build ID), so you don't have to update them manually.</li>
+<li>Draft comes with <a href="https://github.com/Azure/draft/tree/master/packs" target="_blank" rel="noreferrer noopener">a set of existing <em>packs</em> for some common programming languages and development frameworks</a>
+ - essentially, these are just templates consisting of a Dockerfile and a Helm chart for your application that eliminates the part where you have to actually write your Dockerfile and Kubernetes manifest files - here you can <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-003.md" target="_blank" rel="noreferrer noopener">read all about the Draft pack format</a>
+.</li>
+<li>Draft also comes with <a href="https://github.com/Azure/draft/tree/master/examples" target="_blank" rel="noreferrer noopener">a set of example applications for those packs</a>
+ that you can easily deploy on your cluster using <code>draft create</code> and <code>draft up</code>.</li>
+<li>You can either start working from an existing pack and customize it to your needs (changes to Dockerfile and the Helm chart), or you can <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-004.md" target="_blank" rel="noreferrer noopener">create your own pack repository</a>
+ for you and your team to use.</li>
+<li>Draft will inject values specific to your current iteration in the Helm chart (like the name, image tag and build ID), so you don&rsquo;t have to update them manually.</li>
 <li>After deploying your application on the cluster, you can use <code>draft connect</code> to forward the ports exposed by the application locally - this enables developing the front-end of the applications locally, forwarding the connection to the back-end through <code>localhost</code> ports. More on this later.</li>
 </ul>
 </blockquote>
@@ -163,34 +173,51 @@
 <ul>
 <li>a Kubernetes cluster - you can use <em>any</em> existing Kubernetes cluster, locally or on your cloud provider
 <ul>
-<li>you can <a href="https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster">deploy a managed AKS Kubernetes cluster on Azure</a>, or you can <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-container-cluster">deploy a managed GKE Kubernetes cluster on Google Cloud Platform</a></li>
-<li>you can <a href="https://github.com/kubernetes/minikube">use Minikube to run Kubernetes locally</a>, or create a single-node cluster <a href="https://docs.docker.com/docker-for-mac/kubernetes/">using Docker for Mac</a> or <a href="https://docs.docker.com/docker-for-windows/kubernetes/">Docker for Windows</a></li>
+<li>you can <a href="https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster" target="_blank" rel="noreferrer noopener">deploy a managed AKS Kubernetes cluster on Azure</a>
+, or you can <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-container-cluster" target="_blank" rel="noreferrer noopener">deploy a managed GKE Kubernetes cluster on Google Cloud Platform</a>
+</li>
+<li>you can <a href="https://github.com/kubernetes/minikube" target="_blank" rel="noreferrer noopener">use Minikube to run Kubernetes locally</a>
+, or create a single-node cluster <a href="https://docs.docker.com/docker-for-mac/kubernetes/" target="_blank" rel="noreferrer noopener">using Docker for Mac</a>
+ or <a href="https://docs.docker.com/docker-for-windows/kubernetes/" target="_blank" rel="noreferrer noopener">Docker for Windows</a>
+</li>
 </ul>
 </li>
-<li>Helm installed on your cluster - here's <a href="https://docs.helm.sh/using_helm/#installing-helm">the official documentation on installing and configuring Helm</a></li>
+<li>Helm installed on your cluster - here&rsquo;s <a href="https://docs.helm.sh/using_helm/#installing-helm" target="_blank" rel="noreferrer noopener">the official documentation on installing and configuring Helm</a>
+</li>
 <li>Docker running locally</li>
-<li>access to a container registry (like <a href="https://hub.docker.com/">Docker Hub</a>, <a href="https://azure.microsoft.com/en-us/services/container-registry/">Azure Container Registry</a>, <a href="https://cloud.google.com/container-registry/">Google Container Registry</a> or <a href="https://aws.amazon.com/ecr/">Amazon Elastic Container registry</a>) - if you're using Minikube, <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md#configure-docker">you can skip pushing to a registry</a></li>
+<li>access to a container registry (like <a href="https://hub.docker.com/" target="_blank" rel="noreferrer noopener">Docker Hub</a>
+, <a href="https://azure.microsoft.com/en-us/services/container-registry/" target="_blank" rel="noreferrer noopener">Azure Container Registry</a>
+, <a href="https://cloud.google.com/container-registry/" target="_blank" rel="noreferrer noopener">Google Container Registry</a>
+ or <a href="https://aws.amazon.com/ecr/" target="_blank" rel="noreferrer noopener">Amazon Elastic Container registry</a>
+) - if you&rsquo;re using Minikube, <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md#configure-docker" target="_blank" rel="noreferrer noopener">you can skip pushing to a registry</a>
+</li>
 <li>the Draft client
 <ul>
-<li>here's how to <a href="https://github.com/Azure/draft/blob/master/docs/install-cloud.md">configure Draft with a Kubernetes cluster in the cloud</a></li>
-<li>here's how to <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md">configure Draft with Minikube</a></li>
+<li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-cloud.md" target="_blank" rel="noreferrer noopener">configure Draft with a Kubernetes cluster in the cloud</a>
+</li>
+<li>here&rsquo;s how to <a href="https://github.com/Azure/draft/blob/master/docs/install-minikube.md" target="_blank" rel="noreferrer noopener">configure Draft with Minikube</a>
+</li>
 </ul>
 </li>
 </ul>
 <p>Those were the requirements to start using Draft right away. Additionally, to work on the sample provided with this article, you should also configure:</p>
 <ul>
-<li>NodeJS and <a href="https://github.com/angular/angular-cli#installation">Angular CLI</a></li>
-<li><a href="https://code.visualstudio.com/docs/setup/setup-overview">VS Code</a> - we will only truly use VS Code for the debugging part - until then, you can use any text editor you are familiar with.</li>
+<li>NodeJS and <a href="https://github.com/angular/angular-cli#installation" target="_blank" rel="noreferrer noopener">Angular CLI</a>
+</li>
+<li><a href="https://code.visualstudio.com/docs/setup/setup-overview" target="_blank" rel="noreferrer noopener">VS Code</a>
+ - we will only truly use VS Code for the debugging part - until then, you can use any text editor you are familiar with.</li>
 </ul>
 <h3 id="develop-deploy-and-debug-front-end--back-end-apps-on-kubernetes">Develop, deploy and debug front-end + back-end apps on Kubernetes</h3>
-<p>Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don't want to replicate locally - those can be databases we don't have access to, queues we need to use, or multiple micro-services we simply cannot run locally.</p>
+<p>Our scenario is the following: we are working on an Angular front-end that uses a NodeJS back-end, which has to run in the cluster due to some dependencies we cannot or don&rsquo;t want to replicate locally - those can be databases we don&rsquo;t have access to, queues we need to use, or multiple micro-services we simply cannot run locally.</p>
 <p>We will use Draft to easily iterate through changes in our back-end, and use the port-forwarding functionality to test our front-end locally, before deploying it in the cluster. We will also see how to use VS Code to experiment with the remote debugging of the NodeJS application deployed to Kubernetes.</p>
 <blockquote>
 <p>While this article uses Angular and NodeJS, the same tools and thinking can be applied to any front-end + back-end configuration you might have.</p>
 </blockquote>
-<p><a href="https://github.com/radu-matei/angular-todo-app">Our starting point is a GitHub repository containing both projects.</a></p>
+<p><a href="https://github.com/radu-matei/angular-todo-app" target="_blank" rel="noreferrer noopener">Our starting point is a GitHub repository containing both projects.</a>
+</p>
 <blockquote>
-<p>Credits for the Angular application go to <a href="https://www.sitepoint.com/angular-rxjs-create-api-service-rest-backend/">this SitePoint article</a> which explains how to get started with Angular and RxJS - while we will not get into details, it is a great source if you're getting started with Angular.</p>
+<p>Credits for the Angular application go to <a href="https://www.sitepoint.com/angular-rxjs-create-api-service-rest-backend/" target="_blank" rel="noreferrer noopener">this SitePoint article</a>
+ which explains how to get started with Angular and RxJS - while we will not get into details, it is a great source if you&rsquo;re getting started with Angular.</p>
 </blockquote>
 <p>Clone the repository and navigate to the folder containing the solution:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone https://github.com/radu-matei/angular-todo-app
@@ -198,7 +225,9 @@ $ cd angular-todo-app
 </code></pre></div><h3 id="deploy-the-node-back-end">Deploy the Node back-end</h3>
 <p>Earlier we were talking about Draft packs, and how to get started with an existing application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.</p>
 <blockquote>
-<p>You can find <a href="https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug">the pack used for this application in my packs repository</a> - the only difference compared to <a href="https://github.com/Azure/draft/tree/master/packs/javascript">the official Draft pack for NodeJS</a> is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.</p>
+<p>You can find <a href="https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug" target="_blank" rel="noreferrer noopener">the pack used for this application in my packs repository</a>
+ - the only difference compared to <a href="https://github.com/Azure/draft/tree/master/packs/javascript" target="_blank" rel="noreferrer noopener">the official Draft pack for NodeJS</a>
+ is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.</p>
 </blockquote>
 <p>Navigate to the <code>node-backend</code> folder, and if everything is setup correctly, you should be able to:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ draft up
@@ -208,9 +237,9 @@ todos-api: Pushing Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</spa
 todos-api: Releasing Application: SUCCESS ⚓  <span style="color:#f92672">(</span>0.6775s<span style="color:#f92672">)</span>
 todos-api: Build ID: 01CAQQR0K8BH4MES9WFQS0S5RT
 Inspect the logs with <span style="color:#e6db74">`</span>draft logs 01CAQQR0K8BH4MES9WFQS0S5RT<span style="color:#e6db74">`</span>
-</code></pre></div><p>Within around 10 seconds, Draft built and pushed my container image, then deployed my application to the Kubernetes cluster. Let's see what our cluster looks like after this operation.</p>
+</code></pre></div><p>Within around 10 seconds, Draft built and pushed my container image, then deployed my application to the Kubernetes cluster. Let&rsquo;s see what our cluster looks like after this operation.</p>
 <blockquote>
-<p>Note that the first time you build and push the image it might take a little more - this is because Docker doesn't have any layers cached locally.</p>
+<p>Note that the first time you build and push the image it might take a little more - this is because Docker doesn&rsquo;t have any layers cached locally.</p>
 </blockquote>
 <p>Under the hood, after pushing the container image, Draft used Helm to deploy the chart:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ helm ls
@@ -230,7 +259,9 @@ NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT<span style="
 kubernetes             ClusterIP   10.0.0.1      &lt;none&gt;        443/TCP    20d
 todos-api-node-debug   ClusterIP   10.0.202.58   &lt;none&gt;        8080/TCP   5m
 </code></pre></div><blockquote>
-<p>All the values, cluster types and container ports can be configured in <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/charts/node-debug/values.yaml"><code>/charts/values.yml</code></a> and in <a href="https://github.com/radu-matei/angular-todo-app/tree/draft-app/node-backend/charts/node-debug/templates"><code>/charts/templates</code></a>.</p>
+<p>All the values, cluster types and container ports can be configured in <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/charts/node-debug/values.yaml" target="_blank" rel="noreferrer noopener"><code>/charts/values.yml</code></a>
+ and in <a href="https://github.com/radu-matei/angular-todo-app/tree/draft-app/node-backend/charts/node-debug/templates" target="_blank" rel="noreferrer noopener"><code>/charts/templates</code></a>
+.</p>
 </blockquote>
 <p>Now we can start forwarding the ports exposed by our application locally, and access it as if it were running in a local process:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ draft connect
@@ -247,13 +278,16 @@ Connect to node-debug:9229 on localhost:9229
 Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
 For help see https://nodejs.org/en/docs/inspector
 Express server listening on port <span style="color:#ae81ff">8080</span>
-</code></pre></div><p>Now if you browse to <a href="http://localhost:8080/todos"><code>http://localhost:8080/todos</code></a> you should be able to navigate through the API we just deployed to Kubernetes.</p>
+</code></pre></div><p>Now if you browse to <a href="http://localhost:8080/todos" target="_blank" rel="noreferrer noopener"><code>http://localhost:8080/todos</code></a>
+ you should be able to navigate through the API we just deployed to Kubernetes.</p>
 <p><img src="/img/article-photos/real-world-draft/localhost.png" alt=""></p>
 <blockquote>
-<p>You can find settings related to the ports used by <code>draft connect</code> in the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/draft.toml"><code>draft.toml</code> file from the root of the directory</a>, and you can customize on what local ports you want to expose your application.</p>
+<p>You can find settings related to the ports used by <code>draft connect</code> in the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/draft.toml" target="_blank" rel="noreferrer noopener"><code>draft.toml</code> file from the root of the directory</a>
+, and you can customize on what local ports you want to expose your application.</p>
 </blockquote>
 <blockquote>
-<p>Here you can find <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-007.md">information about connecting to your application</a>.</p>
+<p>Here you can find <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-007.md" target="_blank" rel="noreferrer noopener">information about connecting to your application</a>
+.</p>
 </blockquote>
 <h3 id="exploring-the-angular-front-end">Exploring the Angular front-end</h3>
 <p>Now if we navigate to the <code>angular-frontend</code> folder and execute <code>npm install</code> and <code>npm start</code>:</p>
@@ -271,7 +305,8 @@ chunk    <span style="color:#f92672">{</span>2<span style="color:#f92672">}</spa
 chunk    <span style="color:#f92672">{</span>3<span style="color:#f92672">}</span> vendor.bundle.js, vendor.bundle.js.map <span style="color:#f92672">(</span>vendor<span style="color:#f92672">)</span> 2.52 MB <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
 chunk    <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> inline.bundle.js, inline.bundle.js.map <span style="color:#f92672">(</span>inline<span style="color:#f92672">)</span> <span style="color:#ae81ff">0</span> bytes <span style="color:#f92672">[</span>entry<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
 webpack: Compiled successfully.
-</code></pre></div><p>The front-end is already configured to talk to the back-end on <code>localhost:8080</code>, so at this point we can navigate to <a href="http://localhost:4200"><code>http://localhost:4200</code></a> and start playing around with our application:</p>
+</code></pre></div><p>The front-end is already configured to talk to the back-end on <code>localhost:8080</code>, so at this point we can navigate to <a href="http://localhost:4200" target="_blank" rel="noreferrer noopener"><code>http://localhost:4200</code></a>
+ and start playing around with our application:</p>
 <p><img src="/img/article-photos/real-world-draft/app.png" alt=""></p>
 <blockquote>
 <p>You will surely find bugs with the front-end application, as I modified it to work with my back-end, and my front-end skills are non-existent. For starters, the counter is broken - feel free to open pull-requests for any problems you find :)</p>
@@ -279,8 +314,8 @@ webpack: Compiled successfully.
 <p>You can now modify the Angular application, and the live development server will recompile the application.</p>
 <p>But what if you want to make changes to your back-end?</p>
 <h3 id="updating-the-back-end">Updating the back-end</h3>
-<p>At this point, without Draft, making a change to your back-end would require: manually re-building and pushing the container image, then updating the the Kubernetes manifests with the new image tag, then waiting for your pod to be up and manually forward the port so you can test your front-end again - and if you're rapidly iterating and making small changes, this becomes an incredibly annoying and repetitive task.</p>
-<p>Let's make a change to our back-end - if we go to <code>index.js</code>, we can see where our <code>ToDo</code> items are coming from, and we can add a new entry:</p>
+<p>At this point, without Draft, making a change to your back-end would require: manually re-building and pushing the container image, then updating the the Kubernetes manifests with the new image tag, then waiting for your pod to be up and manually forward the port so you can test your front-end again - and if you&rsquo;re rapidly iterating and making small changes, this becomes an incredibly annoying and repetitive task.</p>
+<p>Let&rsquo;s make a change to our back-end - if we go to <code>index.js</code>, we can see where our <code>ToDo</code> items are coming from, and we can add a new entry:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">inMemoryTodoDB</span> <span style="color:#f92672">=</span> [
     { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Kubernetes&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
     { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Draft&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
@@ -314,12 +349,15 @@ Connect to node-debug:9229 on localhost:9229
 <p>The features you are about to see are experimental and their development is in progress.</p>
 </blockquote>
 <blockquote>
-<p>You can <a href="https://github.com/Azure/vscode-kubernetes-tools/pull/160">follow along and start contributing to these features on GitHub</a>.</p>
+<p>You can <a href="https://github.com/Azure/vscode-kubernetes-tools/pull/160" target="_blank" rel="noreferrer noopener">follow along and start contributing to these features on GitHub</a>
+.</p>
 </blockquote>
 <blockquote>
-<p>If you want to try the debugging experience right now, you have to debug or <a href="https://github.com/Microsoft/vscode-go/wiki/Building,-Debugging-and-Sideloading-the-extension-in-Visual-Studio-Code#sideloading-the-extension">side-load the extension from the branch above using these instructions</a>.</p>
+<p>If you want to try the debugging experience right now, you have to debug or <a href="https://github.com/Microsoft/vscode-go/wiki/Building,-Debugging-and-Sideloading-the-extension-in-Visual-Studio-Code#sideloading-the-extension" target="_blank" rel="noreferrer noopener">side-load the extension from the branch above using these instructions</a>
+.</p>
 </blockquote>
-<p>In the <code>node-backend</code> folder you can find the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/.vscode/launch.json"><code>.vscode/launch.json</code></a> file - this contains the configuration we will use to remote debug our application using Draft and VS Code. With the extension above activated (in debug or side-loaded), open the <code>node-backend</code> directory in a new VS Code window and hit <code>F5</code>, or start debugging:</p>
+<p>In the <code>node-backend</code> folder you can find the <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/.vscode/launch.json" target="_blank" rel="noreferrer noopener"><code>.vscode/launch.json</code></a>
+ file - this contains the configuration we will use to remote debug our application using Draft and VS Code. With the extension above activated (in debug or side-loaded), open the <code>node-backend</code> directory in a new VS Code window and hit <code>F5</code>, or start debugging:</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/AO8nRmAN7ys" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
@@ -331,12 +369,13 @@ Connect to node-debug:9229 on localhost:9229
 <blockquote>
 <p>The cluster used in the video above is an Azure AKS cluster in West Europe, while my debug session takes place in Bucharest, Romania - around 1800 kilometers (~1100 miles).</p>
 </blockquote>
-<p>Let's take a step back and rewind what we are doing: when we hit <code>F5</code>, Draft is building and pushing a container image, then upgrading the application in a Kubernetes cluster, exposing the application ports locally. We are then using the NodeJS remote debugger from VS Code to attach to the back-end deployed in Kubernetes, then we do breakpoint debugging <em>as if we are doing everything locally!</em></p>
-<p>This is just a taste of what you will be able to do with Draft and the <a href="https://github.com/Azure/vscode-kubernetes-tools">Kubernetes extension for VS Code</a>.</p>
+<p>Let&rsquo;s take a step back and rewind what we are doing: when we hit <code>F5</code>, Draft is building and pushing a container image, then upgrading the application in a Kubernetes cluster, exposing the application ports locally. We are then using the NodeJS remote debugger from VS Code to attach to the back-end deployed in Kubernetes, then we do breakpoint debugging <em>as if we are doing everything locally!</em></p>
+<p>This is just a taste of what you will be able to do with Draft and the <a href="https://github.com/Azure/vscode-kubernetes-tools" target="_blank" rel="noreferrer noopener">Kubernetes extension for VS Code</a>
+.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>In this article we briefly looked at how Draft can simplify your Kubernetes application development. We also began experimenting with VS Code and remote debugging of your applications deployed with Draft.</p>
 <p>Stay tuned to find out more about how to simplify your development of applications on Kubernetes.</p>
-<p>As always, <strong>thanks for reading</strong> - and let me know if you're interested in remote debugging and what you are using today - I would love to hear your thoughts in the comments below!</p>
+<p>As always, <strong>thanks for reading</strong> - and let me know if you&rsquo;re interested in remote debugging and what you are using today - I would love to hear your thoughts in the comments below!</p>
 
 
             

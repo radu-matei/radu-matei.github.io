@@ -25,16 +25,16 @@
     <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="/css/monokai-sublime.css">
+    <link rel="stylesheet" href="/css/github-gist.css">
     <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
     <script src="/js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-
-
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
@@ -121,20 +121,29 @@
 
 
             <p><img src="/img/article-photos/cnab/cnab-twitter-card.png" alt=""></p>
-<p><em><a href="https://deislabs.io/posts/state-of-cnab-part-1/">This article originally appeared on the DeisLabs blog</a></em>.</p>
-<p>Late last year, the <a href="https://deislabs.io/cnab/">CNAB (Cloud Native Application Bundles)</a> specification was announced - <a href="https://techcrunch.com/2018/12/04/microsoft-and-docker-team-up-to-make-packaging-and-running-cloud-native-applications-easier/">the news made it to TechCrunch</a> and other tech publications, and partner organizations wrote about how they're using CNAB (for example <a href="https://blog.docker.com/2018/12/docker-app-and-cnab/">Docker</a>, <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes">Pivotal</a>, or <a href="https://engineering.bitnami.com/articles/production-ready-packaging-with-cnab-and-bitnami-kubernetes-production-runtime-bkpr.html">Bitnami</a>).</p>
-<p>So what is CNAB? According to <a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md">the official specification</a>:</p>
+<p><em><a href="https://deislabs.io/posts/state-of-cnab-part-1/" target="_blank" rel="noreferrer noopener">This article originally appeared on the DeisLabs blog</a>
+</em>.</p>
+<p>Late last year, the <a href="https://deislabs.io/cnab/" target="_blank" rel="noreferrer noopener">CNAB (Cloud Native Application Bundles)</a>
+ specification was announced - <a href="https://techcrunch.com/2018/12/04/microsoft-and-docker-team-up-to-make-packaging-and-running-cloud-native-applications-easier/" target="_blank" rel="noreferrer noopener">the news made it to TechCrunch</a>
+ and other tech publications, and partner organizations wrote about how they&rsquo;re using CNAB (for example <a href="https://blog.docker.com/2018/12/docker-app-and-cnab/" target="_blank" rel="noreferrer noopener">Docker</a>
+, <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes" target="_blank" rel="noreferrer noopener">Pivotal</a>
+, or <a href="https://engineering.bitnami.com/articles/production-ready-packaging-with-cnab-and-bitnami-kubernetes-production-runtime-bkpr.html" target="_blank" rel="noreferrer noopener">Bitnami</a>
+).</p>
+<p>So what is CNAB? According to <a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md" target="_blank" rel="noreferrer noopener">the official specification</a>
+:</p>
 <blockquote>
 <p>CNAB is a standard packaging format for multi-component distributed applications. It is not a platform-specific tool, and developers can bundle applications targeting environments spanning IaaS (like OpenStack or Azure), container orchestrators (like Kubernetes or Nomad), container runtimes (like local Docker or ACI), and cloud platform services (like object storage or Database as a Service).</p>
 </blockquote>
-<p>But let's take a step back and recap what problems CNAB is trying to solve:</p>
+<p>But let&rsquo;s take a step back and recap what problems CNAB is trying to solve:</p>
 <blockquote>
 <ol>
 <li>We need to be able to describe our application as a single artifact, even when it is composed of a variety of cloud technologies;</li>
 <li>We must be able to provision our applications without having to master dozens of tools; and</li>
 <li>We need to manage lifecycle (particularly installation, upgrade, and deletion) of our applications.</li>
 </ol>
-<p><a href="https://deislabs.io/cnab/">You can read an introduction to CNAB</a>, and here you can find the <a href="https://cloudblogs.microsoft.com/opensource/2018/12/04/announcing-cnab-cloud-agnostic-format-packaging-running-distributed-applications/">CNAB announcement blog post</a>.</p>
+<p><a href="https://deislabs.io/cnab/" target="_blank" rel="noreferrer noopener">You can read an introduction to CNAB</a>
+, and here you can find the <a href="https://cloudblogs.microsoft.com/opensource/2018/12/04/announcing-cnab-cloud-agnostic-format-packaging-running-distributed-applications/" target="_blank" rel="noreferrer noopener">CNAB announcement blog post</a>
+.</p>
 </blockquote>
 <p>The same introduction document introduced the desired functionality CNAB hoped to bring:</p>
 <blockquote>
@@ -153,29 +162,47 @@
 <p>In the months following the initial announcement, the specification was split into three separate specifications:</p>
 <ul>
 <li>
-<p><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md">CNAB Core</a> - addresses 1, 2, and part of 5.</p>
+<p><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md" target="_blank" rel="noreferrer noopener">CNAB Core</a>
+ - addresses 1, 2, and part of 5.</p>
 </li>
 <li>
-<p><a href="https://github.com/deislabs/cnab-spec/blob/master/200-CNAB-registries.md">CNAB Registries</a> - addresses part of 5 and 6.</p>
+<p><a href="https://github.com/deislabs/cnab-spec/blob/master/200-CNAB-registries.md" target="_blank" rel="noreferrer noopener">CNAB Registries</a>
+ - addresses part of 5 and 6.</p>
 </li>
 <li>
-<p><a href="https://github.com/deislabs/cnab-spec/blob/master/300-CNAB-security.md">CNAB Security</a> - addresses 3 and 4.</p>
+<p><a href="https://github.com/deislabs/cnab-spec/blob/master/300-CNAB-security.md" target="_blank" rel="noreferrer noopener">CNAB Security</a>
+ - addresses 3 and 4.</p>
 </li>
 </ul>
-<p>(Two more sub-specifications followed, for <a href="https://github.com/deislabs/cnab-spec/blob/master/400-claims.md">claims</a> and <a href="https://github.com/deislabs/cnab-spec/blob/master/500-CNAB-dependencies.md">bundle dependencies</a>.)</p>
-<p>Why break down into multiple specifications in the first place? The scope of the problem is objectively broad, and it's much easier to iterate and agree on a subset of changes, with a reduced problem space. Also, all other areas depended on the core specification, so it made sense to reach a stability point there, then turn to the other parts of the ecosystem.
+<p>(Two more sub-specifications followed, for <a href="https://github.com/deislabs/cnab-spec/blob/master/400-claims.md" target="_blank" rel="noreferrer noopener">claims</a>
+ and <a href="https://github.com/deislabs/cnab-spec/blob/master/500-CNAB-dependencies.md" target="_blank" rel="noreferrer noopener">bundle dependencies</a>
+.)</p>
+<p>Why break down into multiple specifications in the first place? The scope of the problem is objectively broad, and it&rsquo;s much easier to iterate and agree on a subset of changes, with a reduced problem space. Also, all other areas depended on the core specification, so it made sense to reach a stability point there, then turn to the other parts of the ecosystem.
 So as a community, we decided to focus on having a stable core specification first.</p>
-<p>But this doesn't come without any risks - the most obvious is potentially realizing that the core specifications needs (breaking) changes in order to accommodate distribution or security. We hope this will not be the case, and we think that we've covered potential issues (adding <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-extensions">custom extensions</a>, <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-actions">custom actions</a>, handling <a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md#image-relocation">image relocation</a> without mutating the bundle, to name a few), but realizing another part of the ecosystem will only work with a future CNAB Core 2.0 is a possibility until those parts reach stability.</p>
-<h2 id="the-cnab-core-specificationcore"><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md">The CNAB Core Specification</a></h2>
+<p>But this doesn&rsquo;t come without any risks - the most obvious is potentially realizing that the core specifications needs (breaking) changes in order to accommodate distribution or security. We hope this will not be the case, and we think that we&rsquo;ve covered potential issues (adding <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-extensions" target="_blank" rel="noreferrer noopener">custom extensions</a>
+, <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-actions" target="_blank" rel="noreferrer noopener">custom actions</a>
+, handling <a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md#image-relocation" target="_blank" rel="noreferrer noopener">image relocation</a>
+ without mutating the bundle, to name a few), but realizing another part of the ecosystem will only work with a future CNAB Core 2.0 is a possibility until those parts reach stability.</p>
+<h2 id="the-cnab-core-specificationcore"><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md" target="_blank" rel="noreferrer noopener">The CNAB Core Specification</a>
+</h2>
 <p>The core specification covers the following areas:</p>
 <ul>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md">the <code>bundle.json</code> file</a></li>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/102-invocation-image.md">the invocation image format</a></li>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md">the bundle runtime</a></li>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/104-bundle-formats.md">the bundle formats</a></li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md" target="_blank" rel="noreferrer noopener">the <code>bundle.json</code> file</a>
+</li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/102-invocation-image.md" target="_blank" rel="noreferrer noopener">the invocation image format</a>
+</li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md" target="_blank" rel="noreferrer noopener">the bundle runtime</a>
+</li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/104-bundle-formats.md" target="_blank" rel="noreferrer noopener">the bundle formats</a>
+</li>
 </ul>
-<p>This is the area of CNAB that has seen the most interest so far, and at the beginning of August, a core <a href="https://github.com/deislabs/cnab-spec/pull/238">specification freeze</a> has been instated, stabilizing the core specification even more, and allowing <a href="https://github.com/deislabs/duffle">the reference implementation</a> and other tools implementing the specification (such as <a href="https://porter.sh">Porter</a> or <a href="https://github.com/docker/app">Docker App</a>) to implement the latest changes.</p>
-<p>Of course following the specification freeze <a href="https://github.com/deislabs/cnab-spec/issues">a number of issues have been raised regarding some clarifications</a>, but none of them has lead to major changes.</p>
+<p>This is the area of CNAB that has seen the most interest so far, and at the beginning of August, a core <a href="https://github.com/deislabs/cnab-spec/pull/238" target="_blank" rel="noreferrer noopener">specification freeze</a>
+ has been instated, stabilizing the core specification even more, and allowing <a href="https://github.com/deislabs/duffle" target="_blank" rel="noreferrer noopener">the reference implementation</a>
+ and other tools implementing the specification (such as <a href="https://porter.sh" target="_blank" rel="noreferrer noopener">Porter</a>
+ or <a href="https://github.com/docker/app" target="_blank" rel="noreferrer noopener">Docker App</a>
+) to implement the latest changes.</p>
+<p>Of course following the specification freeze <a href="https://github.com/deislabs/cnab-spec/issues" target="_blank" rel="noreferrer noopener">a number of issues have been raised regarding some clarifications</a>
+, but none of them has lead to major changes.</p>
 <p>So what does stabilizing the core specification mean for the community?
 It means that you can build a bundle with tool A, install it with tool B, then upgrade it or uninstall it with tool C - so the following workflow could be possible:</p>
 <pre><code>$ porter build &lt;bundle&gt;
@@ -186,17 +213,27 @@ $ duffle uninstall &lt;bundle&gt;
 <p>The arguments and flags passed to the tools above are not representative.</p>
 </blockquote>
 <blockquote>
-<p>There is also a <a href="https://github.com/deislabs/cnab-spec/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Post+1.0%22">list of issues deferred for a post 1.0 version of the core specification</a> - and as the tools using CNAB mature, that list is expected to grow.</p>
+<p>There is also a <a href="https://github.com/deislabs/cnab-spec/issues?q=is%3Aissue&#43;is%3Aopen&#43;sort%3Aupdated-desc&#43;label%3A%22Post&#43;1.0%22" target="_blank" rel="noreferrer noopener">list of issues deferred for a post 1.0 version of the core specification</a>
+ - and as the tools using CNAB mature, that list is expected to grow.</p>
 </blockquote>
 <h2 id="where-is-cnab-used-today">Where is CNAB used today?</h2>
 <p>There are multiple public (and even more still private) projects that implement parts of the CNAB specification, or use CNAB as a way of deployment:</p>
 <ul>
-<li><a href="https://github.com/deislabs/duffle">Duffle</a> is the reference implementation of the specification, and its goal is to provide functionality for all parts of the specification. You can use it to build, install, and manage bundles, as well as export bundles in thick format for distributing in air-gapped environments.</li>
-<li><a href="https://porter.sh">Porter</a> is an opinionated CNAB builder that <em>gives you building blocks to create a cloud installer for your application, handling all the necessary infrastructure and configuration setup. It is a declarative authoring experience that lets you focus on what you know best: your application.</em></li>
-<li><a href="https://blog.docker.com/2018/12/docker-app-and-cnab/">Docker App</a> is an opinionated CNAB builder and installer that leverages the Docker Compose format to define your applications. To facilitate developer to operator handover, you can add metadata and runtime parameters. These applications can easily be shared using existing container registries. Docker App is available as part of the <a href="https://blog.docker.com/2019/07/announcing-docker-enterprise-3-0-ga/">the latest Docker release</a>.</li>
-<li>the <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes">Pivotal Build Service (alpha)</a>, <em>a declarative way to build an OCI-compatible container image from source code</em>, and is using CNAB to deploy the service on Kubernetes clusters.</li>
-<li>the next alpha release of <a href="https://pivotal.io/platform/pivotal-function-service">Pivotal Function Service</a> (a platform for building and running Functions, Applications, and Containers on Kubernetes, based on the <a href="https://projectriff.io/blog/2019/08/21/announcing-riff-0-4-0">Project Riff (v0.4.0)</a> open source project) is likely to be distributed as (CNAB) bundles.</li>
-<li><a href="https://github.com/deislabs/duffle-vscode">VS Code extension</a> and <a href="https://github.com/deislabs/duffle-bag">graphical installer for bundles</a> - graphical user interfaces for interacting with CNAB bundles</li>
+<li><a href="https://github.com/deislabs/duffle" target="_blank" rel="noreferrer noopener">Duffle</a>
+ is the reference implementation of the specification, and its goal is to provide functionality for all parts of the specification. You can use it to build, install, and manage bundles, as well as export bundles in thick format for distributing in air-gapped environments.</li>
+<li><a href="https://porter.sh" target="_blank" rel="noreferrer noopener">Porter</a>
+ is an opinionated CNAB builder that <em>gives you building blocks to create a cloud installer for your application, handling all the necessary infrastructure and configuration setup. It is a declarative authoring experience that lets you focus on what you know best: your application.</em></li>
+<li><a href="https://blog.docker.com/2018/12/docker-app-and-cnab/" target="_blank" rel="noreferrer noopener">Docker App</a>
+ is an opinionated CNAB builder and installer that leverages the Docker Compose format to define your applications. To facilitate developer to operator handover, you can add metadata and runtime parameters. These applications can easily be shared using existing container registries. Docker App is available as part of the <a href="https://blog.docker.com/2019/07/announcing-docker-enterprise-3-0-ga/" target="_blank" rel="noreferrer noopener">the latest Docker release</a>
+.</li>
+<li>the <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes" target="_blank" rel="noreferrer noopener">Pivotal Build Service (alpha)</a>
+, <em>a declarative way to build an OCI-compatible container image from source code</em>, and is using CNAB to deploy the service on Kubernetes clusters.</li>
+<li>the next alpha release of <a href="https://pivotal.io/platform/pivotal-function-service" target="_blank" rel="noreferrer noopener">Pivotal Function Service</a>
+ (a platform for building and running Functions, Applications, and Containers on Kubernetes, based on the <a href="https://projectriff.io/blog/2019/08/21/announcing-riff-0-4-0" target="_blank" rel="noreferrer noopener">Project Riff (v0.4.0)</a>
+ open source project) is likely to be distributed as (CNAB) bundles.</li>
+<li><a href="https://github.com/deislabs/duffle-vscode" target="_blank" rel="noreferrer noopener">VS Code extension</a>
+ and <a href="https://github.com/deislabs/duffle-bag" target="_blank" rel="noreferrer noopener">graphical installer for bundles</a>
+ - graphical user interfaces for interacting with CNAB bundles</li>
 <li>several groups in Azure are also evaluating the use of CNAB as a delivery and operational pillar.</li>
 </ul>
 <p>If a tool or platform wants to be CNAB compliant, it must implement the core specification, but it can choose <em>not</em> to implement the distribution or security specifications.
