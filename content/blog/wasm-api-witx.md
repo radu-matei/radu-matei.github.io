@@ -8,7 +8,7 @@ summary:
   "In this short article we explore how to get started with WebAssembly
   interface types by defining a simple API layer, then implementing that using
   Wiggle and Wasmtime"
-date: 2020-06-17 00:00:00 +0000 UTC
+date: 2020-06-23 00:00:00 +0000 UTC
 author: "Radu Matei"
 tags: ["wasm", "rust"]
 image: ""
