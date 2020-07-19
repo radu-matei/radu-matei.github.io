@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Getting started with NodeJS and the WebAssembly System Interface | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary_large_image'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/node-wasi/node-wasi-cover.png">
+<meta name="twitter:title" content="Getting started with NodeJS and the WebAssembly System Interface" />
+<meta name="twitter:description" content="NodeJS recently added experimental support for executing WebAssembly modules using WASI, or the WebAssembly System Interface. In this article we explore how to get started with the WASI sandbox and writing various modules we can execute, in Rust, or AssemblyScript." />
+
+<meta name="description" content="NodeJS recently added experimental support for executing WebAssembly modules using WASI, or the WebAssembly System Interface. In this article we explore how to get started with the WASI sandbox and writing various modules we can execute, in Rust, or AssemblyScript." />
+    <meta property='og:title' content='Getting started with NodeJS and the WebAssembly System Interface - radu&#39;s blog'>
+<meta property='og:description' content='NodeJS recently added experimental support for executing WebAssembly modules using WASI, or the WebAssembly System Interface. In this article we explore how to get started with the WASI sandbox and writing various modules we can execute, in Rust, or AssemblyScript.'>
+<meta property='og:url' content='https://radu-matei.com/blog/nodejs-wasi/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://radu-matei.com/img/article-photos/node-wasi/node-wasi-cover.png'><meta property='article:published_time' content='2020-07-19T00:00:00Z'/><meta property='article:modified_time' content='2020-07-19T00:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/nodejs-wasi/"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+ 
+        </div>
+        
+        <h2 class="subtitle is-6">July 19, 2020. 9 minutes read</h2>
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Getting started with NodeJS and the WebAssembly System Interface</h1>
+        
+        <div class="content">
+            
+
+
+            <p><img src="/img/article-photos/node-wasi/node-wasi-cover.png" alt=""></p>
+<p><a href="https://wasi.dev" target="_blank" rel="noreferrer noopener">WASI, the WebAssembly System Interface,</a>
+ is a capability-oriented set
+of APIs designed to standardize the sandboxed execution of WebAssembly modules
+outside of browsers. Specifically, WASI aims to be the common layer that
+WebAssembly modules can use to interface with host runtimes, and get granular
+access to OS specific objects (such as files, environment variables, or
+sockets). For an introduction to the goals and architecture of WASI, head over
+to the Mozilla blog and read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank" rel="noreferrer noopener">Lin Clark&rsquo;s announcement post</a>
+.</p>
+<p><a href="https://nodejs.org/en/" target="_blank" rel="noreferrer noopener">Node.js</a>
+ has <a href="https://github.com/nodejs/node/commit/09b1228c3a2723c6ecb768b40a507688015a478f" target="_blank" rel="noreferrer noopener">recently</a>
+ added <a href="https://nodejs.org/api/wasi.html" target="_blank" rel="noreferrer noopener">experimental
+support</a>
+ for WASI. This means that if you are running a recent
+version of Node.js, you can natively start a WASI instance and execute
+WebAssembly modules in a sandboxed environment, and granularly pass environment
+variables, arguments, or file handles to the process running in the module, and
+in this article we will briefly explore how to get started, and execute WASI
+modules written in Rust and AssemblyScript.</p>
+<p>All examples in this article can be found in <a href="https://github.com/radu-matei/node-wasi-examples" target="_blank" rel="noreferrer noopener">this repository on
+GitHub</a>
+.</p>
+<p>Let&rsquo;s start by running the example in the <a href="https://nodejs.org/api/wasi.html" target="_blank" rel="noreferrer noopener">official documentation</a>
+.
+The module there is written in the WebAssembly Text Format (and is in fact <a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-tutorial.md" target="_blank" rel="noreferrer noopener">the
+same example from the Wasmtime documentation</a>
+).</p>
+<blockquote>
+<p>Mozilla Developer Network has an excellent set of articles dedicated to
+<a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format" target="_blank" rel="noreferrer noopener">understanding the Wasm text format</a>
+, as well as describing in detail
+how to <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Text_format_to_wasm" target="_blank" rel="noreferrer noopener">convert between the text and binary formats</a>
+ using the
+<a href="https://github.com/webassembly/wabt" target="_blank" rel="noreferrer noopener">WebAssembly binary toolkit</a>
+.</p>
+</blockquote>
+<pre><code>(module
+    ;; Import the required fd_write WASI function which will write the given io vectors to stdout
+    ;; The function signature for fd_write is:
+    ;; (File Descriptor, *iovs, iovs_len, nwritten) -&gt; Returns number of bytes written
+    (import &quot;wasi_snapshot_preview1&quot; &quot;fd_write&quot; (func $fd_write (param i32 i32 i32 i32) (result i32)))
+
+    (memory 1)
+    (export &quot;memory&quot; (memory 0))
+
+    ;; Write 'hello world\n' to memory at an offset of 8 bytes
+    ;; Note the trailing newline which is required for the text to appear
+    (data (i32.const 8) &quot;hello world\n&quot;)
+
+    (func $main (export &quot;_start&quot;)
+        ;; Creating a new io vector within linear memory
+        (i32.store (i32.const 0) (i32.const 8))  ;; iov.iov_base - This is a pointer to the start of the 'hello world\n' string
+        (i32.store (i32.const 4) (i32.const 12))  ;; iov.iov_len - The length of the 'hello world\n' string
+
+        (call $fd_write
+            (i32.const 1) ;; file_descriptor - 1 for stdout
+            (i32.const 0) ;; *iovs - The pointer to the iov array, which is stored at memory location 0
+            (i32.const 1) ;; iovs_len - We're printing 1 string stored in an iov - so one.
+            (i32.const 20) ;; nwritten - A place in memory to store the number of bytes written
+        )
+        drop ;; Discard the number of bytes written from the top of the stack
+    )
+)
+</code></pre><p>This hand-written module imports <a href="https://github.com/WebAssembly/WASI/blob/master/phases/snapshot/docs.md#-fd_writefd-fd-iovs-ciovec_array---errno-size" target="_blank" rel="noreferrer noopener"><code>fd_write</code></a>
+ from
+<code>wasi_snapshot_preview1</code>, a function exposed by WASI used for writing to a
+provided file descriptor, which is used later to write <code>&quot;hello world&quot;</code> to
+standard output. We can convert it to its binary format using
+<a href="https://github.com/webassembly/wabt" target="_blank" rel="noreferrer noopener"><code>wat2wasm</code></a>
+, from the WebAssembly binary toolkit, and we can now
+instantiate it in WASI:</p>
+<pre><code>&quot;use strict&quot;;
+const fs = require(&quot;fs&quot;);
+const { WASI } = require(&quot;wasi&quot;);
+const wasi = new WASI();
+const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
+
+(async () =&gt; {
+  const wasm = await WebAssembly.compile(
+    fs.readFileSync(&quot;./examples/wat/hello.wasm&quot;)
+  );
+  const instance = await WebAssembly.instantiate(wasm, importObject);
+
+  wasi.start(instance);
+})();
+</code></pre><p>We are creating a new instance of <code>WASI</code>, and we pass the
+<code>wasi_snapshot_preview1</code> import as the native Node implementation of the WASI
+<code>libc</code>. Then, using Node 14.5 and running with the experimental flags enabled,
+we can execute the file above and get the expected output:</p>
+<pre><code>$ node --version
+v14.5.0
+$ node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint wasi.js
+
+hello world
+</code></pre><blockquote>
+<p>V8 uses a custom WASI <a href="https://github.com/cjihrig/uvwasi" target="_blank" rel="noreferrer noopener"><code>libc</code> implementation</a>
+ based on <code>libuv</code>, and
+<a href="https://github.com/nodejs/node/blob/0c81cadec6aa92985819a76827f28cfe8e656a8e/deps/uvwasi/src/uvwasi.c#L1397-L1441" target="_blank" rel="noreferrer noopener">the <code>fd_write</code> system call</a>
+ is <a href="https://github.com/nodejs/node/blob/ac6ecd6b7f5949950d600de21488440f9f98c961/src/node_wasi.cc#L969-L1017" target="_blank" rel="noreferrer noopener">implemented by
+V8</a>
+, which exposes a small public API for interacting with WASI
+in JavaScript.</p>
+</blockquote>
+<blockquote>
+<p>If you are interested in the stability of the WASI imports, check the
+different <a href="https://github.com/WebAssembly/WASI/tree/master/phases" target="_blank" rel="noreferrer noopener">phases here</a>
+.</p>
+</blockquote>
+<p>But we don&rsquo;t usually execute system calls just to open a file, or write
+something to the console - we use higher level programming languages that
+abstract that through their standard libraries. Let&rsquo;s see how we could achieve
+the same thing in other programming languages.</p>
+<h3 id="rust-and-wasi">Rust and WASI</h3>
+<p>To start, you need to <a href="https://www.rust-lang.org/learn/get-started" target="_blank" rel="noreferrer noopener">install the Rust toolchain on your machine</a>
+ and
+create the default <code>cargo new</code> project:</p>
+<pre><code>fn main() {
+    println!(&quot;Hello, world from Rust!&quot;);
+}
+</code></pre><p>Then add the <code>wasm32-wasi</code> compiler target and compile the project to WASI:</p>
+<pre><code>$ rustup target add wasm32-wasi
+$ cargo build --target wasm32-wasi
+</code></pre><p>If we change the path of the module to the one generated by the Rust compiler
+(<code>target/wasm32-wasi/debug/&lt;your-app-name&gt;.wasm</code>) and run again:</p>
+<pre><code>$ node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint wasi.js
+Hello, world from Rust!
+</code></pre><p>In both examples, we granted the modules the ability to write to standard output
+by linking the functionality implemented by the runtime in
+<code>wasi_snapshot_preview1</code>. If we don&rsquo;t provide the WASI import - not add the
+<code>wasi_snapshot_preview1</code> import:</p>
+<pre><code>const importObject = {};
+</code></pre><p>Then the module cannot print to standard output:</p>
+<pre><code>node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint wasi.js
+(node:30775) UnhandledPromiseRejectionWarning:
+TypeError: WebAssembly.instantiate(): Import #0 module=&quot;wasi_snapshot_preview1&quot; error: module is not an object or function
+    at nodejs-wasi-examples/wasi.js:14:38
+</code></pre><p>Ok, now let&rsquo;s see how we can grant access to files and directories. Consider the
+following Rust program:</p>
+<pre><code>use std::fs;
+
+fn main() {
+    let contents =
+        fs::read_to_string(&quot;/sandbox/file.txt&quot;).expect(&quot;Something went wrong reading the file&quot;);
+    println!(&quot;Content: {}&quot;, contents);
+}
+</code></pre><p>It tries to read the content of the file from <code>/sandbox/file.txt</code> - but by
+default, the WASI process does not have access to the file system:</p>
+<pre><code>thread 'main' panicked at
+ 'Something went wrong reading the file: Custom { kind: Other, error: &quot;failed to find a preopened file descriptor through which \&quot;/sandbox/file.txt\&quot; could be opened&quot; }', src/main.rs:6:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+(node:33051) UnhandledPromiseRejectionWarning: RuntimeError: unreachable
+    at __rust_start_panic (&lt;anonymous&gt;:wasm-function[218]:0x9f29)
+    at rust_panic (&lt;anonymous&gt;:wasm-function[212]:0x99a2)
+</code></pre><p>We have to explicitly provide a directory mapping for the directories we want to
+allow access to - in this case the current directory.</p>
+<pre><code>const wasi = new WASI({
+  preopens: {
+    &quot;/sandbox&quot;: process.cwd(),
+  },
+});
+</code></pre><p>And now it can read the file:</p>
+<pre><code>node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint wasi.js
+Content:
+This is a file on disk mounted inside the sandboxed process at /sandbox.
+It can be read, modified, or even deleted by the process running inside the module.
+</code></pre><blockquote>
+<p>This is a very simple scenario, where the module always tries to open the file
+from <code>/sandbox/file.txt</code> - but this can also work by passing the file path as
+an argument to the WASI process, and the sandbox always make sure the process
+actually has access to the specified file.</p>
+</blockquote>
+<h3 id="assemblyscript-and-wasi">AssemblyScript and WASI</h3>
+<p><a href="https://www.assemblyscript.org/" target="_blank" rel="noreferrer noopener">AssemblyScript</a>
+ is a strict variant of TypeScript which is natively
+compiled to WebAssembly. (as opposed to TypeScript, which is transpiled to
+JavaScript). This means that users can easily create modules by writing a
+familiar language. Note, however, that most likely you will not be able to
+simply compile your favorite TypeScript library to WebAssembly, as it probably
+makes use of either browser or NodeJS features, which will not be available in
+the WebAssembly runtime without the necessary module imports. For a list of the
+basic functionality and limitations of AssemblyScript, check out <a href="https://www.assemblyscript.org/basics.html" target="_blank" rel="noreferrer noopener">the official
+documentation</a>
+.</p>
+<p>AssemblyScript doesn&rsquo;t have native WASI support just yet - this is why we are
+going to use a library that offers the API layer for WASI syscalls -
+<a href="https://github.com/jedisct1/as-wasi" target="_blank" rel="noreferrer noopener"><code>as-wasi</code></a>
+. Basically, this creates a few high-level AssemblyScript
+objects to interact with WASI (for getting environment variables, or writing to
+files), and implements the translation layer that compiles to WebAssembly,
+allowing us to write AssemblyScript modules that can be then run in any WASI
+runtime.</p>
+<p>Let&rsquo;s see how a small AssemblyScript program that prints its arguments and the
+environment variables looks like.</p>
+<p>First, we need the two dependencies - AssemblyScript itself, and <code>as-wasi</code>, and
+a small script that calls the AssemblyScript compiler:</p>
+<pre><code>{
+    &quot;scripts&quot;: {
+        &quot;asbuild&quot;: &quot;asc index.ts -b build/as-wasi-example.wasm --use abort=wasi_abort&quot;
+    },
+    &quot;dependencies&quot;: {
+        &quot;as-wasi&quot;: &quot;0.0.1&quot;,
+        &quot;assemblyscript&quot;: &quot;^0.14.0&quot;
+    }
+}
+</code></pre><blockquote>
+<p>The <code>--use abort=wasi_abort</code> flag is used to explicitly bind the
+AssemblyScript <code>abort</code> function to the one provided by the runtime. There are
+<a href="https://github.com/AssemblyScript/assemblyscript/pull/1159" target="_blank" rel="noreferrer noopener">ways to avoid having to use it</a>
+, but for the purpose of this
+example, it is easier to just use it.</p>
+</blockquote>
+<blockquote>
+<p><code>0.0.1</code> is not the <a href="https://github.com/jedisct1/as-wasi/releases" target="_blank" rel="noreferrer noopener">latest version</a>
+ for <code>as-wasi</code> - however,
+there is a bug in newer versions that results in an allocation error when
+trying to use environment variables and command line arguments. A
+<a href="https://github.com/jedisct1/as-wasi/pull/54" target="_blank" rel="noreferrer noopener">fix</a>
+ for the bug has already been merged, but until there is a new
+release, we can use version <code>0.0.1</code>.</p>
+</blockquote>
+<p>We read both environment variables and command line arguments and print them to
+standard output. Notice that the objects used are imported from <code>as-wasi</code>, and
+are different from the native NodeJS objects:</p>
+<pre><code>import { Console, Environ, CommandLine } from &quot;as-wasi&quot;;
+
+export function _start(): void {
+  let env = new Environ();
+  let all_vars = env.all();
+  all_vars.forEach(function (val) {
+    Console.log(val.key + &quot;=&quot; + val.value);
+  });
+
+  let cmd = new CommandLine();
+  Console.log(&quot;args: &quot; + cmd.all().toString());
+}
+</code></pre><p>Now we can install the dependencies and build the module:</p>
+<pre><code>$ npm install
+$ npm run-script asbuild
+</code></pre><p>Running this example is similar - notice, however, the different arguments and
+environment variables:</p>
+<pre><code>const wasi = new WASI({
+  args: [&quot;arg1&quot;, &quot;arg2&quot;],
+  env: {
+    abc: &quot;def&quot;,
+    foo: &quot;bar&quot;,
+  },
+});
+const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
+
+(async () =&gt; {
+  const wasm = await WebAssembly.compile(
+    fs.readFileSync(
+      &quot;./examples/assemblyscript-wasi/build/as-wasi-example.wasm&quot;
+    )
+  );
+  const instance = await WebAssembly.instantiate(wasm, importObject);
+
+  wasi.start(instance);
+})();
+
+</code></pre><p>The <code>args</code>, <code>env</code>, and <code>preopen</code> objects from the WASI options can be used to
+granularly control the environment of the process running in the sandbox, and in
+this case, we are passing a set of new environment variables and arguments
+(although a subset of the real <code>process.env</code> and <code>process.args</code> can be passed
+instead, as needed):</p>
+<pre><code>$ node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint wasi.js
+abc=def
+foo=bar
+Args are: arg1,arg2
+</code></pre><blockquote>
+<p>Another programming language with native support for WASI is Zig - you can
+watch a <a href="https://www.youtube.com/watch?v=g_Degmqfo4Q" target="_blank" rel="noreferrer noopener">live coding session by Jakub Konka exemplifying how to write Zig that
+compiles to WASI.</a>
+</p>
+</blockquote>
+<h3 id="conclusion">Conclusion</h3>
+<p>In this article we took a first look at running WebAssembly modules using the
+early native support in NodeJS for WASI, and explored writing WASI modules in
+Rust and AssemblyScript. While WASI support is still early in most environments,
+it is rapidly becoming a great way of running sandboxed and portable code across
+runtimes and operating systems.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank" rel="noreferrer">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu M</a> 2020</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
