@@ -2,6 +2,7 @@
 title: "Instant Scaling on Demand: Serverless Kubernetes with Brigade"
 date: 2019-04-01 00:00:00 +0000 UTC
 author: "Radu Matei"
+tags: ["brigade", "kubernetes"]
 canonicalUrl: "https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/"
 ---
 
