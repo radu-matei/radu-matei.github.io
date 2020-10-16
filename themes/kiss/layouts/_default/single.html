@@ -5,7 +5,8 @@
             {{ if .Params.tags }} {{ partial "tags" .Params.tags }} {{ end }}
         </div>
         {{ if and (not .Date.IsZero) (not .Params.disable_comments) }}
-        <h2 class="subtitle is-6">{{ .Date.Format "January 2, 2006" }}. {{ .ReadingTime }} minutes read</h2>{{ end }}
+        <h2 class="subtitle is-6"> {{ .Date.Format "January 2, 2006" }}. {{ .ReadingTime }} minutes read.  {{ if .Params.pdf }} <a href="{{ .Params.pdf }}" target="_blank">PDF  </a> {{ end }} </h2>{{ end }} 
+
         <style type="text/css">
             .brxsmall {
                 display: block;
@@ -14,6 +15,7 @@
         </style>
         <span class="brxsmall"></span>
         <h1 class="title">{{ .Title }}</h1>
+
         {{ if and (.Site.Params.Info.adsense) (.Params.adsenseTop) }} {{ partial "adsense" . }} {{ end }}
         <div class="content">
             <!-- {{- with .Content -}}
