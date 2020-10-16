@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Towards sockets and networking in WebAssembly and WASI | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="Towards sockets and networking in WebAssembly and WASI" />
+<meta name="twitter:description" content="In this article we look at the current state of the networking API in WASI, and add a minimal implementation together with socket clients in AssemblyScript and Rust (with an upfront disclaimer that this should definitely not be used for anything other than experimentation)." />
+
+<meta name="description" content="In this article we look at the current state of the networking API in WASI, and add a minimal implementation together with socket clients in AssemblyScript and Rust (with an upfront disclaimer that this should definitely not be used for anything other than experimentation)." />
+    <meta property='og:title' content='Towards sockets and networking in WebAssembly and WASI - radu&#39;s blog'>
+<meta property='og:description' content='In this article we look at the current state of the networking API in WASI, and add a minimal implementation together with socket clients in AssemblyScript and Rust (with an upfront disclaimer that this should definitely not be used for anything other than experimentation).'>
+<meta property='og:url' content='https://radu-matei.com/blog/towards-sockets-networking-wasi/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/031fa2ff2832edcb6b30c8ffb61da4d4?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:tag' content='rust'><meta property='article:published_time' content='2020-10-16T00:00:00Z'/><meta property='article:modified_time' content='2020-10-16T00:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/towards-sockets-networking-wasi/"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+
+  
+  | <a class="subtitle is-6" href="/tags/rust">#rust</a>
+  
+ 
+        </div>
+        
+        <h2 class="subtitle is-6"> October 16, 2020. 12 minutes read.   <a href="/pdf/towards-sockets-networking-wasi.pdf" target="_blank">PDF  </a>  </h2> 
+
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Towards sockets and networking in WebAssembly and WASI</h1>
+
+        
+        <div class="content">
+            
+
+
+            <p>As more compilers add support for emitting Wasm (the Kotlin community
+<a href="https://youtrack.jetbrains.com/issue/KT-42292" target="_blank" rel="noreferrer noopener">officially announced</a>
+ starting the work on a compiler backend
+based on the <a href="https://github.com/WebAssembly/gc/" target="_blank" rel="noreferrer noopener">WebAssembly garbage collection proposal</a>
+, and there is an
+<a href="https://book.swiftwasm.org/" target="_blank" rel="noreferrer noopener">ongoing effort to support an official Wasm target for Swift</a>
+,
+besides already being able to execute Rust, Go, AssemblyScript, C#, Zig, and
+others in the <a href="https://github.com/appcypher/awesome-wasm-runtimes" target="_blank" rel="noreferrer noopener">Wasm runtimes</a>
+), and as <a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
+
+implements <a href="https://fitzgeraldnick.com/2020/08/27/reference-types-in-wasmtime.html" target="_blank" rel="noreferrer noopener">more and more WebAssembly proposals</a>
+, one of main
+scenarios not yet enabled by <a href="https://wasi.dev/" target="_blank" rel="noreferrer noopener">WASI (the WebAssembly System Interface)</a>
+ is
+networking applications.</p>
+<p>In this article we look at the current state of the networking API in WASI, and
+add a minimal implementation together with socket clients in AssemblyScript and
+Rust (with an upfront disclaimer that this should definitely not be used for
+anything other than experimentation).</p>
+<h3 id="ongoing-work-to-add-socket-support-to-wasi">Ongoing work to add socket support to WASI</h3>
+<p>For an overview of how the WASI API is defined, how to add a new API to WASI, an
+implementation to Wasmtime, and how to use the new API from a module, <a href="https://radu-matei.com/blog/adding-wasi-syscall/" target="_blank" rel="noreferrer noopener">follow
+this article I wrote back in March</a>
+. In a nutshell, the WASI API
+is declared using <a href="https://github.com/WebAssembly/WASI/blob/master/docs/witx.md" target="_blank" rel="noreferrer noopener"><code>witx</code></a>
+, an experimental file format based on the
+<a href="https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0" target="_blank" rel="noreferrer noopener">WebAssembly Text Format</a>
+, with added support for <a href="https://github.com/WebAssembly/module-linking/blob/master/proposals/module-linking/Explainer.md" target="_blank" rel="noreferrer noopener">module
+types</a>
+ and <a href="https://github.com/WebAssembly/annotations/" target="_blank" rel="noreferrer noopener">annotations</a>
+. The WITX files are used to
+<a href="https://github.com/bytecodealliance/wasi/blob/3023c5a51917a7a3c2fae5cb5cbdbc58c5241589/crates/witx-bindgen/src/lib.rs" target="_blank" rel="noreferrer noopener">automatically generate Rust bindings</a>
+, which are then
+<a href="https://github.com/bytecodealliance/wasmtime/blob/6db24fd08fa6f675e1b4ef818f8684602fd58730/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs" target="_blank" rel="noreferrer noopener">implemented by Wasmtime</a>
+. This is an excellent low-level way
+of defining the WASI API, which means targeting WASI from a new programming
+language becomes a matter of implementing the layer defined in WITX.</p>
+<p>The <a href="https://github.com/WebAssembly/WASI/blob/a206794fea66118945a520f6e0af3754cc51860b/phases/ephemeral/docs.md" target="_blank" rel="noreferrer noopener">current WASI snapshot</a>
+ actually contains a few methods for
+working with sockets: <a href="https://github.com/WebAssembly/WASI/blob/a206794fea66118945a520f6e0af3754cc51860b/phases/snapshot/witx/wasi_snapshot_preview1.witx#L494-L531" target="_blank" rel="noreferrer noopener"><code>sock_recv</code>, <code>sock_send</code>, and
+<code>sock_shutdown</code></a>
+ - they are not quite enough for complete
+networking support, and they are <a href="https://github.com/bytecodealliance/wasmtime/blob/6db24fd08fa6f675e1b4ef818f8684602fd58730/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs#L808-L828" target="_blank" rel="noreferrer noopener">unimplemented in
+Wasmtime</a>
+. However, there is an <a href="https://github.com/WebAssembly/WASI/pull/312" target="_blank" rel="noreferrer noopener">open pull request which
+aims to extend the current sockets API in WASI to include the complete Berkeley
+Sockets API</a>
+, which so far received quite positive
+feedback (and with a few changes and clarifications, hopefully it will be merged
+soon - fingers crossed!) After it gets merged, a Wasmtime implementation is
+next, followed by language toolchain support (for example, the Rust standard
+library&rsquo;s <code>wasm32-wasi</code> target). But since official releases that contain socket
+support will take some time, in this article we explore adding a minimal
+implementation that allows starting client connections from WebAssembly in WASI
+runtimes.</p>
+<p>The following sections build on multiple ongoing efforts in the community, such
+as the <a href="https://github.com/WebAssembly/WASI/pull/312" target="_blank" rel="noreferrer noopener">current PR to add sockets support to WASI</a>
+, its
+<a href="https://github.com/bytecodealliance/wasmtime/compare/main...Kong:feat/wasi-sockets" target="_blank" rel="noreferrer noopener">work-in-progress implementation in Wasmtime</a>
+, an excellent <a href="https://engineering.linecorp.com/en/blog/adding-experimental-webassembly-support-to-decaton-part-2/" target="_blank" rel="noreferrer noopener">blog
+post by Kawamura Yuto adding network support for Decanton</a>
+, and
+enabled by the work of all the awesome people in the WASI community and
+<a href="https://bytecodealliance.org/" target="_blank" rel="noreferrer noopener">Bytecode Alliance</a>
+.</p>
+<h3 id="exposing-the-api-for-a-minimal-socket-client-in-wasi-and-wasmtime">Exposing the API for a minimal socket client in WASI and Wasmtime</h3>
+<p>Adding support for connecting to sockets would allow guest modules running in
+WASI runtimes to create TCP streams, enabling connections to web servers,
+databases, or message queues - the guest module attempts to initiate the
+connection, and if it has enough capabilities, the WASI runtime would start the
+connection, then send and receive buffered data to and from the module.</p>
+<p>It turns out the only missing API in WASI for a socket client is <code>connect</code> - so
+we add a new <code>sock_connect</code> function definition to the WASI snapshot. The WITX
+snippet below adds the <code>sock_connect</code> function to WASI (a robust definition and
+implementation would also add a corresponding <code>rights::sock_connect</code> entry to
+the file descriptor rights to describe the capability of a module to connect to
+a socket, which is the approach taken by <a href="https://github.com/WebAssembly/WASI/pull/312" target="_blank" rel="noreferrer noopener">the current
+proposal</a>
+):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/phases/snapshot/witx/wasi_snapshot_preview1.witx
+b/phases/snapshot/witx/wasi_snapshot_preview1.witx
+index 5604c3e..4c356c6 100644
+<span style="color:#f92672">--- a/phases/snapshot/witx/wasi_snapshot_preview1.witx
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/phases/snapshot/witx/wasi_snapshot_preview1.witx
+</span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -491,6 +491,22 @@
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">+  ;;; Directly connect to a socket.
+</span><span style="color:#a6e22e">+  ;;;
+</span><span style="color:#a6e22e">+  ;;; This is a temporary workaround that contradicts the
+</span><span style="color:#a6e22e">+  ;;; philosophy of WASI, but which is necessary for enabling
+</span><span style="color:#a6e22e">+  ;;; an entire suite of networking workloads.
+</span><span style="color:#a6e22e">+  ;;;
+</span><span style="color:#a6e22e">+  ;;; As the sockets proposal is adopted, this should be
+</span><span style="color:#a6e22e">+  ;;; entirely removed and replaced with that proposal.
+</span><span style="color:#a6e22e">+  ;;;
+</span><span style="color:#a6e22e">+  ;;; See https://github.com/WebAssembly/WASI/pull/312
+</span><span style="color:#a6e22e">+  (@interface func (export &#34;sock_connect&#34;)
+</span><span style="color:#a6e22e">+    (param $ipv4_addr u32)
+</span><span style="color:#a6e22e">+    (param $port u16)
+</span><span style="color:#a6e22e">+    (result $error $errno)
+</span><span style="color:#a6e22e">+    (result $sock_fd $fd)
+</span><span style="color:#a6e22e">+  )
+</span><span style="color:#a6e22e"></span>
+</code></pre></div><p>As the comment suggests, this method contradicts WASI&rsquo;s principle of least
+authority - specifically, all modules will be allowed to create connections,
+which is not ideal, and the main reason why this <em>should not be used for
+anything else other than experimentation</em>. For a much more robust and secure
+API, see <a href="https://github.com/WebAssembly/WASI/pull/312" target="_blank" rel="noreferrer noopener">the current sockets proposal</a>
+ described
+earlier.</p>
+<p>The <code>sock_connect</code> method takes an IP address and port as arguments, and returns
+the socket&rsquo;s file descriptor back to the client - so its Rust implementation
+follows the signature defined in WITX, directly starts a TCP connection to the
+desired IP address and port, and retains a handle for the socket&rsquo;s file
+descriptor:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sock_connect</span>(
+    <span style="color:#f92672">&amp;</span>self,
+    ipv4_addr: <span style="color:#66d9ef">u32</span>,
+    port: <span style="color:#66d9ef">u16</span>,
+) -&gt; Result<span style="color:#f92672">&lt;</span>types::Fd<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">use</span> std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
+    <span style="color:#66d9ef">let</span> addr <span style="color:#f92672">=</span> SocketAddrV4::new(Ipv4Addr::from(ipv4_addr), port);
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasi_snapshot_preview1::sock_connect to addr {:#?}&#34;</span>, addr);
+    <span style="color:#66d9ef">let</span> stream <span style="color:#f92672">=</span> TcpStream::connect(addr)<span style="color:#f92672">?</span>;
+    <span style="color:#66d9ef">let</span> handle: Box<span style="color:#f92672">&lt;</span>dyn <span style="color:#66d9ef">crate</span>::handle::Handle<span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span>
+        Box::new(SocketHandle(std::cell::RefCell::new(stream)));
+    <span style="color:#66d9ef">let</span> entry <span style="color:#f92672">=</span> Entry::new(EntryHandle::from(handle));
+    self.insert_entry(entry)
+}
+</code></pre></div><p>Next, <code>sock_recv</code> and <code>sock_send</code> are implemented in a similar manner - get the
+socket&rsquo;s file descriptor, data buffers, and flags as arguments, and either read
+from the buffer, or write into it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sock_recv</span>(
+    <span style="color:#f92672">&amp;</span>self,
+  fd: <span style="color:#a6e22e">types</span>::Fd,
+  ri_data: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">types</span>::IovecArray<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">&#39;_</span><span style="color:#f92672">&gt;</span>,
+    _ri_flags: <span style="color:#a6e22e">types</span>::Riflags,
+) -&gt; Result<span style="color:#f92672">&lt;</span>(types::Size, types::Roflags)<span style="color:#f92672">&gt;</span> {
+  <span style="color:#66d9ef">use</span> std::convert::TryFrom;
+  <span style="color:#66d9ef">use</span> std::io::IoSliceMut;
+  <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> bufs <span style="color:#f92672">=</span> Vec::with_capacity(ri_data.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>);
+  <span style="color:#66d9ef">for</span> iov <span style="color:#66d9ef">in</span> ri_data.iter() {
+      <span style="color:#66d9ef">let</span> iov <span style="color:#f92672">=</span> iov<span style="color:#f92672">?</span>;
+      <span style="color:#66d9ef">let</span> iov: <span style="color:#a6e22e">types</span>::Iovec <span style="color:#f92672">=</span> iov.read()<span style="color:#f92672">?</span>;
+      <span style="color:#66d9ef">let</span> buf <span style="color:#f92672">=</span> iov.buf.as_array(iov.buf_len).as_slice()<span style="color:#f92672">?</span>;
+      bufs.push(buf);
+  }
+  <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> iovs: Vec<span style="color:#f92672">&lt;</span>_<span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span> bufs.iter_mut()
+                  .map(<span style="color:#f92672">|</span>s<span style="color:#f92672">|</span> IoSliceMut::new(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> <span style="color:#f92672">*</span>s)).collect();
+  <span style="color:#66d9ef">let</span> total_size <span style="color:#f92672">=</span> self
+      .get_entry(fd)<span style="color:#f92672">?</span>
+      .as_handle(<span style="color:#f92672">&amp;</span>HandleRights::empty())<span style="color:#f92672">?</span>
+      .read_vectored(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> iovs)<span style="color:#f92672">?</span>;
+  println<span style="color:#f92672">!</span>(
+      <span style="color:#e6db74">&#34;wasi_snapshot_preview1::sock_recv: {} bytes written&#34;</span>,
+      total_size
+  );
+
+  Ok((total_size <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u32</span>, types::Roflags::try_from(<span style="color:#ae81ff">0</span>)<span style="color:#f92672">?</span>))
+}
+</code></pre></div><p>Here, the <code>rights::fd_read</code> and <code>rights::fd_write</code> <a href="https://github.com/WebAssembly/WASI/blob/a206794fea66118945a520f6e0af3754cc51860b/phases/snapshot/witx/typenames.witx#L197-L274" target="_blank" rel="noreferrer noopener">rights</a>
+ (describing
+the capabilities of a module to read from and write into sockets) should also be
+checked. Besides this, additional rights (describing the address pool a module
+is allowed to connect to, read from, and write to) would also have to be added -
+this would require more substantial changes to Wasmtime, which for the purpose
+of this article will not be explored.</p>
+<blockquote>
+<p>You can find a <a href="https://github.com/bytecodealliance/wasmtime/compare/main...radu-matei:bad-sockets" target="_blank" rel="noreferrer noopener">fork of Wasmtime with these changes on GitHub</a>
+.</p>
+</blockquote>
+<p>Building from this branch, we should now have a version of Wasmtime that exposes
+starting connections, as well as sending and receiving on sockets.</p>
+<h3 id="writing-a-wasi-socket-client-in-assemblyscript">Writing a WASI socket client in AssemblyScript</h3>
+<p><a href="https://www.assemblyscript.org/" target="_blank" rel="noreferrer noopener">AssemblyScript</a>
+ is a strict variant of TypeScript which natively compiles
+to WebAssembly. While it retains significant portions of the TypeScript syntax,
+it is a fundamentally different language, with a different compiler and standard
+library.</p>
+<p>AssemblyScript&rsquo;s standard library contains the <a href="https://github.com/AssemblyScript/assemblyscript/blob/master/std/assembly/bindings/wasi_snapshot_preview1.ts" target="_blank" rel="noreferrer noopener"><em>bindings</em> for
+WASI</a>
+ - and we need to add the definition for <code>sock_connect</code>
+(which is the only API missing from the current WASI snapshot):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/std/assembly/bindings/wasi_snapshot_preview1.ts
+b/std/assembly/bindings/wasi_snapshot_preview1.ts
+index 2470e06c..b206a20a 100644
+<span style="color:#f92672">--- a/std/assembly/bindings/wasi_snapshot_preview1.ts
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/std/assembly/bindings/wasi_snapshot_preview1.ts
+</span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -531,6 +531,34 @@
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">+/** See https://github.com/WebAssembly/WASI/pull/312*/
+</span><span style="color:#a6e22e">+// @ts-ignore: decorator
+</span><span style="color:#a6e22e">+@unsafe
+</span><span style="color:#a6e22e">+export declare function sock_connect(sock: fd, ipv4: u32, port: u16): errno;
+</span></code></pre></div><blockquote>
+<p>You can find a <a href="https://github.com/AssemblyScript/assemblyscript/compare/master...radu-matei:bad-sockets" target="_blank" rel="noreferrer noopener">fork of AssemblyScript with these changes on GitHub</a>
+.</p>
+</blockquote>
+<p>While the bindings for WASI are defined in the standard library, the actual
+implementation is currently a separate project which provides a layer for WASI
+system calls - <a href="https://github.com/jedisct1/as-wasi" target="_blank" rel="noreferrer noopener"><code>as-wasi</code></a>
+. The project already implements
+functionality such as reading and writing from files, so adapting reading and
+writing from sockets is straightforward, since both are modeled using file
+descriptors.</p>
+<p>Let&rsquo;s add a new <code>Socket</code> class to <code>as-wasi</code> with a single member, the socket&rsquo;s
+file descriptor:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/assembly/as-wasi.ts b/assembly/as-wasi.ts
+index b8c844e..a66bdb6 100644
+<span style="color:#f92672">--- a/assembly/as-wasi.ts
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/assembly/as-wasi.ts
+</span><span style="color:#a6e22e"></span>
+<span style="color:#75715e">@@ -771,6 +777,94 @@
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">+@global
+</span><span style="color:#a6e22e">+export class Socket {
+</span><span style="color:#a6e22e">+  fd: Descriptor;
+</span><span style="color:#a6e22e">+ }
+</span></code></pre></div><p>In order to connect to a socket, we call WASI&rsquo;s <code>sock_connect</code> with the IP
+address and port desired, and store the file descriptor returned by Wasmtime:</p>
+<pre><code>connect(ipv4: u32, port: u16): void {
+  let fd_buf = memory.data(8);
+  let res = sock_connect(ipv4, port, fd_buf);
+  if (res !== errno.SUCCESS) {
+    Console.write(&quot;as_wasi::socket::connect: error: &quot; + res.toString());
+    abort()
+  }
+
+  this.fd = new Descriptor(load&lt;u32&gt;(fd_buf));
+}
+</code></pre><p>An implementation that writes an AssemblyScript string to the socket UTF-8
+encodes it (and its length) to a <a href="https://www.gnu.org/software/libc/manual/html_node/Scatter_002dGather.html" target="_blank" rel="noreferrer noopener">scatter-gather</a>
+ memory block and calls
+<code>sock_send</code>. Receiving is analogous, this time <em>reading</em> from a scatter-gather
+memory block and decoding into AssemblyScript strings:</p>
+<pre><code>write(data: string): void {
+  let s_utf8_buf = String.UTF8.encode(data);
+  let s_utf8_len: usize = s_utf8_buf.byteLength;
+  let iov = memory.data(16);
+  store&lt;u32&gt;(iov, changetype&lt;usize&gt;(s_utf8_buf));
+  store&lt;u32&gt;(iov, s_utf8_len, sizeof&lt;usize&gt;());
+
+  let written_ptr = memory.data(8);
+  sock_send(this.fd.rawfd, iov, 1, 0, written_ptr);
+}
+</code></pre><blockquote>
+<p>You can find a <a href="https://github.com/jedisct1/as-wasi/compare/master...radu-matei:bad-sockets" target="_blank" rel="noreferrer noopener">fork of <code>as-wasi</code> with these changes on GitHub</a>
+.</p>
+</blockquote>
+<p>Now we can write a WebAssembly guest module in AssemblyScript that uses the high
+level socket API we just implemented. The only thing to note here is that since
+<code>sock_connect</code> takes in the integer value of the IP address, we have to manually
+convert it from <code>127.0.0.1</code> (you can <a href="https://www.bennadel.com/blog/1830-converting-ip-addresses-to-and-from-integer-values-with-coldfusion.htm" target="_blank" rel="noreferrer noopener">read about the conversion here</a>
+).
+This is because our WASI API is lacking DNS resolution to translate from a URL
+to an IP address (which is left as exercise for the reader):</p>
+<pre><code>import { Console, Socket } from &quot;as-wasi&quot;;
+
+export function _start(): void {
+  let s = new Socket();
+  // 127.0.0.1:3333
+  s.connect(2130706433, 3333);
+
+  s.write(&quot;writing to an echo server...&quot;);
+  let res = s.receive();
+  Console.write(res);
+}
+</code></pre><p>Assuming there is an echo server running on <code>localhost:3333</code> (there is a simple
+C socket server you can find in <a href="https://github.com/jedisct1/as-wasi/compare/master...radu-matei:bad-sockets" target="_blank" rel="noreferrer noopener">this <code>as-wasi</code> fork</a>
+ that can be
+used), we should be able to send and receive data:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
+$ wasmtime test/sockets.wat
+
+wasi_snapshot_preview1::sock_connect to addr 127.0.0.1:3333
+wasi_snapshot_preview1::sock_send: 29 bytes written
+wasi_snapshot_preview1::sock_recv: 29 bytes written
+wasi_snapshot_preview1::sock_recv: 0 bytes written
+writing to an echo server...
+</code></pre></div><p>At this point, the socket can be used for sending and receiving data using any
+protocol that works on top of sockets (with the mention that while our
+implementation only sends and receives strings, it can manipulate arbitrary data
+as well) - for example, if we start a static HTTP file server on the same port:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ echo &#34;this is a file that will be served by an
+        HTTP server to a WebAssembly module&#34; &gt; file.txt
+$ ls
+.rw-r--r-- 77 radu file.txt
+$ http-server --port 3333
+Starting up http-server, serving ./
+Available on:
+  http://127.0.0.1:3333
+Hit CTRL-C to stop the server
+</code></pre></div><p>And modify our AssemblyScript source code to make a <code>GET</code> request for
+<code>file.txt</code>:</p>
+<pre><code>import { Console, Socket } from &quot;as-wasi&quot;;
+
+export function _start(): void {
+  let s = new Socket();
+  // 127.0.0.1:3333
+  s.connect(2130706433, 3333);
+  s.write(&quot;GET /file.txt HTTP/1.1\r\n\r\n&quot;);
+  let res = s.receive();
+  Console.write(res);
+}
+</code></pre><p>We can see the response from the HTTP server:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
+$ wasmtime test/sockets.wat
+
+wasi_snapshot_preview1::sock_connect to addr 127.0.0.1:3333
+wasi_snapshot_preview1::sock_send: 27 bytes written
+wasi_snapshot_preview1::sock_recv: 365 bytes written
+wasi_snapshot_preview1::sock_recv: 0 bytes written
+
+HTTP/1.1 200 OK
+server: ecstatic-3.3.2
+cache-control: max-age=3600
+last-modified: Oct 2020 ... GMT
+content-length: 77
+content-type: text/plain; charset=UTF-8
+Connection: keep-alive
+
+this is a file that will be served by an HTTP server to a WebAssembly module
+</code></pre></div><p>Going from manually creating HTTP requests and printing HTTP responses to an
+actual HTTP client is a matter of following the HTTP specification (and is also
+left as an exercise for the reader).</p>
+<h3 id="rust-tcp-streams-on-top-of-wasi-sockets">Rust TCP streams on top of WASI sockets</h3>
+<p><a href="https://engineering.linecorp.com/en/blog/adding-experimental-webassembly-support-to-decaton-part-2/" target="_blank" rel="noreferrer noopener">Kawamura Yuto&rsquo;s blog post</a>
+ does a fantastic job of introducing the
+required steps for patching the Rust standard library to use the new WASI
+bindings and implement <code>TcpStream</code> on top of the WASI socket API. In short, we
+have to take a similar approach to the one in AssemblyScript: update the
+bindings to include the <code>sock_connect</code> API, and add use <code>sock_connect</code>,
+<code>sock_send</code>, and <code>sock_receive</code> in order to send and receive data.</p>
+<p>These steps result in a forked Rust standard library (together with a stage 2
+compiler build) that can be used to compile Rust programs - for example,
+attempting to execute the same request for <code>file.txt</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> std::io::{Read, Write};
+<span style="color:#66d9ef">use</span> std::net::TcpStream;
+<span style="color:#66d9ef">use</span> std::<span style="color:#66d9ef">str</span>::from_utf8;
+
+<span style="color:#75715e">#[no_mangle]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">_start</span>() {
+  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: attempting to make a TCP stream to localhost:3333&#34;</span>);
+  <span style="color:#66d9ef">match</span> TcpStream::connect(<span style="color:#e6db74">&#34;localhost:3333&#34;</span>) {
+      Ok(<span style="color:#66d9ef">mut</span> stream) <span style="color:#f92672">=&gt;</span> {
+          println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: successfully connected to server in port 3333&#34;</span>);
+
+          <span style="color:#66d9ef">let</span> msg <span style="color:#f92672">=</span> <span style="color:#e6db74">b&#34;GET /file.txt HTTP/1.1</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span>;
+          stream.write(msg).unwrap();
+
+          <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">365</span>];
+          <span style="color:#66d9ef">match</span> stream.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> data) {
+              Ok(_) <span style="color:#f92672">=&gt;</span> {
+                  <span style="color:#66d9ef">let</span> text <span style="color:#f92672">=</span> from_utf8(<span style="color:#f92672">&amp;</span>data).unwrap();
+                  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: received {}&#34;</span>, text);
+              }
+              Err(e) <span style="color:#f92672">=&gt;</span> {
+                  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: failed to receive data: {}&#34;</span>, e);
+              }
+          }
+      }
+      Err(e) <span style="color:#f92672">=&gt;</span> {
+          println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: failed to connect: {}&#34;</span>, e);
+      }
+  }
+  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: exit&#34;</span>);
+}
+</code></pre></div><p>The important thing to note here is that this is using (a fork of) the Rust
+standard library directly:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ rustup run wasi32-sockets rustc --target wasm32-wasi --crate-type=cdylib
+-C linker=build/x86_64-apple-darwin/lld/bin/lld src/lib.rs
+$ wasmtime lib.wasm
+
+wasm::_start: attempting to make a TCP stream to localhost:3333
+rust_stdlib_sys_wasi_net::TcpStream::connect
+wasi_snapshot_preview1::sock_connect to addr 127.0.0.1:3333
+wasm::_start: successfully connected to server in port 3333
+wasi_snapshot_preview1::sock_send: 26 bytes written
+wasm::_start sent request, awaiting reply.
+wasi_snapshot_preview1::sock_recv: 365 bytes written
+wasm::_start: received
+
+HTTP/1.1 200 OK
+server: ecstatic-3.3.2
+cache-control: max-age=3600
+last-modified: Oct 2020 ... GMT
+content-length: 77
+content-type: text/plain; charset=UTF-8
+Connection: keep-alive
+
+this is a file that will be served by an HTTP server to a WebAssembly module
+
+wasm::_start: exit
+</code></pre></div><blockquote>
+<p>You can find a <a href="https://github.com/rust-lang/rust/compare/master...radu-matei:wasm32-wasi-sockets" target="_blank" rel="noreferrer noopener">fork of Rust with these changes on GitHub</a>
+.</p>
+</blockquote>
+<h3 id="what-about-socket-listeners-and-servers-">What about socket listeners and servers ?</h3>
+<p>So far, this article exclusively considered socket clients - partly because they
+are easier to implement. Implementing a server requires additional API functions
+exposed - specifically, <code>sock_bind</code>, <code>sock_listen</code>, and <code>sock_accept</code>, followed
+by reading and writing. And while implementing them is done similarly to what
+was described here so far, there is an underlying issue: there is no
+multi-threading support in WebAssembly - which means that a server running in
+WebAssembly is either going to be single-threaded, or its implementation would
+have to be significantly more complex (see <a href="https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/" target="_blank" rel="noreferrer noopener">Node&rsquo;s event loop</a>
+). At
+the same time, there is a <a href="https://github.com/WebAssembly/threads/blob/master/proposals/threads/Overview.md" target="_blank" rel="noreferrer noopener">WebAssembly threads proposal</a>
+ that
+would define operations for handling atomic memory access across threads, but it
+is only at stage 2 of the Wasm standardization process.</p>
+<p>While actually creating a server within a Wasm module might not be feasible in
+the near future (see limitations above), it doesn&rsquo;t mean that WebAssembly
+modules cannot be used to handle HTTP requests, for example - deferring the
+server creation and threading to the underlying host, and passing request data
+to the module (which can now create client connections on its own) could be a
+reasonable approach (this has the benefit of not compiling the entire HTTP stack
+for simple request handlers), and could enable really exciting projects in the
+future.</p>
+<p>Ongoing WebAssembly <a href="https://github.com/webassembly/proposals" target="_blank" rel="noreferrer noopener">proposals</a>
+ (such as SIMD, threads, garbage
+collection, or interface types), together with WASI&rsquo;s capability-oriented API
+and the vision for <a href="https://hacks.mozilla.org/2019/11/announcing-the-bytecode-alliance/" target="_blank" rel="noreferrer noopener">nanoprocesses</a>
+, have the potential to make server-side
+Wasm a true contender in the cloud native ecosystem, and WASI&rsquo;s networking
+proposal is one of the main enablers of this.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank" rel="noreferrer">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu M</a> 2020</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
