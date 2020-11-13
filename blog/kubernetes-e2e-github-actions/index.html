@@ -190,29 +190,29 @@ kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
 </blockquote>
 <h1 id="tl-dr---it-just-works">TL; DR - It just works</h1>
 <p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let&rsquo;s see how the configuration looks like:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">name</span>: Kind
-<span style="color:#66d9ef">on</span>: [push, pull_request]
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
+<span style="color:#f92672">on</span>: [<span style="color:#ae81ff">push, pull_request]</span>
 
-<span style="color:#66d9ef">jobs</span>:
-  <span style="color:#66d9ef">kind</span>:
-    <span style="color:#66d9ef">runs-on</span>: ubuntu-latest
-    <span style="color:#66d9ef">steps</span>:
-    - <span style="color:#66d9ef">uses</span>: actions/checkout@master
-    - <span style="color:#66d9ef">name</span>: Kind
-      <span style="color:#66d9ef">run</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">        export GOBIN=$(go env GOPATH)/bin</span>
-        export PATH=$PATH:$GOBIN
-        mkdir -p $GOBIN
-
-        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-        chmod +x kubectl <span style="color:#75715e">&amp;&amp;</span> mv kubectl $GOBIN
-        wget https://github.com/kubernetes-sigs/kind/releases/download/v0<span style="color:#ae81ff">.5.0</span>/kind-linux-amd64 <span style="color:#75715e">&amp;&amp;</span> chmod +x kind-linux-amd64 <span style="color:#75715e">&amp;&amp;</span> mv kind-linux-amd64 $GOBIN/kind
-
-        kind create cluster --wait 300s
-        export KUBECONFIG=<span style="color:#e6db74">&#34;$(kind get kubeconfig-path)&#34;</span>
-        kubectl wait --for=condition=Ready pods --all --namespace kube-system
-        kubectl cluster-info
-        kubectl get pods -n kube-system
+<span style="color:#f92672">jobs</span>:
+  <span style="color:#f92672">kind</span>:
+    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+    <span style="color:#f92672">steps</span>:
+    - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@master</span>
+    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
+      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">        export GOBIN=$(go env GOPATH)/bin
+</span><span style="color:#e6db74">        export PATH=$PATH:$GOBIN
+</span><span style="color:#e6db74">        mkdir -p $GOBIN
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+</span><span style="color:#e6db74">        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
+</span><span style="color:#e6db74">        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        kind create cluster --wait 300s
+</span><span style="color:#e6db74">        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
+</span><span style="color:#e6db74">        kubectl wait --for=condition=Ready pods --all --namespace kube-system
+</span><span style="color:#e6db74">        kubectl cluster-info
+</span><span style="color:#e6db74">        kubectl get pods -n kube-system</span>        
 </code></pre></div><blockquote>
 <p>Note that you don&rsquo;t need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p>
 </blockquote>

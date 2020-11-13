@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>A simple WebAssembly linker in JavaScript | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="A simple WebAssembly linker in JavaScript" />
+<meta name="twitter:description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules." />
+
+<meta name="description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules." />
+    <meta property='og:title' content='A simple WebAssembly linker in JavaScript - radu&#39;s blog'>
+<meta property='og:description' content='An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules.'>
+<meta property='og:url' content='https://radu-matei.com/blog/a-simple-wasm-linker-js/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/031fa2ff2832edcb6b30c8ffb61da4d4?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:published_time' content='2020-11-13T00:00:00Z'/><meta property='article:modified_time' content='2020-11-13T00:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://deislabs.io/posts/a-simple-wasm-linker-js"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+ 
+        </div>
+        
+        <h2 class="subtitle is-6"> November 13, 2020. 7 minutes read.   <a href="/pdf/a-simple-wasm-linker-js.pdf" target="_blank">PDF  </a>  </h2> 
+
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">A simple WebAssembly linker in JavaScript</h1>
+
+        
+        <div class="content">
+            
+
+
+            <p><em><a href="https://deislabs.io/posts/a-simple-wasm-linker-js" target="_blank" rel="noreferrer noopener">This article originally appeared on the DeisLabs blog</a>
+</em>.</p>
+<p>Over the last few months, our team has been experimenting with executing
+WebAssembly modules in various environments, and we released projects such as
+<a href="https://deislabs.io/posts/introducing-krustlet/" target="_blank" rel="noreferrer noopener">Krustlet</a>
+ (for executing Wasm modules in Kubernetes), and
+<a href="https://deislabs.io/posts/introducing-wagi-easiest-way-to-build-webassembly-microservices/" target="_blank" rel="noreferrer noopener">WAGI</a>
+ (for writing HTTP response handlers in WebAssembly). But while most
+of our experiments are built in Rust, we are also exploring ways to execute
+WebAssembly workloads in other environments, such as JavaScript runtimes.</p>
+<p>Today, we are <a href="https://github.com/deislabs/wasm-linker-js" target="_blank" rel="noreferrer noopener">releasing a small experimental JavaScript
+library</a>
+ to help with instantiating WebAssembly modules by
+providing functionality to link JavaScript objects as module imports, and
+automatically perform name based resolution for linking entire modules and
+instances. The library also enables optionally defining asynchronous import
+functions, by leveraging a set of great open source projects, such as
+<a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener">Binaryen</a>
+ and <a href="https://github.com/GoogleChromeLabs/asyncify" target="_blank" rel="noreferrer noopener">Asyncify</a>
+.</p>
+<p>Given that most of our WebAssembly experiments are built with
+<a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
+, the API of the JavaScript linker we are releasing is
+modeled after the excellent <a href="https://docs.rs/wasmtime/0.21.0/wasmtime/" target="_blank" rel="noreferrer noopener">Wasmtime linker</a>
+, which offers a
+similar functionality for Rust runtimes, and using the JavaScript linker should
+be familiar to people using Wasmtime.</p>
+<h3 id="using-the-javascript-linker">Using the JavaScript linker</h3>
+<p>First, add the NPM package to your project:</p>
+<pre><code>$ npm install @deislabs/wasm-linker-js
+</code></pre><p>Then, using the <code>Linker</code> is as easy as importing it using your favorite module
+system:</p>
+<pre><code>import { Linker } from &quot;@deislabs/wasm-linker-js&quot;;
+OR
+const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
+</code></pre><p>The next sections contain a few examples of using the JavaScript linker. In
+order to show the text format of the WebAssembly modules we are trying to use,
+<code>binaryen</code> is also required to run the examples
+(<a href="https://www.npmjs.com/package/binaryen" target="_blank" rel="noreferrer noopener"><code>npm install binaryen</code></a>
+). This is not necessary in real world
+scenarios, and the modules can be compiled from their binary representation
+without additional dependencies. For more examples of using the Linker in both
+TypeScript and JavaScript, check the <a href="https://github.com/deislabs/wasm-linker-js/blob/main/tests/linker.ts" target="_blank" rel="noreferrer noopener">linker tests</a>
+ and the
+<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/node-example.js" target="_blank" rel="noreferrer noopener">Node.js examples</a>
+ from <a href="https://github.com/deislabs/wasm-linker-js" target="_blank" rel="noreferrer noopener">the project&rsquo;s repository on
+GitHub</a>
+.</p>
+<h4 id="defining-a-single-import">Defining a single import</h4>
+<p>Let&rsquo;s assume we have a simple WebAssembly module (represented in its text format
+and contained in the <code>usingAdd</code> variable, transformed to its binary
+representation using <a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener">Binaryen</a>
+) that imports a function <code>add</code> from a
+module <code>calculator</code>.</p>
+<p>In order to instantiate this module, we have to satisfy its import - in this
+case, provide an implementation for the <code>add</code> function from the <code>calculator</code>
+module. We can use the <code>define</code> method on the JavaScript linker and provide a
+JavaScript implementation for the required import:</p>
+<pre><code>const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
+const { parseText } = require(&quot;binaryen&quot;);
+
+const usingAdd = `
+(module
+    (import &quot;calculator&quot; &quot;add&quot; (func $calc_add (param i32 i32) (result i32)))
+
+    (memory 1 1)
+    (export &quot;memory&quot; (memory 0))
+    (export &quot;add&quot; (func $add))
+
+    (func $add (param i32) (param i32) (result i32)
+        (return
+            (call $calc_add
+                (local.get 0)
+                (local.get 1)
+            )
+        )
+    )
+)
+`;
+
+(async () =&gt; {
+  var linker = new Linker();
+
+  // The &quot;usingAdd&quot; module imports calculator.add.
+  // We define it,  provide a JS implementation, then
+  // instantiate it.
+
+  linker.define(&quot;calculator&quot;, &quot;add&quot;, (a, b) =&gt; a + b);
+  var calc = await linker.instantiate(parseText(usingAdd).emitBinary());
+
+  var result = calc.instance.exports.add(1, 2);
+  console.log(result);
+})();
+</code></pre><p>Once the imports have been defined, the linker also exposes an <code>instantiate</code>
+method which takes care of instantiating the module and passing the correct
+imports.</p>
+<blockquote>
+<p>For brevity, next examples will omit importing <code>@deislabs/wasm-linker-js</code> and
+<code>binaryen</code>, and will not redeclare previously declared Wasm modules in their
+text format.</p>
+</blockquote>
+<h4 id="linking-modules-instances-and-aliases">Linking modules, instances, and aliases</h4>
+<p>But what if we don&rsquo;t want to satisfy imports with JavaScript objects, but with
+other WebAssembly modules? We would have to instantiate those modules, and
+manually iterate through their exported items, then construct an import object
+suitable for the module that is trying to import them. This is the main scenario
+this package is intended to simplify.</p>
+<p>Continuing our example, we want to instantiate our <code>usingAdd</code> module (defined
+above in text format), but satisfy its <code>calculator</code> <code>add</code> import through an
+already compiled WebAssembly module.</p>
+<p>For this, we define another module (represented in its text format and contained
+in the <code>add</code> variable) that exports a function called <code>add</code> which satisfies the
+import for our initial <code>usingAdd</code> module. We use the linker&rsquo;s <code>module</code> method to
+automatically link the exported items from the <code>add</code> module and use them as
+imports for instantiating <code>usingAdd</code>:</p>
+<pre><code>const add = `
+(module
+  (memory 1 1)
+  (export &quot;memory&quot; (memory 0))
+  (export &quot;add&quot; (func $add))
+
+  (func $add (param i32) (param i32) (result i32)
+      (return
+          (i32.add
+              (local.get 0)
+              (local.get 1)
+          )
+      )
+  )
+)
+`;
+
+(async () =&gt; {
+  var linker = new Linker();
+
+  // The &quot;usingAdd&quot; module above imports calculator.add.
+  // We link a module that exports the functionality
+  // required, then instantiate the module that uses it.
+
+  await linker.module(
+    &quot;calculator&quot;,
+    new WebAssembly.Module(parseText(add).emitBinary())
+  );
+  var calc = await linker.instantiate(parseText(usingAdd).emitBinary());
+  var result = calc.instance.exports.add(1, 2);
+  console.log(result);
+})();
+</code></pre><p>The <code>module</code> method takes a compiled WebAssembly module, instantiates it using
+the items already defined in the linker, then adds its exported items to the
+linker so they can be used when instantiating other modules using the
+<code>instantiate</code> method. The linker also allows adding an already instantiated
+module, through the <code>instance</code> method, as well as aliasing a module under a new
+name, through the <code>alias</code> method (<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/node-example.js" target="_blank" rel="noreferrer noopener">Node.js examples for all the public linker
+methods can be found in the project repository</a>
+ ).</p>
+<p>The linker methods we have seen so far (<code>define</code>, <code>module</code>, <code>instance</code>, <code>alias</code>,
+and <code>instantiate</code>) all have correspondents in the <a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
+ linker,
+and the APIs are purposefully similar.</p>
+<h4 id="defining-asynchronous-imports">Defining asynchronous imports</h4>
+<p>One of the most popular scenarios in JavaScript applications is waiting for
+network or I/O operations. Unfortunately, the current WebAssembly MVP does not
+have a way of waiting for the execution of asynchronous imports (see <a href="https://github.com/WebAssembly/design/issues/720" target="_blank" rel="noreferrer noopener">this
+issue</a>
+). To enable this functionality, <a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener">Binaryen</a>
+
+has a pass that <a href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html" target="_blank" rel="noreferrer noopener">transforms a Wasm module and allows it to pause and resume by
+unwiding and rewinding the call stack</a>
+.</p>
+<p>When enabled, this library can use the <a href="https://github.com/GoogleChromeLabs/asyncify" target="_blank" rel="noreferrer noopener">JavaScript wrapper of
+Asyncify</a>
+ and define asynchronous import functions for WebAssembly
+modules (note that the Asyncify pass must have been applied to the module before
+instantiating using the linker). This allows us to use satisfy the import of a
+WebAssembly module by providing a JavaScript function that performs network or
+file access operations.</p>
+<p>Let&rsquo;s satisfy the <code>calculator</code> <code>add</code> import of our initial <code>usingAdd</code> module by
+providing a JavaScript function that sleeps for 1.5 seconds before returning the
+result. First, we have to explicitly enable the Asyncify functionality in our
+linker (by passing a true boolean to its constructor).</p>
+<p>We can now call <code>define</code> on the linker, and pass and <code>async</code> function.</p>
+<p>The main aspect to remember when using Asyncify is that modules instantiated
+using this method must be transformed by running the Binaryen <code>asyncify</code> pass -
+which we do next using the <code>runPasses([&quot;asyncify&quot;])</code>. Then we can continue to
+use both the linker and instances created with the linker as before:</p>
+<pre><code>var useAsyncify = true;
+var linker = new Linker(useAsyncify);
+
+// Notice how we define an asynchronous import, which
+// will wait for 1.5s before returning the result.
+var sleep = function (ms) {
+  return new Promise((resolve) =&gt; {
+    setTimeout(resolve, ms);
+  });
+};
+linker.define(&quot;calculator&quot;, &quot;add&quot;, async (a, b) =&gt; {
+  await sleep(1500);
+  return a + b;
+});
+
+let bytes = parseText(usingAdd);
+
+// we perform the asyncify compiler pass from Binaryen
+bytes.runPasses([&quot;asyncify&quot;]);
+var calc = await linker.instantiate(bytes.emitBinary());
+
+var result = await calc.instance.exports.add(1, 2);
+console.log(result);
+</code></pre><blockquote>
+<p>Be sure to read <a href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html" target="_blank" rel="noreferrer noopener">Alon Zakai&rsquo;s blog post</a>
+ to better understand
+how Asyncify works and the overhead it introduces.</p>
+<p>Ingvar Stepanyan has a <a href="https://rreverser.com/webassembly-shell-with-a-real-filesystem-access-in-a-browser/" target="_blank" rel="noreferrer noopener">great blog post about building a WebAssembly shell
+with a real filesystem access in a browser</a>
+ using
+WASI and Asyncify.</p>
+</blockquote>
+<h4 id="using-the-linker-in-the-browser">Using the linker in the browser</h4>
+<p>Currently, this library has limited support for running in a browser. The
+easiest way to use it is to pull the library through <a href="https://unpkg.com/" target="_blank" rel="noreferrer noopener">UNPKG</a>
+, and you can
+check a complete example of this library in the browser in the
+<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/index.html" target="_blank" rel="noreferrer noopener">repository</a>
+:</p>
+<pre><code>&lt;script
+  type=&quot;module&quot;
+  src=&quot;https://unpkg.com/@deislabs/wasm-linker-js/dist/wasm-linker.js&quot;
+&gt;&lt;/script&gt;
+</code></pre><p>However, keep in mind the library does not currently have support for
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming" target="_blank" rel="noreferrer noopener"><code>instantiateStreaming</code></a>
+, which is the preferred way of
+instantiating Wasm modules in browsers. The module system for generating a
+browser compatible library is also far from ideal - <a href="https://github.com/deislabs/wasm-linker-js/issues/4" target="_blank" rel="noreferrer noopener">check this
+issue</a>
+ if you want to help make it better!</p>
+<p>We want to thank the WebAssembly community for building great tools, and we hope
+this little library will be helpful for people working with WebAssembly from
+JavaScript runtimes!</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank" rel="noreferrer">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu M</a> 2020</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
