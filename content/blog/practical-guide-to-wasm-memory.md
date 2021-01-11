@@ -15,7 +15,7 @@ or Java. In this article we explore using memory in WebAssembly in various
 scenarios - passing JavaScript arrays to Rust and AssemblyScript modules,
 checking for some basic memory leaks using Valgrind, or exchanging strings
 between runtimes and modules using Wasmtime."
-date: 2021-01-10
+date: 2021-01-11
 tags: ["wasm", "rust"]
 pdf: "/pdf/practical-guide-to-wasm-memory.pdf"
 ---
