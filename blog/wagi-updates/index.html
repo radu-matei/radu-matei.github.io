@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Updates on WAGI, the WebAssembly Gateway Interface | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="Updates on WAGI, the WebAssembly Gateway Interface" />
+<meta name="twitter:description" content="New features such as pulling from container registries and outbound HTTP connections are now part of WAGI." />
+
+<meta name="description" content="New features such as pulling from container registries and outbound HTTP connections are now part of WAGI." />
+    <meta property='og:title' content='Updates on WAGI, the WebAssembly Gateway Interface - radu&#39;s blog'>
+<meta property='og:description' content='New features such as pulling from container registries and outbound HTTP connections are now part of WAGI.'>
+<meta property='og:url' content='https://radu-matei.com/blog/wagi-updates/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/031fa2ff2832edcb6b30c8ffb61da4d4?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:tag' content='rust'><meta property='article:published_time' content='2021-05-10T00:00:00Z'/><meta property='article:modified_time' content='2021-05-10T00:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://deislabs.io/posts/wagi-updates/"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+
+  
+  | <a class="subtitle is-6" href="/tags/rust">#rust</a>
+  
+ 
+        </div>
+        
+        <h2 class="subtitle is-6"> May 10, 2021. 8 minutes read.   <a href="/pdf/wagi-updates.pdf" target="_blank">PDF  </a>  </h2> 
+
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Updates on WAGI, the WebAssembly Gateway Interface</h1>
+
+        
+        <div class="content">
+            
+
+
+            <blockquote>
+<p><a href="https://deislabs.io/posts/wagi-updates/" target="_blank" rel="noreferrer noopener"><em>This article originally appeared on the Microsoft DeisLabs blog</em></a>
+</p>
+</blockquote>
+<p>A few months ago, <a href="https://deislabs.io/posts/introducing-wagi-easiest-way-to-build-webassembly-microservices/" target="_blank" rel="noreferrer noopener">our team introduced WAGI</a>
+, or the
+WebAssembly Gateway Interface, a simple way of writing and executing HTTP
+response handlers as WebAssembly modules. Since we open sourced the project, the
+community has been adding critical features that make WAGI one of the easiest
+ways to build WebAssembly microservices, and in this article we explore some of
+the new features.</p>
+<h3 id="a-primer-on-wagi">A primer on WAGI</h3>
+<p>WAGI is for writing HTTP handlers. It uses <a href="https://wasi.dev" target="_blank" rel="noreferrer noopener">WASI, the WebAssembly System
+Interface</a>
+, and exposes HTTP request information to a WebAssembly module
+as environment variables and through standard input and output. This means that
+for any language that compiles to WASI, writing an HTTP handler that runs on
+WAGI is as easy as reading from <code>stdin</code> and writing to <code>stdout</code>.</p>
+<p>Echoing the body of a request can be done by copying the standard input stream
+directly to standard output (or it can be read as a byte array and further
+processed), and in Rust it can be done in the following way:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> std::io::{copy, stdin, stdout};
+
+<span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Content-Type: text/plain\n&#34;</span>);
+
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Server received body:&#34;</span>);
+    copy(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> stdin(), <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> stdout()).unwrap();
+}
+</code></pre></div><p>After compiling the module to <code>wasm32-wasi</code>, create a new WAGI configuration
+file that sets the <code>/echo</code> route to execute the compiled WebAssembly module as
+an HTTP handler:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
+<span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/echo&#34;</span>
+<span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;target/wasm32-wasi/release/hello-wagi.wasm&#34;</span>
+</code></pre></div><p>Then start WAGI by running <code>wagi --config wagi.toml</code>. At this point, WAGI can
+receive requests which will be delegated to the built module:</p>
+<pre><code>$ curl localhost:3000/echo -X POST -d 'Testing WAGI'
+Server received body:
+Testing WAGI
+</code></pre><p>Any language that compiles to WASI can be used to write WAGI handlers, together
+with any external library for these languages that is compilable to
+<code>wasm32-wasi</code>. So far, our team has been testing with Rust, C/C++,
+AssemblyScript, Swift, Grain, and Zig, but more and more compiler toolchains are
+adding support for emitting WebAssembly.</p>
+<h3 id="outbound-http-connections">Outbound HTTP connections</h3>
+<p>Networking in WASI is one scenario that doesn&rsquo;t have a stable API yet. This
+restricts the types of workloads that can be executed in WASI runtimes for now,
+which is why we released an <a href="https://github.com/deislabs/wasi-experimental-http" target="_blank" rel="noreferrer noopener">experimental outbound HTTP library for
+WASI</a>
+ that allows modules to create outbound HTTP connections.</p>
+<p>Specifically, the published <a href="https://www.npmjs.com/package/@deislabs/wasi-experimental-http" target="_blank" rel="noreferrer noopener">NPM package</a>
+ and <a href="https://crates.io/crates/wasi-experimental-http" target="_blank" rel="noreferrer noopener">crate</a>
+ can be used to
+send HTTP requests from AssemblyScript and Rust guest modules running in WAGI -
+for example, making a <code>GET</code> request and reading the response body as a string in
+AssemblyScript:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Console</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#34;as-wasi&#34;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Method</span>, <span style="color:#a6e22e">RequestBuilder</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#34;@deislabs/wasi-experimental-http&#34;</span>;
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">_start</span>()<span style="color:#f92672">:</span> <span style="color:#66d9ef">void</span> {
+  <span style="color:#a6e22e">Console</span>.<span style="color:#a6e22e">write</span>(<span style="color:#e6db74">&#34;Content-Type: text/plain\n&#34;</span>);
+
+  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">res</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">RequestBuilder</span>(<span style="color:#e6db74">&#34;https://api.brigade.sh/healthz&#34;</span>)
+    .<span style="color:#a6e22e">method</span>(<span style="color:#a6e22e">Method</span>.<span style="color:#a6e22e">GET</span>)
+    .<span style="color:#a6e22e">send</span>();
+  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">str</span> <span style="color:#f92672">=</span> String.<span style="color:#a6e22e">UTF8</span>.<span style="color:#a6e22e">decode</span>(<span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">bodyReadAll</span>().<span style="color:#a6e22e">buffer</span>);
+  <span style="color:#a6e22e">Console</span>.<span style="color:#a6e22e">write</span>(<span style="color:#e6db74">&#34;Result from request: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">str</span>);
+}
+</code></pre></div><p>Notice how the module will attempt to make an HTTP request to
+<code>https://api.brigade.sh/healthz</code> - before starting WAGI with this module, we
+have to explicitly allow the guest module to make a request to this host using
+the <code>allowed_hosts</code> field in the WAGI configuration for this module:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
+<span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/as-http&#34;</span>
+<span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;as/build/optimized.wasm&#34;</span>
+<span style="color:#a6e22e">allowed_hosts</span> = [<span style="color:#e6db74">&#34;https://api.brigade.sh&#34;</span>]
+</code></pre></div><p>Keep in mind that this library is experimental, and breaking changes could occur
+in the future.</p>
+<h3 id="pulling-modules-from-oci-registries">Pulling modules from OCI registries</h3>
+<p>Given the widespread adoption of the container ecosystem, a natural choice for
+distributing WebAssembly modules intended to run outside the browser is OCI
+registries, and WAGI now supports referencing and pulling modules from
+supporting OCI registries (for a list of registries that have support for
+distributing Wasm modules, check the <a href="https://github.com/engineerd/wasm-to-oci" target="_blank" rel="noreferrer noopener"><code>wasm-to-oci</code> repository</a>
+).</p>
+<p>We can take any compiled WebAssembly module and push it to one of the compatible
+registries using <code>wasm-to-oci</code>, a tool that leverages the <a href="https://github.com/deislabs/oras" target="_blank" rel="noreferrer noopener">ORAS</a>
+ and <a href="https://github.com/opencontainers/artifacts" target="_blank" rel="noreferrer noopener">OCI
+artifacts</a>
+ projects - for example, pushing the module we just built
+to the <a href="https://github.com/features/packages" target="_blank" rel="noreferrer noopener">GitHub Package Registry</a>
+:</p>
+<pre><code>$ wasm-to-oci push as/build/optimized.wasm ghcr.io/radu-matei/as-http:v1
+INFO[0003] Pushed: ghcr.io/radu-matei/as-http:v1
+INFO[0003] Size: 9004
+INFO[0003] Digest: sha256:994c8adcef53e93
+</code></pre><p>We can now modify the WAGI configuration to point to the newly pushed
+repository:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
+<span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/as-http&#34;</span>
+<span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;oci://ghcr.io/radu-matei/as-http:v1&#34;</span>
+<span style="color:#a6e22e">allowed_hosts</span> = [<span style="color:#e6db74">&#34;https://api.brigade.sh&#34;</span>]
+</code></pre></div><p>After the first pull from the registry, WAGI will cache the module so the
+instantiation overhead is minimal.</p>
+<p>Currently, the repositories have to enable anonymous pulls for WAGI to work, but
+we are <a href="https://github.com/deislabs/wagi/issues/41" target="_blank" rel="noreferrer noopener">tracking the request to add authentication for
+registries</a>
+. As a workaround, <code>wasm-to-oci pull</code> can be used
+before starting WAGI to pull modules from authenticated repositories.</p>
+<p>Besides using the local filesystem and OCI registries as sources for modules,
+WAGI can also pull artifacts from <a href="https://deislabs.io/posts/introducing-bindle/" target="_blank" rel="noreferrer noopener">Bindle</a>
+, although <a href="https://github.com/deislabs/wagi/pull/31" target="_blank" rel="noreferrer noopener">support for it is
+still early</a>
+.</p>
+<h3 id="declaring-sub-routes-in-the-module">Declaring sub-routes in the module</h3>
+<p>WAGI now also allows modules to define their own sub-routes - specifically, in
+cases when we want a single module to handle more than one sub-route, by
+implementing and exporting a <code>_routes()</code> function in the module that maps routes
+to custom handler functions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Content-Type: text/plain\n\n Hello from main()&#34;</span>);
+}
+
+<span style="color:#75715e">// Use no_mangle so we can call this
+</span><span style="color:#75715e">// from WAGI or other external tools.
+</span><span style="color:#75715e"></span><span style="color:#75715e">#[no_mangle]</span>
+<span style="color:#e6db74">/// A provider function that can be
+</span><span style="color:#e6db74">/// called directly
+</span><span style="color:#e6db74"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">hello</span>() {
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Content-Type: text/plain\n\n Hello&#34;</span>)
+}
+
+<span style="color:#75715e">#[no_mangle]</span>
+<span style="color:#e6db74">/// Another provider function that can
+</span><span style="color:#e6db74">/// be called directly.
+</span><span style="color:#e6db74"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">goodbye</span>() {
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Content-Type: text/plain\n\n Goodbye&#34;</span>)
+}
+
+<span style="color:#75715e">// This maps a few routes:
+</span><span style="color:#75715e">// &#39;/hello&#39; will result in the `hello()`
+</span><span style="color:#75715e">// function being called.
+</span><span style="color:#75715e">// &#39;/goodbye&#39; and all subpaths of &#39;/goodbye&#39;
+</span><span style="color:#75715e">// will call the `goodbye()` function.
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e">// Note that when compiled, the `main` function
+</span><span style="color:#75715e">// is named `_start()`. So if you want
+</span><span style="color:#75715e">// to map to that function, it is `/main _start`.
+</span><span style="color:#75715e"></span><span style="color:#75715e">#[no_mangle]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">_routes</span>() {
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;/hello hello&#34;</span>);
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;/goodbye/... goodbye&#34;</span>);
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;/main _start&#34;</span>);
+}
+</code></pre></div><p>Then, defining the top-level route for the module as <code>/example</code> in the WAGI
+configuration file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
+<span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/example&#34;</span>
+<span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;/PATH/TO/hello_wagi.wasm&#34;</span>
+</code></pre></div><p>After WAGI starts and build the routes, this module will map <code>/example</code> to
+<code>_start()</code>, <code>/example/hello</code> to <code>hello()</code>, and <code>/example/goodbye/...</code> to
+<code>goodbye()</code> (including wildcards).</p>
+<p>You can find a <a href="https://github.com/technosophos/hello-wagi" target="_blank" rel="noreferrer noopener">full routing example here</a>
+.</p>
+<h3 id="using-azure-services-from-rust-modules">Using Azure services from Rust modules</h3>
+<p>Built on top of the outbound HTTP support, we have been experimenting with using
+various Azure services from WASI modules running in WAGI, using the <a href="https://github.com/Azure/azure-sdk-for-rust" target="_blank" rel="noreferrer noopener">Azure SDK
+for Rust</a>
+ - specifically, using Azure Blob Storage (reading and writing
+blobs), Cosmos DB (reading and writing documents and collections), and EventGrid
+(sending messages and handling event subscriptions through HTTP webhooks).</p>
+<p>We are excited by the prospect of having fully portable modules running in a
+Wasm sandbox that use Azure services, packaged at less than 3 MB (with room for
+further optimization). An initial set of samples for WAGI modules using Azure
+services <a href="https://github.com/deislabs/wagi-azure-samples" target="_blank" rel="noreferrer noopener">can be found on GitHub</a>
+, and we would love to hear your
+feedback about building and running them.</p>
+<h4 id="optimizing-compiled-modules-and-caching">Optimizing compiled modules and caching</h4>
+<p>We highly recommend using optimization tools to shrink the size of the resulting
+binary or speed-up the instantiation time. The following represents a
+non-exhaustive list of tools and techniques our team has been experimenting
+with:</p>
+<ul>
+<li><a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener"><code>wasm-opt</code> from Binaryen</a>
+ - by removing debug symbols and unused
+module elements, together with an entire suite of instruction optimizers,
+<code>wasm-opt</code> is perhaps the most widespread tool, and depending on the toolchain
+used to compile modules, it can have exceptional results in shrinking the
+module size.</li>
+<li><a href="https://github.com/bytecodealliance/wizer" target="_blank" rel="noreferrer noopener"><code>wizer</code> from the Bytecode Alliance</a>
+ is a tool that pre-initializes
+WebAssembly modules - it <em>executes their initialization function, and then
+snapshots the initialized state out into a new WebAssembly module.</em> If a
+module spends significant time initializing, it might be a good candidate for
+Wizer, and for specific types of workloads, it can yield startup times of up
+to 6x faster.</li>
+<li><a href="https://docs.wasmtime.dev/cli-cache.html" target="_blank" rel="noreferrer noopener">Wasmtime caching</a>
+ in WAGI - by default, Wasmtime, the runtime used by
+WAGI, will compile a WebAssembly module just-in-time (JIT) for the current
+architecture it is running on. Wasmtime caching writes the compiled module to
+a temporary cache and when instantiating a module, it checks whether an
+already compiled version of it already exists in the cache, resulting in
+significant startup speed improvements for large modules. WAGI provides a
+<code>--cache</code> flag pointing to a Wasmtime cache file, but keep in mind that for
+small modules, the overhead introduced by the filesystem access might increase
+the instantiation time.</li>
+<li>ahead-of-time compilation (AOT) with <a href="https://github.com/bytecodealliance/wasmtime/pull/2791" target="_blank" rel="noreferrer noopener"><code>wasmtime compile</code></a>
+ - as
+opposed to JIT compilation, with AOT compilation, Wasmtime creates a new
+module that is already compiled for the current architecture (or
+cross-compile). This means that before instantiating, Wasmtime will not have
+to perform a JIT compilation, nor access the filesystem cache to check if an
+already compiled version exists. This requires an extra step after pulling the
+module, but for large modules, the performance improvements are significant.</li>
+</ul>
+<p>These are just a few potential optimization techniques that can be performed
+with WAGI, and real world usage indicates that, depending on the workload,
+language, and runtime, a combination of these could improve the binary size or
+startup time for a given module. If there are other optimization techniques we
+can enable for WAGI, let us know about them in <a href="https://github.com/deislabs/wagi" target="_blank" rel="noreferrer noopener">WAGI&rsquo;s issue queue</a>
+.</p>
+<h3 id="we-would-love-to-hear-your-feedback">We would love to hear your feedback</h3>
+<p>WAGI is still in its early stages, but we are excited about the ways it could be
+used. We welcome all contributions that adhere to our <a href="https://opensource.microsoft.com/codeofconduct/" target="_blank" rel="noreferrer noopener">code of conduct</a>
+,
+and we are looking forward to your pull requests, issues, and suggestion.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank" rel="noreferrer">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu M</a> 2021</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
