@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Neural network inferencing  for PyTorch and TensorFlow with ONNX, WebAssembly System Interface, and WASI NN | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary_large_image'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.comimages/twitter-card.png">
+<meta name="twitter:title" content="Neural network inferencing  for PyTorch and TensorFlow with ONNX, WebAssembly System Interface, and WASI NN" />
+<meta name="twitter:description" content="WASI NN is a proposal that allows WebAssembly guest modules running outside the browser to perform neural network inferencing by using host-provided implementations that can leverage CPU multi-threading, host optimizations, or hardware devices such as GPUs or TPUs. This article explores the goals of WASI NN, existing implementations, and details a new experimental implementation targeting ONNX, the Open Neural Network Exchange , which allows the either usage of models built with PyTorch or TensorFlow from guest WebAssembly modules." />
+
+<meta name="description" content="WASI NN is a proposal that allows WebAssembly guest modules running outside the browser to perform neural network inferencing by using host-provided implementations that can leverage CPU multi-threading, host optimizations, or hardware devices such as GPUs or TPUs. This article explores the goals of WASI NN, existing implementations, and details a new experimental implementation targeting ONNX, the Open Neural Network Exchange , which allows the either usage of models built with PyTorch or TensorFlow from guest WebAssembly modules." />
+    <meta property='og:title' content='Neural network inferencing  for PyTorch and TensorFlow with ONNX, WebAssembly System Interface, and WASI NN - radu&#39;s blog'>
+<meta property='og:description' content='WASI NN is a proposal that allows WebAssembly guest modules running outside the browser to perform neural network inferencing by using host-provided implementations that can leverage CPU multi-threading, host optimizations, or hardware devices such as GPUs or TPUs. This article explores the goals of WASI NN, existing implementations, and details a new experimental implementation targeting ONNX, the Open Neural Network Exchange , which allows the either usage of models built with PyTorch or TensorFlow from guest WebAssembly modules.'>
+<meta property='og:url' content='https://radu-matei.com/blog/wasi-nn-onnx/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://radu-matei.com/images/twitter-card.png'><meta property='article:published_time' content='2021-07-07T00:00:00Z'/><meta property='article:modified_time' content='2021-07-07T00:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://deislabs.io/posts/wasi-nn-onnx/"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+
+  
+  | <a class="subtitle is-6" href="/tags/wasi">#wasi</a>
+  
+  | <a class="subtitle is-6" href="/tags/ml">#ml</a>
+  
+ 
+        </div>
+        
+        <h2 class="subtitle is-6"> July 7, 2021. 13 minutes read.   <a href="/pdf/wasi-nn-onnx.pdf" target="_blank">PDF  </a>  </h2> 
+
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Neural network inferencing  for PyTorch and TensorFlow with ONNX, WebAssembly System Interface, and WASI NN</h1>
+
+        
+        <div class="content">
+            
+
+
+            <p><a href="https://deislabs.io/posts/wasi-nn-onnx" target="_blank" rel="noreferrer noopener">This article originally appeared in the Microsoft DeisLabs blog</a>
+.</p>
+<p><a href="https://github.com/WebAssembly/wasi-nn" target="_blank" rel="noreferrer noopener">WASI NN</a>
+ is a proposal that allows WebAssembly guest modules running
+outside the browser to perform neural network inferencing by using host-provided
+implementations that can leverage CPU multi-threading, host optimizations, or
+hardware devices such as GPUs or TPUs. This article explores the goals of WASI
+NN, existing implementations, and details a new experimental implementation
+targeting <a href="https://onnx.ai/" target="_blank" rel="noreferrer noopener">ONNX, the Open Neural Network Exchange</a>
+, which allows the usage
+of models built with PyTorch or TensorFlow from guest WebAssembly modules.</p>
+<blockquote>
+<p>The implementation for ONNX runtimes with WASI NN <a href="https://github.com/deislabs/wasi-nn-onnx" target="_blank" rel="noreferrer noopener">can be found on
+GitHub</a>
+.</p>
+</blockquote>
+<p>The WASI Neural Network API is a new <a href="https://wasi.dev/" target="_blank" rel="noreferrer noopener">WebAssembly System Interface</a>
+
+proposal that allows guest WebAssembly modules running outside the browser, in
+WASI runtimes, access to highly optimized inferencing runtimes for machine
+learning workloads. Andrew Brown has an <a href="https://bytecodealliance.org/articles/using-wasi-nn-in-wasmtime" target="_blank" rel="noreferrer noopener">excellent article on the
+BytecodeAlliance blog about the motivations of WASI NN</a>
+, but in short, the
+proposed API describes a way for guest modules to load a pre-built machine
+learning model, provide input tensors, and execute inferences on the highly
+optimized runtime provided by the WASI host. One of the most important things to
+note about the WASI NN API is that it is model agnostic, and so far quite
+simple:</p>
+<ul>
+<li><code>load</code> a model using one or more opaque byte arrays</li>
+<li><code>init_execution_context</code> and bind some tensors to it using <code>set_input</code></li>
+<li><code>compute</code> the ML inference using the bound context</li>
+<li>retrieve the inference result tensors using <code>get_output</code></li>
+</ul>
+<p>As it is obvious from the API, there is no assumption around the way the neural
+network has been built &ndash; as long as the host implementation understands the
+opaque byte array as a neural network model, it can <code>load</code> it and perform
+inferences when <code>compute</code> is called using the input tensors. The first
+<a href="https://github.com/bytecodealliance/wasmtime/tree/main/crates/wasi-nn" target="_blank" rel="noreferrer noopener">implementation for WASI NN in Wasmtime is for the OpenVINO™
+platform</a>
+, and Andrew Brown has <a href="https://bytecodealliance.org/articles/implementing-wasi-nn-in-wasmtime" target="_blank" rel="noreferrer noopener">another excellent article
+describing the implementation details</a>
+. This article explores how to add
+an implementation that performs inferences on the host for ONNX models.</p>
+<p><a href="https://onnx.ai/" target="_blank" rel="noreferrer noopener">ONNX, or the Open Neural Network Exchange</a>
+, is an open format which
+defines a common set of machine learning operators and file format that ensure
+the interoperability between different frameworks (such as PyTorch, TensorFlow,
+or CNTK), with a common runtime and hardware access through ONNX runtimes. Two
+of the most popular machine learning frameworks, PyTorch and TensorFlow, have
+libraries that allow developers to convert built models to the ONNX format, then
+run them using an ONNX runtime. This means that by adding ONNX support to WASI
+NN, guest WebAssembly modules can perform inferences for both PyTorch and
+TensorFlow models converted to the common format &ndash; which makes it even easier
+to use a wider array of models from the ecosystem.</p>
+<p>Because the WASI ecosystem is written in Rust, an ONNX implementation for WASI
+NN needs the underlying runtime to either be built in Rust, or have Rust
+bindings for its API &ndash; and this article describes building and using two such
+implementations for WASI NN, each presenting their own advantages and drawbacks
+that will be discussed later:</p>
+<ul>
+<li>one based on the <a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noreferrer noopener">native ONNX runtime</a>
+, which uses <a href="https://github.com/nbigaouette/onnxruntime-rs" target="_blank" rel="noreferrer noopener">community-built Rust
+bindings</a>
+ to the runtime&rsquo;s C API.</li>
+<li>one based on the <a href="https://github.com/sonos/tract" target="_blank" rel="noreferrer noopener">Tract crate</a>
+, which is a native inference engine for
+running ONNX models, written in Rust.</li>
+</ul>
+<h3 id="implementing-wasi-nn-for-a-new-runtime">Implementing WASI NN for a new runtime</h3>
+<p>Implementing WASI NN for a new runtime means providing an implementation for
+<a href="https://github.com/WebAssembly/wasi-nn/blob/main/phases/ephemeral/witx/wasi_ephemeral_nn.witx" target="_blank" rel="noreferrer noopener">the WITX definitions of the API</a>
+. For example, the API used to load a new
+model is defined as follows:</p>
+<pre><code>(module $wasi_ephemeral_nn
+  (import &quot;memory&quot; (memory))
+
+  (@interface func (export &quot;load&quot;)
+    (param $builder $graph_builder_array)
+    (param $encoding $graph_encoding)
+    (param $target $execution_target)
+
+    (result $error (expected $graph (error $nn_errno)))
+  )
+)
+</code></pre><p>Then, Wasmtime tooling can be used to generate Rust bindings and traits for the
+API that can then be implemented for a specific runtime:</p>
+<pre><code>pub trait WasiEphemeralNn {
+    fn load(
+        &amp;mut self,
+        builder: &amp;GraphBuilderArray,
+        encoding: GraphEncoding,
+        target: ExecutionTarget,
+    ) -&gt; Result&lt;Graph&gt;;
+}
+</code></pre><blockquote>
+<p>An article describing how to implement a new WebAssembly API from WITX for
+Wasmtime can be found <a href="https://radu-matei.com/blog/wasm-api-witx/" target="_blank" rel="noreferrer noopener">here</a>
+.</p>
+</blockquote>
+<p>The two implementations (the one that uses the ONNX C API and the other using
+Tract) are fairly similar &ndash; they both implement the Rust trait defined by
+<code>WasiEphemeralNn</code>, which defines the following functions from the WASI NN API:</p>
+<ul>
+<li><code>load</code> &ndash; this provides the actual model as opaque byte arrays, as well as the
+model encoding (ONNX for this implementation) and the execution target. This
+function has to store the model bytes so that guests can later instantiate it.</li>
+<li><code>init_execution_context</code> instantiates an already loaded model &ndash; but because
+input tensors have not been provided yet, it only creates the environment
+necessary for the guest to <code>set_input</code>.</li>
+<li><code>set_input</code> can be called multiple times, with the guest setting the input
+tensors and their shapes.</li>
+<li><code>compute</code> is called by the guest once it has defined all input tensors, and it
+performs the actual inference using the optimized runtime.</li>
+<li><code>get_output</code> is called by the guest once the runtime finished an inference,
+which then writes the <code>i-th</code> output tensor to a buffer the guest supplied.</li>
+</ul>
+<p>During their lifetime, guests can perform any number of inferences, on any
+number of different neural network models. This is assured by the internal state
+of the runtime, which keeps track different concurrent requests (the specific
+implementations <a href="https://github.com/deislabs/wasi-nn-onnx/tree/main/crates/wasi-nn-onnx-wasmtime/src" target="_blank" rel="noreferrer noopener">can be found on GitHub</a>
+). The project also comes with a
+binary helper that mimics the Wasmtime CLI, with added support for both ONNX
+runtime implementations.</p>
+<p>First, let&rsquo;s consider <a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noreferrer noopener">the official ONNX implementation</a>
+ &ndash; it is built in
+C++, and provides a highly efficient runtime for inferencing. It comes with
+<a href="https://www.onnxruntime.ai/docs/reference/api/" target="_blank" rel="noreferrer noopener">APIs for a number of different languages</a>
+, including Python, Java,
+JavaScript, C#, or Objective-C, all of them through accessing the ONNX shared
+libraries (<code>.dll</code>, <code>.so</code>, or <code>.dylib</code>, depending on the operating system). To
+use them from Rust, <a href="https://github.com/nbigaouette/onnxruntime-rs" target="_blank" rel="noreferrer noopener">the <code>onnxruntime-rs</code> crate</a>
+ offers bindings to
+the underlying C API of the runtime, with a nice wrapper that makes using this
+API from Rust much easier than directly accessing the <code>unsafe</code> functionality
+exposed by the C API. Keep in mind, however, that this is not an official
+project, and currently targets a slightly older ONNX version, 1.6.</p>
+<p>To execute the inference using the native ONNX runtime, first download <a href="https://github.com/microsoft/onnxruntime/releases/tag/v1.6.0" target="_blank" rel="noreferrer noopener">the ONNX
+runtime 1.6 shared library</a>
+ and unarchive it, then build the project (this
+is temporary, until proper release binaries are provided in the repository). At
+this point, the helper <code>wasmtime-onnx</code> binary can be used to execute WebAssembly
+modules that use WASI NN to perform inferences. The following examples use <a href="https://github.com/deislabs/wasi-nn-onnx/blob/main/tests/rust/src/main.rs" target="_blank" rel="noreferrer noopener">the
+integration tests from the project repository</a>
+, and use the
+<a href="https://github.com/onnx/models/tree/master/vision/classification/squeezenet" target="_blank" rel="noreferrer noopener">SqueezeNet</a>
+ and <a href="https://github.com/onnx/models/tree/master/vision/classification/mobilenet" target="_blank" rel="noreferrer noopener">MobileNetV2</a>
+ models for image classification.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo build --release
+$ LD_LIBRARY_PATH=&lt;PATH-TO-ONNX&gt;/onnx/onnxruntime-linux-x64-1.6.0/lib \
+RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
+         ./target/release/wasmtime-onnx \
+        tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
+        --dir tests/testdata \
+        --invoke test_squeezenet
+
+integration::inference_image:
+results for image &#34;tests/testdata/images/n04350905.jpg&#34;
+class=n04350905 suit of clothes (834); probability=0.21431354
+class=n03763968 military uniform (652); probability=0.18545522
+
+execution time: 74.3381ms with runtime: C
+</code></pre></div><p>The previous command can be translated as follows: using the <code>wasmtime-onnx</code>
+binary, which provides a host implementation for performing ONNX inferences
+using the native ONNX runtime, start the WebAssembly module <code>wasi-nn-rust.wasm</code>
+and invoke the <code>test_squeezenet</code> function, which loads the SqueezeNet model and
+performs an inference on a picture of <a href="https://en.wikipedia.org/wiki/Grace_Hopper" target="_blank" rel="noreferrer noopener">Grace Hopper</a>
+. Because the project
+does not yet enable GPU usage for the native ONNX runtime (see issue
+<a href="https://github.com/deislabs/wasi-nn-onnx/issues/9" target="_blank" rel="noreferrer noopener">#9</a>
+), the inference is
+performed on the CPU, and is multi-threaded by default. This means that after
+GPU is enabled, the inference time will be even lower. But this comes at the
+cost of ease of configuration &ndash; because this runtime uses bindings to the ONNX
+runtime&rsquo;s C API, the shared libraries first have to be downloaded and configured
+(same for the GPU support, where in addition to the proper ONNX release with GPU
+support, the graphics drivers will also have to be properly configured).</p>
+<p>This is the main reason a second implementation is provided here &ndash;
+<a href="https://github.com/sonos/tract" target="_blank" rel="noreferrer noopener">Tract</a>
+ is an ONNX runtime implemented purely in Rust, and does not need
+any shared libraries. However, it only passes <em>successfully about 85% of ONNX
+backend tests</em>, it does not implement internal multi-threading or GPU access,
+and the inference times on the CPU are slightly higher than for the native ONNX
+runtime. The same binary, ONNX model, and WebAssembly module can be used to run
+the same inference &ndash; the only difference is passing the <code>--tract</code> flag,
+informing the runtime to use the alternative implementation for ONNX:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
+         ./target/release/wasmtime-onnx \
+        tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
+        --dir tests/testdata \
+        --invoke test_squeezenet \
+        --tract
+
+integration::inference_image:
+results for image &#34;tests/testdata/images/n04350905.jpg&#34;
+class=n04350905 suit of clothes (834); probability=0.21431345
+class=n03763968 military uniform (652); probability=0.18545584
+
+execution time: 90.6102ms with runtime: Tract
+</code></pre></div><blockquote>
+<p>Note that <code>LD_LIBRARY_PATH</code> is omitted in this example, but it still has to be
+passed for now, depending on whether support for both implementations has been
+compiled. In future releases, compile-time flags and features will choose
+between the two, and the flag will no longer need to be passed when only the
+Tract runtime has been compiled. Also see issues
+<a href="https://github.com/deislabs/wasi-nn-onnx/issues/11" target="_blank" rel="noreferrer noopener">#11</a>
+ and
+<a href="https://github.com/deislabs/wasi-nn-onnx/issues/16" target="_blank" rel="noreferrer noopener">#16</a>
+.</p>
+</blockquote>
+<p>The relative performance between the two can be seen in the inference times, and
+in most cases, the Tract runtime will yield slightly higher latency on the same
+hardware &ndash; but the fact that it comes with no runtime dependencies means that,
+for non-critical scenarios, or when running on CPU-only machines, configuring
+and running this project becomes significantly easier (i.e. downloading a single
+binary).</p>
+<h3 id="initial-_relative_-performance">Initial <em>relative</em> performance</h3>
+<p>A few notes on performance:</p>
+<ul>
+<li>this represents <em>very early</em> data, based on a limited number of runs and
+models, and should only be interpreted in terms of the relative performance
+that can be expected between running the same inference natively, through WASI
+NN, or purely in WebAssembly.</li>
+<li>the ONNX runtime is running multi-threaded on the CPU <em>only</em>, as the GPU is
+not yet enabled.</li>
+<li>in each case, all tests are executing the same ONNX model on the same images.</li>
+<li>all WebAssembly modules (both those built with WASI NN and the ones running
+pure Wasm) are run with <a href="https://github.com/bytecodealliance/wasmtime/releases/tag/v0.28.0" target="_blank" rel="noreferrer noopener">Wasmtime v0.28</a>
+, with caching enabled, and no
+other special optimizations. For the WebAssembly examples, Wasm module
+instantiation time on the tested hardware accounts for around 16 ms on
+average, so in reality, the actual inference time is very close to native
+performance.</li>
+<li>there are known limitations in both runtimes that, when fixed, should also
+significantly improve the inference performance.</li>
+<li>pre- and post-processing of input and output tensors still takes place in
+WebAssembly, so as runtimes, compilers, and libraries add support for
+<a href="https://github.com/WebAssembly/simd/blob/main/proposals/simd/SIMD.md" target="_blank" rel="noreferrer noopener">SIMD</a>
+, this should also be improved.</li>
+</ul>
+<p>The following charts represent the total inference times for running the
+SqueezeNet and MobileNetV2 models on CPU-only hardware, natively, with WASI NN,
+and then purely in WebAssembly.</p>
+<!-- raw HTML omitted -->
+<p><img src="/img/article-photos/wasi-nn-onnx/squeezenet.png" alt="WASI NN SqueezeNet performance"></p>
+<p>Being a much smaller module, the inference times for SqueezeNet are smaller
+relative to MobileNetV2, but the relative performance difference can still be
+observed:</p>
+<!-- raw HTML omitted -->
+<p><img src="/img/article-photos/wasi-nn-onnx/mobilenetv2.png" alt="WASI NN MobileNetV2 performance"></p>
+<p>As more modules and GPU support are added, the performance benchmarks will be
+updated, but there is a trend expected to be seen &ndash; regardless of the neural
+network used, the native ONNX runtime should be faster (or much faster, when GPU
+support is enabled) than the Tract runtime, which in turn is around 3 to 4 times
+faster than running purely in WebAssembly, with both WASI NN implementations
+slightly slower than their natively run counterparts &ndash; the difference being
+mainly because of the module instantiation times.</p>
+<h3 id="writing-webassembly-modules-pre--and-post-processing">Writing WebAssembly modules, pre- and post-processing</h3>
+<p>Building WebAssembly modules that use WASI NN has to be done by using the client
+bindings &ndash; in this case, a <a href="https://github.com/radu-matei/wasi-nn-guest/tree/onnx" target="_blank" rel="noreferrer noopener">slightly modified version that includes the ONNX
+variant for the graph encoding <code>enum</code></a>
+. This API is still very
+early, and requires the use of <code>unsafe</code> Rust in quite a few places, but future
+releases should provide a much safer API that will use <a href="https://docs.rs/ndarray/0.15.3/ndarray/" target="_blank" rel="noreferrer noopener"><code>ndarray</code></a>
+.</p>
+<p>The one thing that is always required when performing inference on a pre-built
+neural network is understanding how input data has to be pre-processed when
+generating the input tensors, and how to interpret the output tensors &ndash; in the
+case of SqueezeNet and MobileNetV2, <em>the images have to be loaded in to a range
+of <code>[0, 1]</code> and then normalized using <code>mean = [0.485, 0.456, 0.406]</code> and
+<code>std = [0.229, 0.224, 0.225]</code>.</em> After the inference, <em>post-processing involves
+calculating the <code>softmax</code> probability scores for each class and sorting them to
+report the most probable classes.</em> This is, of course, dependent on how each
+neural network is built, and should be understood before trying to perform
+inferences, and usually, <a href="https://github.com/onnx/models/" target="_blank" rel="noreferrer noopener">the ONNX models repository</a>
+ provides enough
+information and Python implementations on how to perform pre- and
+post-processing, which can be adapted into the language used to build the Wasm
+module. For example, let&rsquo;s explore how to pre-process images for the two models
+(more Rust examples can be found in the <a href="https://github.com/sonos/tract/tree/main/examples" target="_blank" rel="noreferrer noopener">Tract repository</a>
+):</p>
+<pre><code>pub fn image_to_tensor&lt;
+  S: Into&lt;String&gt; +
+  AsRef&lt;std::path::Path&gt; + Debug
+&gt;(
+    path: S,
+    height: u32,
+    width: u32,
+) -&gt; Result&lt;Vec&lt;u8&gt;, Error&gt; {
+    let image = image::imageops::resize(
+        &amp;image::open(path)?,
+        width,
+        height,
+        ::image::imageops::FilterType::Triangle,
+    );
+
+
+    let mut array = ndarray::Array::from_shape_fn(
+      (1, 3, 224, 224),
+      |(_, c, j, i)| {
+        let pixel = image.get_pixel(i as u32, j as u32);
+        let channels = pixel.channels();
+
+        // range [0, 255] -&gt; range [0, 1]
+        (channels[c] as f32) / 255.0
+    });
+
+    // Normalize channels to
+    // mean and standard deviation on each channel.
+    let mean = [0.485, 0.456, 0.406];
+    let std = [0.229, 0.224, 0.225];
+    for c in 0..3 {
+        let mut channel_array = array.slice_mut(s![0, c, .., ..]);
+        channel_array -= mean[c];
+        channel_array /= std[c];
+    }
+
+    Ok(f32_vec_to_bytes(array.as_slice().unwrap().to_vec()))
+}
+</code></pre><p>This is the Rust implementation for the pre-processing steps described above &ndash;
+load the image, resize it to 224 x 224, then scale each pixel value and
+normalize the resulting tensor. The part worth exploring in more detail is the
+final <code>f32_vec_to_bytes</code> function &ndash; up until the last line of the function, the
+image had been transformed into an <code>ndarray::Array</code> (which, for people used to
+data science in Python, should be very similar to <code>numpy.ndarray</code>). The last
+line has to transform the <code>Array</code> first into a uni-dimensional <code>f32</code> array, then
+into a bytes array, since this is how the WASI API transfers data. Then, it&rsquo;s
+the runtime&rsquo;s responsibility to recreate the tensor properly using its desired
+data type, shapes and dimensions.</p>
+<p>Ideally, future releases of the bindings will allow guest modules to simply pass
+an <code>ndarray::Array</code>, and perform the transformation automatically, based on the
+shape and data type.</p>
+<h3 id="current-limitations">Current limitations</h3>
+<p>The following represents a non-exhaustive list of known limitations of the
+implementation. Depending on when this article is read, some of them might be
+already resolved, and others discovered or introduced:</p>
+<ul>
+<li>only FP32 tensor types are currently supported
+(<a href="https://github.com/deislabs/wasi-nn-onnx/issues/20" target="_blank" rel="noreferrer noopener">#20</a>
+) &ndash; this is related
+to with the way state is tracked internally. It should not affect popular
+models (such as computer vision scenarios), but it represents the main
+limitation for now.</li>
+<li>GPU execution is not yet enabled in the native ONNX runtime
+(<a href="https://github.com/deislabs/wasi-nn-onnx/issues/9" target="_blank" rel="noreferrer noopener">#9</a>
+) &ndash; the C headers for
+the GPU API have to be used when generating the bindings for the ONNX runtime.</li>
+</ul>
+<p>If you are interested in contributing, around performance, GPU support, or
+compatibility, please visit the <a href="https://github.com/deislabs/wasi-nn-onnx/issues" target="_blank" rel="noreferrer noopener">repository and issue queue</a>
+ for an
+updated list of open issues.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>This article explores the WASI NN proposal and describes how the new
+implementation for ONNX is built, how it works, and how to execute such a
+runtime with Wasmtime, with a few notes around pre- and post-processing for
+input tensors when building guest WebAssembly modules in Rust.</p>
+<p>Big shout-out to <a href="https://bytecodealliance.org/articles/using-wasi-nn-in-wasmtime" target="_blank" rel="noreferrer noopener">Andrew Brown for his work on WASI NN</a>
+, to <a href="https://twitter.com/jiaxiao_zhou" target="_blank" rel="noreferrer noopener">Jiaxiao
+Zhou</a>
+ for helping out with the ONNX implementation, to <a href="https://github.com/nbigaouette" target="_blank" rel="noreferrer noopener">Nicolas
+Bigaouette</a>
+ for his work on the ONNX Rust bindings, and to all the <a href="https://github.com/sonos/tract" target="_blank" rel="noreferrer noopener">people
+at Sonos building Tract</a>
+ and <a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noreferrer noopener">the ONNX maintainers</a>
+.</p>
+<p>This project expands the possibility for running real-world neural networks from
+WebAssembly runtimes by providing near-native performance for executing
+inferences for PyTorch or TensorFlow models through ONNX. This implementation,
+as well as WASI NN, are still very early, but results for both ONNX runtimes and
+OpenVINO™ are promising, particularly when combining this type of workload with
+<a href="https://radu-matei.com/blog/wasi-experimental-http/" target="_blank" rel="noreferrer noopener">outbound networking support</a>
+, or <a href="https://radu-matei.com/blog/using-azure-services-wasi/" target="_blank" rel="noreferrer noopener">using cloud services from WebAssembly
+modules</a>
+.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank" rel="noreferrer">Radu M<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu M</a> 2021</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
