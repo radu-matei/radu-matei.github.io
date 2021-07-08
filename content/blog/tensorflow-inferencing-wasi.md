@@ -18,7 +18,7 @@ Finally, a simple prediction API is exemplified running on top of the Wasmtime
 runtime, and some limitations of this approach are discussed."
 date: 2020-10-18
 author: "Radu Matei"
-tags: ["wasm", "rust", "tensorflow"]
+tags: ["wasm", "rust", "tensorflow", "ml"]
 pdf: "/pdf/tensorflow-inferencing-wasi.pdf"
 ---
 

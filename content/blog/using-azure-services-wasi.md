@@ -13,9 +13,9 @@ authorname: "Radu Matei"
 author: "@matei_radu"
 authorlink: "https://twitter.com/matei_radu"
 image: "images/twitter-card.png"
-tags: ["wasm", "wasi", "wagi"]
+tags: ["wasm", "wasi"]
 
-canonuicalUrl: "https://deislabs.io/posts/using-azure-services-wasi/"
+canonicalUrl: "https://deislabs.io/posts/using-azure-services-wasi/"
 pdf: "/pdf/using-azure-services-wasi.pdf"
 
 pagestyle: empty
@@ -24,7 +24,7 @@ fontsize: 14pt
 links-as-notes: true
 urlcolor: gray
 header-includes:
-  - \setlength{\parindent}{2em}
+  # - \setlength{\parindent}{2em}
   - \setlength{\parskip}{1.5em}
 ---
 

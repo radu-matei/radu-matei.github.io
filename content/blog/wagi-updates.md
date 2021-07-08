@@ -17,7 +17,7 @@ fontsize: 14pt
 links-as-notes: true
 urlcolor: gray
 header-includes:
-  - \setlength{\parindent}{2em}
+  # - \setlength{\parindent}{2em}
   - \setlength{\parskip}{1.5em}
 ---
 
