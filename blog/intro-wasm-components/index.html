@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>Introduction to WebAssembly components | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="Introduction to WebAssembly components" />
+<meta name="twitter:description" content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article explains the goals of the component model, and showcases how to use tooling from the Bytecode Alliance to build and consume such components." />
+
+<meta name="description" content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article explains the goals of the component model, and showcases how to use tooling from the Bytecode Alliance to build and consume such components." />
+    <meta property='og:title' content='Introduction to WebAssembly components - radu&#39;s blog'>
+<meta property='og:description' content='WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article explains the goals of the component model, and showcases how to use tooling from the Bytecode Alliance to build and consume such components.'>
+<meta property='og:url' content='https://radu-matei.com/blog/intro-wasm-components/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/031fa2ff2832edcb6b30c8ffb61da4d4?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:tag' content='rust'><meta property='article:published_time' content='2021-12-16T00:00:00Z'/><meta property='article:modified_time' content='2021-12-16T00:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://radu-matei.com/blog/intro-wasm-components/"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+
+  
+  | <a class="subtitle is-6" href="/tags/rust">#rust</a>
+  
+ 
+        </div>
+        
+        <h2 class="subtitle is-6"> December 16, 2021. 10 minutes read.   <a href="/pdf/intro-wasm-components.pdf" target="_blank">PDF  </a>  </h2> 
+
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">Introduction to WebAssembly components</h1>
+
+        
+        <div class="content">
+            
+
+
+            <p><a href="https://webassembly.org" target="_blank" rel="noreferrer noopener">WebAssembly</a>
+ (or Wasm) is a W3C specification for a
+portable binary format for distributing and running code that has been
+implemented in the four major browser engines since 2017. In familiar terms,
+Wasm is used as a compilation target for
+<a href="https://webassembly.org/getting-started/developers-guide" target="_blank" rel="noreferrer noopener">various programming languages</a>
+,
+generating a compact binary that can run at near-native speeds in the browser.
+This brought existing languages such as Rust, C and C++, Go, or C# (and new
+languages like <a href="https://grain-lang.org/" target="_blank" rel="noreferrer noopener">Grain</a>
+) to the web, and enabled porting
+extremely complex applications such as
+<a href="https://medium.com/google-earth/google-earth-comes-to-more-browsers-thanks-to-webassembly-1877d95810d6" target="_blank" rel="noreferrer noopener">Google Earth</a>
+
+or <a href="https://web.dev/ps-on-the-web/" target="_blank" rel="noreferrer noopener">Photoshop</a>
+ to the browser.</p>
+<p>Despite the name, however, nothing in WebAssembly is specific to browsers &mdash;
+and in fact, the same benefits that make it a compelling execution environment
+for browsers (such as near-native speed, compact binary format, or sandbox
+isolation) make it well-suited for scenarios outside the browser, in
+datacenters, clouds, or on the edge.
+<a href="https://wasi.dev/" target="_blank" rel="noreferrer noopener">The WASI project, or the WebAssembly System Interface</a>
+, is a
+proposal that aims to standardize the execution of Wasm outside the browser and
+to provide a common (platform agnostic) layer and set of primitives that guest
+modules can use to interact with the underlying runtime, while maintaining the
+secure sandbox promised by WebAssembly.
+(<a href="https://bytecodealliance.org/articles/announcing-the-bytecode-alliance" target="_blank" rel="noreferrer noopener">Lin Clark&rsquo;s initial post announcing the Bytecode Alliance</a>
+
+does a fantastic job at explaining the goals of WASI.)</p>
+<p>WebAssembly and WASI show great promise for the future of computing outside the
+browser &mdash; but attempting to write any non-trivial WebAssembly application that
+tries to interoperate across runtime or language boundaries requires significant
+effort today, and exchanging any non-fundamental data types (such as strings or
+structures) involves pointer arithmetic and low-level memory manipulation.</p>
+<p>The <a href="https://github.com/WebAssembly/component-model" target="_blank" rel="noreferrer noopener">component model proposal</a>
+
+aims to solve this issue, and this article will explain the goals of the
+proposal and will showcase how to use the current tooling from the
+<a href="https://bytecodealliance.org/" target="_blank" rel="noreferrer noopener">Bytecode Alliance</a>
+ to build and execute such
+components in Rust and C++.</p>
+<blockquote>
+<p>Note: The demo components, the implementations, the tools used, and the
+developer experience showed here represent very early attempts to solve this,
+and future tooling will improve it. This is shown for educational purposes,
+and should not be considered stable.</p>
+</blockquote>
+<h2 id="the-webassembly-component-model">The WebAssembly component model</h2>
+<p>Using an operating system analogy, WebAssembly allows the execution of low-level
+CPU instructions, while WASI is a way to model input/output interfaces. From
+this perspective, the need for a &ldquo;process model&rdquo; that defines how processes are
+started and how they interact with each other is starting to emerge &mdash; this is
+what the WebAssembly component model proposal is trying to address.</p>
+<p>The first stated
+<a href="https://github.com/WebAssembly/component-model/blob/main/design/high-level/Goals.md" target="_blank" rel="noreferrer noopener">goal</a>
+
+of the component model is <em>to define a portable, load- and run-time-efficient
+binary format [&hellip;] that enables portable, cross-language composition</em> &ndash;
+effectively, addressing how multiple components can interact with each other,
+and the use cases describe a wide range of scenarios for embedding components,
+composition, and dynamic linking.</p>
+<p>The main use case this article addresses is the following &mdash; defining an API
+layer as a WebAssembly interface, implementing it as a WebAssembly component,
+then consuming it from other components by passing arguments and return values.
+There are numerous other topics to explore in this area such as transitive
+dependencies, distribution, developer experience, or building specialized host
+runtimes for a given interface, all of which will be addressed in future
+articles.</p>
+<h2 id="defining-and-implementing-webassembly-components">Defining and implementing WebAssembly components</h2>
+<p>The goal is to build a component that can be imported from other WebAssembly
+modules, written in potentially other programming languages, and the first step
+is defining its interface &mdash; what is the public API this component will
+implement? This is done using WIT (WebAssembly Interface), an experimental
+textual format used for defining Wasm interfaces. It is the next iteration of
+<a href="https://github.com/WebAssembly/WASI/blob/main/docs/witx.md" target="_blank" rel="noreferrer noopener">WITX</a>
+, which itself
+is based on
+<a href="https://webassembly.github.io/spec/core/text/index.html" target="_blank" rel="noreferrer noopener">the standard text format</a>
+.
+(A non-trivial example of using the new WIT format can be found
+<a href="https://github.com/bytecodealliance/wit-bindgen/blob/32e63116d469d8046727fae3c1333a7d35d0c5d3/tests/codegen/wasi-next/wasi_next.wit" target="_blank" rel="noreferrer noopener">here</a>
+.)</p>
+<p>The component is going to be a simple key/value cache layer that gets, stores,
+and deletes arbitrary payloads:</p>
+<pre><code>// cache.wit
+// Type for cache errors.
+enum error {
+    runtime_error,
+    not_found_error,
+}
+// Payload for cache values.
+type payload = list&lt;u8&gt;
+// Set the payload for the given key.
+set: function(key: string, value: payload, ttl: option&lt;u32&gt;) -&gt; expected&lt;_, error&gt;
+// Get the payload stored in the cache for the given key.
+get: function(key: string) -&gt; expected&lt;payload, error&gt;
+// Delete the cache entry for the given key.
+delete: function(key: string) -&gt; expected&lt;_, error&gt;
+</code></pre><p>Let&rsquo;s implement this interface in Rust, using the file system as storage for the
+cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cargo new --lib rust-wasi-impl
+Created library <span style="color:#e6db74">`</span>rust-wasi-impl<span style="color:#e6db74">`</span> package
+</code></pre></div><p>Next, the only dependency needed is
+<a href="https://github.com/bytecodealliance/wit-bindgen" target="_blank" rel="noreferrer noopener">wit-bindgen-rust</a>
+ &mdash; a
+Bytecode Alliance project that generates Rust bindings given a WIT interface:</p>
+<pre><code># Cargo.toml
+[lib]
+    crate-type = [ &quot;cdylib&quot; ]
+
+[dependencies]
+    wit-bindgen-rust = { git = &quot;https://github.com/bytecodealliance/wit-bindgen&quot;, rev = &quot;32e63116d469d8046727fae3c1333a7d35d0c5d3&quot; }
+
+</code></pre><p>The next section contains a simplified version of the actual implementation
+(note that the complete implementation for all components
+<a href="https://github.com/radu-matei/wasm-components-example" target="_blank" rel="noreferrer noopener">can be found on GitHub</a>
+).
+A very important part here is the <code>wit_bindgen_rust::export!</code> procedural macro
+&mdash; it takes the interface file as input, and it automatically generates Rust
+bindings for all the objects defined in the interface, bindings necessary to
+implement the interface.</p>
+<p>This is equivalent to using the wit-bindgen CLI to manually generate the
+bindings (to check in to source control, or inspect):</p>
+<pre><code>$ wit-bindgen rust-wasm --export ../cache.wit
+Generating &quot;bindings.rs&quot;
+</code></pre><p>Inspecting the generated bindings, we can see the low-level code (that until now
+had to be manually written) to handle passing non-fundamental data types between
+modules, with
+<a href="https://github.com/WebAssembly/interface-types/pull/140" target="_blank" rel="noreferrer noopener">the canonical ABI described in the interface types proposal</a>
+.</p>
+<p>Rust&rsquo;s excellent macro support means the bindings can be dynamically generated
+from the interface at build time. Regardless of how the bindings are generated,
+the main piece to implement here is
+<a href="https://doc.rust-lang.org/book/ch10-02-traits.html" target="_blank" rel="noreferrer noopener">a Rust trait</a>
+ that models
+the API from the interface:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">// lib.rs
+</span><span style="color:#75715e"></span>wit_bindgen_rust::export<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;../cache.wit&#34;</span>);
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cache</span> {}
+<span style="color:#66d9ef">impl</span> cache::Cache <span style="color:#66d9ef">for</span> Cache {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">set</span>(key: String, value: <span style="color:#a6e22e">Payload</span>, _: Option<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u32</span><span style="color:#f92672">&gt;</span>) -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> file <span style="color:#f92672">=</span> File::create(path(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>)<span style="color:#f92672">?</span>;
+        file.write_all(<span style="color:#f92672">&amp;</span>value)<span style="color:#f92672">?</span>;
+        Ok(())
+    }
+
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get</span>(key: String) -&gt; Result<span style="color:#f92672">&lt;</span>Payload, Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> file <span style="color:#f92672">=</span> File::open(path(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>)<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> Vec::new();
+        file.read_to_end(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buf)<span style="color:#f92672">?</span>;
+        Ok(buf)
+    }
+ ...
+}
+</code></pre></div><p>(Note that at the time of writing this article, the convention for Rust
+implementations is that the struct implementing the interface trait must have
+the same name (accommodating for <code>snake_case</code>) as the interface file, hence
+struct <code>Cache {}</code>. There are also a few error handling specific parts omitted
+from the snippet above,
+<a href="https://github.com/radu-matei/wasm-components-example" target="_blank" rel="noreferrer noopener">see complete implementation</a>
+.)</p>
+<p>The actual implementation is straightforward &ndash; store and retrieve keys/value
+pairs as files in the file system (assuming this component has the capability to
+write to a filesystem).</p>
+<p>At this point, the Wasm module can be built using the Rust toolchain. Then,
+using the translator from the binary format to the text format (from
+<a href="https://github.com/bytecodealliance/wasm-tools" target="_blank" rel="noreferrer noopener">this repo</a>
+), we can see the
+module exports the three methods from the interface, together with functions to
+adapt the arguments passed between boundaries (as described by
+<a href="https://github.com/WebAssembly/interface-types/pull/140" target="_blank" rel="noreferrer noopener">the canonical ABI</a>
+):</p>
+<pre><code>$ cargo build --target wasm32-wasi --release
+$ wasm2wat-rs target/wasm32-wasi/release/rust_wasi_impl.wasm | grep export
+  (export &quot;set&quot; (func $set.command_export))
+  (export &quot;get&quot; (func $get.command_export))
+  (export &quot;delete&quot; (func $delete.command_export))
+  (export &quot;canonical_abi_realloc&quot; (func $canonical_abi_realloc.command_export))
+  (export &quot;canonical_abi_free&quot; (func $canonical_abi_free.command_export))
+</code></pre><h2 id="importing-webassembly-interfaces-in-rust-and-c">Importing WebAssembly interfaces in Rust and C++</h2>
+<p>The previous section defined an interface using WIT, then implemented it in Rust
+using the convenient macros provided by <code>wit-bindgen</code>. This section will create
+two new components, in Rust and C++, which will import the interface.</p>
+<p>First, a new Rust executable with the same Cargo dependency as the previous
+component:</p>
+<pre><code>$ cargo new --bin rust-consumer
+</code></pre><p>As in the previous Rust component, the main aspect here is the use of the
+<code>wit_bindgen_rust::import!</code> procedural macro &mdash; same as before, the macro takes
+the interface and generates Rust bindings, but crucially, because this component
+<em>imports</em> the interface, the bindings will be different (they can be inspected
+by executing <code>wit-bindgen rust-wasm --import ../cache.wit</code>):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">wit_bindgen_rust::import<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;../cache.wit&#34;</span>);
+
+<span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">let</span> key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;five-good-emperors&#34;</span>;
+    <span style="color:#66d9ef">let</span> value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Nerva, Trajan, Hadrian, Pius, and Marcus Aurelius&#34;</span>;
+
+    cache::set(key, value.as_bytes(), None).unwrap();
+    <span style="color:#66d9ef">let</span> ret <span style="color:#f92672">=</span> cache::get(key).unwrap();
+    assert_eq<span style="color:#f92672">!</span>(ret, value.as_bytes());
+}
+</code></pre></div><p>The generated import bindings can be used in a very idiomatic way to set and
+retrieve information.</p>
+<p>The important thing to note here is that the program above only needs the
+<em>interface</em> in order to compile, as the generated WebAssembly module will
+contain imports for the cache functionality:</p>
+<pre><code>$ cargo build --target wasm32-wasi --release
+$ wasm2wat-rs target/wasm32-wasi/release/rust-consumer.wasm | grep import
+  (import &quot;cache&quot; &quot;set&quot; (func $rust_consumer_cache_set_wit_import (type 8)))
+  (import &quot;cache&quot; &quot;get&quot; (func $rust_consumer_cache_get_wit_import (type 9)))
+  (import &quot;wasi_snapshot_preview1&quot; &quot;fd_write&quot; (func $wasi_wasi_fd_write (type 10)))
+
+</code></pre><p>Before actually linking and executing the main module above, it is worth
+exploring how to build another consumer, this time in C++.</p>
+<p>Because C++ doesn&rsquo;t have the same macro system as Rust, the bindings need to be
+on disk at compile time &mdash; using wit-bindgen (and generating <em>import</em> bindings,
+as the C++ component will import the interface), they are written into a
+bindings/ directory:</p>
+<pre><code># Makefile
+bindgen:
+    $(WIT_BINDGEN) c --import ../cache.wit --out-dir bindings
+
+build:
+    $(WASI_CC) -I . -I ./bindings -c -o cache.o bindings/cache.c
+    $(WASI_CC) main.cpp cache.o -o cpp_consumer.wasm
+</code></pre><p>At this point, the implementation is a C++ main program that uses the header
+file defined in bindings/cache.h and calls the functions to get and set
+key/value pairs:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;bindings/cache.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+{
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;almost-consul&#34;</span>;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Caligula&#39;s horse, Incitatus&#34;</span>;
+    printf(<span style="color:#e6db74">&#34;Writing contents `%s` in storage `%s`&#34;</span>, value, key);
+
+    cache_string_t <span style="color:#f92672">*</span>skey;
+    skey<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> strlen(key);
+    skey<span style="color:#f92672">-&gt;</span>ptr <span style="color:#f92672">=</span> key;
+
+    cache_payload_t <span style="color:#f92672">*</span>svalue;
+    svalue<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> strlen(value);
+    svalue<span style="color:#f92672">-&gt;</span>ptr <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>)value;
+
+    cache_set(skey, svalue, NULL);
+
+    cache_payload_t <span style="color:#f92672">*</span>ret;
+    cache_get(skey, ret);
+    printf(<span style="color:#e6db74">&#34;Retrieved from `%s`: `%s`&#34;</span>, key, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)ret<span style="color:#f92672">-&gt;</span>ptr);
+    assert(svalue<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">==</span> ret<span style="color:#f92672">-&gt;</span>len);
+}
+</code></pre></div><p>The rest of the implementation is adapting the character arrays where the key
+and value are stored into the types expected by the interface. Finally, this can
+be compiled, and exploring the resulting module&rsquo;s imports, the same imports from
+a cache module can be seen:</p>
+<pre><code>$ make bindgen build
+$ wasm2wat-rs cpp_consumer.wasm | grep import
+  (import &quot;wasi_snapshot_preview1&quot; &quot;proc_exit&quot; (func $__wasi_proc_exit (type 2)))
+  (import &quot;cache&quot; &quot;set&quot; (func $__wasm_import_cache_set (type 3)))
+  (import &quot;cache&quot; &quot;get&quot; (func $__wasm_import_cache_get (type 4)))
+</code></pre><h2 id="linking-and-executing-components">Linking and executing components</h2>
+<p>The previous sections defined the interface, built an implementation for it,
+then imported the interface in two Rust and C++ programs, resulting in two
+WebAssembly modules with imports that must be satisfied before they can be
+instantiated. This section will them with the actual component implementation
+using
+<a href="https://github.com/bytecodealliance/wit-bindgen/tree/main/crates/wasmlink" target="_blank" rel="noreferrer noopener">wasmlink</a>
+
+, a CLI that allows us to statically link <em>a module and its dependencies using
+<a href="https://github.com/WebAssembly/module-linking" target="_blank" rel="noreferrer noopener">module linking</a>
+ and
+<a href="https://github.com/WebAssembly/interface-types/pull/140" target="_blank" rel="noreferrer noopener">the Canonical Interface Types ABI</a>
+.</em></p>
+<p>Starting with the C++ module that imports the interface, before executing it,
+its cache imports must be satisfied &mdash; this is currently done manually using
+wasmlink:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Makefile" data-lang="Makefile"><span style="color:#a6e22e">link</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">$(</span>WASMLINK<span style="color:#66d9ef">)</span> cpp_consumer.wasm <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --interface cache<span style="color:#f92672">=</span>../cache.wit <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --profile wasmtime <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --module cache<span style="color:#f92672">=</span>../rust-wasi-impl/target/wasm32-wasi/release/rust_wasi_impl.wasm <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --output linked.wasm
+
+<span style="color:#a6e22e">run</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">$(</span>WASMTIME<span style="color:#66d9ef">)</span> --enable-module-linking --enable-multi-memory --mapdir<span style="color:#f92672">=</span>/cache::. linked.wasm
+</code></pre></div><p>The link target uses the wasmlink CLI to supply the Rust implementation of the
+interface whenever the cpp_consumer.wasm imports anything from the cache module.
+The linker is also generating WebAssembly code responsible for adapting the data
+between the linear memories of each component, meaning that no component can
+access another component&rsquo;s memory directly, ensuring a &ldquo;shared-nothing&rdquo;
+approach.</p>
+<p>The output of this target is a statically linked module that contains an inline
+copy of the Rust implementation for the cache interface. (The various imports
+and exports of the final linked module can be explored using wasm2wat-rs.)</p>
+<p>Finally, this can be run using Wasmtime (with support for the module linking and
+multi memory proposals enabled, and with granting the module the ability to use
+the filesystem, where the cache implementations stores data):</p>
+<pre><code>$ make link run
+wasmtime --enable-module-linking --enable-multi-memory --mapdir=/cache::. linked.wasm
+Retrieved from `almost-consul`: `Caligula's horse, Incitatus`
+</code></pre><p>The same commands can be run for the Rust consumer:</p>
+<pre><code>$ make link run
+wasmtime --enable-module-linking --enable-multi-memory --mapdir=/cache::. linked.wasm
+Retrieved from five-good-emperors: Nerva, Trajan, Hadrian, Pius, and Marcus Aurelius
+</code></pre><p>Right now, linking is a manual operation, but as the tooling and language
+support evolves, this will be significantly improved.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This article explored the new WebAssembly component model proposal and
+demonstrated a very early way of using interfaces, building Rust and C++
+components, linking, and running them with Wasmtime. There is a great
+opportunity for improving the developer experience for building, consuming, and
+linking Wasm component, and future articles will showcase the improvements done
+together with the community, as well as other areas such as language toolchain
+integration, or the distribution of components.</p>
+<p>As more programming languages add WebAssembly as a compilation target, and as
+tooling is built that automatically generates bindings for those programming
+languages, the component model will enable true potable and cross-language
+composition for software.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu"
+                    target="_blank" rel="noreferrer">Radu Matei<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <aside>
+      <div id="disqus_thread"></div>
+    </aside>
+    <div id="show_comments"><a id="load_comments" class="button is-link">Load comments</a></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'radu-matei';
+      function disqus() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+      
+      var hash = window.location.hash.substr(1);
+      if ((hash.length > 8) && (hash.substring(0, 8) === "comment-")) {
+        disqus();
+        document.getElementById("show_comments").style.display = "none";
+      } else {
+        document.getElementById('load_comments').onclick = function () {
+          disqus();
+          document.getElementById("show_comments").style.display = "none";
+        };
+      }
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments
+        powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2021</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>

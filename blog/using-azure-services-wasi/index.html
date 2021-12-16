@@ -142,7 +142,7 @@ to <a href="https://wasi.dev" target="_blank" rel="noreferrer noopener">WASI, We
 , can be used build a WAGI handler,
 since WAGI is modeled after the <a href="https://en.wikipedia.org/wiki/Common_Gateway_Interface" target="_blank" rel="noreferrer noopener">CGI specification</a>
  &ndash; read the request
-body from the process' standard input and environment variables and write the
+body from the process&rsquo; standard input and environment variables and write the
 response to standard output. Since the request bodies can be read as byte
 arrays, modules can perform any computation on them, with the advantage of
 running the modules in the WASI isolation sandbox, together with an
@@ -178,15 +178,15 @@ file</a>
 ) &ndash; one that contains the core Azure SDK functionality, and
 the other that allows us to work with Azure Storage:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[<span style="color:#a6e22e">dependencies</span>]
-<span style="color:#a6e22e">azure_core</span> = {
+<span style="color:#a6e22e">azure_core</span> = <span style="color:#960050;background-color:#1e0010">{</span>
     <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/radu-matei/azure-sdk-for-rust&#34;</span>,
     <span style="color:#a6e22e">branch</span> = <span style="color:#e6db74">&#34;enable-wasi-experimental-http&#34;</span>,
     <span style="color:#a6e22e">features</span> = [<span style="color:#e6db74">&#34;enable_wasi_experimental_http&#34;</span>]
-}
-<span style="color:#a6e22e">azure_storage</span> = {
+<span style="color:#960050;background-color:#1e0010">}</span>
+<span style="color:#a6e22e">azure_storage</span> = <span style="color:#960050;background-color:#1e0010">{</span>
     <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/radu-matei/azure-sdk-for-rust&#34;</span>,
     <span style="color:#a6e22e">branch</span> = <span style="color:#e6db74">&#34;enable-wasi-experimental-http&#34;</span>
-}
+<span style="color:#960050;background-color:#1e0010">}</span>
 </code></pre></div><p>Notice that both repositories point to the current work-in-progress branch for
 the Azure SDK for Rust. We expect that once the project stabilizes, we would
 release crates that compile to <code>wasm32-wasi</code>.</p>
@@ -278,7 +278,7 @@ the SDK will make HTTP requests to:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
 <span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/handler&#34;</span>
 <span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;target/wasm32-wasi/release/wagi-azure-blob-storage-sample.wasm&#34;</span>
-<span style="color:#a6e22e">environment</span> = { <span style="color:#a6e22e">STORAGE_ACCOUNT</span> = <span style="color:#e6db74">&#34;&lt;sa&gt;&#34;</span>, <span style="color:#a6e22e">STORAGE_MASTER_KEY</span> = <span style="color:#e6db74">&#34;&lt;sa-key&gt;&#34;</span> }
+<span style="color:#a6e22e">environment</span> = <span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#a6e22e">STORAGE_ACCOUNT</span> = <span style="color:#e6db74">&#34;&lt;sa&gt;&#34;</span>, <span style="color:#a6e22e">STORAGE_MASTER_KEY</span> = <span style="color:#e6db74">&#34;&lt;sa-key&gt;&#34;</span> <span style="color:#960050;background-color:#1e0010">}</span>
 <span style="color:#a6e22e">allowed_hosts</span> = [<span style="color:#e6db74">&#34;https://&lt;sa&gt;.blob.core.windows.net&#34;</span>]
 </code></pre></div><p>Starting WAGI on port 3000 and sending a new request using cURL:</p>
 <pre><code>$ curl 'localhost:3000/handler?container=&lt;container&gt;&amp;blob=new-article-test' -X
@@ -456,7 +456,7 @@ Azure services opens up a lot of interesting opportunities.</p>
 
             
             <p class="author"><a href="https://twitter.com/matei_radu"
-                    target="_blank" rel="noreferrer">Radu M<br>
+                    target="_blank" rel="noreferrer">Radu Matei<br>
                     <small>@matei_radu</a></small>
             </p>
 
@@ -501,7 +501,7 @@ Azure services opens up a lot of interesting opportunities.</p>
 
 <section class="section">
   <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu M</a> 2021</p>
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2021</p>
     
   </div>
 
