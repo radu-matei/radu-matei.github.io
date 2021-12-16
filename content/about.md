@@ -6,13 +6,26 @@ disable_comments = true
 
 Hi, I'm Radu!
 
-I'm an open source software engineer who [sometimes speaks at conferences and organizes technical workshops.](/speaking)
-I'm passionate about open source software, containers and Kubernetes, serverless and the cloud, and I'm a friendly geek who works as a software engineer in the Microsoft Azure Cloud Native team, building Kubernetes and cloud native developer tools for distributed systems.
-I used to work as a cloud engineer at Microsoft, and helped startups and software development companies architect, develop, and scale their solutions using cloud native technologies.
+I am an open source software engineer passionate about WebAssembly, distributed
+systems, and artificial intelligence, working as the co-founder and CTO of
+[Fermyon](https://fermyon.com).
 
-I absolutely love music (and really excited about learning to play the piano), and enjoy a good bicycle ride.
+In the past I worked at Microsoft Azure in the
+[DeisLabs](https://github.com/deislabs) research and development team, where I
+was a core maintainer for multiple
+[server-side WebAssembly](https://github.com/orgs/deislabs/repositories?q=&type=&language=rust&sort=)
+and distributed systems projects like [Draft](https://github.com/Azure/draft),
+[Brigade](https://github.com/brigadecore/brigade), or the
+[Cloud Native Application Bundle](cnab.io) project (building the distribution
+and security specifications).
 
-This is the place I'll write about stuff I'm working on - this includes (but is not limited to): containers, Kubernetes, Go, Rust, or WebAssembly. Sometimes I also write about non-technical topics - you can find all of them under the [#personal](/tags/personal/) tag.
+I am an avid learner, I love classical music (and am excited about learning to
+play the piano), and I enjoy a good bubble tea with a bicycle ride.
+
+This is the place I will write about things I am working on — this includes (but
+not limited to) WebAssembly, Rust, or machine learning. Sometimes I also write
+about non-technical topics — you can find all of them under the
+[#personal](/tags/personal/) tag.
 
 If you need to, you can find me on the Internet:
 
@@ -20,4 +33,5 @@ If you need to, you can find me on the Internet:
 - [github.com/radu-matei](https://github.com/radu-matei)
 - [root@radu.sh](mailto:root@radu.sh)
 
-Obviously, _the views and opinions presented here are my own and are not affiliated with any organization I am part of._
+Obviously, _the views and opinions presented here are my own and are not
+affiliated with any organization I am part of._
