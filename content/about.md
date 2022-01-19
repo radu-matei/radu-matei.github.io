@@ -14,7 +14,8 @@ In the past I worked at Microsoft Azure in the
 [DeisLabs](https://github.com/deislabs) research and development team, where I
 was a core maintainer for multiple
 [server-side WebAssembly](https://github.com/orgs/deislabs/repositories?q=&type=&language=rust&sort=)
-and distributed systems projects like [Draft](https://github.com/Azure/draft),
+and distributed systems projects like [Krustlet](https://krustlet.dev),
+[Draft](https://github.com/Azure/draft),
 [Brigade](https://github.com/brigadecore/brigade), or the
 [Cloud Native Application Bundle](cnab.io) project (building the distribution
 and security specifications).
