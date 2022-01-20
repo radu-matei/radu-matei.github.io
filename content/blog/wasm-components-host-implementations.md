@@ -13,7 +13,7 @@ summary:
   introduces host implementations, and how to use tooling from the Bytecode
   Alliance to build and use such implementations."
 
-date: 2022-01-19
+date: 2022-01-20
 tags: ["wasm", "rust"]
 pdf: "/pdf/wasm-components-host-implementations.pdf"
 
