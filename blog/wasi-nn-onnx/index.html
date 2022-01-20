@@ -200,7 +200,7 @@ running ONNX models, written in Rust.</li>
 <a href="https://github.com/WebAssembly/wasi-nn/blob/main/phases/ephemeral/witx/wasi_ephemeral_nn.witx" target="_blank" rel="noreferrer noopener">the WITX definitions of the API</a>
 . For example, the API used to load a new
 model is defined as follows:</p>
-<pre><code>(module $wasi_ephemeral_nn
+<pre tabindex="0"><code>(module $wasi_ephemeral_nn
   (import &quot;memory&quot; (memory))
 
   (@interface func (export &quot;load&quot;)
@@ -213,7 +213,7 @@ model is defined as follows:</p>
 )
 </code></pre><p>Then, Wasmtime tooling can be used to generate Rust bindings and traits for the
 API that can then be implemented for a specific runtime:</p>
-<pre><code>pub trait WasiEphemeralNn {
+<pre tabindex="0"><code>pub trait WasiEphemeralNn {
     fn load(
         &amp;mut self,
         builder: &amp;GraphBuilderArray,
@@ -274,7 +274,7 @@ integration tests from the project repository</a>
 <a href="https://github.com/onnx/models/tree/master/vision/classification/squeezenet" target="_blank" rel="noreferrer noopener">SqueezeNet</a>
  and <a href="https://github.com/onnx/models/tree/master/vision/classification/mobilenet" target="_blank" rel="noreferrer noopener">MobileNetV2</a>
  models for image classification.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo build --release
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo build --release
 $ LD_LIBRARY_PATH=&lt;PATH-TO-ONNX&gt;/onnx/onnxruntime-linux-x64-1.6.0/lib \
 RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
          ./target/release/wasmtime-onnx \
@@ -312,7 +312,7 @@ and the inference times on the CPU are slightly higher than for the native ONNX
 runtime. The same binary, ONNX model, and WebAssembly module can be used to run
 the same inference &ndash; the only difference is passing the <code>--tract</code> flag,
 informing the runtime to use the alternative implementation for ONNX:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
          ./target/release/wasmtime-onnx \
         tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
         --dir tests/testdata \
@@ -407,7 +407,7 @@ post-processing, which can be adapted into the language used to build the Wasm
 module. For example, let&rsquo;s explore how to pre-process images for the two models
 (more Rust examples can be found in the <a href="https://github.com/sonos/tract/tree/main/examples" target="_blank" rel="noreferrer noopener">Tract repository</a>
 ):</p>
-<pre><code>pub fn image_to_tensor&lt;
+<pre tabindex="0"><code>pub fn image_to_tensor&lt;
   S: Into&lt;String&gt; +
   AsRef&lt;std::path::Path&gt; + Debug
 &gt;(

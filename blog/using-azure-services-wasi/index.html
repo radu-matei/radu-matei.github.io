@@ -142,7 +142,7 @@ to <a href="https://wasi.dev" target="_blank" rel="noreferrer noopener">WASI, We
 , can be used build a WAGI handler,
 since WAGI is modeled after the <a href="https://en.wikipedia.org/wiki/Common_Gateway_Interface" target="_blank" rel="noreferrer noopener">CGI specification</a>
  &ndash; read the request
-body from the process&rsquo; standard input and environment variables and write the
+body from the process' standard input and environment variables and write the
 response to standard output. Since the request bodies can be read as byte
 arrays, modules can perform any computation on them, with the advantage of
 running the modules in the WASI isolation sandbox, together with an
@@ -172,33 +172,33 @@ request body and writes it to a new blob in Azure Storage. We will write it in
 Rust, compile it to <code>wasm32-wasi</code>, then run it in WAGI. To follow along, you
 will need a built binary of WAGI, and an Azure storage account and its key.</p>
 <p>First, let&rsquo;s create a new Cargo project:</p>
-<pre><code>$ cargo new --bin wagi-azure-blob-storage-sample
+<pre tabindex="0"><code>$ cargo new --bin wagi-azure-blob-storage-sample
 </code></pre><p>We need two main dependencies in <code>Cargo.toml</code> (here is <a href="https://github.com/deislabs/wagi-azure-samples/blob/main/Cargo.toml" target="_blank" rel="noreferrer noopener">the complete Cargo.toml
 file</a>
 ) &ndash; one that contains the core Azure SDK functionality, and
 the other that allows us to work with Azure Storage:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[<span style="color:#a6e22e">dependencies</span>]
-<span style="color:#a6e22e">azure_core</span> = <span style="color:#960050;background-color:#1e0010">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[<span style="color:#a6e22e">dependencies</span>]
+<span style="color:#a6e22e">azure_core</span> = {
     <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/radu-matei/azure-sdk-for-rust&#34;</span>,
     <span style="color:#a6e22e">branch</span> = <span style="color:#e6db74">&#34;enable-wasi-experimental-http&#34;</span>,
     <span style="color:#a6e22e">features</span> = [<span style="color:#e6db74">&#34;enable_wasi_experimental_http&#34;</span>]
-<span style="color:#960050;background-color:#1e0010">}</span>
-<span style="color:#a6e22e">azure_storage</span> = <span style="color:#960050;background-color:#1e0010">{</span>
+}
+<span style="color:#a6e22e">azure_storage</span> = {
     <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/radu-matei/azure-sdk-for-rust&#34;</span>,
     <span style="color:#a6e22e">branch</span> = <span style="color:#e6db74">&#34;enable-wasi-experimental-http&#34;</span>
-<span style="color:#960050;background-color:#1e0010">}</span>
+}
 </code></pre></div><p>Notice that both repositories point to the current work-in-progress branch for
 the Azure SDK for Rust. We expect that once the project stabilizes, we would
 release crates that compile to <code>wasm32-wasi</code>.</p>
 <p>Next, we need a function that, given the storage account and blob, access key,
 and bytes, creates a new blob:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write_blob</span>(
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write_blob</span>(
     container: String,
     blob: String,
     sa: String,
     key: String,
     bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
-    http_client: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Box<span style="color:#f92672">&lt;</span>dyn HttpClient<span style="color:#f92672">&gt;&gt;</span>,
+    http_client: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Box<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">dyn</span> HttpClient<span style="color:#f92672">&gt;&gt;</span>,
 ) -&gt; Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
     <span style="color:#75715e">// create a new client for the given storage
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// account, container, and blob
@@ -210,7 +210,7 @@ and bytes, creates a new blob:</p>
          .as_container_client(container)
          .as_blob_client(blob);
 
-    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Writing {} bytes.&#34;</span>, bytes.len());
+    println!(<span style="color:#e6db74">&#34;Writing {} bytes.&#34;</span>, bytes.len());
 
     <span style="color:#75715e">// actually write some bytes to the blob.
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// the content type can be changed accordingly.
@@ -218,14 +218,14 @@ and bytes, creates a new blob:</p>
         .put_block_blob(bytes)
         .content_type(<span style="color:#e6db74">&#34;text/plain&#34;</span>)
         .execute()
-        .await<span style="color:#f92672">?</span>;
+        .<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
 
     Ok(())
 }
 </code></pre></div><p>This is just using the Rust SDK without any changes. Now we need to get the blob
 and container names from the request&rsquo;s query string, the actual body to write
 from the request body, and the access keys from environment variables:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">run</span>() -&gt; Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">run</span>() -&gt; Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
     <span style="color:#75715e">// read the container and blob names
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// from the request&#39;s query string
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> (container, blob) <span style="color:#f92672">=</span> container_and_blob_from_query()<span style="color:#f92672">?</span>;
@@ -236,7 +236,7 @@ from the request body, and the access keys from environment variables:</p>
     <span style="color:#75715e">// create a new WASI HTTP client.
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// this is the only different part compared
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// to the regular samples for the Rust SDK
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> http_client: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Box<span style="color:#f92672">&lt;</span>dyn HttpClient<span style="color:#f92672">&gt;&gt;</span> <span style="color:#f92672">=</span> Arc::new(
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> http_client: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Box<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">dyn</span> HttpClient<span style="color:#f92672">&gt;&gt;</span> <span style="color:#f92672">=</span> Arc::new(
         Box::new(WasiHttpClient {})
     );
 
@@ -253,7 +253,7 @@ from the request body, and the access keys from environment variables:</p>
         buf,
         http_client.clone(),
     )
-    .await<span style="color:#f92672">?</span>;
+    .<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
 
     Ok(())
 }
@@ -264,8 +264,8 @@ which is then used as argument for all functions that communicate with Azure
 services.</p>
 <p>Finally, the entrypoint to this program sets the content type of the response,
 then blocks on the execution of the <code>run()</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Content-Type: text/plain\n&#34;</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain\n&#34;</span>);
 
     block_on(run()).unwrap();
 }
@@ -275,17 +275,17 @@ up the WAGI configuration, <code>wagi.toml</code>. For it, we need an Azure stor
 account, and we need to set three things: the storage account name, an access
 key with write access to a container, and the URL of the storage account where
 the SDK will make HTTP requests to:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
 <span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/handler&#34;</span>
 <span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;target/wasm32-wasi/release/wagi-azure-blob-storage-sample.wasm&#34;</span>
-<span style="color:#a6e22e">environment</span> = <span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#a6e22e">STORAGE_ACCOUNT</span> = <span style="color:#e6db74">&#34;&lt;sa&gt;&#34;</span>, <span style="color:#a6e22e">STORAGE_MASTER_KEY</span> = <span style="color:#e6db74">&#34;&lt;sa-key&gt;&#34;</span> <span style="color:#960050;background-color:#1e0010">}</span>
+<span style="color:#a6e22e">environment</span> = { <span style="color:#a6e22e">STORAGE_ACCOUNT</span> = <span style="color:#e6db74">&#34;&lt;sa&gt;&#34;</span>, <span style="color:#a6e22e">STORAGE_MASTER_KEY</span> = <span style="color:#e6db74">&#34;&lt;sa-key&gt;&#34;</span> }
 <span style="color:#a6e22e">allowed_hosts</span> = [<span style="color:#e6db74">&#34;https://&lt;sa&gt;.blob.core.windows.net&#34;</span>]
 </code></pre></div><p>Starting WAGI on port 3000 and sending a new request using cURL:</p>
-<pre><code>$ curl 'localhost:3000/handler?container=&lt;container&gt;&amp;blob=new-article-test' -X
+<pre tabindex="0"><code>$ curl 'localhost:3000/handler?container=&lt;container&gt;&amp;blob=new-article-test' -X
 POST -d 'Using Azure services from WebAssembly modules is awesome!'
 Writing 57 bytes.
 </code></pre><p>We can check the blob was actually written using the Azure CLI:</p>
-<pre><code>$ az storage blob list --container &lt;container&gt; --account-name &lt;sa&gt;
+<pre tabindex="0"><code>$ az storage blob list --container &lt;container&gt; --account-name &lt;sa&gt;
 Name              Blob Type    Blob Tier    Length    Content Type
 ----------------  -----------  -----------  --------  --------------
 new-article-test  BlockBlob    Hot          57        text/plain
@@ -294,7 +294,7 @@ example can be found in <a href="https://github.com/deislabs/wagi-azure-samples"
 .</p>
 <h3 id="using-cosmos-db">Using Cosmos DB</h3>
 <p>Cosmos DB can also be used from WebAssembly modules running in WAGI:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">// create a new client based on the account and key
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">// create a new client based on the account and key
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> token <span style="color:#f92672">=</span> AuthorizationToken::primary_from_base64(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>;
 <span style="color:#66d9ef">let</span> client <span style="color:#f92672">=</span> CosmosClient::new(http_client, account, token)
     .into_database_client(database)
@@ -305,12 +305,12 @@ example can be found in <a href="https://github.com/deislabs/wagi-azure-samples"
     .create_document()
     .is_upsert(<span style="color:#66d9ef">true</span>)
     .execute(doc)
-    .await<span style="color:#f92672">?</span>;
+    .<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
 
 
 <span style="color:#75715e">// query the current collection for items with a given ID
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> query <span style="color:#f92672">=</span> format<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;SELECT * FROM c where c.id = &#39;{}&#39; &#34;</span>, some_id);
-<span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> client.query_documents().execute::<span style="color:#f92672">&lt;</span>T, _<span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>query).await<span style="color:#f92672">?</span>;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> query <span style="color:#f92672">=</span> format!(<span style="color:#e6db74">&#34;SELECT * FROM c where c.id = &#39;{}&#39; &#34;</span>, some_id);
+<span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> client.query_documents().execute::<span style="color:#f92672">&lt;</span>T, _<span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>query).<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
 </code></pre></div><p>Similarly, the account and keys have to be passed as environment variables, and
 the endpoint for the Cosmos DB account has to be on the list of allowed domains
 the module can send HTTP requests to.</p>
@@ -321,27 +321,27 @@ implemented for Cosmos DB.</p>
 <p>There are two aspects to message passing with EventGrid &ndash; sending and receiving
 messages, and with WAGI, we can handle both.</p>
 <p>Sending a message is done by using the EventGrid client from the Rust SDK:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">send_message</span><span style="color:#f92672">&lt;</span>T: <span style="color:#a6e22e">Serialize</span><span style="color:#f92672">&gt;</span>(
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">send_message</span><span style="color:#f92672">&lt;</span>T: <span style="color:#a6e22e">Serialize</span><span style="color:#f92672">&gt;</span>(
     host: String,
     key: String,
     events: Vec<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;&gt;</span>,
-    http_client: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Box<span style="color:#f92672">&lt;</span>dyn HttpClient<span style="color:#f92672">&gt;&gt;</span>,
+    http_client: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Box<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">dyn</span> HttpClient<span style="color:#f92672">&gt;&gt;</span>,
 ) -&gt; Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
     <span style="color:#75715e">// create a new client for the host
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> client <span style="color:#f92672">=</span> EventGridClient::new(host.clone(), key, http_client);
     <span style="color:#75715e">// send an array of messages
-</span><span style="color:#75715e"></span>    client.publish_events(<span style="color:#f92672">&amp;</span>events).await<span style="color:#f92672">?</span>;
-    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Sent message to host {}&#34;</span>, host);
+</span><span style="color:#75715e"></span>    client.publish_events(<span style="color:#f92672">&amp;</span>events).<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
+    println!(<span style="color:#e6db74">&#34;Sent message to host {}&#34;</span>, host);
     Ok(())
 }
 </code></pre></div><p>We can extend the previous example that writes a blob by sending a message with
 the information about the blob that was just written:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">    <span style="color:#66d9ef">let</span> events <span style="color:#f92672">=</span> vec<span style="color:#f92672">!</span>[Event::new(
-        ...
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">    <span style="color:#66d9ef">let</span> events <span style="color:#f92672">=</span> vec![Event::new(
+        <span style="color:#f92672">..</span>.
         EventData { container, blob },
     )];
 
-    send_message(host, host_key, events, http_client).await<span style="color:#f92672">?</span>;
+    send_message(host, host_key, events, http_client).<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
 </code></pre></div><p>Any event subscription can get the information that a new blob was written in
 the storage container, and we can configure a new EventGrid webhook subscription
 to be handled by a WebAssembly module running in WAGI:</p>
@@ -352,7 +352,7 @@ send a validation event, and the handler will reply with the validation
 response.</p>
 <p>Then, for all other event types, we can handle them in any way we need,
 including using any Azure SDK compilable to WebAssembly.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">run</span>() -&gt; Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">run</span>() -&gt; Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
     <span style="color:#75715e">// Event Grid sends the events to subscribers
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// in an array that has a single event.
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// https://docs.microsoft.com/en-us/azure/event-grid/event-schema
@@ -364,24 +364,24 @@ including using any Azure SDK compilable to WebAssembly.</p>
             <span style="color:#66d9ef">let</span> val <span style="color:#f92672">=</span> json<span style="color:#f92672">!</span>({
                 <span style="color:#e6db74">&#34;validationResponse&#34;</span>: <span style="color:#a6e22e">code</span>,
             });
-            println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;{}&#34;</span>, val);
+            println!(<span style="color:#e6db74">&#34;{}&#34;</span>, val);
             <span style="color:#66d9ef">return</span> Ok(());
         }
-        EventType::BlobCreated <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> handle_blob_created_event(event).await,
+        EventType::BlobCreated <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> handle_blob_created_event(event).<span style="color:#66d9ef">await</span>,
         EventType::Custom(ev) <span style="color:#f92672">=&gt;</span> {
-            panic<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;unknown event {}&#34;</span>, ev)
+            panic!(<span style="color:#e6db74">&#34;unknown event {}&#34;</span>, ev)
         }
     }
 }
 </code></pre></div><h3 id="size-distribution-caching">Size, distribution, caching</h3>
 <p>First, let&rsquo;s have a look at the size of the module:</p>
-<pre><code>$ ls target/wasm32-wasi/release/wagi-azure-blob-storage-sample.wasm
+<pre tabindex="0"><code>$ ls target/wasm32-wasi/release/wagi-azure-blob-storage-sample.wasm
 2.8M  target/wasm32-wasi/release/wagi-azure-blob-storage-sample.wasm
 </code></pre><p>This is the module generated by the Rust compiler. We can further optimize it by
 running <code>wasm-opt</code> from Binaryen (<a href="https://deislabs.io/posts/wagi-updates/#optimizing-compiled-modules-and-caching" target="_blank" rel="noreferrer noopener">this article explains a few optimization
 techniques</a>
  that should be helpful when running WebAssembly modules.):</p>
-<pre><code>$ wasm-opt wagi-azure-blob-storage-sample.wasm -O4 -o mod.wasm
+<pre tabindex="0"><code>$ wasm-opt wagi-azure-blob-storage-sample.wasm -O4 -o mod.wasm
 $ ls
 2.3M mod.wasm
 2.8M wagi-azure-blob-storage-sample.wasm
@@ -390,17 +390,17 @@ supports pulling from OCI registries, we can push the optimized module to a
 supporting registry using <a href="https://github.com/engineerd/wasm-to-oci" target="_blank" rel="noreferrer noopener"><code>wasm-to-oci</code></a>
 , and pull it from there at
 startup:</p>
-<pre><code>$ wasm-to-oci push mod.wasm ghcr.io/radu-matei/write-azure-blob-wasi:v1
+<pre tabindex="0"><code>$ wasm-to-oci push mod.wasm ghcr.io/radu-matei/write-azure-blob-wasi:v1
 INFO[0006] Pushed: ghcr.io/radu-matei/write-azure-blob-wasi:v1
 INFO[0006] Size: 2251461
 INFO[0006] Digest: sha256:62b44dc8e4e6
 </code></pre><p>Then change the WAGI configuration accordingly:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[[<span style="color:#a6e22e">module</span>]]
 <span style="color:#a6e22e">route</span> = <span style="color:#e6db74">&#34;/handler&#34;</span>
 <span style="color:#a6e22e">module</span> = <span style="color:#e6db74">&#34;oci://ghcr.io/radu-matei/write-azure-blob-wasi:v1&#34;</span>
 ...
 </code></pre></div><p>Let&rsquo;s have a look at the total response time for a request:</p>
-<pre><code>$ time curl '&lt;endpoint&gt;/handler?container=&lt;&gt;&amp;blob=&lt;&gt;' -X POST -d '...'
+<pre tabindex="0"><code>$ time curl '&lt;endpoint&gt;/handler?container=&lt;&gt;&amp;blob=&lt;&gt;' -X POST -d '...'
 Writing 57 bytes.
 0.00s user 0.00s system 1% cpu 0.423 total
 </code></pre><p>For this particular example, on my hardware, I get an average response time of
@@ -409,14 +409,14 @@ actually executing the WebAssembly module, and from making external HTTP
 requests to Azure, and depending on the datacenter location and service used,
 that latency can also be improved. But there is another significant source of
 latency &ndash; the instantiation time for the WebAssembly module:</p>
-<pre><code>wagi::runtime] instantiation time for module
+<pre tabindex="0"><code>wagi::runtime] instantiation time for module
 oci://ghcr.io/radu-matei/write-azure-blob-wasi:v1: 90.618ms
 </code></pre><p>Particularly, when instantiating a new module, Wasmtime will compile the module
 just-in-time (JIT) for the current architecture and platform, but we can use a
 cache of the compiled module by creating a <a href="https://docs.wasmtime.dev/cli-cache.html" target="_blank" rel="noreferrer noopener">Wasmtime cache</a>
  file and
 configuring WAGI to use it:</p>
-<pre><code>[cache]
+<pre tabindex="0"><code>[cache]
 enabled = true
 directory = &quot;&lt;absolute-path-to-a-temporary-cache&gt;&quot;
 # optional
@@ -425,16 +425,16 @@ cleanup-interval = &quot;1d&quot;
 files-total-size-soft-limit = &quot;10Gi&quot;
 </code></pre><p>Now we can test the endpoint again, and we can see that the total response time
 dropped significantly:</p>
-<pre><code>$ time curl '&lt;endopoint&gt;/handler?container=&lt;&gt;&amp;blob=&lt;&gt;' -X POST -d '...'
+<pre tabindex="0"><code>$ time curl '&lt;endopoint&gt;/handler?container=&lt;&gt;&amp;blob=&lt;&gt;' -X POST -d '...'
 Writing 57 bytes.
 0.00s user 0.00s system 1% cpu 0.216 total
 </code></pre><p>Checking the WAGI logs, we see the instantiation time of the WebAssembly module
 went from 90 ms to 10 ms:</p>
-<pre><code>wagi::runtime] instantiation time for module
+<pre tabindex="0"><code>wagi::runtime] instantiation time for module
 oci://ghcr.io/radu-matei/write-azure-blob-wasi:v1: 10.5992ms
 </code></pre><p>For context, a simple &ldquo;hello world&rdquo; module written in Rust, with the same
 optimization and caching settings as before is instantiated in around 2.5 ms:</p>
-<pre><code>wagi::runtime] instantiation time for module
+<pre tabindex="0"><code>wagi::runtime] instantiation time for module
 test.wasm: 2.5489ms
 </code></pre><p>Depending on the workload, services used, and hardware, you will see different
 numbers, but the optimization and caching technique should help reduce the

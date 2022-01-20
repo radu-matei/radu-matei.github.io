@@ -149,10 +149,10 @@ similar functionality for Rust runtimes, and using the JavaScript linker should
 be familiar to people using Wasmtime.</p>
 <h3 id="using-the-javascript-linker">Using the JavaScript linker</h3>
 <p>First, add the NPM package to your project:</p>
-<pre><code>$ npm install @deislabs/wasm-linker-js
+<pre tabindex="0"><code>$ npm install @deislabs/wasm-linker-js
 </code></pre><p>Then, using the <code>Linker</code> is as easy as importing it using your favorite module
 system:</p>
-<pre><code>import { Linker } from &quot;@deislabs/wasm-linker-js&quot;;
+<pre tabindex="0"><code>import { Linker } from &quot;@deislabs/wasm-linker-js&quot;;
 OR
 const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
 </code></pre><p>The next sections contain a few examples of using the JavaScript linker. In
@@ -178,7 +178,7 @@ module <code>calculator</code>.</p>
 case, provide an implementation for the <code>add</code> function from the <code>calculator</code>
 module. We can use the <code>define</code> method on the JavaScript linker and provide a
 JavaScript implementation for the required import:</p>
-<pre><code>const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
+<pre tabindex="0"><code>const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
 const { parseText } = require(&quot;binaryen&quot;);
 
 const usingAdd = `
@@ -235,7 +235,7 @@ in the <code>add</code> variable) that exports a function called <code>add</code
 import for our initial <code>usingAdd</code> module. We use the linker&rsquo;s <code>module</code> method to
 automatically link the exported items from the <code>add</code> module and use them as
 imports for instantiating <code>usingAdd</code>:</p>
-<pre><code>const add = `
+<pre tabindex="0"><code>const add = `
 (module
   (memory 1 1)
   (export &quot;memory&quot; (memory 0))
@@ -305,7 +305,7 @@ linker (by passing a true boolean to its constructor).</p>
 using this method must be transformed by running the Binaryen <code>asyncify</code> pass -
 which we do next using the <code>runPasses([&quot;asyncify&quot;])</code>. Then we can continue to
 use both the linker and instances created with the linker as before:</p>
-<pre><code>var useAsyncify = true;
+<pre tabindex="0"><code>var useAsyncify = true;
 var linker = new Linker(useAsyncify);
 
 // Notice how we define an asynchronous import, which
@@ -344,7 +344,7 @@ easiest way to use it is to pull the library through <a href="https://unpkg.com/
 check a complete example of this library in the browser in the
 <a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/index.html" target="_blank" rel="noreferrer noopener">repository</a>
 :</p>
-<pre><code>&lt;script
+<pre tabindex="0"><code>&lt;script
   type=&quot;module&quot;
   src=&quot;https://unpkg.com/@deislabs/wasm-linker-js/dist/wasm-linker.js&quot;
 &gt;&lt;/script&gt;

@@ -154,7 +154,7 @@ ASP .NET Core is no longer based on<code>System.Web</code>. Instead, everything 
 <p>The first step in beginning development is to install .NET Core. You should <a href="https://github.com/radu-matei/blog-content/blob/master/articles/dot-net-core-getting-started.md" target="_blank" rel="noreferrer noopener">follow this tutorial on how to get started with .NET Core and build a basic console application</a>
 .</p>
 <p>After installing .NET Core, open a command-line prompt, create a new directory and add a <code>dotnet</code> application.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir aspnet-core-tutorial
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir aspnet-core-tutorial
 $ cd aspnet-core-tutorial
 $ dotnet new
 </code></pre></div><p><img src="/img/article-photos/aspnet-core-getting-started/powershell-dotnet-new.JPG" alt=""></p>
@@ -162,7 +162,7 @@ $ dotnet new
 <p>The same commands work across Windows PowerShell and the macOS and Linux Terminal</p>
 </blockquote>
 <p>To check if everything is in place, execute the following commands:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ dotnet restore
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ dotnet restore
 $ dotnet run
 </code></pre></div><p><img src="/img/article-photos/aspnet-core-getting-started/powershell-dotnet-restore-run.JPG" alt=""></p>
 <blockquote>
@@ -176,7 +176,7 @@ $ dotnet run
 <h2 id="make-the-project-a-web-application">Make the project a web application</h2>
 <p>As we established earlier, every library in the new .NET Core is a package. So in order to use some packages, we will add them in <code>project.json</code> and at compile time, the packages get downloaded from NuGet.</p>
 <p>In order to host a web application, we need to have a dependency on the web server - Kestrel. After adding this dependency, the <code>project.json</code> file should look like this:</p>
-<pre><code>{
+<pre tabindex="0"><code>{
   &quot;version&quot;: &quot;1.0.0-*&quot;,
   &quot;buildOptions&quot;: {
     &quot;debugType&quot;: &quot;portable&quot;,
@@ -201,7 +201,7 @@ $ dotnet run
 ) that runs across operating systems.</p>
 </blockquote>
 <p>In <code>Program.cs</code> we add the following:</p>
-<pre><code>using System;
+<pre tabindex="0"><code>using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -235,7 +235,7 @@ namespace ConsoleApplication
 <p>The entry point for web applications in ASP .NET Core is also the <code>Main</code> method.</p>
 </blockquote>
 <p>This is a very basic web application. For every request, it will simply respond with <code>Hello, Universe!</code> and the current time of the server. It is the most simple application logic and in further examples we will examine handling more complex requests.</p>
-<pre><code> .Configure(app =&gt; app.Run(context =&gt;
+<pre tabindex="0"><code> .Configure(app =&gt; app.Run(context =&gt;
    {
       var response = String.Format(&quot;Hello, Universe! It is {0}&quot;, DateTime.Now);
       return context.Response.WriteAsync(response);

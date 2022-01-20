@@ -292,7 +292,7 @@
 <p><img src="/img/article-photos/k8s-helm-draft-azure/new-files.png" alt=""></p>
 <p>Taking a look at <code>draft.toml</code>, we can see that it will deploy a new app called <code>simple-go</code> (that&rsquo;s how I named it, if you omit the name you will get a randomly generated name) on the <code>default</code> namespace.</p>
 <p>If you change the <code>watch</code> property to <code>true</code>, it will also look for changes on your local filesystem and redeploy the app on every change:</p>
-<pre><code>[environments]
+<pre tabindex="0"><code>[environments]
   [environments.development]
     name = &quot;simple-go&quot;
     namespace = &quot;default&quot;
@@ -304,7 +304,8 @@
 <p>Then there is the release step, which will install the Helm chart of your application on the cluster, also configuring the public endpoint of your application as: http:// draft-app-name.A-Record.yourdomain.com.</p>
 <p><img src="/img/article-photos/k8s-helm-draft-azure/build.png" alt="">
 <img src="/img/article-photos/k8s-helm-draft-azure/app.png" alt=""></p>
-<p>In my case, the public endpoint of my application will be: <a href="http://simple-go.draft.k8s.radu-matei.com">http://simple-go.draft.k8s.radu-matei.com</a> :</p>
+<p>In my case, the public endpoint of my application will be: <a href="http://simple-go.draft.k8s.radu-matei.com" target="_blank" rel="noreferrer noopener">http://simple-go.draft.k8s.radu-matei.com</a>
+ :</p>
 <p><img src="/img/article-photos/k8s-helm-draft-azure/public-app.png" alt=""></p>
 <p>Note that for any update of your application (that is you modifying the app locally and saving it) while the <code>draft up</code> process is running, you will get the updated version of your application deployed automatically.</p>
 <h3 id="investigating-what-actually-happens">Investigating what actually happens</h3>

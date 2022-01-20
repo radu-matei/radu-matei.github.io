@@ -225,7 +225,7 @@ The shared PID namespace is needed so that the debugger in <code>container B</co
 <p>It is generally not recommended to run Kubernetes alpha features in production, but for use only in short-lived testing clusters, due to increased risk of bugs and lack of long-term support.</p>
 </blockquote>
 <p>Once we have a cluster with Kubernetes 1.10 and <code>--feature-gates=PodShareProcessNamespace=true</code>, we can create a pod where we share the process namespace between the containers:</p>
-<pre><code>apiVersion: v1
+<pre tabindex="0"><code>apiVersion: v1
 kind: Pod
 metadata:
   name: &lt;your-pod&gt;
@@ -249,7 +249,7 @@ spec:
 <p>Going for alpha in 1.11 is a feature used to <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/node/troubleshoot-running-pods.md" target="_blank" rel="noreferrer noopener">Troubleshoot Running Pods</a>
  - this will allow us to <strong>temporarily</strong> attach a container that has the debugger, the correct security context and the exposed ports for debugging - we then will attach the appropriate VS Code debugger, and when we&rsquo;re done, the container with the debugger will be killed.
 This comes with all of the benefits above, plus our <code>container B</code> will only run temporarily, while the debugger is attached in our IDE, having exposed ports and elevated security contexts only for the duration of the debugging session.</p>
-<pre><code>kubectl debug  --image=&lt;your-debugger-image&gt; &lt;your-application-pod&gt;
+<pre tabindex="0"><code>kubectl debug  --image=&lt;your-debugger-image&gt; &lt;your-application-pod&gt;
 </code></pre><p>While this command is running we can start the debugging session, attach the debugger and understand the behavior of our application. When we disconnect the debugger, the container with the debugger will be killed, and our application returns to its normal. Imagine integrating this command in the regular <code>Start Debugging</code> workflow that we currently have with VS Code and Draft, and you have a pretty good idea of how the workflow will look in the not-so-distant future.</p>
 <blockquote>
 <p>Keep in mind that this feature is not yet released in Kubernetes, so probably the actual commands will change, but the end result should remain fairly similar.</p>

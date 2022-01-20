@@ -153,7 +153,7 @@
 <p>Because the release of SignalR for ASP .NET Core was delayed for so long, I decided to write a very basic, stripped down (compared to the original SignalR) that only supports WebSockets (is based on <code>Microsoft.AspNetCore.WebSockets</code>) with server support, TypeScript and C# clients.</p>
 <p>This started as a fun side project (and I am pretty sure it will stay this way once SignalR becomes ready for production).</p>
 <h2 id="high-level-overview">High-level overview</h2>
-<p>This library offers <strong>real-time functionality to ASP .NET Core applications</strong>, using WebSockets. It also supports <strong>the client and the server calling each others&rsquo; methods</strong> (mainly like in the good old SignalR).</p>
+<p>This library offers <strong>real-time functionality to ASP .NET Core applications</strong>, using WebSockets. It also supports <strong>the client and the server calling each others' methods</strong> (mainly like in the good old SignalR).</p>
 <p>In order to get real-time functionality in your application, you need to create a class (called <code>Handler</code>, which inherits <a href="https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager/WebSocketHandler.cs" target="_blank" rel="noreferrer noopener"><code>WebSocketHandler</code></a>
 ), that is very similar to the <code>Hub</code> class in SignalR.</p>
 <p>Then, in this <code>Handler</code> class you can create public methods that the (JavaScript and C#) clients can call, and can call client methods.</p>
@@ -174,7 +174,7 @@
 <li><code>&quot;WebSocketManager&quot;: { &quot;target&quot;: &quot;project&quot; }</code> - this is the reference to the <code>websocket-manager</code> project in the <code>src</code> folder</li>
 </ul>
 <p>This is how <code>project.json</code> looks like:</p>
-<pre><code>{
+<pre tabindex="0"><code>{
   &quot;version&quot;: &quot;1.0.0-*&quot;,
   &quot;buildOptions&quot;: {
     &quot;debugType&quot;: &quot;portable&quot;,
@@ -199,7 +199,7 @@
   }
 }
 </code></pre><p>Then, we need to update our <code>Program.cs</code> to make this a web application, including our <code>Startup</code> class:</p>
-<pre><code>        public static void Main(string[] args)
+<pre tabindex="0"><code>        public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
@@ -225,7 +225,7 @@
 <p>The library uses a<a href="https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager.Common/Message.cs" target="_blank" rel="noreferrer noopener"> <code>Message</code> class</a>
  to pass messages between the server and clients, which contains a <code>MessageType</code> (most likely this will be a method invocation) and a <code>Data</code> field which can be used to hold any JSON-serialized object (since it is a <code>string</code> field). This is how we will pass log messages to the clients.</p>
 <h2 id="connection-and-disconnection-events">Connection and Disconnection events</h2>
-<pre><code>        public override async Task OnConnected(WebSocket socket)
+<pre tabindex="0"><code>        public override async Task OnConnected(WebSocket socket)
         {
             await base.OnConnected(socket);
 
@@ -249,7 +249,7 @@
  for the <code>Data</code> field.</p>
 </blockquote>
 <p>In a similar manner we treat the disconnection event:</p>
-<pre><code>        public override async Task OnDisconnected(WebSocket socket)
+<pre tabindex="0"><code>        public override async Task OnDisconnected(WebSocket socket)
         {
             var socketId = WebSocketConnectionManager.GetId(socket);
 
@@ -267,13 +267,13 @@
 </blockquote>
 <h2 id="creating-server-methods-and-invoking-client-methods">Creating server methods and invoking client methods</h2>
 <p>All <code>public</code> methods in a <code>Handler</code> class can be invoked by connected clients.</p>
-<pre><code>public async Task SendMessage(string socketId, string message)
+<pre tabindex="0"><code>public async Task SendMessage(string socketId, string message)
 {
     await InvokeClientMethodToAllAsync(&quot;receiveMessage&quot;, socketId, message);
 }
 </code></pre><p>This is how such a method would look like. When a client calls the <code>SendMessage</code> method on the server, the server will tell all connected clients to invoke the <code>receiveMessage</code> method, with <code>socketId</code> and <code>message</code> as parameters.</p>
 <h2 id="the-full-chathandler-class">The full <code>ChatHandler</code> class</h2>
-<pre><code>    public class ChatHandler : WebSocketHandler
+<pre tabindex="0"><code>    public class ChatHandler : WebSocketHandler
     {
         public ChatHandler(WebSocketConnectionManager webSocketConnectionManager)
                                                     : base(webSocketConnectionManager)
@@ -319,7 +319,7 @@
 <p>In the <code>Configure</code> method inside <code>Startup</code>, we need to map all clients connecting to a path in our application (in this case &ldquo;/chat&rdquo;) to be handled by a <code>Handler</code> class, in this case <code>ChatHandler</code> (given by the service provider).</p>
 <p><code>app.MapWebSocketManager(&quot;/chat&quot;, serviceProvider.GetService&lt;ChatHandler&gt;());</code></p>
 <p>This is the full <code>Configure</code> method in <code>Startup</code>:</p>
-<pre><code>        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+<pre tabindex="0"><code>        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             app.UseWebSockets();
             app.MapWebSocketManager(&quot;/chat&quot;, serviceProvider.GetService&lt;ChatHandler&gt;());
@@ -341,7 +341,7 @@
 <p>After including the <code>WebSocketManager</code> script in your page, in order to create a new connection write:</p>
 <p><code>var connection = new WebSocketManager.Connection(&quot;ws://localhost:5000/chat&quot;);</code></p>
 <p>Then, create client methods that the server can invoke:</p>
-<pre><code>            connection.clientMethods[&quot;receiveMessage&quot;] = (socketId, message) =&gt; {
+<pre tabindex="0"><code>            connection.clientMethods[&quot;receiveMessage&quot;] = (socketId, message) =&gt; {
                 var messageText = socketId + &quot; said: &quot; + message;
 
                 console.log(messageText);
@@ -354,7 +354,7 @@
 <blockquote>
 <p>Note the optional connection and disconnection methods.</p>
 </blockquote>
-<pre><code>&lt;!DOCTYPE html&gt;
+<pre tabindex="0"><code>&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 
 &lt;head&gt;
@@ -425,7 +425,7 @@
 <p>As I said earlier, there is also a C# client. Simply start a new .NET Core console application, reference the <code>WebsocketManager.Client</code> project from the repository and start a new connection. First, let&rsquo;s look at <code>project.json</code>:</p>
 <p><a href="https://github.com/radu-matei/websocket-manager/tree/master/samples/EchoConsoleClient" target="_blank" rel="noreferrer noopener">The C# client is available on GitHub, under the <code>samples</code> folder.</a>
 </p>
-<pre><code>{
+<pre tabindex="0"><code>{
   &quot;version&quot;: &quot;1.0.0-*&quot;,
   &quot;buildOptions&quot;: {
     &quot;debugType&quot;: &quot;portable&quot;,
@@ -455,7 +455,7 @@
 <p>Note that I also had to include the <code>Common</code> project - the same bug that made me include <code>Newtonsoft.Json</code> in the web application - hopefully with the new tooling of .NET Core this will not be necessary.</p>
 </blockquote>
 <p>Then, the program itself is rather simple:</p>
-<pre><code>public class Program
+<pre tabindex="0"><code>public class Program
 {
     private static Connection _connection;
     public static void Main(string[] args)
@@ -487,7 +487,7 @@
 <h2 id="integrating-this-in-an-mvc-application">Integrating this in an MVC application</h2>
 <p>Most applications are not chat applications. And in most ASP .NET Core applications MVC is used. This library can also be integrated with MVC, so you can have most of the traffic going through MVC and only the notifications going through WebSocketManager.</p>
 <p>Since the client will not invoke <code>Handler</code> methods directly, the <code>Handler</code> class only contains the constructor:</p>
-<pre><code>    public class NotificationsMessageHandler : WebSocketHandler
+<pre tabindex="0"><code>    public class NotificationsMessageHandler : WebSocketHandler
     {
         public NotificationsMessageHandler(WebSocketConnectionManage webSocketConnectionManager)
                         : base(webSocketConnectionManager)
@@ -495,7 +495,7 @@
         }
     }
 </code></pre><p>Then, in the MVC Controller simply have a property of the <code>Handler</code> type and use it to invoke client methods inside controller methods:</p>
-<pre><code>    public class MessagesController : Controller
+<pre tabindex="0"><code>    public class MessagesController : Controller
     {
         private NotificationsMessageHandler _notificationsMessageHandler { get; set; }
 

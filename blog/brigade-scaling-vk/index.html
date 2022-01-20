@@ -228,7 +228,7 @@ documentation</a>
 cluster with ingress and TLS. If you don&rsquo;t want to configure an ingress
 controller, deploying Brigade can be done with Helm:</li>
 </ul>
-<pre><code>$ helm repo add brigade https://azure.github.io/brigade-charts
+<pre tabindex="0"><code>$ helm repo add brigade https://azure.github.io/brigade-charts
 $ helm install brigade/brigade --name brigade --set genericGateway.enabled=true --set genericGateway.service.type=&lt;LoadBalancer/ClusterIP&gt;
 </code></pre><blockquote>
 <p>If you have a cloud-hosted Kubernetes cluster, it should be able to
@@ -242,7 +242,7 @@ documentation that covers configuring ingress objects with
 TLS</a>
 . Here&rsquo;s how the <code>brigade</code> namespace should
 look:</p>
-<pre><code>$ kubectl get deployment,service,ingress --namespace brigade
+<pre tabindex="0"><code>$ kubectl get deployment,service,ingress --namespace brigade
 NAME                                                    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 deployment.extensions/brigade-brigade-api               1         1         1            1           62m
 deployment.extensions/brigade-brigade-ctrl              1         1         1            1           62m
@@ -277,7 +277,7 @@ Brigade generic gateway</a>
 .</p>
 </blockquote>
 <p>The cluster provisioned for this article is a 1 node AKS cluster:</p>
-<pre><code>$ kubectl get nodes
+<pre tabindex="0"><code>$ kubectl get nodes
 NAME                       STATUS   ROLES   AGE   VERSION
 aks-agentpool-35064155-0   Ready    agent   19h   v1.12.6
 
@@ -294,7 +294,7 @@ access to creating Container Instances, as well as access to creating an Azure
 Service Principal.</p>
 <p>If you are running your Kubernetes cluster on AKS, deploying Virtual Kubelet is
 extremely easy:</p>
-<pre><code>$ az aks install-connector --resource-group &lt;aks cluster rg&gt; --name &lt;aks cluster name&gt;
+<pre tabindex="0"><code>$ az aks install-connector --resource-group &lt;aks cluster rg&gt; --name &lt;aks cluster name&gt;
 </code></pre><p>For any other Kubernetes clusters, you can follow <a href="https://github.com/virtual-kubelet/virtual-kubelet/tree/master/providers/azure#manual-set-up" target="_blank" rel="noreferrer noopener">the official instructions
 from the Virtual Kubelet repo for the ACI provider</a>
 .</p>
@@ -305,12 +305,12 @@ from the Virtual Kubelet repo for the ACI provider</a>
 </blockquote>
 <p>Now, if everything worked correctly, we should have a second node in our
 cluster, <code>virtual-kubelet</code>:</p>
-<pre><code>$ kubectl get nodes
+<pre tabindex="0"><code>$ kubectl get nodes
 NAME                       STATUS   ROLES   AGE   VERSION
 aks-agentpool-35064155-0   Ready    agent   40h   v1.12.6
 virtual-kubelet            Ready    agent   11h   v1.13.1-vk-v0.7.4-44-g4f3bd20e-dev
 </code></pre><p>Now that everything is up and running, let&rsquo;s create a new Brigade project:</p>
-<pre><code>$ brig project create
+<pre tabindex="0"><code>$ brig project create
 ? Project Name testing/brigade-vk
 
 $ brig project list
@@ -329,7 +329,7 @@ details about it in <a href="https://docs.brigade.sh/topics/genericgateway/" tar
 <p>Now let&rsquo;s use the project we just created to test a pipeline. We need a
 JavaScript pipeline that creates a Brigade job, and schedules it on the
 <code>virtual-kubelet</code> node we just created:</p>
-<pre><code class="language-javascript=" data-lang="javascript=">// save this as brigade.js
+<pre tabindex="0"><code class="language-javascript=" data-lang="javascript=">// save this as brigade.js
 const { events, Job } = require(&quot;@azure/brigadier&quot;);
 
 events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
@@ -357,7 +357,7 @@ requests for CPU and memory.</li>
 <p>Triggering an <code>exec</code> event can be done through the <code>brig</code> CLI, so if your setup
 doesn&rsquo;t include public IP services, or ingresses, you can still test this,
 provided you configured Virtual Kubelet correctly:</p>
-<pre><code>$ brig exec testing/brigade-vk -f brigade.js
+<pre tabindex="0"><code>$ brig exec testing/brigade-vk -f brigade.js
 Event created. Waiting for worker pod named &quot;brigade-worker-01d5c5g11spb27fzjwkjs7gktw&quot;.
 Build: 01d5c5g11spb27fzjwkjs7gktw, Worker: brigade-worker-01d5c5g11spb27fzjwkjs7gktw
 prestart: no dependencies file found
@@ -371,7 +371,7 @@ prestart: loading script from /etc/brigade/script
 [brigade:k8s] brigade/linux-job-01d5c5g11spb27fzjwkjs7gktw phase Succeeded
 done
 </code></pre><p>So let&rsquo;s see what is happening in our cluster when a job is scheduled:</p>
-<pre><code>$ kubectl get pods
+<pre tabindex="0"><code>$ kubectl get pods
 NAME                                               READY   STATUS       RESTARTS   AGE
 brigade-worker-01d5c58r90v5ernrsy6dkvcf5n          0/1     Completed    0          65s
 linux-job-01d5c58r90v5ernrsy6dkvcf5n               0/1     Terminated   0          29s
@@ -383,7 +383,7 @@ project, and creates all the jobs defined.</li>
 <li>the <code>linux-job</code> pod is our job that was scheduled on the Virtual Kubelet node.</li>
 </ul>
 <p>Checking the logs of the job pod:</p>
-<pre><code>$ kubectl logs linux-job-01d5c58r90v5ernrsy6dkvcf5n
+<pre tabindex="0"><code>$ kubectl logs linux-job-01d5c58r90v5ernrsy6dkvcf5n
 Hello Brigade from Azure
 </code></pre><p>Since the pod was scheduled on the Virtual Kubelet node, which is backed by
 Azure Container Instances, we should also see the container created in the Azure
@@ -415,7 +415,7 @@ between the two</li>
 <li>in a sequential job, which does all 200 executions one after the other</li>
 </ul>
 <p>Notice how we are using two core Brigade concepts - a Job, and a Group.</p>
-<pre><code class="language-javascript=" data-lang="javascript=">const { events, Job, Group } = require(&quot;@azure/brigadier&quot;);
+<pre tabindex="0"><code class="language-javascript=" data-lang="javascript=">const { events, Job, Group } = require(&quot;@azure/brigadier&quot;);
 
 const parallelism = 20;
 
@@ -506,7 +506,7 @@ event handler).</p>
 <p>At this point, you can use the <code>/cloudevents/v02/project-id/secret</code> endpoint in
 the Brigade gateway we just exposed to send POST requests in the CloudEvents
 format:</p>
-<pre><code>{
+<pre tabindex="0"><code>{
     &quot;specversion&quot; : &quot;0.2&quot;,
     &quot;type&quot; : &quot;your.custom.event.type&quot;,
     &quot;source&quot; : &quot;event source&quot;,

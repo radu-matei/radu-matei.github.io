@@ -133,7 +133,7 @@
 , <a href="https://github.com/actions/setup-python" target="_blank" rel="noreferrer noopener">Python</a>
 , or <a href="https://github.com/actions/setup-java" target="_blank" rel="noreferrer noopener">Java</a>
 , and you can directly import them in your workflow file - for example, setting up a custom version for Go:</p>
-<pre><code>steps:
+<pre tabindex="0"><code>steps:
   - name: Setup go
     uses: actions/setup-go@v1
     with:
@@ -154,14 +154,15 @@
 <h3 id="javascript-actions">JavaScript Actions</h3>
 <p>In <a href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/" target="_blank" rel="noreferrer noopener">a previous article</a>
  we saw how to configure Kind (Kubernetes in Docker) inside a GitHub Actions job - but what if we want to reuse the setup across tens of repositories? Do we copy-paste the same configuration? How about unit testing? What if there&rsquo;s a change needed? There&rsquo;s a better way - with JavaScript actions, and at the end of the article, we&rsquo;ll see a GitHub action for Kind I built.</p>
-<p>First step, we use a template for this action to bootstrap our repository - navigate to <a href="https://github.com/actions/javascript-template,">https://github.com/actions/javascript-template,</a> and click on <em>Use this template</em> - it will allow you to create a new repository in one of your accounts using this template.</p>
+<p>First step, we use a template for this action to bootstrap our repository - navigate to <a href="https://github.com/actions/javascript-template" target="_blank" rel="noreferrer noopener">https://github.com/actions/javascript-template</a>
+, and click on <em>Use this template</em> - it will allow you to create a new repository in one of your accounts using this template.</p>
 <p><img src="/img/article-photos/building-github-actions/node12-template.png" alt=""></p>
 <blockquote>
 <p>If you don&rsquo;t know about template repositories, go ahead the and <a href="https://github.blog/2019-06-06-generate-new-repositories-with-repository-templates/" target="_blank" rel="noreferrer noopener">read the announcement blog post</a>
 .</p>
 </blockquote>
 <p>There are two important files we need to look at - first is the action definition file:</p>
-<pre><code>name: &quot;The name of your action&quot;
+<pre tabindex="0"><code>name: &quot;The name of your action&quot;
 description: &quot;Description&quot;
 author: &quot;Engineerd&quot;
 inputs:
@@ -173,7 +174,7 @@ runs:
   main: &quot;lib/main.js&quot;
 </code></pre><p>This file contains metadata about our action, information about the runtime and entrypoint, and definitions for the inputs. All other inputs that we are going to use in the actions will be defined here.</p>
 <p>The other one is the entrypoint for the action (the transpiled <code>.js</code> files are found in <code>lib/</code> - the source code that you modify is in <code>src/</code> - you can change the destination for the transpiled code, but make sure to change the <code>.tsconfig</code>, <code>action.yml</code>, and <code>package.json</code> files with the appropriate directory.)</p>
-<pre><code>import * as core from '@actions/core';
+<pre tabindex="0"><code>import * as core from '@actions/core';
 async function run() {
   try {
     const myInput = core.getInput('myInput');
@@ -187,12 +188,12 @@ run();
 <h3 id="inputs-for-actions">Inputs for Actions</h3>
 <p>Custom inputs are defined in the <code>actions.yml</code> file (see how <code>myInput</code> is defined in the example above), and are passed to the GitHub Actions runtime as environment variables, following the naming schema <code>INPUT_&lt;input-name&gt;</code>.</p>
 <p>Then, consumers of the action will set the value for an input in the <code>with</code> field of the action:</p>
-<pre><code>- uses: &lt;org&gt;/&lt;action&gt;@&lt;version&gt;
+<pre tabindex="0"><code>- uses: &lt;org&gt;/&lt;action&gt;@&lt;version&gt;
     with:
         myInput: &quot;value for myInput&quot;
 </code></pre><p>Reading inputs in the action is done through <a href="https://github.com/actions/toolkit/blob/28803fc3b4374bf36e8878e38876d607b8b7107a/packages/core/src/core.ts#L61-L76" target="_blank" rel="noreferrer noopener">the <code>@action/core</code> library, which exposes a helper function, <code>core.getInput</code></a>
 .</p>
-<pre><code>import * as core from '@actions/core';
+<pre tabindex="0"><code>import * as core from '@actions/core';
 
 let input = core.getInput('myInput');
 </code></pre><p>Keep in mind that all inputs are parsed as strings, and you have to be careful when casting to other types.</p>
@@ -200,30 +201,30 @@ let input = core.getInput('myInput');
 <h3 id="downloading-tools-adding-them-to-the-path">Downloading tools, adding them to the path</h3>
 <p>Another task you might encounter when building a custom action is downloading tools and adding them to the path.</p>
 <p>The <code>@actions/tool-cache</code> package comes with a <code>downloadTool</code> method that you can use to pull files from a remote URL:</p>
-<pre><code>import * as tc from '@actions/tool-cache';
+<pre tabindex="0"><code>import * as tc from '@actions/tool-cache';
 
 let url: string = `&lt;URL for downloading the tool&gt;`;
 let downloadPath: string | null = null;
 downloadPath = await tc.downloadTool(url);
 </code></pre><p>If the tool you are downloading is platform dependent, you should check the runtime operating system and architecture first and download the correct file. Also, files are currently downloaded without extension.</p>
 <p>At this point, <code>downloadPath</code> will contain the tool you just downloaded. Setting the right permissions for a file to be executable is again platform dependent. For example, on UNIX you can use <code>chmod</code>:</p>
-<pre><code>import * as exec from '@actions/exec';
+<pre tabindex="0"><code>import * as exec from '@actions/exec';
 
 await exec.exec(&quot;chmod&quot;, [&quot;+x&quot;, downloadPath]);
 </code></pre><p>Now that the file we downloaded is executable, let&rsquo;s move it to a directory in path so future steps can use it.
 If you&rsquo;re trying to move things to <code>/usr/local/bin</code>, you won&rsquo;t have the right permissions - so let&rsquo;s just create a new directory and add it to path:</p>
-<pre><code>import * as io from '@actions/io';
+<pre tabindex="0"><code>import * as io from '@actions/io';
 
 const binPath: string = &quot;/home/runner/bin&quot;;
 await io.mkdirP(binPath);
 await io.mv(downloadPath, path.join(binPath, &quot;&lt;name-of-your-tool&gt;&quot;));
 </code></pre><p>Make sure to change the name of the tool accordingly when moving it, since the file in <code>downloadPath</code> will have an auto-generated name.</p>
 <p>Next, adding the directory we just created to the path:</p>
-<pre><code>core.addPath(binPath);
+<pre tabindex="0"><code>core.addPath(binPath);
 </code></pre><p>Let&rsquo;s recap: we downloaded a file from a remote URL, made it an executable, and moved it to a directory that is in path. Any subsequent step that is declared after this action will have access to the tool we downloaded.</p>
 <h3 id="using-files-from-the-repository">Using files from the repository</h3>
 <p>If the action you&rsquo;re building is executed <em>after</em> the checkout action, you have access to all files in the repository. However, keep in mind the current directory you&rsquo;re executing in is a temporary directory, so you have to construct the right path to the files in the repo:</p>
-<pre><code>import * as path from 'path';
+<pre tabindex="0"><code>import * as path from 'path';
 
 const wd: string = process.env[`GITHUB_WORKSPACE`] || &quot;&quot;;
 const absPath: string = path.join(wd, &quot;path-relative-to-the-repo-root&quot;);
@@ -276,7 +277,7 @@ const absPath: string = path.join(wd, &quot;path-relative-to-the-repo-root&quot;
 <p>The template uses Jest for testing - you can either use it, or replace it with your favorite JavaScript libraries for testing - <a href="https://github.com/engineerd/setup-kind/blob/73ab115c7fd3b00f032ae89c8ac65e6f136af581/test/action.ts" target="_blank" rel="noreferrer noopener">here&rsquo;s an example of using Mocha and Chai</a>
 .</p>
 <p>You might want to test you&rsquo;re getting the correct input - you can use the naming schema for environment variables:</p>
-<pre><code>const testEnvVars = {
+<pre tabindex="0"><code>const testEnvVars = {
     INPUT_MYINPUT: 'some-input',
 };
 
@@ -293,7 +294,7 @@ describe(&quot;checking input parsing&quot;, function () {
 </code></pre><p>This might not be necessarily required, but if you&rsquo;re constructing complex object based on the input data, you might want to ensure all values are correctly parsed, from environment variables all the way to your objects.</p>
 <h3 id="versioning-and-publishing-to-the-github-marketplace">Versioning and publishing to the GitHub marketplace</h3>
 <p>Versioning is the area with, in my opinion, the most room for improvement - you can use tags, branches, commit SHAs, or <code>@master</code> (although highly discouraged):</p>
-<pre><code>steps:
+<pre tabindex="0"><code>steps:
     - uses: actions/setup-node@74bc508
     - uses: actions/setup-node@v1
     - uses: actions/setup-node@master  # not recommended
@@ -305,7 +306,7 @@ describe(&quot;checking input parsing&quot;, function () {
 <p><img src="/img/article-photos/building-github-actions/marketplace.PNG" alt=""></p>
 <p>This article is a result of my experimenting on how to build a custom action for Kind - you can <a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action" target="_blank" rel="noreferrer noopener">use the action in your pipeline right now</a>
  to create a local Kubernetes cluster:</p>
-<pre><code>jobs:
+<pre tabindex="0"><code>jobs:
   kind:
     runs-on: ubuntu-latest
     steps:
@@ -316,7 +317,7 @@ describe(&quot;checking input parsing&quot;, function () {
         export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
         kubectl cluster-info
 </code></pre><p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Creating cluster <span style="color:#e6db74">&#34;kind&#34;</span> ...
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Creating cluster <span style="color:#e6db74">&#34;kind&#34;</span> ...
  ✓ Ensuring node image <span style="color:#f92672">(</span>kindest/node:v1.15.3<span style="color:#f92672">)</span> 🖼
  ✓ Preparing nodes 📦📦📦📦📦📦📦
  ✓ Configuring the external load balancer ⚖️

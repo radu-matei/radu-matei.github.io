@@ -210,7 +210,7 @@ The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the
 <h3 id="the-telemetry-collected-and-analyzed">The telemetry collected and analyzed</h3>
 <p>In this very simple example, we will only get the temperature telemetry, with the Celsius value and the timestamp of the measurement.
 Since we plan on taking more telemetry than temperature (and use these classes in other projects), we will create a project called <code>RPiSenseHatTelemetry.Common</code> that we will reference later.</p>
-<pre><code>public class TemperatureTelemetry
+<pre tabindex="0"><code>public class TemperatureTelemetry
 {
     public string Time { get; set; }
     public double Temperature { get; set; }
@@ -224,7 +224,7 @@ Since we plan on taking more telemetry than temperature (and use these classes i
 . There you can find how to create a compass, how to make disco lights from the 8x8 LED matrix or write the temperature on the LED matrix.</p>
 </blockquote>
 <p>We will create a new class that will only expose functionality related with the temperature telemetry, but you can expand this class to do all the things you want.</p>
-<pre><code>using System;
+<pre tabindex="0"><code>using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Emmellsoft.IoT.Rpi.SenseHat;
@@ -273,7 +273,7 @@ In the <code>Activate</code> method, we get the reference to the <code>ISenseHat
 <p>This is the entire code that deals with the Sense HAT.</p>
 <h3 id="displaying-the-temperature-in-the-uwp-app">Displaying the temperature in the UWP app</h3>
 <p>In the <code>MainPage</code> of the UWP app, we need to have a <code>SenseHat</code> property in order to get the temperature once every three seconds, that we then display.</p>
-<pre><code>public sealed partial class MainPage : Page
+<pre tabindex="0"><code>public sealed partial class MainPage : Page
 {
     private SenseHat _senseHat { get; set; }
 
@@ -321,7 +321,7 @@ From here, you can add devices that are authorized to send data to the IoT Hub a
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/device-explorer.JPG" alt=""></p>
 <p>In this case, I created a device called <code>RPi.SenseHat</code> that sends the temperature telemetry to the hub.</p>
 <p>To communicate with the cloud, I created a separate project - <code>RPiSenseHatTelemetry.CloudCommunication</code>, where I created a class called <code>IoTHubCommunication</code> that deals with sending a receiving messages from the cloud.</p>
-<pre><code>using System;
+<pre tabindex="0"><code>using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
@@ -374,7 +374,7 @@ using Microsoft.Azure.Devices.Client;
 </blockquote>
 <h3 id="adding-cloud-communication-to-the-uwp-app">Adding cloud communication to the UWP app</h3>
 <p>To add the cloud communication to the UWP app, simply create a new instance of our newly created class, <code>IoTHubConnection</code> and use the <code>SendEventAsync</code> method in the <code>MainPage.xaml.cs</code> file.</p>
-<pre><code>timer.Tick += async (x, y) =&gt;
+<pre tabindex="0"><code>timer.Tick += async (x, y) =&gt;
 {
     var temperatureTelemetry = _senseHat.GetTemperature();
     this.temperatureTextBlock.Text = &quot;Temperature: &quot; +
@@ -402,12 +402,12 @@ This is an <a href="https://azure.microsoft.com/en-us/documentation/articles/str
 <p><img src="/img/article-photos/rpi-sensehat-telemetry/stream-analytics-output.JPG" alt=""></p>
 <p>Notice how we also need to configure a table for our data to be stored. This table should have the same structure as our <code>TemperatureTelemetry</code> objects that we send.</p>
 <p>This is the script I used for creating the table for the temperature telemetry:</p>
-<pre><code>CREATE TABLE [dbo].[TemperatureTelemetry] (
+<pre tabindex="0"><code>CREATE TABLE [dbo].[TemperatureTelemetry] (
     [Time]        DATETIME   NULL,
     [Temperature] FLOAT (53) NOT NULL
 );
 </code></pre><p>At this point, we need a Stream Analytics query that takes the data from IoT Hub and puts it into our SQL database:</p>
-<pre><code>SELECT
+<pre tabindex="0"><code>SELECT
     Time, Temperature
 INTO
     [sql-database-output]

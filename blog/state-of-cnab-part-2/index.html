@@ -151,7 +151,7 @@
 </ol>
 <p>This is directly related to how container images (and any potential artifact types) are represented in OCI registries - by their name and registry location.</p>
 <p>Consider the following (simplified, and non-canonical) bundle file:</p>
-<pre><code>{
+<pre tabindex="0"><code>{
   &quot;images&quot;: {
     &quot;my-microservice&quot;: {
       &quot;contentDigest&quot;: &quot;sha256:aaaaaaaaaaaa...&quot;,
@@ -203,7 +203,7 @@
 <p>Also note that the actual user experience when pushing and pulling bundles will most likely differ between various tools. The <code>cnab-to-oci</code> CLI is one implementation of what arguments and parameters can be passed, and of how users would interact with the tool.</p>
 </blockquote>
 <p>Let&rsquo;s explore how to use <code>cnab-to-oci</code> right now, and how a bundle and its artifacts are represented in the registry:</p>
-<pre><code>$ cnab-to-oci push examples/helloworld-cnab/bundle.json
+<pre tabindex="0"><code>$ cnab-to-oci push examples/helloworld-cnab/bundle.json
             --target localhost:5000/cnab-test:v1
             --log-level debug
             --auto-update-bundle
@@ -288,7 +288,7 @@ Pushed successfully, with digest &quot;sha256:93fd4727cd317c3e035a3ce02e2201a013
 <li>the final digest of the index descriptor is returned</li>
 </ul>
 <p>Now let&rsquo;s explore what happens when we pull the bundle we just pushed:</p>
-<pre><code>$ cnab-to-oci pull localhost:5000/cnab-test:v1 --log-level debug
+<pre tabindex="0"><code>$ cnab-to-oci pull localhost:5000/cnab-test:v1 --log-level debug
 DEBU[0000] Pulling CNAB Bundle localhost:5000/cnab-test:v1
 DEBU[0000] Getting OCI Index Descriptor
 DEBU[0000] {
@@ -385,7 +385,7 @@ DEBU[0004] Relocation map map[cnab/helloworld:0.1.1:localhost:5000/cnab-test@sha
 <p>We have seen how we can use <code>cnab-to-oci</code> to store bundles in supporting registries today, and hopefully now we have a better understanding of how all of it works.</p>
 <h2 id="changes-to-the-oci-index">Changes to the OCI Index</h2>
 <p>But how is the OCI index we are using to store CNAB bundles identified as representing a CNAB bundle? Right now, <code>cnab-to-oci</code> relies on an annotation to achieve this:</p>
-<pre><code>&quot;org.opencontainers.artifactType&quot;: &quot;application/vnd.cnab.manifest.v1&quot;
+<pre tabindex="0"><code>&quot;org.opencontainers.artifactType&quot;: &quot;application/vnd.cnab.manifest.v1&quot;
 </code></pre><p>But as <a href="https://github.com/opencontainers/image-spec/blob/master/annotations.md" target="_blank" rel="noreferrer noopener">annotations are an optional part of the OCI specification</a>
 , using them to identify a bundle cannot be a long-term solution.
 Moreover, without additional ways of reliably identifying that an index is used to represent a CNAB bundle, tools or platforms that assume an OCI index is a multi-architecture container image might unintentionally fail.</p>

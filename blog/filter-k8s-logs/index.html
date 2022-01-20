@@ -177,7 +177,7 @@ application log file and writes the filtered logs to the sidecar <code>stdout</c
 namespaces</a>
  - that is a cluster created with
 <code>--feature-gates=PodShareProcessNamespace=true</code>, then you can access the main
-process&rsquo; <code>stdout</code> directly, without sharing a volume between the main
+process' <code>stdout</code> directly, without sharing a volume between the main
 container and the sidecar.</p>
 </blockquote>
 <blockquote>
@@ -199,7 +199,7 @@ the main application writes the logs, iterates through all Kubernetes secrets in
 the provided namespace, and checks if any value is present in the logs. If
 found, it will remove it, then write the redacted log to <code>stdout</code>. This
 container&rsquo;s logs become the application logs:</p>
-<pre><code>func filter(line string, secrets []v1.Secret) string {
+<pre tabindex="0"><code>func filter(line string, secrets []v1.Secret) string {
 	for _, s := range secrets {
 		for _, v := range s.Data {
 			// if the log line contains a secret value redact it
@@ -246,7 +246,7 @@ action.</p>
 simple NodeJS application that just logs the query parameters of every request.
 The following section redirects the application <code>stdout</code> to a logs file whose
 name is provided as an environment variable:</p>
-<pre><code>var logsFile = process.env.LOGS_FILE;
+<pre tabindex="0"><code>var logsFile = process.env.LOGS_FILE;
 
 // redirect stdout and stderr to file
 var access = fs.createWriteStream(logsFile);
@@ -262,7 +262,7 @@ modern framework.</p>
 <p>Now we simply build a container image out of our application and push it to a
 container registry. Then, we need to create a Kubernetes manifest with the main
 application and the sidecar:</p>
-<pre><code>apiVersion: v1
+<pre tabindex="0"><code>apiVersion: v1
 kind: Pod
 metadata:
   name: filter-logs
@@ -304,7 +304,7 @@ used on RBAC-enabled clusters</a>
 brevity.</p>
 </blockquote>
 <p>For simplicity, let&rsquo;s create a new namespace:</p>
-<pre><code>$ kubectl create namespace filter-logs
+<pre tabindex="0"><code>$ kubectl create namespace filter-logs
 </code></pre><p>Now in this namespace, <a href="https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret-using-kubectl-create-secret" target="_blank" rel="noreferrer noopener">create a new secret, according to the instructions in
 the Kubernetes documentation.</a>
  The values I used are:
@@ -321,7 +321,7 @@ would redact that.</p>
 <p>Clearly, the sidecar container redacts all secret values from the application
 logs, so we avoid accidentally outputting secret values in the logs of our
 applications. Executing <code>kubectl logs</code> also works as expected:</p>
-<pre><code>$ kubectl logs filter-logs -c filter
+<pre tabindex="0"><code>$ kubectl logs filter-logs -c filter
 { user: 'radu',
   password: 'abcdef' }
 

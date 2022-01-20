@@ -154,7 +154,7 @@
 <p>The configuration for running Kind in a pod will need a privileged context, and will mount host path volumes for <code>/sys/fs/cgroup</code> and <code>/lib/modules</code> from your actual Kubernetes node - so again, <strong>proceed with care and at your own risk</strong>.</p>
 </blockquote>
 <p>Now that we got the disclaimer out of the way, let&rsquo;s see how to run Kind in a pod:</p>
-<pre><code>apiVersion: v1
+<pre tabindex="0"><code>apiVersion: v1
 kind: Pod
 metadata:
   name: kind
@@ -224,9 +224,8 @@ spec:
 <p>For example, the following <code>brigade.js</code> file will execute the two <code>echo</code> tasks in an <code>alpine</code> container on each <code>exec</code> event received by Brigade:</p>
 </blockquote>
 <blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
-</code></pre></div></blockquote>
-<p>const { events, Job } = require(&quot;@brigadecore/brigadier&rdquo;);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"></code></pre></div></blockquote>
+<p>const { events, Job } = require(&quot;@brigadecore/brigadier&quot;);
 events.on(&ldquo;exec&rdquo;, () =&gt; {
 var job = new Job(&ldquo;do-nothing&rdquo;, &ldquo;alpine:3.8&rdquo;);
 job.tasks = [
@@ -235,7 +234,7 @@ job.tasks = [
 ];</p>
 <p>job.run();
 });</p>
-<pre><code>&gt; Check these resources for [a Brigade scripting guide][guide] and an [advanced scripting guide][advanced].
+<pre tabindex="0"><code>&gt; Check these resources for [a Brigade scripting guide][guide] and an [advanced scripting guide][advanced].
 
 Brigade allows us to control the flow of executing tasks in containers in Kubernetes pods - so we can take the Kind configuration, and completely abstract it with a [custom Brigade job][utils].
 
@@ -269,7 +268,7 @@ events.on(&quot;exec&quot;, e2e);
 <p>You can also completely change the configured tasks - <a href="https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts" target="_blank" rel="noreferrer noopener">check out how the steps are configured, and always ensure to delete the Kind cluster even when your tasks fail (by default, we are using Linux traps)</a>
 .</p>
 <p>Sample output from running the job:</p>
-<pre><code>time=&quot;2019-08-09T20:24:41.801448759Z&quot; level=info msg=&quot;Starting up&quot;
+<pre tabindex="0"><code>time=&quot;2019-08-09T20:24:41.801448759Z&quot; level=info msg=&quot;Starting up&quot;
 time=&quot;2019-08-09T20:24:48.589831337Z&quot; level=info msg=&quot;Daemon has completed initialization&quot;
 time=&quot;2019-08-09T20:24:49.497015690Z&quot; level=info msg=&quot;API listen on [::]:2376&quot;
 time=&quot;2019-08-09T20:24:49.497119288Z&quot; level=info msg=&quot;API listen on /var/run/docker.sock&quot;

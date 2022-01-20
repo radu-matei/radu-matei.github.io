@@ -137,7 +137,7 @@
 </blockquote>
 <h3 id="installing-the-routing-package">Installing the <code>Routing</code> package</h3>
 <p>First of all, we need to add the <code>Microsoft.AspNetCore.Routing</code> dependency from NuGet.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#e6db74">&#34;dependencies&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#e6db74">&#34;dependencies&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {
     <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
         <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>,
         <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
@@ -160,23 +160,23 @@
 <p>When we discussed <a href="/blog/aspnet-core-startup#the-anatomy-of-the-startup-class">the anatomy of the <code>Startup</code> class</a>
 , besides the <code>Configure</code> method we have used before, there was also a method called <code>ConfigureServices</code> used for configuring services that our application needs.</p>
 <p>Since we are going to use Routing, we should add it as a service in <code>Startup</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
 {
     services.AddRouting();
 }
 </code></pre></div><h3 id="adding-and-handling-custom-routes">Adding and handling custom routes</h3>
 <p>First of all, in the <code>Configure</code> method from <code>Startup</code> we need to instantiate a new instance of the <code>RouteBuilder</code> class that will allow us to build custom routes and handle them.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> routeBuilder = <span style="color:#66d9ef">new</span> RouteBuilder(app);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">var</span> routeBuilder = <span style="color:#66d9ef">new</span> RouteBuilder(app);
 </code></pre></div><p>We will then use this instance to map requests to to specific paths with our request handlers, allowing us to handle<code>GET</code> and <code>POST</code> requests from clients.</p>
 <p>The way to map a <code>GET</code> request is to use the <code>MapGet</code> method from <code>RouteBuilder</code>. Mapping the application root - http://localhost:5000 is done through:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Hello from root!&#34;</span>));
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Hello from root!&#34;</span>));
 </code></pre></div><p>Mapping specific paths for <code>GET</code> - for example http://localhost:5000/hello is done in the following way.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Hello from /hello&#34;</span>));
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Hello from /hello&#34;</span>));
 </code></pre></div><p>We can create paths that contain multiple elements and we can extract the parameters entered when making the request. For example, when requesting on <code>hello/{name}</code>, we can extract the parameter <code>{name}</code> and use it when constructing the response:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello/{name}&#34;</span>, context =&gt; context.Response
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello/{name}&#34;</span>, context =&gt; context.Response
     .WriteAsync(<span style="color:#e6db74">$&#34;Hello, {context.GetRouteValue(&#34;</span>name<span style="color:#e6db74">&#34;)}&#34;</span>));
 </code></pre></div><p>We can also add constrains on the parameters. For example, let&rsquo;s create a respond for requests coming to the path <code>/square/{number}</code>, where <code>{number}</code> is an <code>int</code> and responds with the square of the number.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;square/{number:int}&#34;</span>, context =&gt;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapGet(<span style="color:#e6db74">&#34;square/{number:int}&#34;</span>, context =&gt;
     {
         <span style="color:#66d9ef">int</span> number = Convert.ToInt32(context.GetRouteValue(<span style="color:#e6db74">&#34;number&#34;</span>));
         <span style="color:#66d9ef">return</span> context.Response.WriteAsync(<span style="color:#e6db74">$&#34;The square of {number} is {number * number}&#34;</span>);
@@ -189,13 +189,13 @@
 <blockquote>
 <p>You can also place some breakpoint inside the custom route handlers and iterate through the handlers step-by-step, watching how the response is formed.</p>
 </blockquote>
-<pre><code>http://localhost:5000
+<pre tabindex="0"><code>http://localhost:5000
 http://localhost:5000/hello
 http://localhost:5000/hello/John
 http://localhost:5000/square/3
 </code></pre><p>So far we only created routing mapped for the <code>GET</code> method, so we can test the output from a browser tab.
 Now we will add routing for a <code>POST</code> method (so we will not be able to test it by navigating to the URL in the browser).</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapPost(<span style="color:#e6db74">&#34;post&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Posting!&#34;</span>));
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">routeBuilder.MapPost(<span style="color:#e6db74">&#34;post&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Posting!&#34;</span>));
 </code></pre></div><p>In order to test this route, we need to use a tool that sends <code>HTTP</code> requests to our application. We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop" target="_blank" rel="noreferrer noopener">PostMan for Google Chrome</a>
 .</p>
 <p><img src="/img/article-photos/aspnet-core-routing/routing-postman.JPG" alt=""></p>
@@ -203,7 +203,7 @@ Now we will add routing for a <code>POST</code> method (so we will not be able t
 <p>If we try and change the method type in PostMan from <code>POST</code> to <code>GET</code>, we notice how the request fails.</p>
 </blockquote>
 <h3 id="the-full-startup-class">The full <code>Startup</code> class</h3>
-<pre><code>using System;
+<pre tabindex="0"><code>using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

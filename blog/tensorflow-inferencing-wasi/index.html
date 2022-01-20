@@ -163,7 +163,7 @@ example</a>
 classifications using the <a href="https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet" target="_blank" rel="noreferrer noopener">MobileNet V2</a>
  model, which will be used as
 a starting point for our Wasm module:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
     <span style="color:#75715e">// load the model
 </span><span style="color:#75715e"></span>    .model_for_path(<span style="color:#e6db74">&#34;mobilenet_v2_1.4_224_frozen.pb&#34;</span>)<span style="color:#f92672">?</span>
     <span style="color:#75715e">// specify input type and shape
@@ -199,7 +199,7 @@ of the best prediction. Using Rust&rsquo;s <code>wasm32-wasi</code> compilation 
 project compiles to WebAssembly successfully, but executing it with
 <a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
  (or any other runtime) results in a panic:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ wasmtime run tf-example.wasm --dir=.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ wasmtime run tf-example.wasm --dir=.
 &#39;The global thread pool has not been initialized.:
 ThreadPoolBuildError { kind: IOError(Custom
 { error: &#34;operation not supported on this platform&#34; })}&#39;
@@ -220,14 +220,14 @@ in WebAssembly (<a href="https://github.com/WebAssembly/threads" target="_blank"
 ), the program panics.
 Fortunately, turning off all crate features except JPEG loading solves the
 problem:</p>
-<pre><code>image = { ... default-features = false, features = [&quot;jpeg&quot;] }
+<pre tabindex="0"><code>image = { ... default-features = false, features = [&quot;jpeg&quot;] }
 </code></pre><p>Because the program assumes both the model and image are in the current
 directory, we can use Wasmtime&rsquo;s <code>--dir</code> flag to grant the module permission to
 the current directory, and the program classifies the image as
 <code>military uniform</code> with a confidence of 32% (654 is the index of the
 <code>military uniform</code> label in the labels file of the model, and the image is that
 of Grace Hopper in uniform):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ wasmtime run tf-example.wasm --dir=.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ wasmtime run tf-example.wasm --dir=.
 result: Some((0.32560226, 654))
 </code></pre></div><p>However, getting the model and image from disk on every inference is not ideal,
 since I/O operations can be costly. Additionally, we might need classify images
@@ -259,7 +259,7 @@ Before returning, the function calls <a href="https://doc.rust-lang.org/std/mem/
 ownership of the memory block and ensure the vector&rsquo;s destructor is not called
 when the object goes out of scope. Finally, the function returns the pointer to
 the start of the memory block.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Allocate memory into the module&#39;s linear memory
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Allocate memory into the module&#39;s linear memory
 </span><span style="color:#e6db74">/// and return the offset to the start of the block.
 </span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
 <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">alloc</span>(len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span> {
@@ -277,7 +277,7 @@ memory) and the length of the object. Then, it uses
 <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts" target="_blank" rel="noreferrer noopener"><code>Vec::from_raw_parts</code></a>
  to create a <code>Vec&lt;u8&gt;</code> with the respective
 length and capacity (equal to the length) for each of the two objects:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// This is the module&#39;s entry point for executing inferences.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// This is the module&#39;s entry point for executing inferences.
 </span><span style="color:#e6db74">/// It takes as arguments pointers to the start of the module&#39;s
 </span><span style="color:#e6db74">/// memory blocks where the model and the image were copied,
 </span><span style="color:#e6db74">/// as well as their lengths, meaning that callers of this
@@ -316,18 +316,18 @@ entrypoint for our module.</p>
 similar to the example we saw earlier, with the only difference that it now
 takes the model and image data as arguments, rather than reading them from the
 file system (hence the slight changes in loading them):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Perform the inference given the contents of the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Perform the inference given the contents of the
 </span><span style="color:#e6db74">/// model and the image, and return the index of the
 </span><span style="color:#e6db74">/// predicted class.
 </span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">infer</span>(model_bytes: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>], image_bytes: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>]) -&gt; <span style="color:#66d9ef">i32</span> {
     <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> model <span style="color:#f92672">=</span> std::io::Cursor::new(model_bytes);
     <span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
         .model_for_read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> model)
-    ...
+    <span style="color:#f92672">..</span>.
     <span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::load_from_memory(image_bytes);
-    ...
+    <span style="color:#f92672">..</span>.
     <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image));
-    ...
+    <span style="color:#f92672">..</span>.
 }
 </code></pre></div><p>We can now compile the code to the Rust <code>wasm32-wasi</code> target and get a
 WebAssembly module that can be instantiated and executed in any WASI compatible
@@ -348,7 +348,7 @@ July</a>
 memory. The function takes as arguments the actual bytes to copy and an instance
 of the module, calls the module&rsquo;s exported <code>alloc</code> function, and copies the
 bytes into the module&rsquo;s memory, starting at <code>ptr</code>:</p>
-<pre><code>// write `bytes` into the memory of `instance`
+<pre tabindex="0"><code>// write `bytes` into the memory of `instance`
 function writeGuestMemory(bytes, instance) {
   var len = bytes.byteLength;
   // call the module's `alloc` function
@@ -370,7 +370,7 @@ two objects we want to write into memory, then invokes the module&rsquo;s
 lengths as parameters. The return value of the <code>infer_from_ptrs</code> function is the
 index of the predicted class - we use it together with the model&rsquo;s labels file
 in order to get a human-friendly description of the prediction:</p>
-<pre><code>// get a prediction given the MobileNet V2 model,
+<pre tabindex="0"><code>// get a prediction given the MobileNet V2 model,
 // an image, and an instance of the Wasm module
 // that performs the inference.
 function getPrediction(model_bytes, img_bytes, instance) {
@@ -399,7 +399,7 @@ function getPrediction(model_bytes, img_bytes, instance) {
  of this project contains the complete logic for
 instantiating the module, a compiled version of the WebAssembly module, the
 MobilNet V2 model, as well as a directory with a couple of images we can test:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ node --experimental-wasi-unstable-preview1 \
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ node --experimental-wasi-unstable-preview1 \
        --experimental-wasm-bigint \
        test.js
 predicting on file  golden-retriever.jpeg
@@ -422,7 +422,7 @@ API</a>
 byte array and an instance of the WebAssembly module, writes the data into the
 module&rsquo;s memory - essentially the same functionality we implemented in
 JavaScript in the previous section:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Write a byte array into the instance&#39;s linear memory
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Write a byte array into the instance&#39;s linear memory
 </span><span style="color:#e6db74">/// and return the offset relative to the module&#39;s memory.
 </span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write_guest_memory</span>(
     bytes: <span style="color:#66d9ef">&amp;</span>Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
@@ -441,7 +441,7 @@ JavaScript in the previous section:</p>
         .get_func(ALLOC_FN)
         .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
     <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(
-        <span style="color:#f92672">&amp;</span>vec<span style="color:#f92672">!</span>[Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
+        <span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
     )<span style="color:#f92672">?</span>;
 
     <span style="color:#75715e">// The result is an offset relative to the module&#39;s
@@ -469,7 +469,7 @@ the model and image into the guest&rsquo;s memory, then invoke the <code>invoke_
 function from the WebAssembly module. Finally, use a simple helper function that
 gets the index of the predicted class and return the human-friendly label of the
 class:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Get a prediction given the MobileNet V2 model and an image.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Get a prediction given the MobileNet V2 model and an image.
 </span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get_prediction</span>(
     model_bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
     img_bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>
@@ -499,7 +499,7 @@ class:</p>
 
     <span style="color:#75715e">// Call the inference function with the pointer
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// and length of the model contents and image.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> results <span style="color:#f92672">=</span> infer.call(<span style="color:#f92672">&amp;</span>vec<span style="color:#f92672">!</span>[
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> results <span style="color:#f92672">=</span> infer.call(<span style="color:#f92672">&amp;</span>vec![
         Val::from(model_bytes_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
         Val::from(model_bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
         Val::from(img_bytes_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
@@ -544,13 +544,13 @@ project</a>
 , an HTTP server is started on port 3000 which expects an image
 URL as request body, downloads the image contents, gets a prediction using the
 method described above, then returns its human-friendly label:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo run --release
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo run --release
 Listening on http://127.0.0.1:3000
 
 module instantiation time: 774.715145ms
 inference time: 723.531083ms
 </code></pre></div><p>In another terminal instance (or from an HTTP request builder, such as Postman):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ curl --request GET &#39;localhost:3000&#39; \
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ curl --request GET &#39;localhost:3000&#39; \
 --header &#39;Content-Type: text/plain&#39; \
 --data-raw &#39;https://&lt;url-to-a-retriever-puppy&gt;.jpg&#39;
 golden retriever

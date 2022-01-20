@@ -167,12 +167,12 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 </ul>
 <p>To follow along this article, you can use <a href="https://github.com/radu-matei/helm/tree/debugging-draft" target="_blank" rel="noreferrer noopener">my branch of Helm</a>
  which contains all the assets necessary assets for debugging:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone -b debugging-draft https://github.com/radu-matei/helm
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone -b debugging-draft https://github.com/radu-matei/helm
 </code></pre></div><p>Before moving to actually debugging, it is worth mentioning that Helm has two components - a client-side CLI, that runs locally on the machine and a server-side component, Tiller, which is deployed in your cluster. We will debug both components.</p>
 <h3 id="debugging-the-helm-cli">Debugging the Helm CLI</h3>
 <p>Debugging the Helm CLI is as simple as debugging any Golang project when using the Golang extension for VS Code and Delve - add a launch configuration and start debugging. The only thing to note here is that we can either build our binary for every change in our code, or attach to a pre-built binary - below and in the repo you&rsquo;ll find both configurations:</p>
 <p>This configuration builds Helm from <code>cmd/helm</code> and attaches the debugger:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Build and Debug Helm CLI&#34;</span>,
     <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
     <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
@@ -183,7 +183,7 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
     ]
 }
 </code></pre></div><p>This configuration expects an existing binary in <code>bin/helm</code>, will launch it and attach the debugger:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Debug Helm CLI&#34;</span>,
     <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
     <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
@@ -201,7 +201,7 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 
 <p>To change the command and arguments passed to the Helm CLI, simply add to the <code>args</code> property in the launch configuration.
 Notice that we are debugging the local component of Helm - the <code>helm version</code> command is executed part locally (what we debugged) and part on the cluster:</p>
-<pre><code>Client: &amp;version.Version{SemVer:&quot;v2.8+unreleased&quot;, GitCommit:&quot;&quot;, GitTreeState:&quot;&quot;}
+<pre tabindex="0"><code>Client: &amp;version.Version{SemVer:&quot;v2.8+unreleased&quot;, GitCommit:&quot;&quot;, GitTreeState:&quot;&quot;}
 Server: &amp;version.Version{SemVer:&quot;v2.8.2&quot;, GitCommit:&quot;a80231648a1473929271764b920a8e346f6de844&quot;, GitTreeState:&quot;clean&quot;}
 </code></pre><p>The server version was executed in the cluster - we did not debug that call simply because we only started debugging the local component of Helm. Let&rsquo;s debug Tiller!</p>
 <h3 id="debugging-tiller">Debugging Tiller</h3>
@@ -223,7 +223,7 @@ Server: &amp;version.Version{SemVer:&quot;v2.8.2&quot;, GitCommit:&quot;a8023164
 </p>
 </blockquote>
 <p>We will not be able to use this binary for debugging, so we simply create a new Make target where we pass the desired Golang build flags:</p>
-<pre><code>.PHONY: docker-debug
+<pre tabindex="0"><code>.PHONY: docker-debug
 docker-debug: BINDIR = ./rootfs
 docker-debug:
 	GOOS=linux GOARCH=amd64 $(GO) build -o $(BINDIR)/tiller k8s.io/helm/cmd/tiller
@@ -232,14 +232,14 @@ docker-debug:
 </blockquote>
 <p>Before we get to building the image and push it to a registry, we need a way to <code>make docker-debug</code>. Draft has a feature called <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-008.md" target="_blank" rel="noreferrer noopener">Draft tasks</a>
  which we will use to build the Tiller binary -  add a <code>.draft-tasks.toml</code> file which contains a <code>pre-up</code> task:</p>
-<pre><code>[pre-up]
+<pre tabindex="0"><code>[pre-up]
     build-tiller = &quot;make docker-debug&quot;
 </code></pre><blockquote>
 <p>Note that if you don&rsquo;t want to create a new binary every time you attach the debugger you can comment the step above and simply <code>make docker-debug</code> when you want a new Tiller binary.</p>
 </blockquote>
 <h3 id="creating-the-docker-image-pushing-it-to-a-registry">Creating the Docker image, pushing it to a registry</h3>
 <p>In the repo you can find <code>Dockerfile.tiller.debug</code>, which we will use to build the container image:</p>
-<pre><code>FROM radumatei/golang-delve
+<pre tabindex="0"><code>FROM radumatei/golang-delve
 
 COPY rootfs/tiller .
 COPY rootfs/start.sh .
@@ -251,10 +251,10 @@ CMD ./start.sh
 <li>we copy the Tiller binary we built before</li>
 <li>we also copy a shell script and use it to start the container - this script will start Tiller and attach the Delve debugger to the Tiller process, creating a headless Delve server and exposing it on port 2345:</li>
 </ul>
-<pre><code>./tiller &amp;
+<pre tabindex="0"><code>./tiller &amp;
 dlv attach $(pgrep -x tiller | head -n 1) tiller --headless --listen=0.0.0.0:2345 --log=true
 </code></pre><p>Now we need to configure a couple of things for Draft, in <code>draft.toml</code>:</p>
-<pre><code>[environments]
+<pre tabindex="0"><code>[environments]
   [environments.development]
     name = &quot;tiller-debug&quot;
     namespace = &quot;default&quot;
@@ -268,7 +268,7 @@ dlv attach $(pgrep -x tiller | head -n 1) tiller --headless --listen=0.0.0.0:234
 </ul>
 <h3 id="the-helm-template-for-our-deployment">The Helm template for our deployment</h3>
 <p>The only missing part is the actual Kubernetes configuration for our application - here are the most important things to note in the deployment template (not the complete file!):</p>
-<pre><code>apiVersion: extensions/v1beta1
+<pre tabindex="0"><code>apiVersion: extensions/v1beta1
 kind: Deployment
 spec:
   template:
@@ -298,7 +298,7 @@ spec:
 <p>The thing to note for the deployment is the <code>SYS_PTRACE</code> capability - this is because <code>dlv attach</code> needs to <code>ptrace</code> the target process, and this is disabled by the default Kubernetes security context.</p>
 <h3 id="putting-it-all-together-start-debugging-with-vs-code">Putting it all together. Start debugging with VS Code</h3>
 <p>At this point you need the Kubernetes extension for VS Code and you need to add a <code>draft</code> debug configuration, together with a Golang remote debug configuration. This will execute <code>draft up</code>, <code>draft connect</code> to expose the ports to <code>localhost</code>, then will attach the debug configuration you specified:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;draft&#34;</span>,
     <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
     <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Draft Debug Tiller&#34;</span>,

@@ -154,10 +154,10 @@
  and <a href="https://docs.microsoft.com/en-us/azure/container-registry" target="_blank" rel="noreferrer noopener">Azure Container Registry</a>
 .</p>
 <p>First step is defining the media types we are going to associate WebAssembly modules - this helps identifying the artifact type, and can be used when configuring a registry to explicitly allow or disallow storing them.</p>
-<pre><code>ConfigMediaType       = &quot;application/vnd.wasm.config.v1+json&quot;
+<pre tabindex="0"><code>ConfigMediaType       = &quot;application/vnd.wasm.config.v1+json&quot;
 ContentLayerMediaType = &quot;application/vnd.wasm.content.layer.v1+wasm&quot;
 </code></pre><p>In order to push, we read the contents of the module, add them as a single layer in an OCI descriptor, then use <code>oras.Push</code>:</p>
-<pre><code>contents, err := ioutil.ReadFile(module)
+<pre tabindex="0"><code>contents, err := ioutil.ReadFile(module)
 
 desc := store.Add(module, ContentLayerMediaType, contents)
 layers := []ocispec.Descriptor{desc}
@@ -169,7 +169,7 @@ pushOpts := []oras.PushOpt{
 
 manifest, err := oras.Push(ctx, resolver, ref, store, layers, pushOpts...)
 </code></pre><p>Pulling is similarly straightforward - we use <code>oras.Pull</code> to get the OCI manifest and actual module, then write it to a file:</p>
-<pre><code>pullOpts := []oras.PullOpt{
+<pre tabindex="0"><code>pullOpts := []oras.PullOpt{
 	oras.WithAllowedMediaType(ContentLayerMediaType),
 	oras.WithPullEmptyNameAllowed(),
 }
@@ -182,7 +182,7 @@ ioutil.WriteFile(outFile, contents, 0755)
 <h3 id="testing-with-an-oci-registry">Testing with an OCI registry</h3>
 <p>We have a local module (which can be found in the <code>testdata</code> directory of the <a href="https://github.com/engineerd/wasm-to-oci" target="_blank" rel="noreferrer noopener">repo</a>
 ), and we use the <code>wasm-to-oci</code> to push to an Azure Container Registry repository that we are currently logged in to (using the Docker CLI):</p>
-<pre><code>$ ls
+<pre tabindex="0"><code>$ ls
 .rwxr-xr-x 1.6M radu  hello.wasm
 
 $ wasm-to-oci push hello.wasm &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1
@@ -190,7 +190,7 @@ Pushed: &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1
 Size: 1624962
 Digest: sha256:4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
 </code></pre><p>At this point, we can use the same utility to pull from the repository we just pushed, then use a WebAssembly runtime of choice to execute the module:</p>
-<pre><code>$ wasm-to-oci pull &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1 --out test.wasm
+<pre tabindex="0"><code>$ wasm-to-oci pull &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1 --out test.wasm
 
 Pulled: &lt;oci-registry&gt;.azurecr.io/wasm-to-oci:v1
 Size: 1624962
@@ -202,7 +202,7 @@ Hello from WebAssembly!
 $ wasmer run test.wasm
 Hello from WebAssembly!
 </code></pre><p>We can inspect the generated OCI manifest, and see the media types we set earlier, together with the digests and size of the manifest and actual module:</p>
-<pre><code>{
+<pre tabindex="0"><code>{
   &quot;schemaVersion&quot;: 2,
   &quot;config&quot;: {
     &quot;mediaType&quot;: &quot;application/vnd.wasm.config.v1+json&quot;,

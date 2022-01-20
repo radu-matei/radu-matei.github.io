@@ -169,7 +169,7 @@ examples, and we are going to use it in building our controller. Besides the
 usual CRUD operations that you can do with the client, you can also <em>watch</em> for
 various resources - we listen on a given resource, and then we handle the events
 that take place:</p>
-<pre><code>var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
+<pre tabindex="0"><code>var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
                 group: &quot;api group&quot;,
                 version: &quot;version,
                 namespaceParameter: &quot;namespace&quot;,
@@ -181,7 +181,7 @@ result.Watch&lt;T&gt;((type, item) =&gt; _handle(type, item));
 the generic type <code>T</code> on <code>Watch&lt;T&gt;</code> method - it is supposed to handle custom
 resources of type <code>T</code> - but how does a custom resource look like? Here&rsquo;s an
 example:</p>
-<pre><code>apiVersion: engineerd.dev/v1alpha1
+<pre tabindex="0"><code>apiVersion: engineerd.dev/v1alpha1
 kind: Example
 metadata:
   creationTimestamp: &quot;2019-05-05T21:10:44Z&quot;
@@ -222,7 +222,7 @@ the metadata, in <a href="https://github.com/kubernetes-client/csharp/blob/maste
 <p>This means that we have to add the <code>spec</code> and (optionally) <code>status</code> for our CRD,
 and this is (on a high level) what the <code>CustomResource</code> class in the project
 looks like:</p>
-<pre><code>  public abstract class CustomResource&lt;TSpec, TStatus&gt;
+<pre tabindex="0"><code>  public abstract class CustomResource&lt;TSpec, TStatus&gt;
   {
       public V1ObjectMeta Metadata { get; set; }
       public TSpec Spec { get; set; }
@@ -263,7 +263,7 @@ custom resources, and we end up with a library that can be consumed from a C#
 console library as follows (for a CRD that <a href="https://github.com/engineerd/kubecontroller-csharp/tree/article/KubeController.Sample/deploy" target="_blank" rel="noreferrer noopener">can be found in the
 repository</a>
 ):</p>
-<pre><code>var crd = new CustomResourceDefinition()
+<pre tabindex="0"><code>var crd = new CustomResourceDefinition()
 {
     ApiVersion = &quot;engineerd.dev/v1alpha1&quot;,
     PluralName = &quot;examples&quot;,

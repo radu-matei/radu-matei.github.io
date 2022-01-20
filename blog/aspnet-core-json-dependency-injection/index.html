@@ -159,12 +159,12 @@
 <p>Since this is going to be a web app, we need the Kestrel web server package. As I said earlier, we are not going to use the JSON Configuration provider (at this point), so we will only need a library to deserialize (part of) JSON, and we will use Newtonsoft.Json.</p>
 <h3 id="creating-a-dummy-service">Creating a dummy service</h3>
 <p>We are going to need a very simple service to inject in our application:</p>
-<pre><code>public interface ITest
+<pre tabindex="0"><code>public interface ITest
 {
     string DoSomething(string parameter);
 }
 </code></pre><p>And an even simpler implementation:</p>
-<pre><code>public class Test : ITest
+<pre tabindex="0"><code>public class Test : ITest
 {
     public string DoSomething(string parameter)
     {
@@ -173,7 +173,7 @@
 }
 </code></pre><h3 id="how-to-inject-an-itest-service">How to inject an <code>ITest</code> service</h3>
 <p>In order to inject a service of type <code>ITest</code>, you need to add a function in <code>Startup</code> called <code>ConfigureServices</code> that has a parameter of type <code>IServiceCollection</code> and add the service in this collection.</p>
-<pre><code>public void ConfigureServices(IServiceCollection services)
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.Add(new ServiceDescriptor(serviceType: typeof(ITest),
                                        implementationType: typeof(Test),
@@ -183,7 +183,7 @@
 _</p>
 <h3 id="the-json-file">The JSON File</h3>
 <p>Since we will use a JSON file, it might as well be the one we use for other configurations (or a completely different one). Regardless of what you choose, you can extract only the relevant part of the JSON file using a section name.</p>
-<pre><code>{
+<pre tabindex="0"><code>{
     &quot;services&quot;: [
         {
             &quot;serviceType&quot;: &quot;ITest&quot;,
@@ -201,7 +201,7 @@ _</p>
 <h3 id="the-service-class">The <code>Service</code> class</h3>
 <p>These 3 properties are mapped into a class called <code>Service</code>. For simplicity, the <code>ServiceType</code> and <code>ImplementationType</code> properties are of type <code>string</code>, but you can always implement a <code>JsonConverter</code> that maps them to the type <code>Type</code> (There is no immediate conversion from <code>string</code> to <code>Type</code>).</p>
 <p>Since <code>Newtonsoft</code> has implemented the conversion from <code>string</code> to <code>enum</code>, we used it here to convert to <code>ServiceLifetime</code> enum from <code>Microsoft.Extensions.DependencyInjection</code>.</p>
-<pre><code>using Microsoft.Extensions.DependencyInjection;
+<pre tabindex="0"><code>using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -216,7 +216,7 @@ public class Service
 }
 </code></pre><h3 id="adding-the-services">Adding the services</h3>
 <p>Next, in the <code>Startup</code> class we will simply deserialize the JSON section into a <code>List&lt;Service&gt;</code>, iterate through it and add the services:</p>
-<pre><code>private void ConfigureJsonServices(IServiceCollection services)
+<pre tabindex="0"><code>private void ConfigureJsonServices(IServiceCollection services)
 {
     var jsonServices = JObject.Parse(File.ReadAllText(&quot;appSettings.json&quot;))[&quot;services&quot;];
     var requiredServices = JsonConvert.DeserializeObject&lt;List&lt;Service&gt;&gt;(jsonServices.ToString());
@@ -234,7 +234,7 @@ public class Service
 <p><img src="/img/article-photos/aspnet-core-json-dependency-injection/services-breakpoint.JPG" alt=""></p>
 <p>We can see that our <code>ITest</code> service was added and now we can inject it anywhere in our application.</p>
 <p>At this point, we can also inject an instance of the service in the <code>Configure</code> method and have a message returned from the service:</p>
-<pre><code>public void Configure(IApplicationBuilder app, ITest test)
+<pre tabindex="0"><code>public void Configure(IApplicationBuilder app, ITest test)
 {
     app.Run(context =&gt;
     {

@@ -167,7 +167,7 @@ With WebSockets, you can send data between the server and the client over a sing
 <p>Before writing the middleware itself, we need a few classes that deal with connections and handling messages.</p>
 <h3 id="writing-a-websocket-connection-manager">Writing a WebSocket Connection Manager</h3>
 <p>The first thing we notice when using the WebSocket package is that everything is low-level: we deal with individual connections, buffers and cancellation tokens. There is no built-in way of storing sockets, nor are they identified in any way. So we&rsquo;re building a class that keeps all active sockets in a thread-safe collection and assigns each a unique ID, while also maintaining the collection (getting, adding and removing sockets).</p>
-<pre><code>public class ConnectionManager
+<pre tabindex="0"><code>public class ConnectionManager
 {
     private ConcurrentDictionary&lt;string, WebSocket&gt; _sockets = new ConcurrentDictionary&lt;string, WebSocket&gt;();
 
@@ -208,7 +208,7 @@ With WebSockets, you can send data between the server and the client over a sing
 </code></pre><p>Notice the use of a <code>ConcurrentDictionary</code> for the collection - this is because we will try using the collection from multiple user requests concurrently.</p>
 <h3 id="writing-a-websocket-handler">Writing a WebSocket Handler</h3>
 <p>Now that we have a way of keeping track of the connected clients, we want a class that handles connection and disconnection events and manages sending and receiving messages from the socket. Let&rsquo;s see how a class like this might look like:</p>
-<pre><code>public abstract class WebSocketHandler
+<pre tabindex="0"><code>public abstract class WebSocketHandler
 {
     protected ConnectionManager WebSocketConnectionManager { get; set; }
 
@@ -261,7 +261,7 @@ With WebSockets, you can send data between the server and the client over a sing
 <h3 id="the-middleware-itself">The middleware itself</h3>
 <p>So far we built classes that help maintaining a record of connected sockets and handle sending and receiving messages to and from those sockets. Now it&rsquo;s time to build the actual middleware:</p>
 <p>As any middleware, it needs to receive a <code>RequestDelegate</code> for the next component in the pipeline, while executing operations on the <code>HttpContext</code> before and after invoking the next component, and it needs an <code>async Task Invoke</code> method. It doesn&rsquo;t have to inherit or implement anything, just to have the <code>Invoke</code> method.</p>
-<pre><code>public class WebSocketManagerMiddleware
+<pre tabindex="0"><code>public class WebSocketManagerMiddleware
 {
     private readonly RequestDelegate _next;
     private WebSocketHandler _webSocketHandler { get; set; }
@@ -317,7 +317,7 @@ With WebSockets, you can send data between the server and the client over a sing
 <p>Most likely in modern applications you want to send notifications and messages only to clients connected to a specific part of the application (think SignalR Hubs).</p>
 <p>With this middleware, you can map different paths of your application with specific implementations of <code>WebSocketHandler</code>, so you would get completely isolated environments (and different instances of <code>WebSocketConnectionManager</code>, but more on this later).</p>
 <p>So mapping the middleware is done using the following extension method on <code>IApplicationBuilder</code>:</p>
-<pre><code>public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app,
+<pre tabindex="0"><code>public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app,
                                                         PathString path,
                                                         WebSocketHandler handler)
 {
@@ -325,7 +325,7 @@ With WebSockets, you can send data between the server and the client over a sing
 }
 </code></pre><p>It receives a path and it maps that path using with the <code>WebSocketManagerMiddleware</code> which is passed the specific implementation of <code>WebSocketHandler</code> you provided as argument for the <code>MapWebSocketManager</code> extension method.</p>
 <p>You also need to add some services in order to use them, and this is done in another extension method on <code>IServiceCollection</code>:</p>
-<pre><code>public static IServiceCollection AddWebSocketManager(this IServiceCollection services)
+<pre tabindex="0"><code>public static IServiceCollection AddWebSocketManager(this IServiceCollection services)
 {
     services.AddTransient&lt;ConnectionManager&gt;();
 
@@ -348,7 +348,7 @@ With WebSockets, you can send data between the server and the client over a sing
 <h3 id="scenario-1---client-sending-messages-through-websockets">Scenario 1 - Client Sending messages through WebSockets</h3>
 <p>Using the middleware we just created we will build a chat application (I know, everybody shows chat applications when playing around with WebSockets).
 In order use the newly created middleware, we need to call the extension method <code>MapWebSocketManager</code> inside a new project&rsquo;s <code>Startup</code> class.</p>
-<pre><code>public class Startup
+<pre tabindex="0"><code>public class Startup
 {
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -371,7 +371,7 @@ In order use the newly created middleware, we need to call the extension method 
 </code></pre><p>First we need to <code>UseWebSockets()</code>, then map the paths you want to be handled by the middleware.</p>
 <p>We said that we need to pass the <code>MapWebSocketManager</code> method an implementation of <code>WebSocketHandler</code>. Remember that in the extension method we registered all types that inherited <code>WebSocketHandler</code> as singletons in the framework. So at this moment we can use the <code>IServiceProvider</code> to give us instances of those classes.</p>
 <p>Let&rsquo;s have a look at an actual implementation of <code>WebSocketHandler</code>, <code>ChatMessageHandler</code>:</p>
-<pre><code>public class ChatMessageHandler : WebSocketHandler
+<pre tabindex="0"><code>public class ChatMessageHandler : WebSocketHandler
 {
     public ChatMessageHandler(ConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
     {
@@ -396,7 +396,7 @@ In order use the newly created middleware, we need to call the extension method 
 </code></pre><p>It overrides the <code>OnConnected</code> method to send a message to everybody broadcasting that a new client connected and it implements the <code>ReceiveAsync</code> method (by just broadcasting the method to all clients).</p>
 <p>At this point, you can create a new message handler to separate the clients connected on a page from another, since there will be separate collections of connections.</p>
 <p>Now let&rsquo;s add a web client that connects through WebSockets:</p>
-<pre><code>&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
+<pre tabindex="0"><code>&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
 &lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
 
 &lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
@@ -445,7 +445,7 @@ In order use the newly created middleware, we need to call the extension method 
 <h3 id="scenario-2---receiving-real-time-notifications-from-a-controller">Scenario 2 - Receiving real-time notifications from a controller</h3>
 <p>This time we will build an MVC application and have client send data through the MVC pipeline. Then, the notifications would get fired from within the controller.</p>
 <p>We will build a standard MVC application and we will add the <code>WebSocketManagerMiddleware</code> we created. Here&rsquo;s the <code>Startup</code> class of this application:</p>
-<pre><code>public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+<pre tabindex="0"><code>public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     var serviceScopeFactory = app.ApplicationServices.GetRequiredService&lt;IServiceScopeFactory&gt;();
     var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
@@ -459,7 +459,7 @@ In order use the newly created middleware, we need to call the extension method 
     });
 }
 </code></pre><p>Since this time the handler class only manages the connected clients and will not handle requests itself, we can leave the <code>ReceiveAsync</code> method unimplemented:</p>
-<pre><code>public class NotificationsMessageHandler : WebSocketHandler
+<pre tabindex="0"><code>public class NotificationsMessageHandler : WebSocketHandler
 {
     public NotificationsMessageHandler(WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
     {
@@ -471,7 +471,7 @@ In order use the newly created middleware, we need to call the extension method 
     }
 }
 </code></pre><p>And the controller:</p>
-<pre><code>public class MessagesController : Controller
+<pre tabindex="0"><code>public class MessagesController : Controller
 {
     private NotificationsMessageHandler _notificationsMessageHandler { get; set; }
 
@@ -488,7 +488,7 @@ In order use the newly created middleware, we need to call the extension method 
 }
 </code></pre><p>In the controller we will have a <code>NotificationsMessageHandler</code> instance that will handle the sending of notifications to all connected clients.</p>
 <p>The HTML page is very similar to the previous ones, but this time the message will be sent using the API we created, so through HTTP and not WebSockets, so only the <code>sendMessage</code> method is different:</p>
-<pre><code>function sendMessage(message) {
+<pre tabindex="0"><code>function sendMessage(message) {
     console.log(&quot;Sending: &quot; + message);
 
     $.ajax({
@@ -502,7 +502,7 @@ In order use the newly created middleware, we need to call the extension method 
 <h3 id="extra---console-client">Extra - Console client</h3>
 <p>You can also use a C# console client to connect to the application we created.</p>
 <p>This sample uses the <code>System.Net.WebSockets</code> namespace which contains the <code>ClientWebSocket</code> class:</p>
-<pre><code>public class Program
+<pre tabindex="0"><code>public class Program
 {
     public static void Main(string[] args)
     {

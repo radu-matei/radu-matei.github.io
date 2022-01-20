@@ -135,7 +135,7 @@
  tutorial.</p>
 <h3 id="adding-the-mvc-services-to-our-application">Adding the MVC services to our application</h3>
 <p>The first thing we have to do is add the <code>&quot;Microsoft.AspNetCore.Mvc&quot;: &quot;1.0.0&quot;</code> dependency in <code>project.json</code>, then add the <code>ConfigureServices</code> method in the <code>Startup</code> class.</p>
-<pre><code>public void ConfigureServices(IServiceCollection services)
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
 }
@@ -152,7 +152,7 @@
 <blockquote>
 <p>So a request for <code>/api/test/hello/3</code> will be mapped to <code>TestController</code> in the <code>Hello</code> method which will have 3 as parameter for <code>id</code>.</p>
 </blockquote>
-<pre><code>public void Configure(IApplicationBuilder app)
+<pre tabindex="0"><code>public void Configure(IApplicationBuilder app)
 {
     app.UseMvc(routes =&gt;
     {
@@ -166,7 +166,7 @@
 <p>Note that you can customize your route template in any way, I chose the <code>/api</code> option because in previous versions of ASP .NET (Web Api) this was the default route for creating an API.</p>
 </blockquote>
 <p>At this point, we can add a controller and make some requests to test our framework. So let&rsquo;s add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p>
-<pre><code>using Microsoft.AspNetCore.Mvc;
+<pre tabindex="0"><code>using Microsoft.AspNetCore.Mvc;
 
 public class PostsController : Controller
 {
@@ -178,7 +178,7 @@ public class PostsController : Controller
 </code></pre><p>To run the application, execute <code>dotnet restore</code> and <code>dotnet run</code> in the root of the project and browse to <code>http://localhost:5000/api/Posts/Hello</code>. If everything works, you should see the message received from the controller.</p>
 <h3 id="adding-the-post-class">Adding the <code>Post</code> class</h3>
 <p>As we said earlier, each user that enters can publish a post containing his user name and a text, so our <code>Post</code> class only contains two properties for the <code>UserName</code> and <code>Text</code> of the post and an <code>Id</code>.</p>
-<pre><code>public class Post
+<pre tabindex="0"><code>public class Post
 {
     public int Id { get; set; }
     public string UserName { get; set; }
@@ -200,7 +200,7 @@ public class PostsController : Controller
 <h3 id="creating-an-ipostrepository-interface">Creating an <code>IPostRepository</code> interface</h3>
 <p>In order for our API to work, we are going to need a way for it to store data. Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, <code>IPostRepository</code>, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p>
 <p>So the interface should look like this:</p>
-<pre><code>using System.Collections.Generic;
+<pre tabindex="0"><code>using System.Collections.Generic;
 
 public interface IPostRepository
 {
@@ -211,13 +211,13 @@ public interface IPostRepository
 </code></pre><p>Since this is a very simple example, we are going to store the data in a list in memory, but regardless of the location, the publicly available methods will be exactly the same, making any modifications to the data store easy to implement (more on this later).</p>
 <h3 id="creating-an-in-memory-implementation-of-ipostrepository">Creating an in-memory implementation of <code>IPostRepository</code></h3>
 <p>We will implement the <code>IPostRepository</code> interface through an in-memory class we will call <code>PostRepository</code> that will hold the data in a list.</p>
-<pre><code>private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
+<pre tabindex="0"><code>private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
 {
     new Post(1, &quot;Obi-Wan Kenobi&quot;,&quot;These are not the droids you're looking for&quot;),
     new Post(2, &quot;Darth Vader&quot;,&quot;I find your lack of faith disturbing&quot;)
 };
 </code></pre><p>Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it will be private. Besides the list, we only need to implement the three methods from the interface, so here is the full <code>PostRepository</code> class:</p>
-<pre><code>using System.Collections.Generic;
+<pre tabindex="0"><code>using System.Collections.Generic;
 using System.Linq;
 
 public class PostRepository : IPostRepository
@@ -246,7 +246,7 @@ public class PostRepository : IPostRepository
 <p>ASP .NET (MVC Core and other versions) maps requests to classes called controllers that are responsible for processing incoming requests, handling user input and generating the response (by themselves or by calling other services).</p>
 <p>We will create a very simple <code>PostController</code>  that will have methods to get all posts, add a post and retrieve a single post based on the id.</p>
 <p>The controller will have some instance of <code>IPostRepository</code>(we will see shortly how it will have it) and will call methods from the repository.</p>
-<pre><code>using System.Collections.Generic;
+<pre tabindex="0"><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 public class PostsController : Controller
@@ -279,7 +279,7 @@ public class PostsController : Controller
 <p>Besides from the publicly exposed methods of the API (any public method placed in a controller is publicly accessible from the web), we also have a constructor through which we can provide the appropriate implementation of <code>IPostRepository</code> and we will specify this in the <code>Startup</code> of our application.</p>
 <h3 id="registering-the-repository-service-in-startup">Registering the repository service in <code>Startup</code></h3>
 <p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven&rsquo;t specified what instance of <code>IPostRepository</code> our application is supposed to use.</p>
-<pre><code>public void ConfigureServices(IServiceCollection services)
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
     services.AddSingleton&lt;IPostRepository, PostRepository&gt;();
@@ -289,7 +289,7 @@ public class PostsController : Controller
 <p>We added the repository as singleton because of the in-memory implementation: if we made a new instance of <code>PostRepository</code> for every request, then the post list would be instantiated every time, not saving the modifications.</p>
 </blockquote>
 <h3 id="startupcs"><code>Startup.cs</code></h3>
-<pre><code>using Microsoft.AspNetCore.Builder;
+<pre tabindex="0"><code>using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 public class Startup
@@ -321,7 +321,7 @@ public class Startup
 <p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get.JPG" alt=""></p>
 <p>We can see that the response was JSON and it returned a 200 OK HTML code.</p>
 <p>In order to test the post functionality, we create a POST request to <code>http://localhost:5000/api/Posts/AddPost</code> with a JSON object containing the properties of a <code>Post</code>.</p>
-<pre><code>{
+<pre tabindex="0"><code>{
     &quot;Id&quot;: 3,
     &quot;UserName&quot;: &quot;Darth Vader&quot;,
     &quot;Text&quot;: &quot;Luke, I am your father!&quot;
@@ -329,7 +329,7 @@ public class Startup
 </code></pre><blockquote>
 <p>You can either use the upper camel case or the lower camel case notation (as you saw in the response from the server, the objects were in lower camel case), but the name and type of the properties must match the ones on the server:</p>
 </blockquote>
-<pre><code>{
+<pre tabindex="0"><code>{
     &quot;id&quot;: 3,
     &quot;userName&quot;: &quot;Darth Vader&quot;,
     &quot;text&quot;: &quot;Luke, I am your father!&quot;

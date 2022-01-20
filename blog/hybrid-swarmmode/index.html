@@ -208,7 +208,7 @@
 <p>Now you should be able to execute <code>acs-engine</code> from any directory:</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/acs-engine.PNG" alt=""></p>
 <p>Now let&rsquo;s create the ARM templates we will deploy: in a new directory, download the gist with the initial cluster definition (the gist file from above). You can either copy it yourself, or <code>wget</code> the file:</p>
-<pre><code>wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json
+<pre tabindex="0"><code>wget https://gist.githubusercontent.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f/raw/d6a30f867b09d4baa64f78d2499a154096d053e2/swarmmode-hybrid.json
 </code></pre><p>After you edit the file with your values, generate the ARM templates using <code>acs-engine generate swarmmode-hybrid.json</code>:</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/acs-engine-generate.PNG" alt=""></p>
 <p>This will create an <code>_output</code> directory that will contain the ARM template tht we will use for the deployment.</p>
@@ -217,7 +217,7 @@
 <p>Note that you should choose the region closest to your location.</p>
 </blockquote>
 <p>Then, using the generated files <code>azuredeploy.json</code> and <code>azuredeploy.parameters.json</code>, create a new deployment using the <code>az</code> command-line interface:</p>
-<pre><code>az group deployment create
+<pre tabindex="0"><code>az group deployment create
     --name hybrid-swarmmode-deployment
     --resource-group {your-resource-group}
     --template-file azuredeploy.json
@@ -238,7 +238,7 @@
 <p>After the deployment succeeds, you are now ready to connect to the master. You will SSH into the masters using the user and SSH key you setup in the cluster definition file. The 3 FQDNs will have the following template:</p>
 <p><code>{yourfqdnname}.{azurelocation}.cloudapp.azure.com</code></p>
 <p>Each master can be publicly accessed using the FQDN and one of the ports (2200..220x) (So you will access the first master on 2200, the second master on 2201 and so on.). For example, to SSH into the first master, use the following:</p>
-<pre><code>ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200
+<pre tabindex="0"><code>ssh -i path-to-private-key azureuser@{yourfqdn}.{azurelocation}.cloudapp.azure.com -p 2200
 </code></pre><p>Then, if you list all nodes in the cluster you might first see this:</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/docker-node-ls.PNG" alt=""></p>
 <p>This means we only see the 3 masters and the 3 Linux agents. This means that even though the Windows nodes were deployed, they did not join the swarm.</p>

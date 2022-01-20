@@ -191,7 +191,7 @@ value in the Dockerfile, keep in mind that the value is present in the layers of
 the built image - so be careful if you are publishing the image to a container
 registry. You can always put a generic password and change it after booting up
 the distribution.</p>
-<pre><code>FROM ubuntu:18.04
+<pre tabindex="0"><code>FROM ubuntu:18.04
 ENV HOME /home/radu
 
 RUN apt-get update
@@ -212,7 +212,7 @@ machine, there is nothing stopping you from copying signing keys, or tokens, or
 passwords and configuring them.</p>
 <h3 id="importing-the-distribution-into-wsl">Importing the distribution into WSL</h3>
 <p>First, build the image based on your Dockerfile:</p>
-<pre><code>$ docker build -t my-custom-fs .
+<pre tabindex="0"><code>$ docker build -t my-custom-fs .
 $ docker run --name fs -it -d my-custom-fs
 $ docker export --output my-custom-fs.tar fs
 </code></pre><p>The size of the filesystem depends on what tools you configured. A blank Ubuntu
@@ -220,7 +220,7 @@ $ docker export --output my-custom-fs.tar fs
 around 4 GB (but it contains multiple SDKs and frameworks, a container runtime,
 and a full browser, among others).</p>
 <p>At this point, you can import the distribution:</p>
-<pre><code>$ wsl --import my-custom-distro .\my-custom-distro-location\ .\my-custom-fs.tar
+<pre tabindex="0"><code>$ wsl --import my-custom-distro .\my-custom-distro-location\ .\my-custom-fs.tar
 $ wsl --list --verbose
   NAME                STATE           VERSION
   my-custom-distro    Stopped         2
@@ -231,12 +231,12 @@ documentation</a>
 Windows terminal, the distribution should be automatically added to your
 configuration list after restarting the terminal. Otherwise, you can manually
 open a shell to your distribution using <code>wsl</code>:</p>
-<pre><code>$ wsl --distribution my-custom-distro
+<pre tabindex="0"><code>$ wsl --distribution my-custom-distro
 root@surface:~#
 </code></pre><p>If you configured a user, you can pass it to the <code>wsl</code> command using the
 <code>--user</code> flag, or you can configure the Windows terminal to always login as that
 user:</p>
-<pre><code>&quot;commandline&quot;: &quot;wsl.exe --distribution my-custom-distro --user radu&quot;,
+<pre tabindex="0"><code>&quot;commandline&quot;: &quot;wsl.exe --distribution my-custom-distro --user radu&quot;,
 </code></pre><h3 id="conclusion">Conclusion</h3>
 <p>In this article, we explored a way of pre-configuring a WSL distribution using a
 Dockerfile. You can use this method to configure all the tools you use

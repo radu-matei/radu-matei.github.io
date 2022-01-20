@@ -204,7 +204,7 @@ the file descriptor rights to describe the capability of a module to connect to
 a socket, which is the approach taken by <a href="https://github.com/WebAssembly/WASI/pull/312" target="_blank" rel="noreferrer noopener">the current
 proposal</a>
 ):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/phases/snapshot/witx/wasi_snapshot_preview1.witx
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/phases/snapshot/witx/wasi_snapshot_preview1.witx
 b/phases/snapshot/witx/wasi_snapshot_preview1.witx
 index 5604c3e..4c356c6 100644
 <span style="color:#f92672">--- a/phases/snapshot/witx/wasi_snapshot_preview1.witx
@@ -240,16 +240,16 @@ the socket&rsquo;s file descriptor back to the client - so its Rust implementati
 follows the signature defined in WITX, directly starts a TCP connection to the
 desired IP address and port, and retains a handle for the socket&rsquo;s file
 descriptor:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sock_connect</span>(
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sock_connect</span>(
     <span style="color:#f92672">&amp;</span>self,
     ipv4_addr: <span style="color:#66d9ef">u32</span>,
     port: <span style="color:#66d9ef">u16</span>,
 ) -&gt; Result<span style="color:#f92672">&lt;</span>types::Fd<span style="color:#f92672">&gt;</span> {
     <span style="color:#66d9ef">use</span> std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
     <span style="color:#66d9ef">let</span> addr <span style="color:#f92672">=</span> SocketAddrV4::new(Ipv4Addr::from(ipv4_addr), port);
-    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasi_snapshot_preview1::sock_connect to addr {:#?}&#34;</span>, addr);
+    println!(<span style="color:#e6db74">&#34;wasi_snapshot_preview1::sock_connect to addr {:#?}&#34;</span>, addr);
     <span style="color:#66d9ef">let</span> stream <span style="color:#f92672">=</span> TcpStream::connect(addr)<span style="color:#f92672">?</span>;
-    <span style="color:#66d9ef">let</span> handle: Box<span style="color:#f92672">&lt;</span>dyn <span style="color:#66d9ef">crate</span>::handle::Handle<span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span>
+    <span style="color:#66d9ef">let</span> handle: Box<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">dyn</span> <span style="color:#66d9ef">crate</span>::handle::Handle<span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span>
         Box::new(SocketHandle(std::cell::RefCell::new(stream)));
     <span style="color:#66d9ef">let</span> entry <span style="color:#f92672">=</span> Entry::new(EntryHandle::from(handle));
     self.insert_entry(entry)
@@ -257,10 +257,10 @@ descriptor:</p>
 </code></pre></div><p>Next, <code>sock_recv</code> and <code>sock_send</code> are implemented in a similar manner - get the
 socket&rsquo;s file descriptor, data buffers, and flags as arguments, and either read
 from the buffer, or write into it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sock_recv</span>(
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sock_recv</span>(
     <span style="color:#f92672">&amp;</span>self,
   fd: <span style="color:#a6e22e">types</span>::Fd,
-  ri_data: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">types</span>::IovecArray<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">&#39;_</span><span style="color:#f92672">&gt;</span>,
+  ri_data: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">types</span>::IovecArray<span style="color:#f92672">&lt;&#39;</span>_<span style="color:#f92672">&gt;</span>,
     _ri_flags: <span style="color:#a6e22e">types</span>::Riflags,
 ) -&gt; Result<span style="color:#f92672">&lt;</span>(types::Size, types::Roflags)<span style="color:#f92672">&gt;</span> {
   <span style="color:#66d9ef">use</span> std::convert::TryFrom;
@@ -278,7 +278,7 @@ from the buffer, or write into it:</p>
       .get_entry(fd)<span style="color:#f92672">?</span>
       .as_handle(<span style="color:#f92672">&amp;</span>HandleRights::empty())<span style="color:#f92672">?</span>
       .read_vectored(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> iovs)<span style="color:#f92672">?</span>;
-  println<span style="color:#f92672">!</span>(
+  println!(
       <span style="color:#e6db74">&#34;wasi_snapshot_preview1::sock_recv: {} bytes written&#34;</span>,
       total_size
   );
@@ -308,7 +308,7 @@ library.</p>
 WASI</a>
  - and we need to add the definition for <code>sock_connect</code>
 (which is the only API missing from the current WASI snapshot):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/std/assembly/bindings/wasi_snapshot_preview1.ts
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/std/assembly/bindings/wasi_snapshot_preview1.ts
 b/std/assembly/bindings/wasi_snapshot_preview1.ts
 index 2470e06c..b206a20a 100644
 <span style="color:#f92672">--- a/std/assembly/bindings/wasi_snapshot_preview1.ts
@@ -332,7 +332,7 @@ writing from sockets is straightforward, since both are modeled using file
 descriptors.</p>
 <p>Let&rsquo;s add a new <code>Socket</code> class to <code>as-wasi</code> with a single member, the socket&rsquo;s
 file descriptor:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/assembly/as-wasi.ts b/assembly/as-wasi.ts
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/assembly/as-wasi.ts b/assembly/as-wasi.ts
 index b8c844e..a66bdb6 100644
 <span style="color:#f92672">--- a/assembly/as-wasi.ts
 </span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/assembly/as-wasi.ts
@@ -345,7 +345,7 @@ index b8c844e..a66bdb6 100644
 </span><span style="color:#a6e22e">+ }
 </span></code></pre></div><p>In order to connect to a socket, we call WASI&rsquo;s <code>sock_connect</code> with the IP
 address and port desired, and store the file descriptor returned by Wasmtime:</p>
-<pre><code>connect(ipv4: u32, port: u16): void {
+<pre tabindex="0"><code>connect(ipv4: u32, port: u16): void {
   let fd_buf = memory.data(8);
   let res = sock_connect(ipv4, port, fd_buf);
   if (res !== errno.SUCCESS) {
@@ -360,7 +360,7 @@ encodes it (and its length) to a <a href="https://www.gnu.org/software/libc/manu
  memory block and calls
 <code>sock_send</code>. Receiving is analogous, this time <em>reading</em> from a scatter-gather
 memory block and decoding into AssemblyScript strings:</p>
-<pre><code>write(data: string): void {
+<pre tabindex="0"><code>write(data: string): void {
   let s_utf8_buf = String.UTF8.encode(data);
   let s_utf8_len: usize = s_utf8_buf.byteLength;
   let iov = memory.data(16);
@@ -381,7 +381,7 @@ convert it from <code>127.0.0.1</code> (you can <a href="https://www.bennadel.co
 ).
 This is because our WASI API is lacking DNS resolution to translate from a URL
 to an IP address (which is left as exercise for the reader):</p>
-<pre><code>import { Console, Socket } from &quot;as-wasi&quot;;
+<pre tabindex="0"><code>import { Console, Socket } from &quot;as-wasi&quot;;
 
 export function _start(): void {
   let s = new Socket();
@@ -396,7 +396,7 @@ export function _start(): void {
 C socket server you can find in <a href="https://github.com/jedisct1/as-wasi/compare/master...radu-matei:bad-sockets" target="_blank" rel="noreferrer noopener">this <code>as-wasi</code> fork</a>
  that can be
 used), we should be able to send and receive data:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
 $ wasmtime test/sockets.wat
 
 wasi_snapshot_preview1::sock_connect to addr 127.0.0.1:3333
@@ -408,7 +408,7 @@ writing to an echo server...
 protocol that works on top of sockets (with the mention that while our
 implementation only sends and receives strings, it can manipulate arbitrary data
 as well) - for example, if we start a static HTTP file server on the same port:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ echo &#34;this is a file that will be served by an
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ echo &#34;this is a file that will be served by an
         HTTP server to a WebAssembly module&#34; &gt; file.txt
 $ ls
 .rw-r--r-- 77 radu file.txt
@@ -419,7 +419,7 @@ Available on:
 Hit CTRL-C to stop the server
 </code></pre></div><p>And modify our AssemblyScript source code to make a <code>GET</code> request for
 <code>file.txt</code>:</p>
-<pre><code>import { Console, Socket } from &quot;as-wasi&quot;;
+<pre tabindex="0"><code>import { Console, Socket } from &quot;as-wasi&quot;;
 
 export function _start(): void {
   let s = new Socket();
@@ -430,7 +430,7 @@ export function _start(): void {
   Console.write(res);
 }
 </code></pre><p>We can see the response from the HTTP server:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
 $ wasmtime test/sockets.wat
 
 wasi_snapshot_preview1::sock_connect to addr 127.0.0.1:3333
@@ -461,16 +461,16 @@ bindings to include the <code>sock_connect</code> API, and add use <code>sock_co
 <p>These steps result in a forked Rust standard library (together with a stage 2
 compiler build) that can be used to compile Rust programs - for example,
 attempting to execute the same request for <code>file.txt</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> std::io::{Read, Write};
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> std::io::{Read, Write};
 <span style="color:#66d9ef">use</span> std::net::TcpStream;
 <span style="color:#66d9ef">use</span> std::<span style="color:#66d9ef">str</span>::from_utf8;
 
 <span style="color:#75715e">#[no_mangle]</span>
 <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">_start</span>() {
-  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: attempting to make a TCP stream to localhost:3333&#34;</span>);
+  println!(<span style="color:#e6db74">&#34;wasm::_start: attempting to make a TCP stream to localhost:3333&#34;</span>);
   <span style="color:#66d9ef">match</span> TcpStream::connect(<span style="color:#e6db74">&#34;localhost:3333&#34;</span>) {
       Ok(<span style="color:#66d9ef">mut</span> stream) <span style="color:#f92672">=&gt;</span> {
-          println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: successfully connected to server in port 3333&#34;</span>);
+          println!(<span style="color:#e6db74">&#34;wasm::_start: successfully connected to server in port 3333&#34;</span>);
 
           <span style="color:#66d9ef">let</span> msg <span style="color:#f92672">=</span> <span style="color:#e6db74">b&#34;GET /file.txt HTTP/1.1</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">&#34;</span>;
           stream.write(msg).unwrap();
@@ -479,22 +479,22 @@ attempting to execute the same request for <code>file.txt</code>:</p>
           <span style="color:#66d9ef">match</span> stream.read_exact(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> data) {
               Ok(_) <span style="color:#f92672">=&gt;</span> {
                   <span style="color:#66d9ef">let</span> text <span style="color:#f92672">=</span> from_utf8(<span style="color:#f92672">&amp;</span>data).unwrap();
-                  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: received {}&#34;</span>, text);
+                  println!(<span style="color:#e6db74">&#34;wasm::_start: received {}&#34;</span>, text);
               }
               Err(e) <span style="color:#f92672">=&gt;</span> {
-                  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: failed to receive data: {}&#34;</span>, e);
+                  println!(<span style="color:#e6db74">&#34;wasm::_start: failed to receive data: {}&#34;</span>, e);
               }
           }
       }
       Err(e) <span style="color:#f92672">=&gt;</span> {
-          println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: failed to connect: {}&#34;</span>, e);
+          println!(<span style="color:#e6db74">&#34;wasm::_start: failed to connect: {}&#34;</span>, e);
       }
   }
-  println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;wasm::_start: exit&#34;</span>);
+  println!(<span style="color:#e6db74">&#34;wasm::_start: exit&#34;</span>);
 }
 </code></pre></div><p>The important thing to note here is that this is using (a fork of) the Rust
 standard library directly:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ rustup run wasi32-sockets rustc --target wasm32-wasi --crate-type=cdylib
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ rustup run wasi32-sockets rustc --target wasm32-wasi --crate-type=cdylib
 -C linker=build/x86_64-apple-darwin/lld/bin/lld src/lib.rs
 $ wasmtime lib.wasm
 

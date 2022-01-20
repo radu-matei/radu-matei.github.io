@@ -140,7 +140,7 @@ WSL virtual machine. Because the virtual machine gets an IP address
 dynamically, you need to get it every time you start WSL - but you can get it
 dynamically from <code>/etc/resolv.conf</code>:</li>
 </ul>
-<pre><code>export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0
+<pre tabindex="0"><code>export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0
 </code></pre><p>At this point you can start the application on Linux, and if everything is
 configured properly, the X server should create the application window:</p>
 <p><img src="/img/article-photos/random-wsl-tips/gui.gif" alt=""></p>
@@ -169,7 +169,7 @@ multiple WSL distributions, you should really give it a try!</p>
 easier to just install Docker natively, <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/" target="_blank" rel="noreferrer noopener">according to the docs</a>
 ,
 and just start and stop it as you need:</p>
-<pre><code>$ sudo /etc/init.d/docker start
+<pre tabindex="0"><code>$ sudo /etc/init.d/docker start
  * Starting Docker: docker         [ OK ]
 
 # do your Docker work
@@ -219,13 +219,13 @@ review PRs, or view diffs:</p>
  after closing a window, VS Code doesn&rsquo;t stop all the
 server processes immediately in WSL - if you want to terminate all VS Code
 processes, you can use <code>pkill</code> to manually terminate all of them:</p>
-<pre><code>$ pkill -f vscode
+<pre tabindex="0"><code>$ pkill -f vscode
 </code></pre><p>There was a recent <a href="https://devblogs.microsoft.com/commandline/memory-reclaim-in-the-windows-subsystem-for-linux-2/" target="_blank" rel="noreferrer noopener">blog post</a>
  by the WSL team about improvements to
 memory reclaim - this is much better in the latest build, but I still find
 myself manually terminating a distribution, or the entire virtual machine, after
 a resource intensive operation, or when I finished working within WSL:</p>
-<pre><code>$ powershell.exe wsl.exe --terminate &lt;your-distro&gt;
+<pre tabindex="0"><code>$ powershell.exe wsl.exe --terminate &lt;your-distro&gt;
 # OR
 $ powershell.exe wsl.exe --shutdown
 </code></pre><h3 id="8-exporting-importing-and-duplicating-distributions">8. Exporting, importing, and duplicating distributions</h3>
@@ -239,7 +239,7 @@ distribution.)</p>
 <p>You can create multiple instances of the same distribution by importing the same
 filesystem multiple times. However, if you want to duplicate your current
 environment:</p>
-<pre><code>$ wsl --export &lt;distribution&gt; &lt;archive-file-name&gt;
+<pre tabindex="0"><code>$ wsl --export &lt;distribution&gt; &lt;archive-file-name&gt;
 $ wsl --import &lt;new-distribution&gt; &lt;install-location&gt; &lt;archive-file-name&gt;
 </code></pre><p>Now you have two identical distributions - you can do any potential harmful
 testing in one environment, then delete it.</p>

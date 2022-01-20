@@ -216,7 +216,7 @@ will compute the content digest of the module, then add it to the <code>targets<
 role of the collection, with the public part of the key</li>
 <li>publish the repository to the trust server</li>
 </ul>
-<pre><code>// initialize a new TUF repository
+<pre tabindex="0"><code>// initialize a new TUF repository
 err = notaryRepo.Initialize(rootKeyIDs);
 
 // add our target module to the repository
@@ -231,7 +231,7 @@ manifest, so the signature is persisted regardless of any compression or
 archiving operation done by the registry. Integrating this to our existing
 functionality, we first push the signed content digest to the trust server, then
 push the module to the OCI registry:</p>
-<pre><code>$ sha256sum testdata/hello.wasm
+<pre tabindex="0"><code>$ sha256sum testdata/hello.wasm
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510  testdata/hello.wasm
 
 $ wasm-to-oci push testdata/hello.wasm localhost:5000/hello-wasm-signed:v1
@@ -246,7 +246,7 @@ INFO[0000] Digest: sha256:9c82cbe576ee947c00435ac8053a800a1969f4757ae4a81f870f71
 </code></pre><p>Then, a client that wishes to consume the module will pull the module from the
 OCI registry and the trust data from the TUF server, then will compare the two
 content digests - if the digests match, the client can further use the module:</p>
-<pre><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
+<pre tabindex="0"><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
     --sign
     --tlscacert=$NOTARY_CA
     --server https://localhost:4443
@@ -265,7 +265,7 @@ Hello from WebAssembly!
 </code></pre><p>But let&rsquo;s explore what happens if the registry infrastructure has been
 compromised, and the initial module we published has been either modified, or
 replaced with a vulnerable one.</p>
-<pre><code># we're inside the OCI registry - we see the module that we pushed earlier
+<pre tabindex="0"><code># we're inside the OCI registry - we see the module that we pushed earlier
 $ sha256sum blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510  blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 
@@ -278,7 +278,7 @@ b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5  blobs/sha256/4
 </code></pre><p>Assuming that the attacker also updated the manifests (trivial, if they had
 access to the registry), a client can pull the vulnerable module and start using
 it:</p>
-<pre><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1 -o hacked
+<pre tabindex="0"><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1 -o hacked
 INFO[0000] Pulled: localhost:5000/hello-wasm-signed:v1
 INFO[0000] Digest: sha256:b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
 
@@ -286,7 +286,7 @@ $ wasmtime hacked
 YOU HAVE BEEN HACKED
 </code></pre><p>Now let&rsquo;s perform the same operation, this time by performing the signature
 verification first:</p>
-<pre><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
+<pre tabindex="0"><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
     --sign --tlscacert=$NOTARY_CA
     --server https://localhost:4443
 
