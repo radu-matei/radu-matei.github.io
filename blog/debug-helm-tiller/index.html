@@ -16,8 +16,7 @@
 
 <meta name="description" content="" />
     <meta property='og:title' content='Debug Helm and Tiller using VS Code and Draft - radu&#39;s blog'>
-<meta property='og:description' content='In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes , the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
- Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.'>
+<meta property='og:description' content='In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes , the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.'>
 <meta property='og:url' content='https://radu-matei.com/blog/debug-helm-tiller/'>
 <meta property='og:site_name' content='radu&#39;s blog'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/031fa2ff2832edcb6b30c8ffb61da4d4?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='kubernetes'><meta property='article:tag' content='draft'><meta property='article:tag' content='helm'><meta property='article:tag' content='vscode'><meta property='article:published_time' content='2018-04-29T00:00:00Z'/><meta property='article:modified_time' content='2018-04-29T00:00:00Z'/>
@@ -167,33 +166,33 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 </ul>
 <p>To follow along this article, you can use <a href="https://github.com/radu-matei/helm/tree/debugging-draft" target="_blank" rel="noreferrer noopener">my branch of Helm</a>
  which contains all the assets necessary assets for debugging:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone -b debugging-draft https://github.com/radu-matei/helm
-</code></pre></div><p>Before moving to actually debugging, it is worth mentioning that Helm has two components - a client-side CLI, that runs locally on the machine and a server-side component, Tiller, which is deployed in your cluster. We will debug both components.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone -b debugging-draft https://github.com/radu-matei/helm
+</span></span></code></pre></div><p>Before moving to actually debugging, it is worth mentioning that Helm has two components - a client-side CLI, that runs locally on the machine and a server-side component, Tiller, which is deployed in your cluster. We will debug both components.</p>
 <h3 id="debugging-the-helm-cli">Debugging the Helm CLI</h3>
 <p>Debugging the Helm CLI is as simple as debugging any Golang project when using the Golang extension for VS Code and Delve - add a launch configuration and start debugging. The only thing to note here is that we can either build our binary for every change in our code, or attach to a pre-built binary - below and in the repo you&rsquo;ll find both configurations:</p>
 <p>This configuration builds Helm from <code>cmd/helm</code> and attaches the debugger:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Build and Debug Helm CLI&#34;</span>,
-    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
-    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
-    <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;debug&#34;</span>,
-    <span style="color:#f92672">&#34;program&#34;</span>: <span style="color:#e6db74">&#34;${workspaceFolder}/cmd/helm/&#34;</span>,
-    <span style="color:#f92672">&#34;args&#34;</span>: [
-        <span style="color:#e6db74">&#34;version&#34;</span>
-    ]
-}
-</code></pre></div><p>This configuration expects an existing binary in <code>bin/helm</code>, will launch it and attach the debugger:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Debug Helm CLI&#34;</span>,
-    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
-    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
-    <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;exec&#34;</span>,
-    <span style="color:#f92672">&#34;program&#34;</span>: <span style="color:#e6db74">&#34;${workspaceFolder}/bin/helm&#34;</span>,
-    <span style="color:#f92672">&#34;args&#34;</span>: [
-        <span style="color:#e6db74">&#34;version&#34;</span>
-    ]
-}
-</code></pre></div><p>In both cases, the default command executed will be <code>helm version</code> - note that you can customize the command and arguments passed to your binary, and you can set breakpoints in your Helm CLI&rsquo;s code. If you select the desired configuration and start debugging (F5), the execution of <code>helm version</code> will start. If you setup breakpoints in VS Code, the execution will be stopped and you can step in, out and over method executions or evaluate expressions and variable values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Build and Debug Helm CLI&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;debug&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;program&#34;</span>: <span style="color:#e6db74">&#34;${workspaceFolder}/cmd/helm/&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;args&#34;</span>: [
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;version&#34;</span>
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This configuration expects an existing binary in <code>bin/helm</code>, will launch it and attach the debugger:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Debug Helm CLI&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;exec&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;program&#34;</span>: <span style="color:#e6db74">&#34;${workspaceFolder}/bin/helm&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;args&#34;</span>: [
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;version&#34;</span>
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>In both cases, the default command executed will be <code>helm version</code> - note that you can customize the command and arguments passed to your binary, and you can set breakpoints in your Helm CLI&rsquo;s code. If you select the desired configuration and start debugging (F5), the execution of <code>helm version</code> will start. If you setup breakpoints in VS Code, the execution will be stopped and you can step in, out and over method executions or evaluate expressions and variable values:</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/qUbkGq-RygM" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
@@ -201,8 +200,8 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 
 <p>To change the command and arguments passed to the Helm CLI, simply add to the <code>args</code> property in the launch configuration.
 Notice that we are debugging the local component of Helm - the <code>helm version</code> command is executed part locally (what we debugged) and part on the cluster:</p>
-<pre tabindex="0"><code>Client: &amp;version.Version{SemVer:&quot;v2.8+unreleased&quot;, GitCommit:&quot;&quot;, GitTreeState:&quot;&quot;}
-Server: &amp;version.Version{SemVer:&quot;v2.8.2&quot;, GitCommit:&quot;a80231648a1473929271764b920a8e346f6de844&quot;, GitTreeState:&quot;clean&quot;}
+<pre tabindex="0"><code>Client: &amp;version.Version{SemVer:&#34;v2.8+unreleased&#34;, GitCommit:&#34;&#34;, GitTreeState:&#34;&#34;}
+Server: &amp;version.Version{SemVer:&#34;v2.8.2&#34;, GitCommit:&#34;a80231648a1473929271764b920a8e346f6de844&#34;, GitTreeState:&#34;clean&#34;}
 </code></pre><p>The server version was executed in the cluster - we did not debug that call simply because we only started debugging the local component of Helm. Let&rsquo;s debug Tiller!</p>
 <h3 id="debugging-tiller">Debugging Tiller</h3>
 <p>To debug remote components deployed in a Kubernetes cluster you need to:</p>
@@ -233,7 +232,7 @@ docker-debug:
 <p>Before we get to building the image and push it to a registry, we need a way to <code>make docker-debug</code>. Draft has a feature called <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-008.md" target="_blank" rel="noreferrer noopener">Draft tasks</a>
  which we will use to build the Tiller binary -  add a <code>.draft-tasks.toml</code> file which contains a <code>pre-up</code> task:</p>
 <pre tabindex="0"><code>[pre-up]
-    build-tiller = &quot;make docker-debug&quot;
+    build-tiller = &#34;make docker-debug&#34;
 </code></pre><blockquote>
 <p>Note that if you don&rsquo;t want to create a new binary every time you attach the debugger you can comment the step above and simply <code>make docker-debug</code> when you want a new Tiller binary.</p>
 </blockquote>
@@ -256,11 +255,11 @@ dlv attach $(pgrep -x tiller | head -n 1) tiller --headless --listen=0.0.0.0:234
 </code></pre><p>Now we need to configure a couple of things for Draft, in <code>draft.toml</code>:</p>
 <pre tabindex="0"><code>[environments]
   [environments.development]
-    name = &quot;tiller-debug&quot;
-    namespace = &quot;default&quot;
-    override-ports = [&quot;2345:2345&quot;, &quot;44134:44134&quot;, &quot;44135:44135&quot;]
-    dockerfile = &quot;Dockerfile.tiller.debug&quot;
-    chart = &quot;tiller&quot;
+    name = &#34;tiller-debug&#34;
+    namespace = &#34;default&#34;
+    override-ports = [&#34;2345:2345&#34;, &#34;44134:44134&#34;, &#34;44135:44135&#34;]
+    dockerfile = &#34;Dockerfile.tiller.debug&#34;
+    chart = &#34;tiller&#34;
 </code></pre><ul>
 <li>the name and namespace of our application</li>
 <li>how to expose the pod&rsquo;s ports locally on <code>localhost</code></li>
@@ -279,12 +278,12 @@ spec:
           capabilities:
             add:
               - SYS_PTRACE
-        image: &quot;{{ .Values.image.repository }}:{{ .Values.image.tag }}&quot;
+        image: &#34;{{ .Values.image.repository }}:{{ .Values.image.tag }}&#34;
         env:
         - name: TILLER_NAMESPACE
-          value: &quot;default&quot;
+          value: &#34;default&#34;
         - name: TILLER_HISTORY_MAX
-          value: &quot;0&quot;
+          value: &#34;0&#34;
         ports:
         - containerPort: {{ .Values.ports.tiller }}
         - containerPort: {{ .Values.ports.http }}
@@ -298,23 +297,23 @@ spec:
 <p>The thing to note for the deployment is the <code>SYS_PTRACE</code> capability - this is because <code>dlv attach</code> needs to <code>ptrace</code> the target process, and this is disabled by the default Kubernetes security context.</p>
 <h3 id="putting-it-all-together-start-debugging-with-vs-code">Putting it all together. Start debugging with VS Code</h3>
 <p>At this point you need the Kubernetes extension for VS Code and you need to add a <code>draft</code> debug configuration, together with a Golang remote debug configuration. This will execute <code>draft up</code>, <code>draft connect</code> to expose the ports to <code>localhost</code>, then will attach the debug configuration you specified:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;draft&#34;</span>,
-    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
-    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Draft Debug Tiller&#34;</span>,
-    <span style="color:#f92672">&#34;original-debug&#34;</span>: {
-        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Kubernetes remote debugging&#34;</span>,
-        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
-        <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
-        <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;remote&#34;</span>,
-        <span style="color:#f92672">&#34;remotePath&#34;</span>: <span style="color:#e6db74">&#34;/go/src/app&#34;</span>,
-        <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">2345</span>,
-        <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
-        <span style="color:#f92672">&#34;program&#34;</span>: <span style="color:#e6db74">&#34;&lt;YOUR_GOPATH&gt;src/k8s.io/helm/cmd/tiller&#34;</span>,
-        <span style="color:#f92672">&#34;args&#34;</span>: []
-    }
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;draft&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Draft Debug Tiller&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;original-debug&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Kubernetes remote debugging&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;launch&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;remote&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;remotePath&#34;</span>: <span style="color:#e6db74">&#34;/go/src/app&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">2345</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;program&#34;</span>: <span style="color:#e6db74">&#34;&lt;YOUR_GOPATH&gt;src/k8s.io/helm/cmd/tiller&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;args&#34;</span>: []
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>Remember to correctly add your <code>$GOPATH</code> in the <code>program</code> field in the configuration - this is a currently known limitation of the extension</p>
 </blockquote>
 <p>The <code>original-debug</code> configuration is simply a Golang remote debug configuration instructing to attach the debugger on <code>localhost:2345</code> - essentially, the extension orchestrates all the steps necessary to successfully debug your application.</p>

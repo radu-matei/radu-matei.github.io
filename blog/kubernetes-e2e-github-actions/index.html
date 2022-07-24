@@ -138,10 +138,10 @@
     - uses: engineerd/setup-kind@v0.1.0
     - name: Testing
       run: |
-        export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
+        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
         kubectl cluster-info
 </code></pre><p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
-<pre tabindex="0"><code>Creating cluster &quot;kind&quot; ...
+<pre tabindex="0"><code>Creating cluster &#34;kind&#34; ...
  ✓ Ensuring node image (kindest/node:v1.15.3) 🖼
  ✓ Preparing nodes 📦📦📦📦📦📦📦
  ✓ Configuring the external load balancer ⚖️
@@ -190,30 +190,30 @@ kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
 </blockquote>
 <h1 id="tl-dr---it-just-works">TL; DR - It just works</h1>
 <p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let&rsquo;s see how the configuration looks like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
-<span style="color:#f92672">on</span>: [<span style="color:#ae81ff">push, pull_request]</span>
-
-<span style="color:#f92672">jobs</span>:
-  <span style="color:#f92672">kind</span>:
-    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
-    <span style="color:#f92672">steps</span>:
-    - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@master</span>
-    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
-      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span><span style="color:#e6db74">        export GOBIN=$(go env GOPATH)/bin
-</span><span style="color:#e6db74">        export PATH=$PATH:$GOBIN
-</span><span style="color:#e6db74">        mkdir -p $GOBIN
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-</span><span style="color:#e6db74">        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
-</span><span style="color:#e6db74">        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">        kind create cluster --wait 300s
-</span><span style="color:#e6db74">        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
-</span><span style="color:#e6db74">        kubectl wait --for=condition=Ready pods --all --namespace kube-system
-</span><span style="color:#e6db74">        kubectl cluster-info
-</span><span style="color:#e6db74">        kubectl get pods -n kube-system</span>        
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">on</span>: [<span style="color:#ae81ff">push, pull_request]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">jobs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">steps</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@master</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        export GOBIN=$(go env GOPATH)/bin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        export PATH=$PATH:$GOBIN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        mkdir -p $GOBIN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kind create cluster --wait 300s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kubectl wait --for=condition=Ready pods --all --namespace kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kubectl cluster-info
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kubectl get pods -n kube-system</span>        
+</span></span></code></pre></div><blockquote>
 <p>Note that you don&rsquo;t need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p>
 </blockquote>
 <p>Breaking down the the configuration file, we have:</p>
@@ -239,7 +239,7 @@ pod/kube-proxy-7gd45 condition met
 Kubernetes master is running at https://127.0.0.1:33687
 KubeDNS is running at https://127.0.0.1:33687/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+To further debug and diagnose cluster problems, use &#39;kubectl cluster-info dump&#39;.
 NAMESPACE     NAME                       READY   STATUS    RESTARTS   AGE
 kube-system   coredns-5c98db65d4-658bm   1/1     Running   0          47s
 kube-system   coredns-5c98db65d4-bjcfh   1/1     Running   0          47s
@@ -263,7 +263,7 @@ kubectl get pods
 <pre tabindex="0"><code>$HELM_HOME has been configured at /home/runner/.helm.
 Happy Helming!
 Hang tight while we grab the latest from your chart repositories...
-...Successfully got an update from the &quot;stable&quot; chart repository
+...Successfully got an update from the &#34;stable&#34; chart repository
 Update Complete. ⎈ Happy Helming!⎈
 
 NAME: ni
@@ -274,7 +274,7 @@ STATUS: deployed
 NOTES:
 The nginx-ingress controller has been installed.
 It may take a few minutes for the LoadBalancer IP to be available.
-You can watch the status by running 'kubectl --namespace default get services -o wide -w ni-nginx-ingress-controller'
+You can watch the status by running &#39;kubectl --namespace default get services -o wide -w ni-nginx-ingress-controller&#39;
 
 If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
 

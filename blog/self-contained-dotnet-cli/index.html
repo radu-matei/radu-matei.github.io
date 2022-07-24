@@ -159,35 +159,35 @@ The article is written for .NET Core 3 preview 8 - and while the actual package 
  (although keep in mind that the TOML configuration provider needs a new release to use it, as of the time of writing this article.)</p>
 <p>So how can we add the configuration providers to our application?
 First step is to add the desired NuGet packages to your application project - for example, for JSON and YAML, this is what packages you might use (keep in mind that the current versions of the packages might differ, as the article is written with .NET Core 3 preview 8):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Configuration&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
-<span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Configuration.Json&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
-<span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;NetEscapades.Configuration.Yaml&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.5.0&#34;</span> <span style="color:#f92672">/&gt;</span>
-</code></pre></div><p>Then, we add our configuration files - example for YAML (you can add similar files / configuration sources for all providers you want to use - keep in mind that configuration sources are read in order, and the first found will be the configuration source used):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Configuration&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Configuration.Json&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;NetEscapades.Configuration.Yaml&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.5.0&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span></code></pre></div><p>Then, we add our configuration files - example for YAML (you can add similar files / configuration sources for all providers you want to use - keep in mind that configuration sources are read in order, and the first found will be the configuration source used):</p>
 <blockquote>
 <p>Note that I&rsquo;m totally ripping off Carolyn&rsquo;s example here.</p>
 </blockquote>
 <pre tabindex="0"><code>emoticons:
-  shrug: '¯\_(ツ)_/¯'
-  tableflip: &quot;(╯°□°）╯︵ ┻━┻&quot;
+  shrug: &#39;¯\_(ツ)_/¯&#39;
+  tableflip: &#34;(╯°□°）╯︵ ┻━┻&#34;
 </code></pre><p>So how would we consume this configuration?</p>
 <pre tabindex="0"><code>var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddYamlFile(&quot;appsettings.yaml&quot;, true, true)
-    .AddJsonFile(&quot;appsettings.json&quot;, true, true)
+    .AddYamlFile(&#34;appsettings.yaml&#34;, true, true)
+    .AddJsonFile(&#34;appsettings.json&#34;, true, true)
     .Build();
 
-var emoticons = config.GetSection(&quot;emoticons&quot;)
+var emoticons = config.GetSection(&#34;emoticons&#34;)
     .GetChildren()
     .ToDictionary(x =&gt; x.Key, x =&gt; x.Value);
 </code></pre><p>Here we&rsquo;re passing the <code>emoticons</code> configuration into a <code>Dictionary&lt;string, string&gt;</code>. If you want to automatically bind your configuration to strongly-typed objects, you can use <code>Binder</code> package:</p>
-<pre tabindex="0"><code>&lt;PackageReference Include=&quot;Microsoft.Extensions.Configuration.Binder&quot; Version=&quot;3.0.0-X&quot; /&gt;
+<pre tabindex="0"><code>&lt;PackageReference Include=&#34;Microsoft.Extensions.Configuration.Binder&#34; Version=&#34;3.0.0-X&#34; /&gt;
 </code></pre><p>Then, for this sample YAML configuration:</p>
 <pre tabindex="0"><code>person:
   name: Jane
   profession: scientist
 </code></pre><p>You can automatically bind it to a strongly-typed object:</p>
 <pre tabindex="0"><code>var p = new Person();
-config.GetSection(&quot;person&quot;).Bind(p);
+config.GetSection(&#34;person&#34;).Bind(p);
 
 class Person
 {
@@ -195,7 +195,7 @@ class Person
     public string Profession { get; set; }
 }
 </code></pre><p>For custom keys, you can use the <code>[JsonObject(&quot;custom_object&quot;)]</code> and <code>[JsonProperty(&quot;custom_property&quot;)]</code> attributes for JSON, and for YAML:</p>
-<pre tabindex="0"><code>[YamlMember(Alias = &quot;custom_member&quot;, ApplyNamingConventions = false)]
+<pre tabindex="0"><code>[YamlMember(Alias = &#34;custom_member&#34;, ApplyNamingConventions = false)]
 </code></pre><p>Generally, you could create a top level <code>YourAppConfiguration</code> class that holds all of your configuration and bind to that.</p>
 <h3 id="parsing-command-line-arguments-and-flags">Parsing command line arguments and flags</h3>
 <blockquote>
@@ -211,16 +211,16 @@ class Person
  - the &ldquo;new&rdquo; <code>System.CommandLine</code> - keep in mind the package is still experimental</li>
 </ul>
 <p>Regardless of the actual package you use to parse arguments, the core concepts are the same - you have a root command, subcommands, arguments, flags, and for the rest of this article we will use <code>System.CommandLine</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;System.CommandLine.Experimental&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;0.3.0-alpha.19405.1&#34;</span> <span style="color:#f92672">/&gt;</span>
-</code></pre></div><p>So let&rsquo;s add a command to show an emoticon from the configuration file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;System.CommandLine.Experimental&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;0.3.0-alpha.19405.1&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span></code></pre></div><p>So let&rsquo;s add a command to show an emoticon from the configuration file:</p>
 <pre tabindex="0"><code>public class ShowCommandHandler
 {
     public Command Create()
     {
-        var cmd = new Command(&quot;show&quot;, &quot;shows an emoticon from the configuration given its name&quot;);
+        var cmd = new Command(&#34;show&#34;, &#34;shows an emoticon from the configuration given its name&#34;);
 
-        cmd.AddArgument(new Argument&lt;string&gt;(&quot;emoticon&quot;));
-        cmd.AddOption(new Option(new string[] { &quot;--verbose&quot;, &quot;-v&quot; }, &quot;if provided, it will also print the name of the emoticon&quot;)
+        cmd.AddArgument(new Argument&lt;string&gt;(&#34;emoticon&#34;));
+        cmd.AddOption(new Option(new string[] { &#34;--verbose&#34;, &#34;-v&#34; }, &#34;if provided, it will also print the name of the emoticon&#34;)
         {
             Argument = new Argument&lt;bool&gt;(() =&gt; false)
         });
@@ -262,7 +262,7 @@ In our case, the application logic consists of retrieving emoticons from <em>som
     public ConfigEmoticonRetriever(IConfigurationRoot cfg)
     {
         _emoticons = new List&lt;Emoticon&gt;();
-        var dict = cfg.GetSection(&quot;emoticons&quot;).GetChildren().ToDictionary(x =&gt; x.Key, x =&gt; x.Value);
+        var dict = cfg.GetSection(&#34;emoticons&#34;).GetChildren().ToDictionary(x =&gt; x.Key, x =&gt; x.Value);
         foreach (KeyValuePair&lt;string, string&gt; entry in dict)
         {
             _emoticons.Add(new Emoticon(entry.Key, entry.Value));
@@ -302,8 +302,8 @@ public ShowCommandHandler(IEmoticonRetriever emoticons)
 <li>our current implementation of <code>IEmoticonRetrieval</code> contains an <code>IConfigurationRoot</code> object</li>
 </ul>
 <p>First step is to add the dependency injection package:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.DependencyInjection&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
-</code></pre></div><p>Now we can create a <em>service provider</em> - an object that provides concrete implementations for our services, based on the configured <em>service collection</em>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.DependencyInjection&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span></code></pre></div><p>Now we can create a <em>service provider</em> - an object that provides concrete implementations for our services, based on the configured <em>service collection</em>:</p>
 <pre tabindex="0"><code>var serviceCollection = new ServiceCollection().AddTransient&lt;IEmoticonRetriever, ConfigEmoticonRetriever&gt;();
 serviceCollection.Add(new ServiceDescriptor(serviceType: typeof(IConfigurationRoot), instance: config));
 var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -334,12 +334,12 @@ var cmd = new CommandLineBuilder()
 <blockquote>
 <p>Note that you should always test the application after trimming, and using features such as reflection might not work with trimming.</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup&gt;</span>
-  <span style="color:#f92672">&lt;RuntimeIdentifier&gt;</span>linux-x64<span style="color:#f92672">&lt;/RuntimeIdentifier&gt;</span>
-  <span style="color:#f92672">&lt;PublishSingleFile&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
-  <span style="color:#f92672">&lt;PublishTrimmed&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
-<span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
-</code></pre></div><p>Let&rsquo;s publish our application in release configuration - <code>dotnet publish -c Release</code> - this will create our binary in <code>bin/Release/linux-x64/publish</code> - let&rsquo;s copy it in the same directory as our configuration files and explore it further:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PropertyGroup&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;RuntimeIdentifier&gt;</span>linux-x64<span style="color:#f92672">&lt;/RuntimeIdentifier&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;PublishSingleFile&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;PublishTrimmed&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
+</span></span></code></pre></div><p>Let&rsquo;s publish our application in release configuration - <code>dotnet publish -c Release</code> - this will create our binary in <code>bin/Release/linux-x64/publish</code> - let&rsquo;s copy it in the same directory as our configuration files and explore it further:</p>
 <pre tabindex="0"><code>$ ls emote
 .rwxr--r-- 47M radu  2 Sep  8:32 emote
 </code></pre><p>Our resulting application is 47M - not a small application, for what we&rsquo;ve accomplished (and especially compared with a Go or Rust application, which would have been maybe 3 times smaller) - BUT - the binary contains the entire .NET Core runtime - and is self-contained. At least now you have the option to make the tradeoff between development ease, ecosystem, tooling, and resulting application size.</p>
@@ -369,15 +369,15 @@ $ emote show shrug
 emote --version  0.26s user 0.01s
 </code></pre><p>On average, the execution time for this tool is just around 0.26 seconds (your timing might differ based on a wide number of factors) - let&rsquo;s compare that to the execution time of a Go based, much more complex program - Helm 3:</p>
 <pre tabindex="0"><code>$ time helm version
-version.BuildInfo{Version:&quot;v3.0.0-beta.2&quot;, GitCommit:&quot;26c7338408f8db593f93cd7c963ad56f67f662d4&quot;, GitTreeState:&quot;clean&quot;, GoVersion:&quot;go1.12.9&quot;}
+version.BuildInfo{Version:&#34;v3.0.0-beta.2&#34;, GitCommit:&#34;26c7338408f8db593f93cd7c963ad56f67f662d4&#34;, GitTreeState:&#34;clean&#34;, GoVersion:&#34;go1.12.9&#34;}
 helm version  0.13s user 0.03s
 </code></pre><p>Our application is twice as slow as Helm, a Go-based tool, and all of the extra time is because of the slow startup.
 (Interestingly enough, because of the Kubernetes <code>client-go</code>, binaries that use it are around 40M as well, so from the size perspective, there isn&rsquo;t much difference).</p>
 <p>But .NET Core 3 comes with more option - according to the <a href="https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0" target="_blank" rel="noreferrer noopener">release notes</a>
 , <em>you can improve the startup time of your .NET Core application by compiling your application assemblies as ReadyToRun (R2R) format. R2R is a form of ahead-of-time (AOT) compilation. R2R binaries improve startup performance by reducing the amount of work the just-in-time (JIT) compiler needs to do as your application loads. The binaries contain similar native code compared to what the JIT would produce. However, R2R binaries are larger because they contain both intermediate language (IL) code, which is still needed for some scenarios, and the native version of the same code. R2R is only available when you publish a self-contained app that targets specific runtime environments (RID) such as Linux x64 or Windows x64.</em></p>
 <p>Adding the setting in our project file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PublishReadyToRun&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
-</code></pre></div><p>And creating a new release, we see the size increase to 68M:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PublishReadyToRun&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
+</span></span></code></pre></div><p>And creating a new release, we see the size increase to 68M:</p>
 <pre tabindex="0"><code>$ ls emote-aot
  .rwxr--r-- 68M radu  2 Sep  8:31 emote-aot
 </code></pre><p>Let&rsquo;s see what improvement this gets is with the startup time:</p>

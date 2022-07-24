@@ -152,9 +152,9 @@ be familiar to people using Wasmtime.</p>
 <pre tabindex="0"><code>$ npm install @deislabs/wasm-linker-js
 </code></pre><p>Then, using the <code>Linker</code> is as easy as importing it using your favorite module
 system:</p>
-<pre tabindex="0"><code>import { Linker } from &quot;@deislabs/wasm-linker-js&quot;;
+<pre tabindex="0"><code>import { Linker } from &#34;@deislabs/wasm-linker-js&#34;;
 OR
-const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
+const { Linker } = require(&#34;@deislabs/wasm-linker-js&#34;);
 </code></pre><p>The next sections contain a few examples of using the JavaScript linker. In
 order to show the text format of the WebAssembly modules we are trying to use,
 <code>binaryen</code> is also required to run the examples
@@ -178,16 +178,16 @@ module <code>calculator</code>.</p>
 case, provide an implementation for the <code>add</code> function from the <code>calculator</code>
 module. We can use the <code>define</code> method on the JavaScript linker and provide a
 JavaScript implementation for the required import:</p>
-<pre tabindex="0"><code>const { Linker } = require(&quot;@deislabs/wasm-linker-js&quot;);
-const { parseText } = require(&quot;binaryen&quot;);
+<pre tabindex="0"><code>const { Linker } = require(&#34;@deislabs/wasm-linker-js&#34;);
+const { parseText } = require(&#34;binaryen&#34;);
 
 const usingAdd = `
 (module
-    (import &quot;calculator&quot; &quot;add&quot; (func $calc_add (param i32 i32) (result i32)))
+    (import &#34;calculator&#34; &#34;add&#34; (func $calc_add (param i32 i32) (result i32)))
 
     (memory 1 1)
-    (export &quot;memory&quot; (memory 0))
-    (export &quot;add&quot; (func $add))
+    (export &#34;memory&#34; (memory 0))
+    (export &#34;add&#34; (func $add))
 
     (func $add (param i32) (param i32) (result i32)
         (return
@@ -203,11 +203,11 @@ const usingAdd = `
 (async () =&gt; {
   var linker = new Linker();
 
-  // The &quot;usingAdd&quot; module imports calculator.add.
+  // The &#34;usingAdd&#34; module imports calculator.add.
   // We define it,  provide a JS implementation, then
   // instantiate it.
 
-  linker.define(&quot;calculator&quot;, &quot;add&quot;, (a, b) =&gt; a + b);
+  linker.define(&#34;calculator&#34;, &#34;add&#34;, (a, b) =&gt; a + b);
   var calc = await linker.instantiate(parseText(usingAdd).emitBinary());
 
   var result = calc.instance.exports.add(1, 2);
@@ -238,8 +238,8 @@ imports for instantiating <code>usingAdd</code>:</p>
 <pre tabindex="0"><code>const add = `
 (module
   (memory 1 1)
-  (export &quot;memory&quot; (memory 0))
-  (export &quot;add&quot; (func $add))
+  (export &#34;memory&#34; (memory 0))
+  (export &#34;add&#34; (func $add))
 
   (func $add (param i32) (param i32) (result i32)
       (return
@@ -255,12 +255,12 @@ imports for instantiating <code>usingAdd</code>:</p>
 (async () =&gt; {
   var linker = new Linker();
 
-  // The &quot;usingAdd&quot; module above imports calculator.add.
+  // The &#34;usingAdd&#34; module above imports calculator.add.
   // We link a module that exports the functionality
   // required, then instantiate the module that uses it.
 
   await linker.module(
-    &quot;calculator&quot;,
+    &#34;calculator&#34;,
     new WebAssembly.Module(parseText(add).emitBinary())
   );
   var calc = await linker.instantiate(parseText(usingAdd).emitBinary());
@@ -315,7 +315,7 @@ var sleep = function (ms) {
     setTimeout(resolve, ms);
   });
 };
-linker.define(&quot;calculator&quot;, &quot;add&quot;, async (a, b) =&gt; {
+linker.define(&#34;calculator&#34;, &#34;add&#34;, async (a, b) =&gt; {
   await sleep(1500);
   return a + b;
 });
@@ -323,7 +323,7 @@ linker.define(&quot;calculator&quot;, &quot;add&quot;, async (a, b) =&gt; {
 let bytes = parseText(usingAdd);
 
 // we perform the asyncify compiler pass from Binaryen
-bytes.runPasses([&quot;asyncify&quot;]);
+bytes.runPasses([&#34;asyncify&#34;]);
 var calc = await linker.instantiate(bytes.emitBinary());
 
 var result = await calc.instance.exports.add(1, 2);
@@ -345,8 +345,8 @@ check a complete example of this library in the browser in the
 <a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/index.html" target="_blank" rel="noreferrer noopener">repository</a>
 :</p>
 <pre tabindex="0"><code>&lt;script
-  type=&quot;module&quot;
-  src=&quot;https://unpkg.com/@deislabs/wasm-linker-js/dist/wasm-linker.js&quot;
+  type=&#34;module&#34;
+  src=&#34;https://unpkg.com/@deislabs/wasm-linker-js/dist/wasm-linker.js&#34;
 &gt;&lt;/script&gt;
 </code></pre><p>However, keep in mind the library does not currently have support for
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming" target="_blank" rel="noreferrer noopener"><code>instantiateStreaming</code></a>

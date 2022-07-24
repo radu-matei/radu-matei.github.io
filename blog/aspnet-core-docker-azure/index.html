@@ -184,9 +184,9 @@
 <p>In the folder that was just created from cloning the repository, execute <code>dotnet new</code> in order to create a new .NET Core application.</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/git-clone-dotnet.png" alt=""></p>
 <p>Now depending on the .NET Core version you have installed on your machine, <code>project.json</code> will look slightly different:</p>
-<pre tabindex="0"><code>&quot;Microsoft.NETCore.App&quot;: {
-  &quot;type&quot;: &quot;platform&quot;,
-  &quot;version&quot;: &quot;1.0.1&quot;
+<pre tabindex="0"><code>&#34;Microsoft.NETCore.App&#34;: {
+  &#34;type&#34;: &#34;platform&#34;,
+  &#34;version&#34;: &#34;1.0.1&#34;
 }
 </code></pre><p>Since <code>1.0.1</code> is the latest stable version, we will use it as example for this application.</p>
 <blockquote>
@@ -199,7 +199,7 @@
             .UseKestrel()
             .Configure(app =&gt; app.Run(context =&gt;
             {
-                return context.Response.WriteAsync($&quot;Hello, Universe! It is {DateTime.Now}&quot;);
+                return context.Response.WriteAsync($&#34;Hello, Universe! It is {DateTime.Now}&#34;);
             }))
             .Build();
 
@@ -225,13 +225,13 @@
 COPY . /app
 WORKDIR /app
 
-RUN [&quot;dotnet&quot;, &quot;restore&quot;]
-RUN [&quot;dotnet&quot;, &quot;build&quot;]
+RUN [&#34;dotnet&#34;, &#34;restore&#34;]
+RUN [&#34;dotnet&#34;, &#34;build&#34;]
 
 EXPOSE 5000/tcp
 ENV ASPNETCORE_URLS http://*:5000
 
-ENTRYPOINT [&quot;dotnet&quot;, &quot;run&quot;]
+ENTRYPOINT [&#34;dotnet&#34;, &#34;run&#34;]
 </code></pre><p>The content of the Dockerfile is pretty self-explanatory:</p>
 <ul>
 <li>it gets a base image that has <code>dotnet</code> installed, the <code>microsoft/dotnet:1.0.1-sdk-projectjson</code> image</li>

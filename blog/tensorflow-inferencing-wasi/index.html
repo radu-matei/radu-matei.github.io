@@ -163,32 +163,32 @@ example</a>
 classifications using the <a href="https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet" target="_blank" rel="noreferrer noopener">MobileNet V2</a>
  model, which will be used as
 a starting point for our Wasm module:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
-    <span style="color:#75715e">// load the model
-</span><span style="color:#75715e"></span>    .model_for_path(<span style="color:#e6db74">&#34;mobilenet_v2_1.4_224_frozen.pb&#34;</span>)<span style="color:#f92672">?</span>
-    <span style="color:#75715e">// specify input type and shape
-</span><span style="color:#75715e"></span>    .with_input_fact(
-        <span style="color:#ae81ff">0</span>,
-        InferenceFact::dt_shape(
-            <span style="color:#66d9ef">f32</span>::datum_type(),
-            tvec<span style="color:#f92672">!</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
-        ),
-    )
-    <span style="color:#75715e">// make the model runnable and fix its inputs and outputs
-</span><span style="color:#75715e"></span>    .into_runnable()<span style="color:#f92672">?</span>;
-
-<span style="color:#75715e">// open image, resize it and make a Tensor out of it
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::open(<span style="color:#e6db74">&#34;grace_hopper.jpg&#34;</span>)<span style="color:#f92672">?</span>.to_rgb();
-<span style="color:#66d9ef">let</span> image: <span style="color:#a6e22e">Tensor</span> <span style="color:#f92672">=</span> from_shape_fn(
-    (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>),
-    <span style="color:#f92672">|</span>(_, y, x, c)<span style="color:#f92672">|</span> {
-        resized[(x <span style="color:#66d9ef">as</span> _, y <span style="color:#66d9ef">as</span> _)][c] <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">f32</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">255.0</span>
-    })
-    .into();
-
-<span style="color:#75715e">// run the model on the input
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image))<span style="color:#f92672">?</span>;
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// load the model
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    .model_for_path(<span style="color:#e6db74">&#34;mobilenet_v2_1.4_224_frozen.pb&#34;</span>)<span style="color:#f92672">?</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// specify input type and shape
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    .with_input_fact(
+</span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>        InferenceFact::dt_shape(
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">f32</span>::datum_type(),
+</span></span><span style="display:flex;"><span>            tvec<span style="color:#f92672">!</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// make the model runnable and fix its inputs and outputs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    .into_runnable()<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// open image, resize it and make a Tensor out of it
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::open(<span style="color:#e6db74">&#34;grace_hopper.jpg&#34;</span>)<span style="color:#f92672">?</span>.to_rgb();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> image: <span style="color:#a6e22e">Tensor</span> <span style="color:#f92672">=</span> from_shape_fn(
+</span></span><span style="display:flex;"><span>    (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|</span>(_, y, x, c)<span style="color:#f92672">|</span> {
+</span></span><span style="display:flex;"><span>        resized[(x <span style="color:#66d9ef">as</span> _, y <span style="color:#66d9ef">as</span> _)][c] <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">f32</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">255.0</span>
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>    .into();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// run the model on the input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image))<span style="color:#f92672">?</span>;
+</span></span></code></pre></div><blockquote>
 <p>Source code adapted from <a href="https://github.com/sonos/tract/blob/main/examples/tensorflow-mobilenet-v2/src/main.rs" target="_blank" rel="noreferrer noopener">the Sonos Tract examples</a>
 .</p>
 </blockquote>
@@ -199,37 +199,37 @@ of the best prediction. Using Rust&rsquo;s <code>wasm32-wasi</code> compilation 
 project compiles to WebAssembly successfully, but executing it with
 <a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
  (or any other runtime) results in a panic:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ wasmtime run tf-example.wasm --dir=.
-&#39;The global thread pool has not been initialized.:
-ThreadPoolBuildError { kind: IOError(Custom
-{ error: &#34;operation not supported on this platform&#34; })}&#39;
-
-Caused by:
-    0: failed to invoke `_start`
-        ...
-         8:  rayon_core::registry::global_registry
-         9:  rayon_core::current_num_threads
-         12: jpeg_decoder::decoder::Decoder&lt;R&gt;::decode_internal
-         13: image::jpeg::decoder::JpegDecoder&lt;R&gt; as read_image
-         16: image::io::free_functions::open_impl
-         ...
-</code></pre></div><p>The runtime error is caused by <a href="https://crates.io/crates/image" target="_blank" rel="noreferrer noopener">the <code>image</code> crate</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ wasmtime run tf-example.wasm --dir=.
+</span></span><span style="display:flex;"><span>&#39;The global thread pool has not been initialized.:
+</span></span><span style="display:flex;"><span>ThreadPoolBuildError { kind: IOError(Custom
+</span></span><span style="display:flex;"><span>{ error: &#34;operation not supported on this platform&#34; })}&#39;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Caused by:
+</span></span><span style="display:flex;"><span>    0: failed to invoke `_start`
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>         8:  rayon_core::registry::global_registry
+</span></span><span style="display:flex;"><span>         9:  rayon_core::current_num_threads
+</span></span><span style="display:flex;"><span>         12: jpeg_decoder::decoder::Decoder&lt;R&gt;::decode_internal
+</span></span><span style="display:flex;"><span>         13: image::jpeg::decoder::JpegDecoder&lt;R&gt; as read_image
+</span></span><span style="display:flex;"><span>         16: image::io::free_functions::open_impl
+</span></span><span style="display:flex;"><span>         ...
+</span></span></code></pre></div><p>The runtime error is caused by <a href="https://crates.io/crates/image" target="_blank" rel="noreferrer noopener">the <code>image</code> crate</a>
  attempting to use
 multiple threads when loading the picture, and since there is no threads support
 in WebAssembly (<a href="https://github.com/WebAssembly/threads" target="_blank" rel="noreferrer noopener">here is an early proposal</a>
 ), the program panics.
 Fortunately, turning off all crate features except JPEG loading solves the
 problem:</p>
-<pre tabindex="0"><code>image = { ... default-features = false, features = [&quot;jpeg&quot;] }
+<pre tabindex="0"><code>image = { ... default-features = false, features = [&#34;jpeg&#34;] }
 </code></pre><p>Because the program assumes both the model and image are in the current
 directory, we can use Wasmtime&rsquo;s <code>--dir</code> flag to grant the module permission to
 the current directory, and the program classifies the image as
 <code>military uniform</code> with a confidence of 32% (654 is the index of the
 <code>military uniform</code> label in the labels file of the model, and the image is that
 of Grace Hopper in uniform):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ wasmtime run tf-example.wasm --dir=.
-result: Some((0.32560226, 654))
-</code></pre></div><p>However, getting the model and image from disk on every inference is not ideal,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ wasmtime run tf-example.wasm --dir=.
+</span></span><span style="display:flex;"><span>result: Some((0.32560226, 654))
+</span></span></code></pre></div><p>However, getting the model and image from disk on every inference is not ideal,
 since I/O operations can be costly. Additionally, we might need classify images
 that are not on disk, but received by the runtime in some other ways (such as
 HTTP requests). In short, we need to pass both model and image data from the
@@ -259,17 +259,17 @@ Before returning, the function calls <a href="https://doc.rust-lang.org/std/mem/
 ownership of the memory block and ensure the vector&rsquo;s destructor is not called
 when the object goes out of scope. Finally, the function returns the pointer to
 the start of the memory block.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Allocate memory into the module&#39;s linear memory
-</span><span style="color:#e6db74">/// and return the offset to the start of the block.
-</span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
-<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">alloc</span>(len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span> {
-    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> Vec::with_capacity(len);
-    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> buf.as_mut_ptr();
-
-    std::mem::forget(buf);
-    <span style="color:#66d9ef">return</span> ptr;
-}
-</code></pre></div><p>At this point, it is worth understanding how the WebAssembly module we are
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Allocate memory into the module&#39;s linear memory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// and return the offset to the start of the block.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">alloc</span>(len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> Vec::with_capacity(len);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> buf.as_mut_ptr();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    std::mem::forget(buf);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ptr;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>At this point, it is worth understanding how the WebAssembly module we are
 writing should expect to get the pointers and length of the model and image
 data - specifically, for each of the two input objects (model and image), the
 module expects a pointer (offset relative to the start of its entire linear
@@ -277,37 +277,37 @@ memory) and the length of the object. Then, it uses
 <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts" target="_blank" rel="noreferrer noopener"><code>Vec::from_raw_parts</code></a>
  to create a <code>Vec&lt;u8&gt;</code> with the respective
 length and capacity (equal to the length) for each of the two objects:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// This is the module&#39;s entry point for executing inferences.
-</span><span style="color:#e6db74">/// It takes as arguments pointers to the start of the module&#39;s
-</span><span style="color:#e6db74">/// memory blocks where the model and the image were copied,
-</span><span style="color:#e6db74">/// as well as their lengths, meaning that callers of this
-</span><span style="color:#e6db74">/// function must allocate memory for both the model and image
-</span><span style="color:#e6db74">/// data using the `alloc` function, then copy it into the
-</span><span style="color:#e6db74">/// module&#39;s linear memory at the pointers returned by `alloc`.
-</span><span style="color:#e6db74">///
-</span><span style="color:#e6db74">/// It retrieves the contents of the model and image, then calls
-</span><span style="color:#e6db74">/// the `infer` function, which performs the prediction.
-</span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
-<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">infer_from_ptrs</span>(
-    model_ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>,
-    model_len: <span style="color:#66d9ef">usize</span>,
-    img_ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>,
-    img_len: <span style="color:#66d9ef">usize</span>,
-) -&gt; <span style="color:#66d9ef">i32</span> {
-    <span style="color:#66d9ef">let</span> model_bytes <span style="color:#f92672">=</span> Vec::from_raw_parts(
-        model_ptr,
-        model_len,
-        model_len
-    );
-    <span style="color:#66d9ef">let</span> img_bytes <span style="color:#f92672">=</span> Vec::from_raw_parts(
-        img_ptr,
-        img_len,
-        img_len
-    );
-
-    <span style="color:#66d9ef">return</span> infer(<span style="color:#f92672">&amp;</span>model_bytes, <span style="color:#f92672">&amp;</span>img_bytes);
-}
-</code></pre></div><p>As the comment suggests, host runtimes will have to call the module&rsquo;s <code>alloc</code>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// This is the module&#39;s entry point for executing inferences.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// It takes as arguments pointers to the start of the module&#39;s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// memory blocks where the model and the image were copied,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// as well as their lengths, meaning that callers of this
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// function must allocate memory for both the model and image
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// data using the `alloc` function, then copy it into the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// module&#39;s linear memory at the pointers returned by `alloc`.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// It retrieves the contents of the model and image, then calls
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// the `infer` function, which performs the prediction.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">infer_from_ptrs</span>(
+</span></span><span style="display:flex;"><span>    model_ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>,
+</span></span><span style="display:flex;"><span>    model_len: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>    img_ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>,
+</span></span><span style="display:flex;"><span>    img_len: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>) -&gt; <span style="color:#66d9ef">i32</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> model_bytes <span style="color:#f92672">=</span> Vec::from_raw_parts(
+</span></span><span style="display:flex;"><span>        model_ptr,
+</span></span><span style="display:flex;"><span>        model_len,
+</span></span><span style="display:flex;"><span>        model_len
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> img_bytes <span style="color:#f92672">=</span> Vec::from_raw_parts(
+</span></span><span style="display:flex;"><span>        img_ptr,
+</span></span><span style="display:flex;"><span>        img_len,
+</span></span><span style="display:flex;"><span>        img_len
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> infer(<span style="color:#f92672">&amp;</span>model_bytes, <span style="color:#f92672">&amp;</span>img_bytes);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>As the comment suggests, host runtimes will have to call the module&rsquo;s <code>alloc</code>
 function for each of the two input objects, get the respective pointers returned
 by <code>alloc</code>, and copy the model and image data into the module&rsquo;s linear memory.
 Then, use the pointers and lengths to call <code>infer_from_ptrs</code>, which acts as the
@@ -316,20 +316,20 @@ entrypoint for our module.</p>
 similar to the example we saw earlier, with the only difference that it now
 takes the model and image data as arguments, rather than reading them from the
 file system (hence the slight changes in loading them):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Perform the inference given the contents of the
-</span><span style="color:#e6db74">/// model and the image, and return the index of the
-</span><span style="color:#e6db74">/// predicted class.
-</span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">infer</span>(model_bytes: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>], image_bytes: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>]) -&gt; <span style="color:#66d9ef">i32</span> {
-    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> model <span style="color:#f92672">=</span> std::io::Cursor::new(model_bytes);
-    <span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
-        .model_for_read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> model)
-    <span style="color:#f92672">..</span>.
-    <span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::load_from_memory(image_bytes);
-    <span style="color:#f92672">..</span>.
-    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image));
-    <span style="color:#f92672">..</span>.
-}
-</code></pre></div><p>We can now compile the code to the Rust <code>wasm32-wasi</code> target and get a
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Perform the inference given the contents of the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// model and the image, and return the index of the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// predicted class.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">infer</span>(model_bytes: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>], image_bytes: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>]) -&gt; <span style="color:#66d9ef">i32</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> model <span style="color:#f92672">=</span> std::io::Cursor::new(model_bytes);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
+</span></span><span style="display:flex;"><span>        .model_for_read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> model)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::load_from_memory(image_bytes);
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image));
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We can now compile the code to the Rust <code>wasm32-wasi</code> target and get a
 WebAssembly module that can be instantiated and executed in any WASI compatible
 runtime, and in the following section we will explore running it in Node&rsquo;s WASI
 runtime and Wasmtime.</p>
@@ -351,9 +351,9 @@ bytes into the module&rsquo;s memory, starting at <code>ptr</code>:</p>
 <pre tabindex="0"><code>// write `bytes` into the memory of `instance`
 function writeGuestMemory(bytes, instance) {
   var len = bytes.byteLength;
-  // call the module's `alloc` function
+  // call the module&#39;s `alloc` function
   var ptr = instance.exports.alloc(len);
-  // create an array of length `len` in the module's memory,
+  // create an array of length `len` in the module&#39;s memory,
   // starting at offset `ptr`
   var m = new Uint8Array(instance.exports.memory.buffer, ptr, len);
   // set the value of the array to `bytes`
@@ -376,11 +376,11 @@ in order to get a human-friendly description of the prediction:</p>
 function getPrediction(model_bytes, img_bytes, instance) {
   // write the contents of the model and image
   // in the memory of the module, using the
-  // module's `alloc`exported function
+  // module&#39;s `alloc`exported function
   var mptr = writeGuestMemory(model_bytes, instance);
   var iptr = writeGuestMemory(img_bytes, instance);
 
-  // invoke the module's exported `infer_from_ptrs`
+  // invoke the module&#39;s exported `infer_from_ptrs`
   // function using the pointers and lengths of
   // the model and image, which returns an integer
   //  representing the index of the predicted class.
@@ -399,17 +399,17 @@ function getPrediction(model_bytes, img_bytes, instance) {
  of this project contains the complete logic for
 instantiating the module, a compiled version of the WebAssembly module, the
 MobilNet V2 model, as well as a directory with a couple of images we can test:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ node --experimental-wasi-unstable-preview1 \
-       --experimental-wasm-bigint \
-       test.js
-predicting on file  golden-retriever.jpeg
-inference time:  832 ms
-prediction:  golden retriever
-
-predicting on file  husky.jpeg
-inference time:  541 ms
-prediction:  Eskimo dog, husky
-</code></pre></div><p>The program correctly uses the MobileNet V2 computer vision model and the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ node --experimental-wasi-unstable-preview1 \
+</span></span><span style="display:flex;"><span>       --experimental-wasm-bigint \
+</span></span><span style="display:flex;"><span>       test.js
+</span></span><span style="display:flex;"><span>predicting on file  golden-retriever.jpeg
+</span></span><span style="display:flex;"><span>inference time:  832 ms
+</span></span><span style="display:flex;"><span>prediction:  golden retriever
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>predicting on file  husky.jpeg
+</span></span><span style="display:flex;"><span>inference time:  541 ms
+</span></span><span style="display:flex;"><span>prediction:  Eskimo dog, husky
+</span></span></code></pre></div><p>The program correctly uses the MobileNet V2 computer vision model and the
 WebAssembly module we wrote, and performs image classification on the test
 images.</p>
 <h3 id="building-a-rust-host-runtime-with-wasmtime">Building a Rust host runtime with Wasmtime</h3>
@@ -422,104 +422,104 @@ API</a>
 byte array and an instance of the WebAssembly module, writes the data into the
 module&rsquo;s memory - essentially the same functionality we implemented in
 JavaScript in the previous section:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Write a byte array into the instance&#39;s linear memory
-</span><span style="color:#e6db74">/// and return the offset relative to the module&#39;s memory.
-</span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write_guest_memory</span>(
-    bytes: <span style="color:#66d9ef">&amp;</span>Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
-    instance: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Instance</span>
-) -&gt; Result<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">isize</span>, anyhow::Error<span style="color:#f92672">&gt;</span> {
-    <span style="color:#75715e">// Get the &#34;memory&#34; export of the module.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic, since
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// we are not going to be able to copy any data.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
-        .get_memory(MEMORY)
-        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
-
-    <span style="color:#75715e">// Get the guest&#39;s exported `alloc` function, and call
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// it with the length of the byte array.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
-        .get_func(ALLOC_FN)
-        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
-    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(
-        <span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
-    )<span style="color:#f92672">?</span>;
-
-    <span style="color:#75715e">// The result is an offset relative to the module&#39;s
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// linear memory, which is used to copy the bytes into
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s memory.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> guest_ptr_offset <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> alloc_result
-        .get(<span style="color:#ae81ff">0</span>)
-        .expect(<span style="color:#e6db74">&#34;expected the result to have one value&#34;</span>)
-    {
-        Val::I32(val) <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">*</span>val <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">isize</span>,
-        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(<span style="color:#e6db74">&#34;guest pointer must be Val::I32&#34;</span>),
-    };
-
-    <span style="color:#75715e">// Copy the desired bytes into the memory at `guest_ptr_offset`.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsafe</span> {
-        <span style="color:#66d9ef">let</span> raw <span style="color:#f92672">=</span> memory.data_ptr().offset(guest_ptr_offset);
-        raw.copy_from(bytes.as_ptr(), bytes.len());
-    }
-    <span style="color:#66d9ef">return</span> Ok(guest_ptr_offset);
-}
-</code></pre></div><p>We can now use the <code>write_guest_memory</code> function to implement getting a
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Write a byte array into the instance&#39;s linear memory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// and return the offset relative to the module&#39;s memory.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write_guest_memory</span>(
+</span></span><span style="display:flex;"><span>    bytes: <span style="color:#66d9ef">&amp;</span>Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    instance: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Instance</span>
+</span></span><span style="display:flex;"><span>) -&gt; Result<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">isize</span>, anyhow::Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the &#34;memory&#34; export of the module.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic, since
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// we are not going to be able to copy any data.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
+</span></span><span style="display:flex;"><span>        .get_memory(MEMORY)
+</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the guest&#39;s exported `alloc` function, and call
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// it with the length of the byte array.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
+</span></span><span style="display:flex;"><span>        .get_func(ALLOC_FN)
+</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
+</span></span><span style="display:flex;"><span>    )<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The result is an offset relative to the module&#39;s
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// linear memory, which is used to copy the bytes into
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s memory.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> guest_ptr_offset <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> alloc_result
+</span></span><span style="display:flex;"><span>        .get(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected the result to have one value&#34;</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        Val::I32(val) <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">*</span>val <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">isize</span>,
+</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(<span style="color:#e6db74">&#34;guest pointer must be Val::I32&#34;</span>),
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Copy the desired bytes into the memory at `guest_ptr_offset`.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsafe</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> raw <span style="color:#f92672">=</span> memory.data_ptr().offset(guest_ptr_offset);
+</span></span><span style="display:flex;"><span>        raw.copy_from(bytes.as_ptr(), bytes.len());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Ok(guest_ptr_offset);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We can now use the <code>write_guest_memory</code> function to implement getting a
 prediction - given the contents of the model and an image, create a new
 WebAssembly instance of the module using the Wasmtime API, write the contents of
 the model and image into the guest&rsquo;s memory, then invoke the <code>invoke_from_ptrs</code>
 function from the WebAssembly module. Finally, use a simple helper function that
 gets the index of the predicted class and return the human-friendly label of the
 class:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#e6db74">/// Get a prediction given the MobileNet V2 model and an image.
-</span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get_prediction</span>(
-    model_bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
-    img_bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>
-) -&gt; Result<span style="color:#f92672">&lt;</span>String, anyhow::Error<span style="color:#f92672">&gt;</span> {
-    <span style="color:#75715e">// Unfortunately, we have to create a new module
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// instance for every prediction, since a
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// `Wasmtime::Instance` cannot be safely sent between threads.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// See https://github.com/bytecodealliance/wasmtime/issues/793
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(WASM.to_string())<span style="color:#f92672">?</span>;
-
-    <span style="color:#75715e">// Write the MobileNet model and the image contents to
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s linear memory, and get their pointers.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> model_bytes_ptr <span style="color:#f92672">=</span> write_guest_memory(
-        <span style="color:#f92672">&amp;</span>model_bytes,
-        <span style="color:#f92672">&amp;</span>instance
-    )<span style="color:#f92672">?</span>;
-    <span style="color:#66d9ef">let</span> img_bytes_ptr <span style="color:#f92672">=</span> write_guest_memory(
-        <span style="color:#f92672">&amp;</span>img_bytes,
-        <span style="color:#f92672">&amp;</span>instance
-    )<span style="color:#f92672">?</span>;
-
-    <span style="color:#75715e">// Get the module&#39;s &#34;infer_from_ptrs&#34; function,
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is the entrypoint for our module.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> infer <span style="color:#f92672">=</span> instance
-        .get_func(INFER_FN)
-        .expect(<span style="color:#e6db74">&#34;expected inference function not found&#34;</span>);
-
-    <span style="color:#75715e">// Call the inference function with the pointer
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// and length of the model contents and image.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> results <span style="color:#f92672">=</span> infer.call(<span style="color:#f92672">&amp;</span>vec![
-        Val::from(model_bytes_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
-        Val::from(model_bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
-        Val::from(img_bytes_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
-        Val::from(img_bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
-    ])<span style="color:#f92672">?</span>;
-
-    <span style="color:#75715e">// The inference function has one return argument,
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the index of the predicted class.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">match</span> results
-        .get(<span style="color:#ae81ff">0</span>)
-        .expect(<span style="color:#e6db74">&#34;expected the result to have one value&#34;</span>)
-    {
-        Val::I32(val) <span style="color:#f92672">=&gt;</span> {
-            <span style="color:#66d9ef">let</span> label <span style="color:#f92672">=</span> get_label(<span style="color:#f92672">*</span>val <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>)<span style="color:#f92672">?</span>;
-            <span style="color:#66d9ef">return</span> Ok(label);
-        }
-        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(<span style="color:#e6db74">&#34;cannot get prediction&#34;</span>),
-    }
-}
-</code></pre></div><p>As the comment suggests, <a href="https://github.com/bytecodealliance/wasmtime/issues/793" target="_blank" rel="noreferrer noopener">a <code>Wasmtime::Instance</code> cannot be sent across
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Get a prediction given the MobileNet V2 model and an image.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get_prediction</span>(
+</span></span><span style="display:flex;"><span>    model_bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    img_bytes: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, anyhow::Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Unfortunately, we have to create a new module
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// instance for every prediction, since a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// `Wasmtime::Instance` cannot be safely sent between threads.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// See https://github.com/bytecodealliance/wasmtime/issues/793
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(WASM.to_string())<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Write the MobileNet model and the image contents to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s linear memory, and get their pointers.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> model_bytes_ptr <span style="color:#f92672">=</span> write_guest_memory(
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>model_bytes,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>instance
+</span></span><span style="display:flex;"><span>    )<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> img_bytes_ptr <span style="color:#f92672">=</span> write_guest_memory(
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>img_bytes,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>instance
+</span></span><span style="display:flex;"><span>    )<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the module&#39;s &#34;infer_from_ptrs&#34; function,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is the entrypoint for our module.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> infer <span style="color:#f92672">=</span> instance
+</span></span><span style="display:flex;"><span>        .get_func(INFER_FN)
+</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected inference function not found&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Call the inference function with the pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// and length of the model contents and image.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> results <span style="color:#f92672">=</span> infer.call(<span style="color:#f92672">&amp;</span>vec![
+</span></span><span style="display:flex;"><span>        Val::from(model_bytes_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
+</span></span><span style="display:flex;"><span>        Val::from(model_bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
+</span></span><span style="display:flex;"><span>        Val::from(img_bytes_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
+</span></span><span style="display:flex;"><span>        Val::from(img_bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
+</span></span><span style="display:flex;"><span>    ])<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The inference function has one return argument,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the index of the predicted class.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">match</span> results
+</span></span><span style="display:flex;"><span>        .get(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected the result to have one value&#34;</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        Val::I32(val) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> label <span style="color:#f92672">=</span> get_label(<span style="color:#f92672">*</span>val <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> Ok(label);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(<span style="color:#e6db74">&#34;cannot get prediction&#34;</span>),
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>As the comment suggests, <a href="https://github.com/bytecodealliance/wasmtime/issues/793" target="_blank" rel="noreferrer noopener">a <code>Wasmtime::Instance</code> cannot be sent across
 threads</a>
  (not in a memory-safe manner) - which means we cannot
 use the same instance in a multi-threaded environment (for example when
@@ -544,17 +544,17 @@ project</a>
 , an HTTP server is started on port 3000 which expects an image
 URL as request body, downloads the image contents, gets a prediction using the
 method described above, then returns its human-friendly label:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo run --release
-Listening on http://127.0.0.1:3000
-
-module instantiation time: 774.715145ms
-inference time: 723.531083ms
-</code></pre></div><p>In another terminal instance (or from an HTTP request builder, such as Postman):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ curl --request GET &#39;localhost:3000&#39; \
---header &#39;Content-Type: text/plain&#39; \
---data-raw &#39;https://&lt;url-to-a-retriever-puppy&gt;.jpg&#39;
-golden retriever
-</code></pre></div><p>For each request, the module instantiation and inference time are printed to the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ cargo run --release
+</span></span><span style="display:flex;"><span>Listening on http://127.0.0.1:3000
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>module instantiation time: 774.715145ms
+</span></span><span style="display:flex;"><span>inference time: 723.531083ms
+</span></span></code></pre></div><p>In another terminal instance (or from an HTTP request builder, such as Postman):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ curl --request GET &#39;localhost:3000&#39; \
+</span></span><span style="display:flex;"><span>--header &#39;Content-Type: text/plain&#39; \
+</span></span><span style="display:flex;"><span>--data-raw &#39;https://&lt;url-to-a-retriever-puppy&gt;.jpg&#39;
+</span></span><span style="display:flex;"><span>golden retriever
+</span></span></code></pre></div><p>For each request, the module instantiation and inference time are printed to the
 console, and this is where not being able to share a <code>Wasmtime::Instance</code> across
 threads affects the overall response time of the API we built. But as
 WebAssembly and WASI mature, hardware devices (such as GPUs) will be available

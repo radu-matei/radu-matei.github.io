@@ -220,9 +220,9 @@
  which explains how to get started with Angular and RxJS - while we will not get into details, it is a great source if you&rsquo;re getting started with Angular.</p>
 </blockquote>
 <p>Clone the repository and navigate to the folder containing the solution:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone https://github.com/radu-matei/angular-todo-app
-$ cd angular-todo-app
-</code></pre></div><h3 id="deploy-the-node-back-end">Deploy the Node back-end</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone https://github.com/radu-matei/angular-todo-app
+</span></span><span style="display:flex;"><span>$ cd angular-todo-app
+</span></span></code></pre></div><h3 id="deploy-the-node-back-end">Deploy the Node back-end</h3>
 <p>Earlier we were talking about Draft packs, and how to get started with an existing application - this sample is already configured with the Dockerfile and Helm chart required to deploy on Kubernetes - however, you can customize it to your needs and even write your own packs for your team.</p>
 <blockquote>
 <p>You can find <a href="https://github.com/radu-matei/draft-packs/tree/master/packs/node-debug" target="_blank" rel="noreferrer noopener">the pack used for this application in my packs repository</a>
@@ -230,55 +230,55 @@ $ cd angular-todo-app
  is that this one exposes an additional port that we will use later for remote debugging, 9229 - more on this later.</p>
 </blockquote>
 <p>Navigate to the <code>node-backend</code> folder, and if everything is setup correctly, you should be able to:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ draft up
-Draft Up Started: <span style="color:#e6db74">&#39;todos-api&#39;</span>
-todos-api: Building Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>1.0020s<span style="color:#f92672">)</span>
-todos-api: Pushing Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>9.0293s<span style="color:#f92672">)</span>
-todos-api: Releasing Application: SUCCESS ⚓  <span style="color:#f92672">(</span>0.6775s<span style="color:#f92672">)</span>
-todos-api: Build ID: 01CAQQR0K8BH4MES9WFQS0S5RT
-Inspect the logs with <span style="color:#e6db74">`</span>draft logs 01CAQQR0K8BH4MES9WFQS0S5RT<span style="color:#e6db74">`</span>
-</code></pre></div><p>Within around 10 seconds, Draft built and pushed my container image, then deployed my application to the Kubernetes cluster. Let&rsquo;s see what our cluster looks like after this operation.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ draft up
+</span></span><span style="display:flex;"><span>Draft Up Started: <span style="color:#e6db74">&#39;todos-api&#39;</span>
+</span></span><span style="display:flex;"><span>todos-api: Building Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>1.0020s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>todos-api: Pushing Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>9.0293s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>todos-api: Releasing Application: SUCCESS ⚓  <span style="color:#f92672">(</span>0.6775s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>todos-api: Build ID: 01CAQQR0K8BH4MES9WFQS0S5RT
+</span></span><span style="display:flex;"><span>Inspect the logs with <span style="color:#e6db74">`</span>draft logs 01CAQQR0K8BH4MES9WFQS0S5RT<span style="color:#e6db74">`</span>
+</span></span></code></pre></div><p>Within around 10 seconds, Draft built and pushed my container image, then deployed my application to the Kubernetes cluster. Let&rsquo;s see what our cluster looks like after this operation.</p>
 <blockquote>
 <p>Note that the first time you build and push the image it might take a little more - this is because Docker doesn&rsquo;t have any layers cached locally.</p>
 </blockquote>
 <p>Under the hood, after pushing the container image, Draft used Helm to deploy the chart:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ helm ls
-NAME         REVISION     UPDATED                      STATUS       CHART                NAMESPACE
-todos-api    <span style="color:#ae81ff">1</span>            Tue Apr <span style="color:#ae81ff">10</span> 15:16:14 <span style="color:#ae81ff">2018</span>     DEPLOYED     node-debug-v0.1.0    default
-</code></pre></div><p>This resulted in one pod:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get pods
-NAME                                    READY     STATUS    RESTARTS   AGE
-todos-api-node-debug-2786020832-qv0pf   1/1       Running   <span style="color:#ae81ff">0</span>          2m
-</code></pre></div><p>A deployment:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get deployments
-NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-todos-api-node-debug   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           4m
-</code></pre></div><p>And a <code>ClusterIP</code> type service:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get services
-NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>    AGE
-kubernetes             ClusterIP   10.0.0.1      &lt;none&gt;        443/TCP    20d
-todos-api-node-debug   ClusterIP   10.0.202.58   &lt;none&gt;        8080/TCP   5m
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ helm ls
+</span></span><span style="display:flex;"><span>NAME         REVISION     UPDATED                      STATUS       CHART                NAMESPACE
+</span></span><span style="display:flex;"><span>todos-api    <span style="color:#ae81ff">1</span>            Tue Apr <span style="color:#ae81ff">10</span> 15:16:14 <span style="color:#ae81ff">2018</span>     DEPLOYED     node-debug-v0.1.0    default
+</span></span></code></pre></div><p>This resulted in one pod:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get pods
+</span></span><span style="display:flex;"><span>NAME                                    READY     STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>todos-api-node-debug-2786020832-qv0pf   1/1       Running   <span style="color:#ae81ff">0</span>          2m
+</span></span></code></pre></div><p>A deployment:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get deployments
+</span></span><span style="display:flex;"><span>NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+</span></span><span style="display:flex;"><span>todos-api-node-debug   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           4m
+</span></span></code></pre></div><p>And a <code>ClusterIP</code> type service:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get services
+</span></span><span style="display:flex;"><span>NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>    AGE
+</span></span><span style="display:flex;"><span>kubernetes             ClusterIP   10.0.0.1      &lt;none&gt;        443/TCP    20d
+</span></span><span style="display:flex;"><span>todos-api-node-debug   ClusterIP   10.0.202.58   &lt;none&gt;        8080/TCP   5m
+</span></span></code></pre></div><blockquote>
 <p>All the values, cluster types and container ports can be configured in <a href="https://github.com/radu-matei/angular-todo-app/blob/draft-app/node-backend/charts/node-debug/values.yaml" target="_blank" rel="noreferrer noopener"><code>/charts/values.yml</code></a>
  and in <a href="https://github.com/radu-matei/angular-todo-app/tree/draft-app/node-backend/charts/node-debug/templates" target="_blank" rel="noreferrer noopener"><code>/charts/templates</code></a>
 .</p>
 </blockquote>
 <p>Now we can start forwarding the ports exposed by our application locally, and access it as if it were running in a local process:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ draft connect
-Connect to node-debug:8080 on localhost:8080
-Connect to node-debug:9229 on localhost:9229
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: &gt; node --inspect index.js
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>:
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: For help see https://nodejs.org/en/docs/inspector
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Express server listening on port <span style="color:#ae81ff">8080</span>
-</code></pre></div><p>The logs you see come from the Kubernetes pod we just deployed:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl logs todos-api-node-debug-2786020832-qv0pf
-&gt; todo-api@0.0.1 start /usr/src/app&gt; node --inspect index.js
-Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
-For help see https://nodejs.org/en/docs/inspector
-Express server listening on port <span style="color:#ae81ff">8080</span>
-</code></pre></div><p>Now if you browse to <a href="http://localhost:8080/todos" target="_blank" rel="noreferrer noopener"><code>http://localhost:8080/todos</code></a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ draft connect
+</span></span><span style="display:flex;"><span>Connect to node-debug:8080 on localhost:8080
+</span></span><span style="display:flex;"><span>Connect to node-debug:9229 on localhost:9229
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: &gt; node --inspect index.js
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: For help see https://nodejs.org/en/docs/inspector
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Express server listening on port <span style="color:#ae81ff">8080</span>
+</span></span></code></pre></div><p>The logs you see come from the Kubernetes pod we just deployed:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl logs todos-api-node-debug-2786020832-qv0pf
+</span></span><span style="display:flex;"><span>&gt; todo-api@0.0.1 start /usr/src/app&gt; node --inspect index.js
+</span></span><span style="display:flex;"><span>Debugger listening on ws://127.0.0.1:9229/221daeb2-8f1b-4b66-b91d-644628107a09
+</span></span><span style="display:flex;"><span>For help see https://nodejs.org/en/docs/inspector
+</span></span><span style="display:flex;"><span>Express server listening on port <span style="color:#ae81ff">8080</span>
+</span></span></code></pre></div><p>Now if you browse to <a href="http://localhost:8080/todos" target="_blank" rel="noreferrer noopener"><code>http://localhost:8080/todos</code></a>
  you should be able to navigate through the API we just deployed to Kubernetes.</p>
 <p><img src="/img/article-photos/real-world-draft/localhost.png" alt=""></p>
 <blockquote>
@@ -291,21 +291,21 @@ Express server listening on port <span style="color:#ae81ff">8080</span>
 </blockquote>
 <h3 id="exploring-the-angular-front-end">Exploring the Angular front-end</h3>
 <p>Now if we navigate to the <code>angular-frontend</code> folder and execute <code>npm install</code> and <code>npm start</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ npm install
-$ npm start
-&gt; todo-app@0.0.0 start /Users/radu/go/src/github.com/radu-matei/angular-todo-app/angular-client
-&gt; ng serve
-
-** NG Live Development Server is running on http://localhost:4200 **
-Hash: 6c27ad3a7fc35b2f2fa0
-Time: 6869ms
-chunk    <span style="color:#f92672">{</span>0<span style="color:#f92672">}</span> polyfills.bundle.js, polyfills.bundle.js.map <span style="color:#f92672">(</span>polyfills<span style="color:#f92672">)</span> <span style="color:#ae81ff">195</span> kB <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
-chunk    <span style="color:#f92672">{</span>1<span style="color:#f92672">}</span> main.bundle.js, main.bundle.js.map <span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> 21.2 kB <span style="color:#f92672">{</span>3<span style="color:#f92672">}</span> <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
-chunk    <span style="color:#f92672">{</span>2<span style="color:#f92672">}</span> styles.bundle.js, styles.bundle.js.map <span style="color:#f92672">(</span>styles<span style="color:#f92672">)</span> 21.6 kB <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
-chunk    <span style="color:#f92672">{</span>3<span style="color:#f92672">}</span> vendor.bundle.js, vendor.bundle.js.map <span style="color:#f92672">(</span>vendor<span style="color:#f92672">)</span> 2.52 MB <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
-chunk    <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> inline.bundle.js, inline.bundle.js.map <span style="color:#f92672">(</span>inline<span style="color:#f92672">)</span> <span style="color:#ae81ff">0</span> bytes <span style="color:#f92672">[</span>entry<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
-webpack: Compiled successfully.
-</code></pre></div><p>The front-end is already configured to talk to the back-end on <code>localhost:8080</code>, so at this point we can navigate to <a href="http://localhost:4200" target="_blank" rel="noreferrer noopener"><code>http://localhost:4200</code></a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ npm install
+</span></span><span style="display:flex;"><span>$ npm start
+</span></span><span style="display:flex;"><span>&gt; todo-app@0.0.0 start /Users/radu/go/src/github.com/radu-matei/angular-todo-app/angular-client
+</span></span><span style="display:flex;"><span>&gt; ng serve
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>** NG Live Development Server is running on http://localhost:4200 **
+</span></span><span style="display:flex;"><span>Hash: 6c27ad3a7fc35b2f2fa0
+</span></span><span style="display:flex;"><span>Time: 6869ms
+</span></span><span style="display:flex;"><span>chunk    <span style="color:#f92672">{</span>0<span style="color:#f92672">}</span> polyfills.bundle.js, polyfills.bundle.js.map <span style="color:#f92672">(</span>polyfills<span style="color:#f92672">)</span> <span style="color:#ae81ff">195</span> kB <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>chunk    <span style="color:#f92672">{</span>1<span style="color:#f92672">}</span> main.bundle.js, main.bundle.js.map <span style="color:#f92672">(</span>main<span style="color:#f92672">)</span> 21.2 kB <span style="color:#f92672">{</span>3<span style="color:#f92672">}</span> <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>chunk    <span style="color:#f92672">{</span>2<span style="color:#f92672">}</span> styles.bundle.js, styles.bundle.js.map <span style="color:#f92672">(</span>styles<span style="color:#f92672">)</span> 21.6 kB <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>chunk    <span style="color:#f92672">{</span>3<span style="color:#f92672">}</span> vendor.bundle.js, vendor.bundle.js.map <span style="color:#f92672">(</span>vendor<span style="color:#f92672">)</span> 2.52 MB <span style="color:#f92672">[</span>initial<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>chunk    <span style="color:#f92672">{</span>4<span style="color:#f92672">}</span> inline.bundle.js, inline.bundle.js.map <span style="color:#f92672">(</span>inline<span style="color:#f92672">)</span> <span style="color:#ae81ff">0</span> bytes <span style="color:#f92672">[</span>entry<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>rendered<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>webpack: Compiled successfully.
+</span></span></code></pre></div><p>The front-end is already configured to talk to the back-end on <code>localhost:8080</code>, so at this point we can navigate to <a href="http://localhost:4200" target="_blank" rel="noreferrer noopener"><code>http://localhost:4200</code></a>
  and start playing around with our application:</p>
 <p><img src="/img/article-photos/real-world-draft/app.png" alt=""></p>
 <blockquote>
@@ -316,31 +316,31 @@ webpack: Compiled successfully.
 <h3 id="updating-the-back-end">Updating the back-end</h3>
 <p>At this point, without Draft, making a change to your back-end would require: manually re-building and pushing the container image, then updating the the Kubernetes manifests with the new image tag, then waiting for your pod to be up and manually forward the port so you can test your front-end again - and if you&rsquo;re rapidly iterating and making small changes, this becomes an incredibly annoying and repetitive task.</p>
 <p>Let&rsquo;s make a change to our back-end - if we go to <code>index.js</code>, we can see where our <code>ToDo</code> items are coming from, and we can add a new entry:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">inMemoryTodoDB</span> <span style="color:#f92672">=</span> [
-    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Kubernetes&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
-    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Draft&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
-    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Helm&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> },
-    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">3</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Remote debugging is awesome!&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> },
-    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">4</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;It is incredibly easy to update your application&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
-];
-</code></pre></div><p>Now we simply save the file and execute <code>draft up --auto-connect</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ draft up --auto-connect
-Draft Up Started: <span style="color:#e6db74">&#39;todos-api&#39;</span>
-todos-api: Building Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>4.0053s<span style="color:#f92672">)</span>
-todos-api: Pushing Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>16.0338s<span style="color:#f92672">)</span>
-todos-api: Releasing Application: SUCCESS ⚓  <span style="color:#f92672">(</span>1.2102s<span style="color:#f92672">)</span>
-todos-api: Build ID: 01CAQTGH3JNWB7GQQZFVNR5SFE
-Inspect the logs with <span style="color:#e6db74">`</span>draft logs 01CAQTGH3JNWB7GQQZFVNR5SFE<span style="color:#e6db74">`</span>
-Connect to node-debug:8080 on localhost:8080
-Connect to node-debug:9229 on localhost:9229
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>:
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: &gt; todo-api@0.0.1 start /usr/src/app
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: &gt; node --inspect index.js
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>:
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Debugger listening on ws://127.0.0.1:9229/501876bb-eda4-47b1-8f8c-f4c4dfaf648e
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: For help see https://nodejs.org/en/docs/inspector
-<span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Express server listening on port <span style="color:#ae81ff">8080</span>
-</code></pre></div><p>This command executed the <code>draft up</code> cycle again (build and push the container image, then update the application in your Kubernetes cluster), then exposed the application ports locally - now simply refresh your application page:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">inMemoryTodoDB</span> <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Kubernetes&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Draft&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Learn Helm&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> },
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">3</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Remote debugging is awesome!&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> },
+</span></span><span style="display:flex;"><span>    { <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">4</span>, <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;It is incredibly easy to update your application&#39;</span>, <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> },
+</span></span><span style="display:flex;"><span>];
+</span></span></code></pre></div><p>Now we simply save the file and execute <code>draft up --auto-connect</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ draft up --auto-connect
+</span></span><span style="display:flex;"><span>Draft Up Started: <span style="color:#e6db74">&#39;todos-api&#39;</span>
+</span></span><span style="display:flex;"><span>todos-api: Building Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>4.0053s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>todos-api: Pushing Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>16.0338s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>todos-api: Releasing Application: SUCCESS ⚓  <span style="color:#f92672">(</span>1.2102s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>todos-api: Build ID: 01CAQTGH3JNWB7GQQZFVNR5SFE
+</span></span><span style="display:flex;"><span>Inspect the logs with <span style="color:#e6db74">`</span>draft logs 01CAQTGH3JNWB7GQQZFVNR5SFE<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>Connect to node-debug:8080 on localhost:8080
+</span></span><span style="display:flex;"><span>Connect to node-debug:9229 on localhost:9229
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: &gt; todo-api@0.0.1 start /usr/src/app
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: &gt; node --inspect index.js
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Debugger listening on ws://127.0.0.1:9229/501876bb-eda4-47b1-8f8c-f4c4dfaf648e
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: For help see https://nodejs.org/en/docs/inspector
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>node-debug<span style="color:#f92672">]</span>: Express server listening on port <span style="color:#ae81ff">8080</span>
+</span></span></code></pre></div><p>This command executed the <code>draft up</code> cycle again (build and push the container image, then update the application in your Kubernetes cluster), then exposed the application ports locally - now simply refresh your application page:</p>
 <p><img src="/img/article-photos/real-world-draft/updated-app.png" alt=""></p>
 <p>It is this easy to iterate through changes in your application - all you have to do is execute <code>draft up</code>.</p>
 <p>So far, all the features we saw are stable and already used by developers to simplify their development cycle when using Kubernetes. But regardless of what tool you use today, one thing that is either missing, not working correctly or incomplete is debugging the application you deployed to the cluster. In the next section we will experiment with VS Code and remotely debug the back-end we just deployed.</p>

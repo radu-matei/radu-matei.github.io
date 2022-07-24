@@ -145,43 +145,43 @@ Any non-trivial application is going to need a mechanism to handle different typ
 <h3 id="building-the-hello-world-web-application-with-startup">Building the <code>Hello, World</code> web application with <code>Startup</code></h3>
 <p>We are going to build the same application that responds with <code>Hello, World</code> and the current time, this time with a <code>Startup</code> class.</p>
 <p>First of all, if this is a new application (created using <code>dotnet new</code>), you should add the dependency to the web server Kestrel in <code>project.json</code>, which should look like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0-*&#34;</span>,
-    <span style="color:#f92672">&#34;buildOptions&#34;</span>: {
-        <span style="color:#f92672">&#34;debugType&#34;</span>: <span style="color:#e6db74">&#34;portable&#34;</span>,
-        <span style="color:#f92672">&#34;emitEntryPoint&#34;</span>: <span style="color:#66d9ef">true</span>
-    },
-    <span style="color:#f92672">&#34;dependencies&#34;</span>: {},
-    <span style="color:#f92672">&#34;frameworks&#34;</span>: {
-        <span style="color:#f92672">&#34;netcoreapp1.0&#34;</span>: {
-            <span style="color:#f92672">&#34;dependencies&#34;</span>: {
-                <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
-                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>,
-                    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
-                },
-                <span style="color:#f92672">&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
-            },
-            <span style="color:#f92672">&#34;imports&#34;</span>: <span style="color:#e6db74">&#34;dnxcore50&#34;</span>
-        }
-    }
-}
-</code></pre></div><p>Then, add a new file called <code>Startup.cs</code> and add the following code:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System;
-<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Builder;
-<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Http;
-
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Startup</span>
-{
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Configure(IApplicationBuilder app)
-    {
-        app.Run(context =&gt;
-        {
-            <span style="color:#66d9ef">var</span> response = String.Format(<span style="color:#e6db74">&#34;Hello, Universe! It is {0}&#34;</span>, DateTime.Now);
-            <span style="color:#66d9ef">return</span> context.Response.WriteAsync(response);
-        });
-    }
-}
-</code></pre></div><p>As you can see, the code in <code>Configure</code> is the same as the code in <code>Main</code> from the previous example.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0-*&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;buildOptions&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;debugType&#34;</span>: <span style="color:#e6db74">&#34;portable&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;emitEntryPoint&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;dependencies&#34;</span>: {},
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;frameworks&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;netcoreapp1.0&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;dependencies&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;imports&#34;</span>: <span style="color:#e6db74">&#34;dnxcore50&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Then, add a new file called <code>Startup.cs</code> and add the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Builder;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Http;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Startup</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Configure(IApplicationBuilder app)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        app.Run(context =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">var</span> response = String.Format(<span style="color:#e6db74">&#34;Hello, Universe! It is {0}&#34;</span>, DateTime.Now);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> context.Response.WriteAsync(response);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>As you can see, the code in <code>Configure</code> is the same as the code in <code>Main</code> from the previous example.</p>
 <p>Then, in the <code>Main</code> method we simply indicate that we have a <code>Startup</code> class we want to use.</p>
 <pre tabindex="0"><code>using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;

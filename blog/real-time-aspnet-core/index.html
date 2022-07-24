@@ -153,7 +153,7 @@
 <p>Because the release of SignalR for ASP .NET Core was delayed for so long, I decided to write a very basic, stripped down (compared to the original SignalR) that only supports WebSockets (is based on <code>Microsoft.AspNetCore.WebSockets</code>) with server support, TypeScript and C# clients.</p>
 <p>This started as a fun side project (and I am pretty sure it will stay this way once SignalR becomes ready for production).</p>
 <h2 id="high-level-overview">High-level overview</h2>
-<p>This library offers <strong>real-time functionality to ASP .NET Core applications</strong>, using WebSockets. It also supports <strong>the client and the server calling each others' methods</strong> (mainly like in the good old SignalR).</p>
+<p>This library offers <strong>real-time functionality to ASP .NET Core applications</strong>, using WebSockets. It also supports <strong>the client and the server calling each others&rsquo; methods</strong> (mainly like in the good old SignalR).</p>
 <p>In order to get real-time functionality in your application, you need to create a class (called <code>Handler</code>, which inherits <a href="https://github.com/radu-matei/websocket-manager/blob/master/src/WebSocketManager/WebSocketHandler.cs" target="_blank" rel="noreferrer noopener"><code>WebSocketHandler</code></a>
 ), that is very similar to the <code>Hub</code> class in SignalR.</p>
 <p>Then, in this <code>Handler</code> class you can create public methods that the (JavaScript and C#) clients can call, and can call client methods.</p>
@@ -175,26 +175,26 @@
 </ul>
 <p>This is how <code>project.json</code> looks like:</p>
 <pre tabindex="0"><code>{
-  &quot;version&quot;: &quot;1.0.0-*&quot;,
-  &quot;buildOptions&quot;: {
-    &quot;debugType&quot;: &quot;portable&quot;,
-    &quot;emitEntryPoint&quot;: true
+  &#34;version&#34;: &#34;1.0.0-*&#34;,
+  &#34;buildOptions&#34;: {
+    &#34;debugType&#34;: &#34;portable&#34;,
+    &#34;emitEntryPoint&#34;: true
   },
-  &quot;frameworks&quot;: {
-    &quot;netcoreapp1.1&quot;: {
-      &quot;dependencies&quot;: {
-        &quot;Microsoft.NETCore.App&quot;: {
-          &quot;type&quot;: &quot;platform&quot;,
-          &quot;version&quot;: &quot;1.1.0&quot;
+  &#34;frameworks&#34;: {
+    &#34;netcoreapp1.1&#34;: {
+      &#34;dependencies&#34;: {
+        &#34;Microsoft.NETCore.App&#34;: {
+          &#34;type&#34;: &#34;platform&#34;,
+          &#34;version&#34;: &#34;1.1.0&#34;
         },
-        &quot;WebSocketManager&quot;: {
-          &quot;target&quot;: &quot;project&quot;
+        &#34;WebSocketManager&#34;: {
+          &#34;target&#34;: &#34;project&#34;
         },
-        &quot;Microsoft.AspNetCore.Server.Kestrel&quot;: &quot;1.1.0&quot;,
-        &quot;Microsoft.AspNetCore.StaticFiles&quot;: &quot;1.1.0&quot;,
-        &quot;Newtonsoft.Json&quot;: &quot;9.0.1&quot;
+        &#34;Microsoft.AspNetCore.Server.Kestrel&#34;: &#34;1.1.0&#34;,
+        &#34;Microsoft.AspNetCore.StaticFiles&#34;: &#34;1.1.0&#34;,
+        &#34;Newtonsoft.Json&#34;: &#34;9.0.1&#34;
       },
-      &quot;imports&quot;: &quot;dnxcore50&quot;
+      &#34;imports&#34;: &#34;dnxcore50&#34;
     }
   }
 }
@@ -234,7 +234,7 @@
             var message = new Message()
             {
                 MessageType = MessageType.Text,
-                Data = $&quot;{socketId} is now connected&quot;
+                Data = $&#34;{socketId} is now connected&#34;
             };
 
             await SendMessageToAllAsync(message);
@@ -258,7 +258,7 @@
             var message = new Message()
             {
                 MessageType = MessageType.Text,
-                Data = $&quot;{socketId} disconnected&quot;
+                Data = $&#34;{socketId} disconnected&#34;
             };
             await SendMessageToAllAsync(message);
         }
@@ -269,7 +269,7 @@
 <p>All <code>public</code> methods in a <code>Handler</code> class can be invoked by connected clients.</p>
 <pre tabindex="0"><code>public async Task SendMessage(string socketId, string message)
 {
-    await InvokeClientMethodToAllAsync(&quot;receiveMessage&quot;, socketId, message);
+    await InvokeClientMethodToAllAsync(&#34;receiveMessage&#34;, socketId, message);
 }
 </code></pre><p>This is how such a method would look like. When a client calls the <code>SendMessage</code> method on the server, the server will tell all connected clients to invoke the <code>receiveMessage</code> method, with <code>socketId</code> and <code>message</code> as parameters.</p>
 <h2 id="the-full-chathandler-class">The full <code>ChatHandler</code> class</h2>
@@ -289,7 +289,7 @@
             var message = new Message()
             {
                 MessageType = MessageType.Text,
-                Data = $&quot;{socketId} is now connected&quot;
+                Data = $&#34;{socketId} is now connected&#34;
             };
 
             await SendMessageToAllAsync(message);
@@ -297,7 +297,7 @@
 
         public async Task SendMessage(string socketId, string message)
         {
-            await InvokeClientMethodToAllAsync(&quot;receiveMessage&quot;, socketId, message);
+            await InvokeClientMethodToAllAsync(&#34;receiveMessage&#34;, socketId, message);
         }
 
         public override async Task OnDisconnected(WebSocket socket)
@@ -309,7 +309,7 @@
             var message = new Message()
             {
                 MessageType = MessageType.Text,
-                Data = $&quot;{socketId} disconnected&quot;
+                Data = $&#34;{socketId} disconnected&#34;
             };
             await SendMessageToAllAsync(message);
         }
@@ -322,7 +322,7 @@
 <pre tabindex="0"><code>        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             app.UseWebSockets();
-            app.MapWebSocketManager(&quot;/chat&quot;, serviceProvider.GetService&lt;ChatHandler&gt;());
+            app.MapWebSocketManager(&#34;/chat&#34;, serviceProvider.GetService&lt;ChatHandler&gt;());
 
             app.UseStaticFiles();
         }
@@ -341,8 +341,8 @@
 <p>After including the <code>WebSocketManager</code> script in your page, in order to create a new connection write:</p>
 <p><code>var connection = new WebSocketManager.Connection(&quot;ws://localhost:5000/chat&quot;);</code></p>
 <p>Then, create client methods that the server can invoke:</p>
-<pre tabindex="0"><code>            connection.clientMethods[&quot;receiveMessage&quot;] = (socketId, message) =&gt; {
-                var messageText = socketId + &quot; said: &quot; + message;
+<pre tabindex="0"><code>            connection.clientMethods[&#34;receiveMessage&#34;] = (socketId, message) =&gt; {
+                var messageText = socketId + &#34; said: &#34; + message;
 
                 console.log(messageText);
                 // do something with the message
@@ -358,37 +358,37 @@
 &lt;html&gt;
 
 &lt;head&gt;
-	&lt;meta charset=&quot;utf-8&quot; /&gt;
+	&lt;meta charset=&#34;utf-8&#34; /&gt;
 	&lt;title&gt;Test Page&lt;/title&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
-	&lt;h1&gt;This should be mapped to &quot;/chat&quot;&lt;/h1&gt;
-	&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot; /&gt;
-	&lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
+	&lt;h1&gt;This should be mapped to &#34;/chat&#34;&lt;/h1&gt;
+	&lt;input type=text id=&#34;textInput&#34; placeholder=&#34;Enter your text&#34; /&gt;
+	&lt;button id=&#34;sendButton&#34;&gt;Send&lt;/button&gt;
 
-	&lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
+	&lt;ul id=&#34;messages&#34;&gt;&lt;/ul&gt;
 
 
-	&lt;script data-main=&quot;scripts/main&quot; src=&quot;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&quot;&gt;&lt;/script&gt;
+	&lt;script data-main=&#34;scripts/main&#34; src=&#34;https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js&#34;&gt;&lt;/script&gt;
 
-	&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
+	&lt;script language=&#34;javascript&#34; type=&#34;text/javascript&#34;&gt;
 
-            var connection = new WebSocketManager.Connection(&quot;ws://localhost:5000/chat&quot;);
+            var connection = new WebSocketManager.Connection(&#34;ws://localhost:5000/chat&#34;);
             connection.enableLogging = true;
 
             connection.connectionMethods.onConnected = () =&gt; {
                 //optional
-                console.log(&quot;You are now connected! Connection ID: &quot; + connection.connectionId);
+                console.log(&#34;You are now connected! Connection ID: &#34; + connection.connectionId);
             }
 
             connection.connectionMethods.onDisconnected = () =&gt; {
                 //optional
-                console.log(&quot;Disconnected!&quot;);
+                console.log(&#34;Disconnected!&#34;);
             }
 
-            connection.clientMethods[&quot;receiveMessage&quot;] = (socketId, message) =&gt; {
-                var messageText = socketId + &quot; said: &quot; + message;
+            connection.clientMethods[&#34;receiveMessage&#34;] = (socketId, message) =&gt; {
+                var messageText = socketId + &#34; said: &#34; + message;
 
                 console.log(messageText);
                 appendItem(list, messageText);
@@ -396,18 +396,18 @@
 
             connection.start();
 
-            var list = document.getElementById(&quot;messages&quot;);
-            var button = document.getElementById(&quot;sendButton&quot;);
-            button.addEventListener(&quot;click&quot;, function() {
+            var list = document.getElementById(&#34;messages&#34;);
+            var button = document.getElementById(&#34;sendButton&#34;);
+            button.addEventListener(&#34;click&#34;, function() {
 
-                var input = document.getElementById(&quot;textInput&quot;);
-                connection.invoke(&quot;SendMessage&quot;, connection.connectionId, input.value);
+                var input = document.getElementById(&#34;textInput&#34;);
+                connection.invoke(&#34;SendMessage&#34;, connection.connectionId, input.value);
 
-                input.value = &quot;&quot;;
+                input.value = &#34;&#34;;
             });
 
             function appendItem(list, message) {
-                var item = document.createElement(&quot;li&quot;);
+                var item = document.createElement(&#34;li&#34;);
                 item.appendChild(document.createTextNode(message));
                 list.appendChild(item);
              }
@@ -426,31 +426,30 @@
 <p><a href="https://github.com/radu-matei/websocket-manager/tree/master/samples/EchoConsoleClient" target="_blank" rel="noreferrer noopener">The C# client is available on GitHub, under the <code>samples</code> folder.</a>
 </p>
 <pre tabindex="0"><code>{
-  &quot;version&quot;: &quot;1.0.0-*&quot;,
-  &quot;buildOptions&quot;: {
-    &quot;debugType&quot;: &quot;portable&quot;,
-    &quot;emitEntryPoint&quot;: true
+  &#34;version&#34;: &#34;1.0.0-*&#34;,
+  &#34;buildOptions&#34;: {
+    &#34;debugType&#34;: &#34;portable&#34;,
+    &#34;emitEntryPoint&#34;: true
   },
-  &quot;dependencies&quot;: {},
-  &quot;frameworks&quot;: {
-    &quot;netcoreapp1.1&quot;: {
-      &quot;dependencies&quot;: {
-        &quot;Microsoft.NETCore.App&quot;: {
-          &quot;type&quot;: &quot;platform&quot;,
-          &quot;version&quot;: &quot;1.1.0&quot;
+  &#34;dependencies&#34;: {},
+  &#34;frameworks&#34;: {
+    &#34;netcoreapp1.1&#34;: {
+      &#34;dependencies&#34;: {
+        &#34;Microsoft.NETCore.App&#34;: {
+          &#34;type&#34;: &#34;platform&#34;,
+          &#34;version&#34;: &#34;1.1.0&#34;
         },
-        &quot;WebSocketManager.Client&quot;: {
-          &quot;target&quot;: &quot;project&quot;
+        &#34;WebSocketManager.Client&#34;: {
+          &#34;target&#34;: &#34;project&#34;
         },
-        &quot;WebSocketManager.Common&quot;: {
-          &quot;target&quot;: &quot;project&quot;
+        &#34;WebSocketManager.Common&#34;: {
+          &#34;target&#34;: &#34;project&#34;
         }
       },
-      &quot;imports&quot;: &quot;dnxcore50&quot;
+      &#34;imports&#34;: &#34;dnxcore50&#34;
     }
   }
 }
-
 </code></pre><blockquote>
 <p>Note that I also had to include the <code>Common</code> project - the same bug that made me include <code>Newtonsoft.Json</code> in the web application - hopefully with the new tooling of .NET Core this will not be necessary.</p>
 </blockquote>
@@ -462,9 +461,9 @@
     {
         StartConnectionAsync();
 
-        _connection.On(&quot;receiveMessage&quot;, (arguments) =&gt;
+        _connection.On(&#34;receiveMessage&#34;, (arguments) =&gt;
         {
-            Console.WriteLine($&quot;{arguments[0]} said: {arguments[1]}&quot;);
+            Console.WriteLine($&#34;{arguments[0]} said: {arguments[1]}&#34;);
         });
 
         Console.ReadLine();
@@ -474,7 +473,7 @@
     public static async Task StartConnectionAsync()
     {
         _connection = new Connection();
-        await _connection.StartConnectionAsync(&quot;ws://localhost:5000/chat&quot;);
+        await _connection.StartConnectionAsync(&#34;ws://localhost:5000/chat&#34;);
     }
 
     public static async Task StopConnectionAsync()
@@ -507,7 +506,7 @@
         [HttpGet]
         public async Task SendMessage([FromQueryAttribute]string message)
         {
-           await _notificationsMessageHandler.InvokeClientMethodToAllAsync(&quot;receiveMessage&quot;, message);
+           await _notificationsMessageHandler.InvokeClientMethodToAllAsync(&#34;receiveMessage&#34;, message);
         }
     }
 </code></pre><p>And this is pretty much it!</p>

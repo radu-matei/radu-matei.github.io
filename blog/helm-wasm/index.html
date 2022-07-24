@@ -142,10 +142,10 @@ gone, is to manipulate the DOM - you are able select elements by their ID or
 class, then read and write their values. This can be done in Go with Web
 Assembly using the <code>sycall/js</code> package, and the syntax is really similar to
 JavaScript:</p>
-<pre tabindex="0"><code>someValue := document.Call(&quot;getElementById&quot;, &quot;someId&quot;).Get(&quot;value&quot;).String()
+<pre tabindex="0"><code>someValue := document.Call(&#34;getElementById&#34;, &#34;someId&#34;).Get(&#34;value&#34;).String()
 </code></pre><p>This is equivalent to the following in JavaScript (and modifying the value of
 objects can be done in a similar way):</p>
-<pre tabindex="0"><code>var someValue = document.getElementById(&quot;someId&quot;).value
+<pre tabindex="0"><code>var someValue = document.getElementById(&#34;someId&#34;).value
 </code></pre><p>So in theory, we have the inputs and outputs for our simple application - we can
 read the chart metadata, templates, and values files from a bunch of HTML text
 areas, and we can write the output to another text area. (Luckily enough, the
@@ -156,21 +156,21 @@ sure that was even going to compile with Web Assembly - we&rsquo;re directly imp
 packages from <code>k8s.io/helm</code> into our application, as well as the library for
 unmarshaling YAML, then calling the Helm render engine:</p>
 <pre tabindex="0"><code>func render(this js.Value, args []js.Value) interface{} {
-	document := js.Global().Get(&quot;document&quot;)
-	metadata := document.Call(&quot;getElementById&quot;, &quot;metadata&quot;).Get(&quot;value&quot;).String()
-	templates := document.Call(&quot;getElementById&quot;, &quot;templates&quot;).Get(&quot;value&quot;).String()
-	values := document.Call(&quot;getElementById&quot;, &quot;values&quot;).Get(&quot;value&quot;).String()
+	document := js.Global().Get(&#34;document&#34;)
+	metadata := document.Call(&#34;getElementById&#34;, &#34;metadata&#34;).Get(&#34;value&#34;).String()
+	templates := document.Call(&#34;getElementById&#34;, &#34;templates&#34;).Get(&#34;value&#34;).String()
+	values := document.Call(&#34;getElementById&#34;, &#34;values&#34;).Get(&#34;value&#34;).String()
 
     m := &amp;chart.Metadata{}
     // unmarshaling the chart metadata, coming from the HTML input
 	err := yaml.Unmarshal([]byte(metadata), m)
 	if err != nil {
-		fmt.Printf(&quot;cannot unmarshal chart metadata: %v&quot;, err)
+		fmt.Printf(&#34;cannot unmarshal chart metadata: %v&#34;, err)
 	}
 
     t := []*chart.Template{}
     // Helm templates, coming from the HTML input
-	t = append(t, &amp;chart.Template{Name: &quot;service.yaml&quot;, Data: []byte(templates)})
+	t = append(t, &amp;chart.Template{Name: &#34;service.yaml&#34;, Data: []byte(templates)})
 	c := &amp;chart.Chart{
 		Metadata:  m,
 		Templates: t,
@@ -181,22 +181,22 @@ unmarshaling YAML, then calling the Helm render engine:</p>
 
 	renderedTemplates, err := renderutil.Render(c, config, renderOpts)
 	if err != nil {
-		fmt.Printf(&quot;error rendering: %v&quot;, err)
+		fmt.Printf(&#34;error rendering: %v&#34;, err)
 	}
-	fmt.Printf(&quot;rendered: %v&quot;, renderedTemplates)
+	fmt.Printf(&#34;rendered: %v&#34;, renderedTemplates)
 
-	result := &quot;&quot;
+	result := &#34;&#34;
 	for _, v := range renderedTemplates {
 		result += v
 	}
 
     // showing the result in the browser
-	document.Call(&quot;getElementById&quot;, &quot;result&quot;).Set(&quot;textContent&quot;, result)
+	document.Call(&#34;getElementById&#34;, &#34;result&#34;).Set(&#34;textContent&#34;, result)
 	return nil
 }
 </code></pre><p>The next important piece is registering a function written in Go so it can be
 used from JavaScript:</p>
-<pre tabindex="0"><code>js.Global().Set(&quot;render&quot;, js.FuncOf(render))
+<pre tabindex="0"><code>js.Global().Set(&#34;render&#34;, js.FuncOf(render))
 </code></pre><p>The only thing to note here is the signature for <code>render</code>, which has to be
 <code>func render(this js.Value, args []js.Value) interface{}</code>, where <code>this</code> is the
 JavaScript context that calls the Go function, and <code>args</code> contains the arguments
@@ -235,17 +235,17 @@ Go.</p>
 </blockquote>
 <p>Next, we need the text areas and the button:</p>
 <pre tabindex="0"><code>Metadata:
-&lt;textarea id=&quot;metadata&quot; cols=&quot;50&quot; rows=&quot;10&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+&lt;textarea id=&#34;metadata&#34; cols=&#34;50&#34; rows=&#34;10&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
 Templates:
-&lt;textarea id=&quot;templates&quot; cols=&quot;50&quot; rows=&quot;20&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+&lt;textarea id=&#34;templates&#34; cols=&#34;50&#34; rows=&#34;20&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
 Values:
-&lt;textarea id=&quot;values&quot; cols=&quot;50&quot; rows=&quot;20&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+&lt;textarea id=&#34;values&#34; cols=&#34;50&#34; rows=&#34;20&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
 
-&lt;button onClick=&quot;render()&quot; id=&quot;renderButton&quot;&gt;
+&lt;button onClick=&#34;render()&#34; id=&#34;renderButton&#34;&gt;
   Render
 &lt;/button&gt;
 Result:
-&lt;textarea id=&quot;result&quot; cols=&quot;50&quot; rows=&quot;20&quot; charswidth=&quot;100&quot;&gt;&lt;/textarea&gt;
+&lt;textarea id=&#34;result&#34; cols=&#34;50&#34; rows=&#34;20&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
 </code></pre><p>The callback for the <code>renderButton</code>, <code>render()</code>, is precisely the Go function
 from above, and will be executed whenever the button is clicked.</p>
 <p>Provided we included the <code>wasm_exec.js</code> script and used it to fetch the

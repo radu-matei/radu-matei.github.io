@@ -157,8 +157,8 @@
     app.UseMvc(routes =&gt;
     {
         routes.MapRoute(
-            name: &quot;default&quot;,
-            template: &quot;api/{controller}/{action}/{id?}&quot;
+            name: &#34;default&#34;,
+            template: &#34;api/{controller}/{action}/{id?}&#34;
         );
     });
 }
@@ -172,7 +172,7 @@ public class PostsController : Controller
 {
 	public string Hello()
 	{
-		return &quot;Hello from MVC!&quot;;
+		return &#34;Hello from MVC!&#34;;
 	}
 }
 </code></pre><p>To run the application, execute <code>dotnet restore</code> and <code>dotnet run</code> in the root of the project and browse to <code>http://localhost:5000/api/Posts/Hello</code>. If everything works, you should see the message received from the controller.</p>
@@ -213,8 +213,8 @@ public interface IPostRepository
 <p>We will implement the <code>IPostRepository</code> interface through an in-memory class we will call <code>PostRepository</code> that will hold the data in a list.</p>
 <pre tabindex="0"><code>private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
 {
-    new Post(1, &quot;Obi-Wan Kenobi&quot;,&quot;These are not the droids you're looking for&quot;),
-    new Post(2, &quot;Darth Vader&quot;,&quot;I find your lack of faith disturbing&quot;)
+    new Post(1, &#34;Obi-Wan Kenobi&#34;,&#34;These are not the droids you&#39;re looking for&#34;),
+    new Post(2, &#34;Darth Vader&#34;,&#34;I find your lack of faith disturbing&#34;)
 };
 </code></pre><p>Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it will be private. Besides the list, we only need to implement the three methods from the interface, so here is the full <code>PostRepository</code> class:</p>
 <pre tabindex="0"><code>using System.Collections.Generic;
@@ -224,8 +224,8 @@ public class PostRepository : IPostRepository
 {
     private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
     {
-        new Post(1, &quot;Obi-Wan Kenobi&quot;,&quot;These are not the droids you're looking for&quot;),
-        new Post(2, &quot;Darth Vader&quot;,&quot;I find your lack of faith disturbing&quot;)
+        new Post(1, &#34;Obi-Wan Kenobi&#34;,&#34;These are not the droids you&#39;re looking for&#34;),
+        new Post(2, &#34;Darth Vader&#34;,&#34;I find your lack of faith disturbing&#34;)
     };
     public void AddPost(Post post)
     {
@@ -305,8 +305,8 @@ public class Startup
         app.UseMvc(routes =&gt;
         {
             routes.MapRoute(
-                name: &quot;default&quot;,
-                template: &quot;api/{controller}/{action}/{id?}&quot;
+                name: &#34;default&#34;,
+                template: &#34;api/{controller}/{action}/{id?}&#34;
             );
         });
     }
@@ -322,17 +322,17 @@ public class Startup
 <p>We can see that the response was JSON and it returned a 200 OK HTML code.</p>
 <p>In order to test the post functionality, we create a POST request to <code>http://localhost:5000/api/Posts/AddPost</code> with a JSON object containing the properties of a <code>Post</code>.</p>
 <pre tabindex="0"><code>{
-    &quot;Id&quot;: 3,
-    &quot;UserName&quot;: &quot;Darth Vader&quot;,
-    &quot;Text&quot;: &quot;Luke, I am your father!&quot;
+    &#34;Id&#34;: 3,
+    &#34;UserName&#34;: &#34;Darth Vader&#34;,
+    &#34;Text&#34;: &#34;Luke, I am your father!&#34;
 }
 </code></pre><blockquote>
 <p>You can either use the upper camel case or the lower camel case notation (as you saw in the response from the server, the objects were in lower camel case), but the name and type of the properties must match the ones on the server:</p>
 </blockquote>
 <pre tabindex="0"><code>{
-    &quot;id&quot;: 3,
-    &quot;userName&quot;: &quot;Darth Vader&quot;,
-    &quot;text&quot;: &quot;Luke, I am your father!&quot;
+    &#34;id&#34;: 3,
+    &#34;userName&#34;: &#34;Darth Vader&#34;,
+    &#34;text&#34;: &#34;Luke, I am your father!&#34;
 }
 </code></pre><p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-post.JPG" alt=""></p>
 <p>Now, if we create another request to <code>http://localhost:5000/api/Posts/GetPosts</code> we can see that the post we added was saved.</p>

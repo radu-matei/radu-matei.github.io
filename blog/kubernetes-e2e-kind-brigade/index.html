@@ -224,7 +224,7 @@ spec:
 <p>For example, the following <code>brigade.js</code> file will execute the two <code>echo</code> tasks in an <code>alpine</code> container on each <code>exec</code> event received by Brigade:</p>
 </blockquote>
 <blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"></code></pre></div></blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"></code></pre></div></blockquote>
 <p>const { events, Job } = require(&quot;@brigadecore/brigadier&quot;);
 events.on(&ldquo;exec&rdquo;, () =&gt; {
 var job = new Job(&ldquo;do-nothing&rdquo;, &ldquo;alpine:3.8&rdquo;);
@@ -239,16 +239,16 @@ job.tasks = [
 Brigade allows us to control the flow of executing tasks in containers in Kubernetes pods - so we can take the Kind configuration, and completely abstract it with a [custom Brigade job][utils].
 
 ```javascript
-const { KindJob } = require(&quot;@brigadecore/brigade-utils&quot;);
+const { KindJob } = require(&#34;@brigadecore/brigade-utils&#34;);
 function e2e(event, project) {
-    let kind = new KindJob(&quot;kind&quot;);
+    let kind = new KindJob(&#34;kind&#34;);
     kind.tasks.push(
         // add your end-to-end tests
-        &quot;kubectl get pods --all-namespaces&quot;
+        &#34;kubectl get pods --all-namespaces&#34;
     );
     return kind;
 }
-events.on(&quot;exec&quot;, e2e);
+events.on(&#34;exec&#34;, e2e);
 </code></pre><p>The <a href="https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts" target="_blank" rel="noreferrer noopener"><code>KindJob</code> class</a>
  creates the pod configuration described earlier:</p>
 <ul>
@@ -268,13 +268,13 @@ events.on(&quot;exec&quot;, e2e);
 <p>You can also completely change the configured tasks - <a href="https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts" target="_blank" rel="noreferrer noopener">check out how the steps are configured, and always ensure to delete the Kind cluster even when your tasks fail (by default, we are using Linux traps)</a>
 .</p>
 <p>Sample output from running the job:</p>
-<pre tabindex="0"><code>time=&quot;2019-08-09T20:24:41.801448759Z&quot; level=info msg=&quot;Starting up&quot;
-time=&quot;2019-08-09T20:24:48.589831337Z&quot; level=info msg=&quot;Daemon has completed initialization&quot;
-time=&quot;2019-08-09T20:24:49.497015690Z&quot; level=info msg=&quot;API listen on [::]:2376&quot;
-time=&quot;2019-08-09T20:24:49.497119288Z&quot; level=info msg=&quot;API listen on /var/run/docker.sock&quot;
-Creating cluster &quot;kind&quot; ...
+<pre tabindex="0"><code>time=&#34;2019-08-09T20:24:41.801448759Z&#34; level=info msg=&#34;Starting up&#34;
+time=&#34;2019-08-09T20:24:48.589831337Z&#34; level=info msg=&#34;Daemon has completed initialization&#34;
+time=&#34;2019-08-09T20:24:49.497015690Z&#34; level=info msg=&#34;API listen on [::]:2376&#34;
+time=&#34;2019-08-09T20:24:49.497119288Z&#34; level=info msg=&#34;API listen on /var/run/docker.sock&#34;
+Creating cluster &#34;kind&#34; ...
  ✓ Ensuring node image (kindest/node:v1.15.0) 🖼
-time=&quot;2019-08-09T20:28:03.256888458Z&quot; level=info msg=&quot;shim containerd-shim started&quot; address=&quot;/containerd-shim/moby/7e3918831faeaf1e7992ba07c72ff6c245b2cdeeb21c3c374b7758bb362294ad/shim.sock&quot; debug=false pid=401
+time=&#34;2019-08-09T20:28:03.256888458Z&#34; level=info msg=&#34;shim containerd-shim started&#34; address=&#34;/containerd-shim/moby/7e3918831faeaf1e7992ba07c72ff6c245b2cdeeb21c3c374b7758bb362294ad/shim.sock&#34; debug=false pid=401
  ✓ Preparing nodes 📦
  ✓ Creating kubeadm config 📜
  ✓ Starting control-plane 🕹️
@@ -283,9 +283,9 @@ time=&quot;2019-08-09T20:28:03.256888458Z&quot; level=info msg=&quot;shim contai
  ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
  • Ready after 1m1s 💚
 Cluster creation complete. You can now use the cluster with:
-export KUBECONFIG=&quot;$(kind get kubeconfig-path --name=&quot;kind&quot;)&quot;
+export KUBECONFIG=&#34;$(kind get kubeconfig-path --name=&#34;kind&#34;)&#34;
 
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+To further debug and diagnose cluster problems, use &#39;kubectl cluster-info dump&#39;.
 NAMESPACE     NAME                                         READY   STATUS              RESTARTS   AGE
 kube-system   coredns-5c98db65d4-5f7n7                     0/1     ContainerCreating   0          52s
 kube-system   coredns-5c98db65d4-rpjld                     0/1     ContainerCreating   0          52s

@@ -143,23 +143,23 @@
 We are not interested in specifically how this library is built in Go (it is built on top of <a href="https://github.com/deislabs/oras" target="_blank" rel="noreferrer noopener">ORAS</a>
 , and you can <a href="https://radu-matei.com/blog/wasm-to-oci/" target="_blank" rel="noreferrer noopener">read more about building it in this article</a>
 ) - we are interested, however, in how this library is consumed in Go - it takes two <code>string</code> arguments, and returns a Go <code>error</code>.</p>
-<pre tabindex="0"><code>err := oci.Pull(&quot;some-registry-reference&quot;, &quot;output-file&quot;)
+<pre tabindex="0"><code>err := oci.Pull(&#34;some-registry-reference&#34;, &#34;output-file&#34;)
 </code></pre><p>Now it&rsquo;s time to build a custom API that we want to expose to the library we will use through FFI - the <a href="https://golang.org/cmd/cgo/" target="_blank" rel="noreferrer noopener">official Go documentation</a>
  offers a very good introduction to CGO, and discusses important scenarios you will encounter when exposing your library.</p>
 <pre tabindex="0"><code>package main
 
 import (
-    &quot;C&quot;
-    &quot;fmt&quot;
+    &#34;C&#34;
+    &#34;fmt&#34;
 
-    &quot;github.com/engineerd/wasm-to-oci/pkg/oci&quot;
+    &#34;github.com/engineerd/wasm-to-oci/pkg/oci&#34;
 )
 
 //export Pull
 func Pull(ref, outFile string) int64 {
     err := oci.Pull(ref, outFile)
     if err != nil {
-        fmt.Printf(&quot;cannot pull module: %v&quot;, err)
+        fmt.Printf(&#34;cannot pull module: %v&#34;, err)
         return 1
     }
 
@@ -202,17 +202,17 @@ pub struct _GoString_ {
 <pre tabindex="0"><code>extern crate libloading as lib;
 
 fn lib_file() -&gt; String {
-    #[cfg(target_os = &quot;linux&quot;)]
+    #[cfg(target_os = &#34;linux&#34;)]
     {
-        String::from(&quot;shared/libwasm2oci.so&quot;)
+        String::from(&#34;shared/libwasm2oci.so&#34;)
     }
-    #[cfg(target_os = &quot;macos&quot;)]
+    #[cfg(target_os = &#34;macos&#34;)]
     {
-        String::from(&quot;shared/libwasm2oci.dylib&quot;)
+        String::from(&#34;shared/libwasm2oci.dylib&#34;)
     }
-    #[cfg(target_os = &quot;windows&quot;)]
+    #[cfg(target_os = &#34;windows&#34;)]
     {
-        String::from(&quot;shared/libwasm2oci.dll&quot;)
+        String::from(&#34;shared/libwasm2oci.dll&#34;)
     }
 }
 </code></pre><p>Because the <code>Pull</code> function we exported accepted two Go <code>string</code> arguments, now we need to translate between a Rust <code>String</code> and a Go <code>string</code>. If you looked at <code>GoString</code>, it is made up of a list of characters and their length - which is how we transform each <code>String</code> argument our Rust function receives, then actually call the exported function from our shared library.</p>
@@ -231,8 +231,8 @@ fn lib_file() -&gt; String {
 
     let lib = lib::Library::new(lib_file())?;
     unsafe {
-        let func: lib::Symbol&lt;unsafe extern &quot;C&quot; fn(r: GoString, f: GoString) -&gt; i64&gt; =
-            lib.get(b&quot;Pull&quot;)?;
+        let func: lib::Symbol&lt;unsafe extern &#34;C&#34; fn(r: GoString, f: GoString) -&gt; i64&gt; =
+            lib.get(b&#34;Pull&#34;)?;
         match func(go_str_ref, go_str_file) {
             0 =&gt; return Ok(()),
             _ =&gt; return Err(),
@@ -252,20 +252,20 @@ fn lib_file() -&gt; String {
 <pre tabindex="0"><code>$ CGO_ENABLED=1 go build -buildmode=c-archive -o target/libwasm2oci.a lib/libwasm2oci.go
 </code></pre><p>This also generates the C header, which can be used with <a href="https://rust-lang.github.io/rust-bindgen/command-line-usage.html" target="_blank" rel="noreferrer noopener"><code>rust-bindgen</code></a>
  to generate Rust bindings - again, the important function to note here is the <code>extern &quot;C&quot;</code> function that defines the symbol for our exported function from the Go static library:</p>
-<pre tabindex="0"><code>extern &quot;C&quot; {
+<pre tabindex="0"><code>extern &#34;C&#34; {
     pub fn Pull(p0: GoString, p1: GoString) -&gt; GoInt64;
 }
 </code></pre><p>We can now call this function (provided we execute the same transformation from Rust strings to Go strings that we saw earlier) in an unsafe block:</p>
 <pre tabindex="0"><code>let result = unsafe { Pull(go_str_ref, go_str_file) };
 </code></pre><p>The only additional thing we need to do here is add a <code>build.rs</code> file that will instruct the Rust compiler to statically link the <code>.a</code> file we generated earlier:</p>
 <pre tabindex="0"><code>fn main() {
-    println!(&quot;cargo:rustc-link-search=native={}&quot;, &quot;./target&quot;);
-    println!(&quot;cargo:rustc-link-lib=static={}&quot;, &quot;wasm2oci&quot;);
+    println!(&#34;cargo:rustc-link-search=native={}&#34;, &#34;./target&#34;);
+    println!(&#34;cargo:rustc-link-lib=static={}&#34;, &#34;wasm2oci&#34;);
 }
 </code></pre><p>If you are trying to build a Darwin executable, and if your Go packages use any cryptography libraries, you might also have to link against the macOS core and security frameworks - add this conditional compilation expression to <code>build.rs</code> links them. (Depending on what your Go packages do, you might have to link other core libraries).</p>
-<pre tabindex="0"><code>#[cfg(target_os = &quot;macos&quot;)]
+<pre tabindex="0"><code>#[cfg(target_os = &#34;macos&#34;)]
 {
-    println!(&quot;cargo:rustc-flags=-l framework=CoreFoundation -l framework=Security&quot;);
+    println!(&#34;cargo:rustc-flags=-l framework=CoreFoundation -l framework=Security&#34;);
 }
 </code></pre><h3 id="conclusion">Conclusion</h3>
 <p>In this article we explored building Go shared and static libraries that can be imported in Rust programs using foreign function interfaces. While not ideal, this could provide a very useful way of reusing a Go package in Rust. You can <a href="https://github.com/radu-matei/experiments/tree/master/rust" target="_blank" rel="noreferrer noopener">find the complete examples on GitHub</a>

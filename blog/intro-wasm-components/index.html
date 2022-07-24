@@ -225,19 +225,18 @@ get: function(key: string) -&gt; expected&lt;payload, error&gt;
 delete: function(key: string) -&gt; expected&lt;_, error&gt;
 </code></pre><p>Let&rsquo;s implement this interface in Rust, using the file system as storage for the
 cache:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cargo new --lib rust-wasi-impl
-Created library <span style="color:#e6db74">`</span>rust-wasi-impl<span style="color:#e6db74">`</span> package
-</code></pre></div><p>Next, the only dependency needed is
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cargo new --lib rust-wasi-impl
+</span></span><span style="display:flex;"><span>Created library <span style="color:#e6db74">`</span>rust-wasi-impl<span style="color:#e6db74">`</span> package
+</span></span></code></pre></div><p>Next, the only dependency needed is
 <a href="https://github.com/bytecodealliance/wit-bindgen" target="_blank" rel="noreferrer noopener">wit-bindgen-rust</a>
  &mdash; a
 Bytecode Alliance project that generates Rust bindings given a WIT interface:</p>
 <pre tabindex="0"><code># Cargo.toml
 [lib]
-    crate-type = [ &quot;cdylib&quot; ]
+    crate-type = [ &#34;cdylib&#34; ]
 
 [dependencies]
-    wit-bindgen-rust = { git = &quot;https://github.com/bytecodealliance/wit-bindgen&quot;, rev = &quot;32e63116d469d8046727fae3c1333a7d35d0c5d3&quot; }
-
+    wit-bindgen-rust = { git = &#34;https://github.com/bytecodealliance/wit-bindgen&#34;, rev = &#34;32e63116d469d8046727fae3c1333a7d35d0c5d3&#34; }
 </code></pre><p>The next section contains a simplified version of the actual implementation
 (note that the complete implementation for all components
 <a href="https://github.com/radu-matei/wasm-components-example" target="_blank" rel="noreferrer noopener">can be found on GitHub</a>
@@ -249,7 +248,7 @@ implement the interface.</p>
 <p>This is equivalent to using the wit-bindgen CLI to manually generate the
 bindings (to check in to source control, or inspect):</p>
 <pre tabindex="0"><code>$ wit-bindgen rust-wasm --export ../cache.wit
-Generating &quot;bindings.rs&quot;
+Generating &#34;bindings.rs&#34;
 </code></pre><p>Inspecting the generated bindings, we can see the low-level code (that until now
 had to be manually written) to handle passing non-fundamental data types between
 modules, with
@@ -261,26 +260,26 @@ the main piece to implement here is
 <a href="https://doc.rust-lang.org/book/ch10-02-traits.html" target="_blank" rel="noreferrer noopener">a Rust trait</a>
  that models
 the API from the interface:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">// lib.rs
-</span><span style="color:#75715e"></span>wit_bindgen_rust::export<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;../cache.wit&#34;</span>);
-
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cache</span> {}
-<span style="color:#66d9ef">impl</span> cache::Cache <span style="color:#66d9ef">for</span> Cache {
-    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">set</span>(key: String, value: <span style="color:#a6e22e">Payload</span>, _: Option<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u32</span><span style="color:#f92672">&gt;</span>) -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
-        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> file <span style="color:#f92672">=</span> File::create(path(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>)<span style="color:#f92672">?</span>;
-        file.write_all(<span style="color:#f92672">&amp;</span>value)<span style="color:#f92672">?</span>;
-        Ok(())
-    }
-
-    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get</span>(key: String) -&gt; Result<span style="color:#f92672">&lt;</span>Payload, Error<span style="color:#f92672">&gt;</span> {
-        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> file <span style="color:#f92672">=</span> File::open(path(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>)<span style="color:#f92672">?</span>;
-        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> Vec::new();
-        file.read_to_end(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buf)<span style="color:#f92672">?</span>;
-        Ok(buf)
-    }
- <span style="color:#f92672">..</span>.
-}
-</code></pre></div><p>(Note that at the time of writing this article, the convention for Rust
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// lib.rs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>wit_bindgen_rust::export<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;../cache.wit&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cache</span> {}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> cache::Cache <span style="color:#66d9ef">for</span> Cache {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">set</span>(key: String, value: <span style="color:#a6e22e">Payload</span>, _: Option<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u32</span><span style="color:#f92672">&gt;</span>) -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> file <span style="color:#f92672">=</span> File::create(path(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        file.write_all(<span style="color:#f92672">&amp;</span>value)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get</span>(key: String) -&gt; Result<span style="color:#f92672">&lt;</span>Payload, Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> file <span style="color:#f92672">=</span> File::open(path(<span style="color:#f92672">&amp;</span>key)<span style="color:#f92672">?</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>        file.read_to_end(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buf)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        Ok(buf)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>(Note that at the time of writing this article, the convention for Rust
 implementations is that the struct implementing the interface trait must have
 the same name (accommodating for <code>snake_case</code>) as the interface file, hence
 struct <code>Cache {}</code>. There are also a few error handling specific parts omitted
@@ -300,11 +299,11 @@ adapt the arguments passed between boundaries (as described by
 ):</p>
 <pre tabindex="0"><code>$ cargo build --target wasm32-wasi --release
 $ wasm2wat-rs target/wasm32-wasi/release/rust_wasi_impl.wasm | grep export
-  (export &quot;set&quot; (func $set.command_export))
-  (export &quot;get&quot; (func $get.command_export))
-  (export &quot;delete&quot; (func $delete.command_export))
-  (export &quot;canonical_abi_realloc&quot; (func $canonical_abi_realloc.command_export))
-  (export &quot;canonical_abi_free&quot; (func $canonical_abi_free.command_export))
+  (export &#34;set&#34; (func $set.command_export))
+  (export &#34;get&#34; (func $get.command_export))
+  (export &#34;delete&#34; (func $delete.command_export))
+  (export &#34;canonical_abi_realloc&#34; (func $canonical_abi_realloc.command_export))
+  (export &#34;canonical_abi_free&#34; (func $canonical_abi_free.command_export))
 </code></pre><h2 id="importing-webassembly-interfaces-in-rust-and-c">Importing WebAssembly interfaces in Rust and C++</h2>
 <p>The previous section defined an interface using WIT, then implemented it in Rust
 using the convenient macros provided by <code>wit-bindgen</code>. This section will create
@@ -317,27 +316,26 @@ component:</p>
 the interface and generates Rust bindings, but crucially, because this component
 <em>imports</em> the interface, the bindings will be different (they can be inspected
 by executing <code>wit-bindgen rust-wasm --import ../cache.wit</code>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">wit_bindgen_rust::import<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;../cache.wit&#34;</span>);
-
-<span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">let</span> key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;five-good-emperors&#34;</span>;
-    <span style="color:#66d9ef">let</span> value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Nerva, Trajan, Hadrian, Pius, and Marcus Aurelius&#34;</span>;
-
-    cache::set(key, value.as_bytes(), None).unwrap();
-    <span style="color:#66d9ef">let</span> ret <span style="color:#f92672">=</span> cache::get(key).unwrap();
-    assert_eq!(ret, value.as_bytes());
-}
-</code></pre></div><p>The generated import bindings can be used in a very idiomatic way to set and
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>wit_bindgen_rust::import<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;../cache.wit&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;five-good-emperors&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Nerva, Trajan, Hadrian, Pius, and Marcus Aurelius&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cache::set(key, value.as_bytes(), None).unwrap();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> ret <span style="color:#f92672">=</span> cache::get(key).unwrap();
+</span></span><span style="display:flex;"><span>    assert_eq!(ret, value.as_bytes());
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The generated import bindings can be used in a very idiomatic way to set and
 retrieve information.</p>
 <p>The important thing to note here is that the program above only needs the
 <em>interface</em> in order to compile, as the generated WebAssembly module will
 contain imports for the cache functionality:</p>
 <pre tabindex="0"><code>$ cargo build --target wasm32-wasi --release
 $ wasm2wat-rs target/wasm32-wasi/release/rust-consumer.wasm | grep import
-  (import &quot;cache&quot; &quot;set&quot; (func $rust_consumer_cache_set_wit_import (type 8)))
-  (import &quot;cache&quot; &quot;get&quot; (func $rust_consumer_cache_get_wit_import (type 9)))
-  (import &quot;wasi_snapshot_preview1&quot; &quot;fd_write&quot; (func $wasi_wasi_fd_write (type 10)))
-
+  (import &#34;cache&#34; &#34;set&#34; (func $rust_consumer_cache_set_wit_import (type 8)))
+  (import &#34;cache&#34; &#34;get&#34; (func $rust_consumer_cache_get_wit_import (type 9)))
+  (import &#34;wasi_snapshot_preview1&#34; &#34;fd_write&#34; (func $wasi_wasi_fd_write (type 10)))
 </code></pre><p>Before actually linking and executing the main module above, it is worth
 exploring how to build another consumer, this time in C++.</p>
 <p>Because C++ doesn&rsquo;t have the same macro system as Rust, the bindings need to be
@@ -354,38 +352,38 @@ build:
 </code></pre><p>At this point, the implementation is a C++ main program that uses the header
 file defined in bindings/cache.h and calls the functions to get and set
 key/value pairs:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;bindings/cache.h&#34;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
-{
-    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;almost-consul&#34;</span>;
-    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Caligula&#39;s horse, Incitatus&#34;</span>;
-    printf(<span style="color:#e6db74">&#34;Writing contents `%s` in storage `%s`&#34;</span>, value, key);
-
-    cache_string_t <span style="color:#f92672">*</span>skey;
-    skey<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> strlen(key);
-    skey<span style="color:#f92672">-&gt;</span>ptr <span style="color:#f92672">=</span> key;
-
-    cache_payload_t <span style="color:#f92672">*</span>svalue;
-    svalue<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> strlen(value);
-    svalue<span style="color:#f92672">-&gt;</span>ptr <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>)value;
-
-    cache_set(skey, svalue, NULL);
-
-    cache_payload_t <span style="color:#f92672">*</span>ret;
-    cache_get(skey, ret);
-    printf(<span style="color:#e6db74">&#34;Retrieved from `%s`: `%s`&#34;</span>, key, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)ret<span style="color:#f92672">-&gt;</span>ptr);
-    assert(svalue<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">==</span> ret<span style="color:#f92672">-&gt;</span>len);
-}
-</code></pre></div><p>The rest of the implementation is adapting the character arrays where the key
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;bindings/cache.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;almost-consul&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Caligula&#39;s horse, Incitatus&#34;</span>;
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Writing contents `%s` in storage `%s`&#34;</span>, value, key);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cache_string_t <span style="color:#f92672">*</span>skey;
+</span></span><span style="display:flex;"><span>    skey<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> strlen(key);
+</span></span><span style="display:flex;"><span>    skey<span style="color:#f92672">-&gt;</span>ptr <span style="color:#f92672">=</span> key;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cache_payload_t <span style="color:#f92672">*</span>svalue;
+</span></span><span style="display:flex;"><span>    svalue<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> strlen(value);
+</span></span><span style="display:flex;"><span>    svalue<span style="color:#f92672">-&gt;</span>ptr <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>)value;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cache_set(skey, svalue, NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cache_payload_t <span style="color:#f92672">*</span>ret;
+</span></span><span style="display:flex;"><span>    cache_get(skey, ret);
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Retrieved from `%s`: `%s`&#34;</span>, key, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)ret<span style="color:#f92672">-&gt;</span>ptr);
+</span></span><span style="display:flex;"><span>    assert(svalue<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">==</span> ret<span style="color:#f92672">-&gt;</span>len);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The rest of the implementation is adapting the character arrays where the key
 and value are stored into the types expected by the interface. Finally, this can
 be compiled, and exploring the resulting module&rsquo;s imports, the same imports from
 a cache module can be seen:</p>
 <pre tabindex="0"><code>$ make bindgen build
 $ wasm2wat-rs cpp_consumer.wasm | grep import
-  (import &quot;wasi_snapshot_preview1&quot; &quot;proc_exit&quot; (func $__wasi_proc_exit (type 2)))
-  (import &quot;cache&quot; &quot;set&quot; (func $__wasm_import_cache_set (type 3)))
-  (import &quot;cache&quot; &quot;get&quot; (func $__wasm_import_cache_get (type 4)))
+  (import &#34;wasi_snapshot_preview1&#34; &#34;proc_exit&#34; (func $__wasi_proc_exit (type 2)))
+  (import &#34;cache&#34; &#34;set&#34; (func $__wasm_import_cache_set (type 3)))
+  (import &#34;cache&#34; &#34;get&#34; (func $__wasm_import_cache_get (type 4)))
 </code></pre><h2 id="linking-and-executing-components">Linking and executing components</h2>
 <p>The previous sections defined the interface, built an implementation for it,
 then imported the interface in two Rust and C++ programs, resulting in two
@@ -402,16 +400,16 @@ using
 <p>Starting with the C++ module that imports the interface, before executing it,
 its cache imports must be satisfied &mdash; this is currently done manually using
 wasmlink:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Makefile" data-lang="Makefile"><span style="color:#a6e22e">link</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">$(</span>WASMLINK<span style="color:#66d9ef">)</span> cpp_consumer.wasm <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --interface cache<span style="color:#f92672">=</span>../cache.wit <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --profile wasmtime <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --module cache<span style="color:#f92672">=</span>../rust-wasi-impl/target/wasm32-wasi/release/rust_wasi_impl.wasm <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --output linked.wasm
-
-<span style="color:#a6e22e">run</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">$(</span>WASMTIME<span style="color:#66d9ef">)</span> --enable-module-linking --enable-multi-memory --mapdir<span style="color:#f92672">=</span>/cache::. linked.wasm
-</code></pre></div><p>The link target uses the wasmlink CLI to supply the Rust implementation of the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Makefile" data-lang="Makefile"><span style="display:flex;"><span><span style="color:#a6e22e">link</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">$(</span>WASMLINK<span style="color:#66d9ef">)</span> cpp_consumer.wasm <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        --interface cache<span style="color:#f92672">=</span>../cache.wit <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        --profile wasmtime <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        --module cache<span style="color:#f92672">=</span>../rust-wasi-impl/target/wasm32-wasi/release/rust_wasi_impl.wasm <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        --output linked.wasm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">run</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">$(</span>WASMTIME<span style="color:#66d9ef">)</span> --enable-module-linking --enable-multi-memory --mapdir<span style="color:#f92672">=</span>/cache::. linked.wasm
+</span></span></code></pre></div><p>The link target uses the wasmlink CLI to supply the Rust implementation of the
 interface whenever the cpp_consumer.wasm imports anything from the cache module.
 The linker is also generating WebAssembly code responsible for adapting the data
 between the linear memories of each component, meaning that no component can
@@ -425,7 +423,7 @@ multi memory proposals enabled, and with granting the module the ability to use
 the filesystem, where the cache implementations stores data):</p>
 <pre tabindex="0"><code>$ make link run
 wasmtime --enable-module-linking --enable-multi-memory --mapdir=/cache::. linked.wasm
-Retrieved from `almost-consul`: `Caligula's horse, Incitatus`
+Retrieved from `almost-consul`: `Caligula&#39;s horse, Incitatus`
 </code></pre><p>The same commands can be run for the Rust consumer:</p>
 <pre tabindex="0"><code>$ make link run
 wasmtime --enable-module-linking --enable-multi-memory --mapdir=/cache::. linked.wasm

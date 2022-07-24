@@ -201,9 +201,9 @@ running ONNX models, written in Rust.</li>
 . For example, the API used to load a new
 model is defined as follows:</p>
 <pre tabindex="0"><code>(module $wasi_ephemeral_nn
-  (import &quot;memory&quot; (memory))
+  (import &#34;memory&#34; (memory))
 
-  (@interface func (export &quot;load&quot;)
+  (@interface func (export &#34;load&#34;)
     (param $builder $graph_builder_array)
     (param $encoding $graph_encoding)
     (param $target $execution_target)
@@ -274,21 +274,21 @@ integration tests from the project repository</a>
 <a href="https://github.com/onnx/models/tree/master/vision/classification/squeezenet" target="_blank" rel="noreferrer noopener">SqueezeNet</a>
  and <a href="https://github.com/onnx/models/tree/master/vision/classification/mobilenet" target="_blank" rel="noreferrer noopener">MobileNetV2</a>
  models for image classification.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ cargo build --release
-$ LD_LIBRARY_PATH=&lt;PATH-TO-ONNX&gt;/onnx/onnxruntime-linux-x64-1.6.0/lib \
-RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
-         ./target/release/wasmtime-onnx \
-        tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
-        --dir tests/testdata \
-        --invoke test_squeezenet
-
-integration::inference_image:
-results for image &#34;tests/testdata/images/n04350905.jpg&#34;
-class=n04350905 suit of clothes (834); probability=0.21431354
-class=n03763968 military uniform (652); probability=0.18545522
-
-execution time: 74.3381ms with runtime: C
-</code></pre></div><p>The previous command can be translated as follows: using the <code>wasmtime-onnx</code>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ cargo build --release
+</span></span><span style="display:flex;"><span>$ LD_LIBRARY_PATH=&lt;PATH-TO-ONNX&gt;/onnx/onnxruntime-linux-x64-1.6.0/lib \
+</span></span><span style="display:flex;"><span>RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
+</span></span><span style="display:flex;"><span>         ./target/release/wasmtime-onnx \
+</span></span><span style="display:flex;"><span>        tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
+</span></span><span style="display:flex;"><span>        --dir tests/testdata \
+</span></span><span style="display:flex;"><span>        --invoke test_squeezenet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>integration::inference_image:
+</span></span><span style="display:flex;"><span>results for image &#34;tests/testdata/images/n04350905.jpg&#34;
+</span></span><span style="display:flex;"><span>class=n04350905 suit of clothes (834); probability=0.21431354
+</span></span><span style="display:flex;"><span>class=n03763968 military uniform (652); probability=0.18545522
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>execution time: 74.3381ms with runtime: C
+</span></span></code></pre></div><p>The previous command can be translated as follows: using the <code>wasmtime-onnx</code>
 binary, which provides a host implementation for performing ONNX inferences
 using the native ONNX runtime, start the WebAssembly module <code>wasi-nn-rust.wasm</code>
 and invoke the <code>test_squeezenet</code> function, which loads the SqueezeNet model and
@@ -312,20 +312,20 @@ and the inference times on the CPU are slightly higher than for the native ONNX
 runtime. The same binary, ONNX model, and WebAssembly module can be used to run
 the same inference &ndash; the only difference is passing the <code>--tract</code> flag,
 informing the runtime to use the alternative implementation for ONNX:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">$ RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
-         ./target/release/wasmtime-onnx \
-        tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
-        --dir tests/testdata \
-        --invoke test_squeezenet \
-        --tract
-
-integration::inference_image:
-results for image &#34;tests/testdata/images/n04350905.jpg&#34;
-class=n04350905 suit of clothes (834); probability=0.21431345
-class=n03763968 military uniform (652); probability=0.18545584
-
-execution time: 90.6102ms with runtime: Tract
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ RUST_LOG=wasi_nn_onnx_wasmtime=info,wasmtime_onnx=info \
+</span></span><span style="display:flex;"><span>         ./target/release/wasmtime-onnx \
+</span></span><span style="display:flex;"><span>        tests/rust/target/wasm32-wasi/release/wasi-nn-rust.wasm \
+</span></span><span style="display:flex;"><span>        --dir tests/testdata \
+</span></span><span style="display:flex;"><span>        --invoke test_squeezenet \
+</span></span><span style="display:flex;"><span>        --tract
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>integration::inference_image:
+</span></span><span style="display:flex;"><span>results for image &#34;tests/testdata/images/n04350905.jpg&#34;
+</span></span><span style="display:flex;"><span>class=n04350905 suit of clothes (834); probability=0.21431345
+</span></span><span style="display:flex;"><span>class=n03763968 military uniform (652); probability=0.18545584
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>execution time: 90.6102ms with runtime: Tract
+</span></span></code></pre></div><blockquote>
 <p>Note that <code>LD_LIBRARY_PATH</code> is omitted in this example, but it still has to be
 passed for now, depending on whether support for both implementations has been
 compiled. In future releases, compile-time flags and features will choose

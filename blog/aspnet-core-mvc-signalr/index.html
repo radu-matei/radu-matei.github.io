@@ -145,21 +145,21 @@
 <p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p>
 <h2 id="configure-the-application">Configure the application</h2>
 <p>NuGet has the ability to get packages from more than one source, and we need it to download alpha packages that are only available on the MyGet server of the ASP.NET team, besides the ASP.NET Core packages available on NuGet. So in the root of the application add a file called <code>NuGet.Config</code> with the following content:</p>
-<pre tabindex="0"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+<pre tabindex="0"><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
 &lt;configuration&gt;
    &lt;packageSources&gt;
        &lt;clear/&gt;
-           &lt;add key=&quot;aspnetcidev&quot; value=&quot;https://dotnet.myget.org/F/aspnetcore-ci-dev/api/v3/index.json&quot;/&gt;
-           &lt;add key=&quot;api.nuget.org&quot; value=&quot;https://api.nuget.org/v3/index.json&quot;/&gt;
+           &lt;add key=&#34;aspnetcidev&#34; value=&#34;https://dotnet.myget.org/F/aspnetcore-ci-dev/api/v3/index.json&#34;/&gt;
+           &lt;add key=&#34;api.nuget.org&#34; value=&#34;https://api.nuget.org/v3/index.json&#34;/&gt;
    &lt;/packageSources&gt;
 &lt;/configuration&gt;
 </code></pre><h2 id="add-the-required-packages">Add the required packages</h2>
 <p>For this application, we will need the Kestrel web server (of course), the MVC packages so we can use controllers, static files so we can have HTML and JavaScript files served, SignalR and WebSockets:</p>
-<pre tabindex="0"><code>&quot;Microsoft.AspNetCore.Server.Kestrel&quot;: &quot;1.0.0&quot;,
-&quot;Microsoft.AspNetCore.Mvc&quot;: &quot;1.0.0&quot;,
-&quot;Microsoft.AspNetCore.StaticFiles&quot;: &quot;1.0.0&quot;,
-&quot;Microsoft.AspNetCore.SignalR.Server&quot;: &quot;0.2.0-*&quot;,
-&quot;Microsoft.AspNetCore.WebSockets&quot;: &quot;0.2.0-*&quot;
+<pre tabindex="0"><code>&#34;Microsoft.AspNetCore.Server.Kestrel&#34;: &#34;1.0.0&#34;,
+&#34;Microsoft.AspNetCore.Mvc&#34;: &#34;1.0.0&#34;,
+&#34;Microsoft.AspNetCore.StaticFiles&#34;: &#34;1.0.0&#34;,
+&#34;Microsoft.AspNetCore.SignalR.Server&#34;: &#34;0.2.0-*&#34;,
+&#34;Microsoft.AspNetCore.WebSockets&#34;: &#34;0.2.0-*&#34;
 </code></pre><h2 id="programcs"><code>Program.cs</code></h2>
 <p>Besides adding the <code>UseContentRoot</code> statement, the <code>Main</code> method is pretty much standard for an ASP.NET Core application.</p>
 <pre tabindex="0"><code> public static void Main(string[] args)
@@ -214,8 +214,8 @@ public class PostRepository : IPostRepository
 {
     private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
     {
-        new Post(1, &quot;Obi-Wan Kenobi&quot;,&quot;These are not the droids you're looking for&quot;),
-        new Post(2, &quot;Darth Vader&quot;,&quot;I find your lack of faith disturbing&quot;)
+        new Post(1, &#34;Obi-Wan Kenobi&#34;,&#34;These are not the droids you&#39;re looking for&#34;),
+        new Post(2, &#34;Darth Vader&#34;,&#34;I find your lack of faith disturbing&#34;)
     };
     public void AddPost(Post post)
     {
@@ -267,7 +267,6 @@ public class PostsController : Controller
         _postRepository.AddPost(post);
     }
 }
-
 </code></pre><p>From this controller, we will update all clients when a post was added using SignalR by getting the context of the hub and calling client methods  using a <code>ConnectionManager</code>. We will see later how to achieve this.</p>
 <h2 id="add-a-hub">Add a hub</h2>
 <p>In this application, we will use the hub as a proxy: clients will not call hub methods directly. SignalR will be used to provide server updates - that is the server notifies all clients that something happened, so the clients must first connect to a hub.</p>
@@ -292,7 +291,6 @@ var serializer = JsonSerializer.Create(settings);
 services.Add(new ServiceDescriptor(typeof(JsonSerializer),
              provider =&gt; serializer,
              ServiceLifetime.Transient));
-
 </code></pre><p>While this is not far from what we are going to do, at this moment we simply cannot force all components to pass camel case objects because it would break current conventions in place.</p>
 <p>Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is transformed to camel case.</p>
 <p>We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified.</p>
@@ -325,7 +323,6 @@ using Newtonsoft.Json.Serialization;
         }
 
     }
-
 </code></pre><p>So in <code>ConfigureServices</code> we register our contract resolver very similarly to what we had earlier:</p>
 <pre tabindex="0"><code>var settings = new JsonSerializerSettings();
 settings.ContractResolver = new SignalRContractResolver();
@@ -346,8 +343,8 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
         app.UseMvc(routes =&gt;
         {
             routes.MapRoute(
-                    name: &quot;default&quot;,
-                    template: &quot;api/{controller}/{action}/{id?}&quot;
+                    name: &#34;default&#34;,
+                    template: &#34;api/{controller}/{action}/{id?}&#34;
             );
         });
 
@@ -422,26 +419,26 @@ public class PostsController : Controller
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;&lt;/title&gt;
-	&lt;meta charset=&quot;utf-8&quot; /&gt;
+	&lt;meta charset=&#34;utf-8&#34; /&gt;
 
-    &lt;script src=&quot;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;/signalr/hubs&quot;&gt;&lt;/script&gt;
+    &lt;script src=&#34;http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js&#34;&gt;&lt;/script&gt;
+    &lt;script src=&#34;http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js&#34;&gt;&lt;/script&gt;
+    &lt;script src=&#34;/signalr/hubs&#34;&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 
-    &lt;input id=&quot;userNameInput&quot; type=&quot;text&quot; placeholder=&quot;Enter your user name...&quot; /&gt;
-    &lt;input id=&quot;textInput&quot; type=&quot;text&quot; placeholder=&quot;Enter your status...&quot; /&gt;
+    &lt;input id=&#34;userNameInput&#34; type=&#34;text&#34; placeholder=&#34;Enter your user name...&#34; /&gt;
+    &lt;input id=&#34;textInput&#34; type=&#34;text&#34; placeholder=&#34;Enter your status...&#34; /&gt;
 
-    &lt;button id=&quot;publishPostButton&quot;&gt;Publish post!&lt;/button&gt;
+    &lt;button id=&#34;publishPostButton&#34;&gt;Publish post!&lt;/button&gt;
 
-    &lt;ul id=&quot;postsList&quot;&gt;&lt;/ul&gt;
+    &lt;ul id=&#34;postsList&#34;&gt;&lt;/ul&gt;
 
-    &lt;script type=&quot;text/javascript&quot;&gt;
+    &lt;script type=&#34;text/javascript&#34;&gt;
         $.ajax({
-            url: '/api/Posts/GetPosts',
-            method: 'GET',
-            dataType: 'JSON',
+            url: &#39;/api/Posts/GetPosts&#39;,
+            method: &#39;GET&#39;,
+            dataType: &#39;JSON&#39;,
             success: addPostsList
         });
 
@@ -453,8 +450,8 @@ public class PostsController : Controller
         }
 
         function addPost(post) {
-            $(&quot;#postsList&quot;).append(
-                    '&lt;li&gt;&lt;b&gt;' + post.userName + '&lt;/b&gt;&lt;br&gt;' + post.text + '&lt;/li&gt;&lt;br&gt;'
+            $(&#34;#postsList&#34;).append(
+                    &#39;&lt;li&gt;&lt;b&gt;&#39; + post.userName + &#39;&lt;/b&gt;&lt;br&gt;&#39; + post.text + &#39;&lt;/li&gt;&lt;br&gt;&#39;
                  );
         }
 
@@ -462,15 +459,15 @@ public class PostsController : Controller
 
         hub.client.publishPost = addPost;
 
-        $(&quot;#publishPostButton&quot;).click(function () {
+        $(&#34;#publishPostButton&#34;).click(function () {
 
             var post = {
-                userName: $(&quot;#userNameInput&quot;).val() || &quot;Guest&quot;,
-                text: $(&quot;#textInput&quot;).val()
+                userName: $(&#34;#userNameInput&#34;).val() || &#34;Guest&#34;,
+                text: $(&#34;#textInput&#34;).val()
             };
             $.ajax({
-                url: '/api/Posts/AddPost',
-                method: 'POST',
+                url: &#39;/api/Posts/AddPost&#39;,
+                method: &#39;POST&#39;,
                 data: post
             });
         });

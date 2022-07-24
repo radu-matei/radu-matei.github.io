@@ -172,111 +172,111 @@
 <p>In its current form, <a href="https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1" target="_blank" rel="noreferrer noopener"><code>v0.1</code></a>
 , the service is able to return the server and client version and showcase how to stream some data - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto" target="_blank" rel="noreferrer noopener">essentially, the <code>.proto</code> looks like this</a>
 :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">syntax</span> = <span style="color:#e6db74">&#34;proto3&#34;</span>;
-
-<span style="color:#f92672">package</span> <span style="color:#a6e22e">rpc</span>;
-
-<span style="color:#a6e22e">service</span> <span style="color:#a6e22e">KTK</span> {
-	<span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">Empty</span>) <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">Version</span>){}
-	<span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">Empty</span>) <span style="color:#a6e22e">returns</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">StreamingMessage</span>){}
-}
-
-<span style="color:#a6e22e">message</span> <span style="color:#a6e22e">Version</span> {
-	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">sem_ver</span> = <span style="color:#ae81ff">1</span>;
-	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">git_commit</span> = <span style="color:#ae81ff">2</span>;
-}
-
-<span style="color:#a6e22e">message</span> <span style="color:#a6e22e">StreamingMessage</span> {
-	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">message</span> = <span style="color:#ae81ff">1</span>;
-}
-</code></pre></div><p>This defines a service with two methods, <code>GetVersion</code> and <code>ServerStream</code> (which returns a stream of <code>StreamingMessage</code> back to the client), and <strong>this is the place where you will first define your service methods!</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">syntax</span> = <span style="color:#e6db74">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">rpc</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">service</span> <span style="color:#a6e22e">KTK</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">Empty</span>) <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">Version</span>){}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">Empty</span>) <span style="color:#a6e22e">returns</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">StreamingMessage</span>){}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">Version</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">sem_ver</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">git_commit</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">StreamingMessage</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">string</span> <span style="color:#a6e22e">message</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This defines a service with two methods, <code>GetVersion</code> and <code>ServerStream</code> (which returns a stream of <code>StreamingMessage</code> back to the client), and <strong>this is the place where you will first define your service methods!</strong></p>
 <p>Now if we take a look at the <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Makefile" target="_blank" rel="noreferrer noopener"><code>Makefile</code></a>
 , there is an <code>rpc</code> target that will use the <code>protoc</code> compiler and build the client and server in Golang for our service in <code>pkg/rpc</code> (as defined in the <code>Makefile</code>).</p>
 <p>Now it&rsquo;s about creating actual implementations for the client and server. <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40" target="_blank" rel="noreferrer noopener">For example, the client implementation for <code>GetVersion</code> is as straightforward as simply as calling the <code>GetVersion</code> on the generated client</a>
 :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// GetVersion returns the ktk version
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">RPC</span>.<span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>{})
-}
-</code></pre></div><p>This function call will simply return the version from the server - note that we have to <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74" target="_blank" rel="noreferrer noopener">implement the server method as below</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// GetVersion returns the ktk version
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">RPC</span>.<span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>{})
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This function call will simply return the version from the server - note that we have to <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74" target="_blank" rel="noreferrer noopener">implement the server method as below</a>
 :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// GetVersion returns the current version of the server.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">server</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;executing ktkd version&#34;</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>{
-		<span style="color:#a6e22e">SemVer</span>:    <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">SemVer</span>,
-		<span style="color:#a6e22e">GitCommit</span>: <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">GitCommit</span>}, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// GetVersion returns the current version of the server.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">server</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;executing ktkd version&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Version</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">SemVer</span>:    <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">SemVer</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">GitCommit</span>: <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">GitCommit</span>}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>The version and commit hash are injected at build time through compile flags. See Makefile.</p>
 </blockquote>
 <p>Now let&rsquo;s take a look at some streaming messages - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82" target="_blank" rel="noreferrer noopener">first the server</a>
 :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ServerStream starts a new stream from the server
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">server</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">_</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>, <span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">KTK_ServerStreamServer</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;received server stream command&#34;</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">5</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Send</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">StreamingMessage</span>{
-			<span style="color:#a6e22e">Message</span>: <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Sending stream back to client, iteration: %d&#34;</span>, <span style="color:#a6e22e">i</span>),
-		})
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-		}
-
-		<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>This will send 5 messages back to the client, 2 seconds apart.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// ServerStream starts a new stream from the server
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">server</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">_</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>, <span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">KTK_ServerStreamServer</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;received server stream command&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">5</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Send</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">StreamingMessage</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Message</span>: <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Sending stream back to client, iteration: %d&#34;</span>, <span style="color:#a6e22e">i</span>),
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This will send 5 messages back to the client, 2 seconds apart.</p>
 <p><a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49" target="_blank" rel="noreferrer noopener">Receiving the stream is done like this</a>
 :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ServerStream starts a stream from the server
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">CallOption</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;called InitializeCloud client method...&#34;</span>)
-
-	<span style="color:#a6e22e">stream</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">RPC</span>.<span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>{})
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;cannot start server stream: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-
-	<span style="color:#66d9ef">for</span> {
-		<span style="color:#a6e22e">message</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Recv</span>()
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
-			<span style="color:#66d9ef">break</span>
-		}
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;error receiving stream: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-		}
-
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">message</span>.<span style="color:#a6e22e">Message</span>)
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>With this proto service, you should have a clear understanding on how to write additional methods for the gRPC service and implement the client and the server.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// ServerStream starts a stream from the server
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">CallOption</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;called InitializeCloud client method...&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">stream</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">RPC</span>.<span style="color:#a6e22e">ServerStream</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rpc</span>.<span style="color:#a6e22e">Empty</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;cannot start server stream: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">message</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Recv</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;error receiving stream: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">message</span>.<span style="color:#a6e22e">Message</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>With this proto service, you should have a clear understanding on how to write additional methods for the gRPC service and implement the client and the server.</p>
 <p>Now that you have a pretty good understanding on how to write gRPC client and server methods, let&rsquo;s explore how to connect to the Kubernetes cluster.</p>
 <h3 id="connecting-to-the-kubernetes-cluster">Connecting to the Kubernetes cluster</h3>
 <p>For this part, I will <a href="https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go" target="_blank" rel="noreferrer noopener">give 100% credits to the Draft team</a>
  as I merely copied their implementation of a port forwarder that uses the Helm packages.</p>
 <p>Essentially, this creates a new &ldquo;SSH-like tunnel&rdquo; back to a pod in the Kubernetes cluster - normally, the pod is the one running our server-side component, <code>ktkd</code> (you have to specify the name and labels for it):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//New returns a tunnel to the ktkd pod.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">clientset</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">kubernetes</span>.<span style="color:#a6e22e">Clientset</span>, <span style="color:#a6e22e">config</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">restclient</span>.<span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">kube</span>.<span style="color:#a6e22e">Tunnel</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">podName</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getKTKDPodName</span>(<span style="color:#a6e22e">clientset</span>, <span style="color:#a6e22e">namespace</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;found pod: %s&#34;</span>, <span style="color:#a6e22e">podName</span>)
-
-    <span style="color:#75715e">// the default port for ktkd is 10000
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ktkdPort</span> = <span style="color:#ae81ff">10000</span>
-
-    <span style="color:#75715e">// this gets a tunnel to the ktkd pod, port 10000
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">kube</span>.<span style="color:#a6e22e">NewTunnel</span>(<span style="color:#a6e22e">clientset</span>.<span style="color:#a6e22e">CoreV1</span>().<span style="color:#a6e22e">RESTClient</span>(), <span style="color:#a6e22e">config</span>, <span style="color:#a6e22e">namespace</span>, <span style="color:#a6e22e">podName</span>, <span style="color:#a6e22e">ktkdPort</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">ForwardPort</span>()
-}
-</code></pre></div><p>This tunnel is created for every executed command, and allows us to execute commands against <code>localhost:some-random-port</code> and then it forwards the request to <code>ktkdpod-internal-ip:10000</code>. As stated earlier, behind the scenes it uses the Go client for Kubernetes and packages from Helm.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">//New returns a tunnel to the ktkd pod.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">clientset</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">kubernetes</span>.<span style="color:#a6e22e">Clientset</span>, <span style="color:#a6e22e">config</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">restclient</span>.<span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">kube</span>.<span style="color:#a6e22e">Tunnel</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">podName</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getKTKDPodName</span>(<span style="color:#a6e22e">clientset</span>, <span style="color:#a6e22e">namespace</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;found pod: %s&#34;</span>, <span style="color:#a6e22e">podName</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the default port for ktkd is 10000
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ktkdPort</span> = <span style="color:#ae81ff">10000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// this gets a tunnel to the ktkd pod, port 10000
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">kube</span>.<span style="color:#a6e22e">NewTunnel</span>(<span style="color:#a6e22e">clientset</span>.<span style="color:#a6e22e">CoreV1</span>().<span style="color:#a6e22e">RESTClient</span>(), <span style="color:#a6e22e">config</span>, <span style="color:#a6e22e">namespace</span>, <span style="color:#a6e22e">podName</span>, <span style="color:#a6e22e">ktkdPort</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">ForwardPort</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This tunnel is created for every executed command, and allows us to execute commands against <code>localhost:some-random-port</code> and then it forwards the request to <code>ktkdpod-internal-ip:10000</code>. As stated earlier, behind the scenes it uses the Go client for Kubernetes and packages from Helm.</p>
 <blockquote>
 <p>Please note that there is no need to publicly expose any port on the pod.</p>
 </blockquote>
@@ -288,36 +288,36 @@
  for creating CLI apps, and tools like Kubernetes, Docker, rkt, etcd or Hugo are built upon cobra.</p>
 </blockquote>
 <p>Let&rsquo;s have a look at the folder structure:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#960050;background-color:#1e0010">kube-toolkit</span>
-<span style="color:#960050;background-color:#1e0010">└───cmd</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktk</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">ktk.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">serverStream.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">version.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktkd</span>
-<span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">ktkd.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">start.go</span>
-<span style="color:#960050;background-color:#1e0010">└───pkg</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktk</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">client.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktkd</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">server.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───portforwarder</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">portforwarder.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───rpc</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">rpc.proto</span>
-<span style="color:#960050;background-color:#1e0010">|</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">|---</span> <span style="color:#960050;background-color:#1e0010">rpc.pb.go</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───version</span>
-<span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">version.go</span>
-</code></pre></div><p>In the <code>cmd</code> directory we have the CLIs for <code>ktk</code> and <code>ktkd</code>, and in <code>pkg</code> we have all packages that we use throughout the tool - the implementations for the gRPC client and server, the port forwarder, the generated Go service and proto.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">kube-toolkit</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">└───cmd</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktk</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">ktk.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">serverStream.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">version.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktkd</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">ktkd.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>        <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">start.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">└───pkg</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktk</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">client.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───ktkd</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">server.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───portforwarder</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">portforwarder.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───rpc</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">rpc.proto</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">|</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">|---</span> <span style="color:#960050;background-color:#1e0010">rpc.pb.go</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">└───version</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">│</span>   <span style="color:#960050;background-color:#1e0010">|</span>    <span style="color:#960050;background-color:#1e0010">│---</span> <span style="color:#960050;background-color:#1e0010">version.go</span>
+</span></span></code></pre></div><p>In the <code>cmd</code> directory we have the CLIs for <code>ktk</code> and <code>ktkd</code>, and in <code>pkg</code> we have all packages that we use throughout the tool - the implementations for the gRPC client and server, the port forwarder, the generated Go service and proto.</p>
 <p>Let&rsquo;s take a look at how everything works together for the version command:</p>
 <ul>
 <li>first of all, I briefly mentioned that the version and git commit are injected at build time using compilation flags - the <code>LFFLAGS</code> inject into <code>GitCommit</code>and <code>SemVer</code> the respective values from the <code>version</code> package from <code>pkg</code> into both the client and the server (which can have different versions!):</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile">VERSION_PACKAGE <span style="color:#f92672">=</span> github.com/radu-matei/kube-toolkit/pkg/version
-LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(</span>VERSION_PACKAGE<span style="color:#66d9ef">)</span>.GitCommit<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>GIT_COMMIT<span style="color:#e6db74">}</span>
-LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(</span>VERSION_PACKAGE<span style="color:#66d9ef">)</span>.SemVer<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SEMVER<span style="color:#e6db74">}</span>
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>VERSION_PACKAGE <span style="color:#f92672">=</span> github.com/radu-matei/kube-toolkit/pkg/version
+</span></span><span style="display:flex;"><span>LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(</span>VERSION_PACKAGE<span style="color:#66d9ef">)</span>.GitCommit<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>GIT_COMMIT<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(</span>VERSION_PACKAGE<span style="color:#66d9ef">)</span>.SemVer<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SEMVER<span style="color:#e6db74">}</span>
+</span></span></code></pre></div><blockquote>
 <p>There is a <a href="https://blog.alexellis.io/inject-build-time-vars-golang/" target="_blank" rel="noreferrer noopener">great article by Alex Ellis explaining everything about injecting build-time variables</a>
 </p>
 </blockquote>
@@ -325,59 +325,59 @@ LDFLAGS <span style="color:#f92672">+=</span> -X <span style="color:#66d9ef">$(<
 <li>earlier we saw the client and the server implementation of <code>GetVersion</code></li>
 </ul>
 <p>Now let&rsquo;s see how to put together the server app:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newStartCmd</span>(<span style="color:#a6e22e">out</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span> {
-	<span style="color:#a6e22e">startCmd</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">startCmd</span>{}
-
-	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span>{
-		<span style="color:#a6e22e">Use</span>:   <span style="color:#e6db74">&#34;start&#34;</span>,
-		<span style="color:#a6e22e">Short</span>: <span style="color:#a6e22e">startUsage</span>,
-		<span style="color:#a6e22e">Long</span>:  <span style="color:#a6e22e">startUsage</span>,
-		<span style="color:#a6e22e">RunE</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span>, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">startCmd</span>.<span style="color:#a6e22e">run</span>()
-		},
-	}
-
-	<span style="color:#a6e22e">flags</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Flags</span>()
-	<span style="color:#a6e22e">flags</span>.<span style="color:#a6e22e">StringVar</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">listenAddress</span>, <span style="color:#e6db74">&#34;listen-addr&#34;</span>, <span style="color:#e6db74">&#34;0.0.0.0:10000&#34;</span>, <span style="color:#e6db74">&#34;the ktkd server listen address&#34;</span>)
-
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cmd</span>
-}
-
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">startCmd</span>) <span style="color:#a6e22e">run</span>() <span style="color:#66d9ef">error</span> {
-
-	<span style="color:#a6e22e">cfg</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ktkd</span>.<span style="color:#a6e22e">ServerConfig</span>{
-		<span style="color:#a6e22e">ListenAddress</span>: <span style="color:#a6e22e">listenAddress</span>,
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ktkd</span>.<span style="color:#a6e22e">NewServer</span>(<span style="color:#a6e22e">cfg</span>).<span style="color:#a6e22e">Serve</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
-}
-</code></pre></div><p>We will simply call <code>ktkd start</code>, which will start the gRPC server and we will be ready to accept incoming requests from clients.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newStartCmd</span>(<span style="color:#a6e22e">out</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">startCmd</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">startCmd</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Use</span>:   <span style="color:#e6db74">&#34;start&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Short</span>: <span style="color:#a6e22e">startUsage</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Long</span>:  <span style="color:#a6e22e">startUsage</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">RunE</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span>, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">startCmd</span>.<span style="color:#a6e22e">run</span>()
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">flags</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Flags</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">flags</span>.<span style="color:#a6e22e">StringVar</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">listenAddress</span>, <span style="color:#e6db74">&#34;listen-addr&#34;</span>, <span style="color:#e6db74">&#34;0.0.0.0:10000&#34;</span>, <span style="color:#e6db74">&#34;the ktkd server listen address&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cmd</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">startCmd</span>) <span style="color:#a6e22e">run</span>() <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cfg</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ktkd</span>.<span style="color:#a6e22e">ServerConfig</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ListenAddress</span>: <span style="color:#a6e22e">listenAddress</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ktkd</span>.<span style="color:#a6e22e">NewServer</span>(<span style="color:#a6e22e">cfg</span>).<span style="color:#a6e22e">Serve</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We will simply call <code>ktkd start</code>, which will start the gRPC server and we will be ready to accept incoming requests from clients.</p>
 <ul>
 <li>now the cobra <code>run</code> method for <code>ktk version</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">versionCmd</span>) <span style="color:#a6e22e">run</span>() <span style="color:#66d9ef">error</span> {
-
-	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;making request to: %s&#34;</span>, <span style="color:#a6e22e">ktkdHost</span>)
-
-	<span style="color:#a6e22e">conn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ktk</span>.<span style="color:#a6e22e">GetGRPCConnection</span>(<span style="color:#a6e22e">ktkdHost</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;cannot create grpc connection: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">Close</span>()
-
-	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">client</span> = <span style="color:#a6e22e">ensureKTKClient</span>(<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">client</span>, <span style="color:#a6e22e">conn</span>)
-
-	<span style="color:#a6e22e">ktkdVersion</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;cannot get ktkd version: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-        }
-
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ktk Semver: %s GitCommit: %s\n&#34;</span>, <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">SemVer</span>, <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">GitCommit</span>)
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ktkd SemVer:  %s Git Commit: %s\n&#34;</span>, <span style="color:#a6e22e">ktkdVersion</span>.<span style="color:#a6e22e">SemVer</span>, <span style="color:#a6e22e">ktkdVersion</span>.<span style="color:#a6e22e">GitCommit</span>)
-
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">versionCmd</span>) <span style="color:#a6e22e">run</span>() <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;making request to: %s&#34;</span>, <span style="color:#a6e22e">ktkdHost</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">conn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ktk</span>.<span style="color:#a6e22e">GetGRPCConnection</span>(<span style="color:#a6e22e">ktkdHost</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;cannot create grpc connection: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">client</span> = <span style="color:#a6e22e">ensureKTKClient</span>(<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">client</span>, <span style="color:#a6e22e">conn</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ktkdVersion</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">GetVersion</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;cannot get ktkd version: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ktk Semver: %s GitCommit: %s\n&#34;</span>, <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">SemVer</span>, <span style="color:#a6e22e">version</span>.<span style="color:#a6e22e">GitCommit</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ktkd SemVer:  %s Git Commit: %s\n&#34;</span>, <span style="color:#a6e22e">ktkdVersion</span>.<span style="color:#a6e22e">SemVer</span>, <span style="color:#a6e22e">ktkdVersion</span>.<span style="color:#a6e22e">GitCommit</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>here, we get an instance of the gRPC client, then call the server for its version. Then we simply print the version.</li>
 </ul>
 <p>For every new functionality, we need to add a new cobra command (and remember to add it to the root command) and implement it accordingly.</p>

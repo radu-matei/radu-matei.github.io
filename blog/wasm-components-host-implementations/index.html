@@ -205,11 +205,11 @@ Created library `wasmtime-impl-redis` package
 Bytecode Alliance project that, given a WebAssembly interface (WIT) file,
 generates Rust bindings that make it easy to implement (or consume) the
 interface from Wasmtime using its Rust API:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#75715e"># Cargo.toml</span>
-[<span style="color:#a6e22e">dependencies</span>]
-    <span style="color:#a6e22e">wit-bindgen-wasmtime</span> = { <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/bytecodealliance/wit-bindgen&#34;</span>,
-    <span style="color:#a6e22e">rev</span> = <span style="color:#e6db74">&#34;2e654dc82b7f9331719ba617a36ed5967b2aecb0&#34;</span> }
-</code></pre></div><p>In general, generators from wit-bindgen have two operating modes, <em>import</em> and
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span><span style="color:#75715e"># Cargo.toml</span>
+</span></span><span style="display:flex;"><span>[<span style="color:#a6e22e">dependencies</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">wit-bindgen-wasmtime</span> = { <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/bytecodealliance/wit-bindgen&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">rev</span> = <span style="color:#e6db74">&#34;2e654dc82b7f9331719ba617a36ed5967b2aecb0&#34;</span> }
+</span></span></code></pre></div><p>In general, generators from wit-bindgen have two operating modes, <em>import</em> and
 <em>export</em>:</p>
 <ul>
 <li>import bindings are for <em>consuming</em> an interface</li>
@@ -222,14 +222,14 @@ macro, which takes the interface file as input, and automatically generates
 Wasmtime-specific bindings to implement the interface in Rust. This is similar
 to directly using the CLI:</p>
 <pre tabindex="0"><code>$ wit-bindgen wasmtime --export ../cache.wit
-Generating &quot;bindings.rs&quot;;
+Generating &#34;bindings.rs&#34;;
 </code></pre><p>Inspecting the generated bindings, we can see types for the objects from the
 interface, a top-level <code>add_to_linker</code> function that allows linking all the
 functions from this implementation, and a trait that contains all functions we
 must implement. Let&rsquo;s look at the implementation for the <code>cache::Cache</code> trait
 and how to implement it:</p>
 <pre tabindex="0"><code>use cache::*;
-wit_bindgen_wasmtime::export!(&quot;../cache.wit&quot;);
+wit_bindgen_wasmtime::export!(&#34;../cache.wit&#34;);
 
 struct RedisCache {}
 
@@ -237,7 +237,7 @@ impl cache::Cache for RedisCache {
     fn set(
         &amp;mut self,
         key: &amp;str,
-        value: PayloadParam&lt;'_&gt;,
+        value: PayloadParam&lt;&#39;_&gt;,
         ttl: Option&lt;u32&gt;,
     ) -&gt; Result&lt;(), Error&gt; {
         todo!()
@@ -294,22 +294,22 @@ WebAssembly module with Wasmtime can be found on GitHub and in the
 , but
 the relevant part to this article is linking the host implementation to satisfy
 the cache interface the consumer component is importing:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">// create an instance of the RedisCache object we just built
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> rc <span style="color:#f92672">=</span> RedisCache::new(<span style="color:#e6db74">&#34;redis://localhost:6379&#34;</span>)<span style="color:#f92672">?</span>;
-
-<span style="color:#75715e">// use the auto-generated add_to_linker method to register the associated functions
-</span><span style="color:#75715e">// whenever interface functions are executed during this Wasm caller’s lifetime
-</span><span style="color:#75715e"></span>cache::add_to_linker(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> linker, <span style="color:#f92672">|</span>ctx<span style="color:#f92672">|</span> -&gt; <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> RedisCache {
-ctx.runtime_data.as_mut().unwrap()
-})<span style="color:#f92672">?</span>;
-
-<span style="color:#f92672">..</span>.
-<span style="color:#75715e">// create a new instance of the module and call its entrypoint
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> linker.instantiate(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#f92672">&amp;</span>module)<span style="color:#f92672">?</span>;
-
-<span style="color:#66d9ef">let</span> start <span style="color:#f92672">=</span> instance.get_func(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#e6db74">&#34;_start&#34;</span>).unwrap();
-start.call(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#f92672">&amp;</span>[], <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> [])<span style="color:#f92672">?</span>;
-</code></pre></div><p>The procedural macro we used when implementing the library also generated the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// create an instance of the RedisCache object we just built
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> rc <span style="color:#f92672">=</span> RedisCache::new(<span style="color:#e6db74">&#34;redis://localhost:6379&#34;</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// use the auto-generated add_to_linker method to register the associated functions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// whenever interface functions are executed during this Wasm caller’s lifetime
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>cache::add_to_linker(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> linker, <span style="color:#f92672">|</span>ctx<span style="color:#f92672">|</span> -&gt; <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> RedisCache {
+</span></span><span style="display:flex;"><span>ctx.runtime_data.as_mut().unwrap()
+</span></span><span style="display:flex;"><span>})<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// create a new instance of the module and call its entrypoint
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> linker.instantiate(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#f92672">&amp;</span>module)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> start <span style="color:#f92672">=</span> instance.get_func(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#e6db74">&#34;_start&#34;</span>).unwrap();
+</span></span><span style="display:flex;"><span>start.call(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#f92672">&amp;</span>[], <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> [])<span style="color:#f92672">?</span>;
+</span></span></code></pre></div><p>The procedural macro we used when implementing the library also generated the
 <code>add_to_linker</code> method, which abstracts the entire process of linking the
 interface methods to the implementation. After creating a new instance of
 <code>RedisCache</code>, the state is added to the current Wasmtime store, and the module

@@ -134,7 +134,7 @@ So I wanted to cheat my way into adding a dark mode, but without putting in the 
 <p>So I tried all the themes the extension comes with, and found out that <em>Dark invert #5</em> was the style I liked best.</p>
 <blockquote>
 <p>The actual CSS file is located in the browser extension data directory - you can find it by inspecting a web page when the extension is active, and for Chromium-based browsers, you can access it from the at a URL that resembles:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"></code></pre></div></blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"></code></pre></div></blockquote>
 <p>chrome-extension://<!-- raw HTML omitted -->/data/content_script/general/dark_25.css</p>
 <pre tabindex="0"><code>
 After looking at the theme style, this is the entire CSS content injected by the extension - it changes the background color, inverts colors, adjusts brightness, colours, hue:
@@ -152,48 +152,48 @@ body {
 }
 img,
 video,
-body * [style*=&quot;background-image&quot;] {
+body * [style*=&#34;background-image&#34;] {
     filter: hue-rotate(180deg) contrast(100%) invert(100%);
     -webkit-filter: hue-rotate(180deg) contrast(100%) invert(100%);
 }
 </code></pre><p>So I saved this file along with the other CSS files in my theme, referenced it in the header of my HTML pages, but disabled it by default (because I still want light mode by default):</p>
-<pre tabindex="0"><code>&lt;link disabled id=&quot;dark-mode-theme&quot; rel=&quot;stylesheet&quot; href=&quot;/css/dark.css&quot;&gt;
+<pre tabindex="0"><code>&lt;link disabled id=&#34;dark-mode-theme&#34; rel=&#34;stylesheet&#34; href=&#34;/css/dark.css&#34;&gt;
 </code></pre><p>Now that I have a style, it&rsquo;s time to add a way of toggling between light and dark modes.</p>
 <h3 id="toggling-between-the-light-and-dark-modes">Toggling between the light and dark modes</h3>
 <p>My theme comes with a navigation bar that is always visible at the top. In the top right, there is a button that opens the sharing menu, one for search, and another for a menu. That portion seemed perfect to add another button, since it&rsquo;s always in view.</p>
 <p>My theme also comes with <a href="https://fontawesome.com/" target="_blank" rel="noreferrer noopener">Font Awesome</a>
  - and if you search, you can find icons for a moon and a sun - and we&rsquo;ll use them to toggle between dark and light modes. Because I want light mode by default, I added the moon icon in the navigation bar to toggle to dark mode:</p>
-<pre tabindex="0"><code>&lt;a id=&quot;dark-mode-toggle&quot; class=&quot;fal fa-moon-o&quot;&gt;Toggle Dark Mode&lt;/a&gt;
+<pre tabindex="0"><code>&lt;a id=&#34;dark-mode-toggle&#34; class=&#34;fal fa-moon-o&#34;&gt;Toggle Dark Mode&lt;/a&gt;
 </code></pre><p>Now we need a bit of JavaScript to add an event listener, so that when the moon icon is pressed, the dark mode is toggled:</p>
-<pre tabindex="0"><code>var toggle = document.getElementById(&quot;dark-mode-toggle&quot;);
-var darkTheme = document.getElementById(&quot;dark-mode-theme&quot;);
+<pre tabindex="0"><code>var toggle = document.getElementById(&#34;dark-mode-toggle&#34;);
+var darkTheme = document.getElementById(&#34;dark-mode-theme&#34;);
 
-toggle.addEventListener(&quot;click&quot;, () =&gt; {
-    if (toggle.className === &quot;fal fa-moon-o&quot;) {
-        setTheme(&quot;dark&quot;);
-    } else if (toggle.className === &quot;fal fa-sun-o&quot;) {
-        setTheme(&quot;light&quot;);
+toggle.addEventListener(&#34;click&#34;, () =&gt; {
+    if (toggle.className === &#34;fal fa-moon-o&#34;) {
+        setTheme(&#34;dark&#34;);
+    } else if (toggle.className === &#34;fal fa-sun-o&#34;) {
+        setTheme(&#34;light&#34;);
     }
 });
 
 function setTheme(mode) {
-    if (mode === &quot;dark&quot;) {
+    if (mode === &#34;dark&#34;) {
         darkTheme.disabled = false;
-        toggle.className = &quot;fal fa-sun-o&quot;;
-    } else if (mode === &quot;light&quot;) {
+        toggle.className = &#34;fal fa-sun-o&#34;;
+    } else if (mode === &#34;light&#34;) {
         darkTheme.disabled = true;
-        toggle.className = &quot;fal fa-moon-o&quot;;
+        toggle.className = &#34;fal fa-moon-o&#34;;
     }
 }
 </code></pre><p>So when the icon is pressed, the style sheet is enabled or disabled, and the correct icon is set.</p>
 <h3 id="using-local-storage-for-persistance">Using local storage for persistance</h3>
 <p>This works well enough, but if you navigate to another page in the website, the default theme (light, in my case) is re-applied. Let&rsquo;s see how we can use local storage to save the preference for the theme - and just save the theme in local storage when the user changes it:</p>
 <pre tabindex="0"><code>// the default theme is light
-var savedTheme = localStorage.getItem(&quot;dark-mode-storage&quot;) || &quot;light&quot;;
+var savedTheme = localStorage.getItem(&#34;dark-mode-storage&#34;) || &#34;light&#34;;
 setTheme(savedTheme);
 
 function setTheme(mode) {
-    localStorage.setItem(&quot;dark-mode-storage&quot;, mode);
+    localStorage.setItem(&#34;dark-mode-storage&#34;, mode);
 
     // same as above
 }

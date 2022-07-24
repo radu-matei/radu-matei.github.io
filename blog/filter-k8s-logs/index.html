@@ -177,7 +177,7 @@ application log file and writes the filtered logs to the sidecar <code>stdout</c
 namespaces</a>
  - that is a cluster created with
 <code>--feature-gates=PodShareProcessNamespace=true</code>, then you can access the main
-process' <code>stdout</code> directly, without sharing a volume between the main
+process&rsquo; <code>stdout</code> directly, without sharing a volume between the main
 container and the sidecar.</p>
 </blockquote>
 <blockquote>
@@ -204,7 +204,7 @@ container&rsquo;s logs become the application logs:</p>
 		for _, v := range s.Data {
 			// if the log line contains a secret value redact it
 			if strings.Contains(line, string(v)) {
-				line = strings.Replace(line, string(v), &quot;[ redacted ]&quot;, -1)
+				line = strings.Replace(line, string(v), &#34;[ redacted ]&#34;, -1)
 			}
 		}
 	}
@@ -274,7 +274,7 @@ spec:
     image: radumatei/node-redirect-stdout:alpine
     env:
     - name: LOGS_FILE
-      value: &quot;/var/log/app&quot;
+      value: &#34;/var/log/app&#34;
     volumeMounts:
     - name: varlog
       mountPath: /var/log
@@ -283,9 +283,9 @@ spec:
     image: radumatei/filter-kubernetes-logs:latest
     env:
     - name: LOGS_FILE
-      value: &quot;/var/log/app&quot;
+      value: &#34;/var/log/app&#34;
     - name: NAMESPACE
-      value: &quot;&lt;your-namespace&gt;&quot;
+      value: &#34;&lt;your-namespace&gt;&#34;
     volumeMounts:
     - name: varlog
       mountPath: /var/log
@@ -322,17 +322,17 @@ would redact that.</p>
 logs, so we avoid accidentally outputting secret values in the logs of our
 applications. Executing <code>kubectl logs</code> also works as expected:</p>
 <pre tabindex="0"><code>$ kubectl logs filter-logs -c filter
-{ user: 'radu',
-  password: 'abcdef' }
+{ user: &#39;radu&#39;,
+  password: &#39;abcdef&#39; }
 
-{ user: '[ redacted ]',
-  password: '[ redacted ]' }
+{ user: &#39;[ redacted ]&#39;,
+  password: &#39;[ redacted ]&#39; }
 
-{ user: '[ redacted ]',
-  password: '[ redacted ]abc' }
+{ user: &#39;[ redacted ]&#39;,
+  password: &#39;[ redacted ]abc&#39; }
 
-{ user: '[ redacted ]2',
-  password: '[ redacted ]abc' }
+{ user: &#39;[ redacted ]2&#39;,
+  password: &#39;[ redacted ]abc&#39; }
 </code></pre><h3 id="conclusion">Conclusion</h3>
 <p>In this article we saw how to filter Kubernetes secrets from the logs of our
 applications by running a sidecar container that continuously redacts the secret

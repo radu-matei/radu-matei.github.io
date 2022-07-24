@@ -168,7 +168,7 @@
 {
     public string DoSomething(string parameter)
     {
-        return $&quot;Message from Test with { parameter }&quot;;
+        return $&#34;Message from Test with { parameter }&#34;;
     }
 }
 </code></pre><h3 id="how-to-inject-an-itest-service">How to inject an <code>ITest</code> service</h3>
@@ -184,17 +184,17 @@ _</p>
 <h3 id="the-json-file">The JSON File</h3>
 <p>Since we will use a JSON file, it might as well be the one we use for other configurations (or a completely different one). Regardless of what you choose, you can extract only the relevant part of the JSON file using a section name.</p>
 <pre tabindex="0"><code>{
-    &quot;services&quot;: [
+    &#34;services&#34;: [
         {
-            &quot;serviceType&quot;: &quot;ITest&quot;,
-            &quot;implementationType&quot;: &quot;Test&quot;,
-            &quot;lifetime&quot;: &quot;Transient&quot;
+            &#34;serviceType&#34;: &#34;ITest&#34;,
+            &#34;implementationType&#34;: &#34;Test&#34;,
+            &#34;lifetime&#34;: &#34;Transient&#34;
         }
     ],
 
-    &quot;otherConfigurations&quot;: {
-        &quot;someKey&quot;: &quot;someValue&quot;,
-        &quot;otherKey&quot;: &quot;otherValue&quot;
+    &#34;otherConfigurations&#34;: {
+        &#34;someKey&#34;: &#34;someValue&#34;,
+        &#34;otherKey&#34;: &#34;otherValue&#34;
     }
 }
 </code></pre><p>In this case, the JSON section we are interested in is <code>services</code>. At this key, we have an array of JSON objects with 3 properties: <code>serviceType</code>, <code>implementationType</code> and <code>lifetime</code>, which correspond to the parameters passed to the <code>ServiceDescriptor</code> when adding the service.</p>
@@ -218,7 +218,7 @@ public class Service
 <p>Next, in the <code>Startup</code> class we will simply deserialize the JSON section into a <code>List&lt;Service&gt;</code>, iterate through it and add the services:</p>
 <pre tabindex="0"><code>private void ConfigureJsonServices(IServiceCollection services)
 {
-    var jsonServices = JObject.Parse(File.ReadAllText(&quot;appSettings.json&quot;))[&quot;services&quot;];
+    var jsonServices = JObject.Parse(File.ReadAllText(&#34;appSettings.json&#34;))[&#34;services&#34;];
     var requiredServices = JsonConvert.DeserializeObject&lt;List&lt;Service&gt;&gt;(jsonServices.ToString());
 
     foreach(var service in requiredServices)
@@ -238,7 +238,7 @@ public class Service
 {
     app.Run(context =&gt;
     {
-        var response = test.DoSomething(&quot;startup&quot;);
+        var response = test.DoSomething(&#34;startup&#34;);
         return context.Response.WriteAsync(response);
     });
 }

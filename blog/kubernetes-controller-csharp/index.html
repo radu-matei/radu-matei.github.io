@@ -170,10 +170,10 @@ usual CRUD operations that you can do with the client, you can also <em>watch</e
 various resources - we listen on a given resource, and then we handle the events
 that take place:</p>
 <pre tabindex="0"><code>var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
-                group: &quot;api group&quot;,
-                version: &quot;version,
-                namespaceParameter: &quot;namespace&quot;,
-                plural: &quot;examples&quot;,
+                group: &#34;api group&#34;,
+                version: &#34;version,
+                namespaceParameter: &#34;namespace&#34;,
+                plural: &#34;examples&#34;,
                 watch: true);
 
 result.Watch&lt;T&gt;((type, item) =&gt; _handle(type, item));
@@ -184,11 +184,11 @@ example:</p>
 <pre tabindex="0"><code>apiVersion: engineerd.dev/v1alpha1
 kind: Example
 metadata:
-  creationTimestamp: &quot;2019-05-05T21:10:44Z&quot;
+  creationTimestamp: &#34;2019-05-05T21:10:44Z&#34;
   generation: 1
   name: my-cr-example
   namespace: kubecontroller
-  resourceVersion: &quot;12456473&quot;
+  resourceVersion: &#34;12456473&#34;
   selfLink: /apis/engineerd.dev/v1alpha1/namespaces/kubecontroller/examples/my-cr-example
   uid: 3eced7fe-6f7a-11e9-ae81-fad9608c9dfa
 spec:
@@ -265,17 +265,17 @@ repository</a>
 ):</p>
 <pre tabindex="0"><code>var crd = new CustomResourceDefinition()
 {
-    ApiVersion = &quot;engineerd.dev/v1alpha1&quot;,
-    PluralName = &quot;examples&quot;,
-    Kind = &quot;Example&quot;,
-    Namespace = &quot;kubecontroller&quot;
+    ApiVersion = &#34;engineerd.dev/v1alpha1&#34;,
+    PluralName = &#34;examples&#34;,
+    Kind = &#34;Example&#34;,
+    Namespace = &#34;kubecontroller&#34;
 };
 
 var controller = new Controller&lt;ExampleCRD&gt;(
     new Kubernetes(KubernetesClientConfiguration.BuildConfigFromConfigFile()),
     crd,
     (WatchEventType eventType, ExampleCRD example) =&gt;
-        Console.WriteLine(&quot;Event type: {0} for {1}&quot;, eventType, example.Metadata.Name));
+        Console.WriteLine(&#34;Event type: {0} for {1}&#34;, eventType, example.Metadata.Name));
 
 var cts = new CancellationTokenSource();
 await controller.StartAsync(cts.Token);

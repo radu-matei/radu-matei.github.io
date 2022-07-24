@@ -164,8 +164,8 @@ very prompt help of <a href="https://twitter.com/kubkon" target="_blank" rel="no
 .</p>
 <p><a href="https://bytecodealliance.github.io/wasmtime/contributing.html" target="_blank" rel="noreferrer noopener">To get started</a>
 , first clone the Wasmtime repository:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ git clone --recursive https://github.com/bytecodealliance/wasmtime
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ git clone --recursive https://github.com/bytecodealliance/wasmtime
+</span></span></code></pre></div><blockquote>
 <p>If you want to avoid any changes made to the Wasmtime repository since writing
 this article, you can checkout <a href="https://github.com/bytecodealliance/wasmtime/tree/ac7cd4c46abdc9d4f3ef3230386afd52177e5f7c" target="_blank" rel="noreferrer noopener">this revision</a>
  of the
@@ -192,15 +192,15 @@ repository pulled as a submodule in <code>crates/wasi-common/WASI</code>.</p>
 <p>As mentioned, the <code>.witx</code> file format should be familiar if you have worked with
 <code>.wat</code> files - for example, this is how the <code>args_sizes_get</code> function is
 declared in the <code>snapshot</code> phase:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">;;; Return command-line argument data sizes.
-(@interface func (export &#34;args_sizes_get&#34;)
-  (result $error $errno)
-  ;;; The number of arguments.
-  (result $argc $size)
-  ;;; The size of the argument string data.
-  (result $argv_buf_size $size)
-)
-</code></pre></div><p>We note that this is exports a function called <code>args_sizes_get</code>, which does not
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>;;; Return command-line argument data sizes.
+</span></span><span style="display:flex;"><span>(@interface func (export &#34;args_sizes_get&#34;)
+</span></span><span style="display:flex;"><span>  (result $error $errno)
+</span></span><span style="display:flex;"><span>  ;;; The number of arguments.
+</span></span><span style="display:flex;"><span>  (result $argc $size)
+</span></span><span style="display:flex;"><span>  ;;; The size of the argument string data.
+</span></span><span style="display:flex;"><span>  (result $argv_buf_size $size)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>We note that this is exports a function called <code>args_sizes_get</code>, which does not
 accept any parameters, and which returns any error and its error code, together
 with the number of arguments, and the size of the argument string data.</p>
 <p>So let&rsquo;s declare a new WASI API function. We add it to the <code>snapshot</code> phase -
@@ -218,7 +218,7 @@ index 98cd947..9c74dae 100644
    )
 +
 +  ;;; Print a greeting message.
-+  (@interface func (export &quot;print_greeting&quot;)
++  (@interface func (export &#34;print_greeting&#34;)
 +    (result $error $errno)
 +  )
  )
@@ -236,13 +236,13 @@ must also provide an actual implementation for it.</p>
 <pre tabindex="0"><code>error[E0046]: not all trait items implemented, missing: `print_greeting`
   --&gt; crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs:13:1
    |
-13 |   impl&lt;'a&gt; WasiSnapshotPreview1 for WasiCtx {
+13 |   impl&lt;&#39;a&gt; WasiSnapshotPreview1 for WasiCtx {
    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `print_greeting` in implementation
    |
   ::: crates/wasi-common/src/wasi.rs:6:1
    |
 6  | / wiggle::from_witx!({
-7  | |     witx: [&quot;WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx&quot;],
+7  | |     witx: [&#34;WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx&#34;],
 8  | |     ctx: WasiCtx,
 9  | | });
    | |___- `print_greeting` from trait
@@ -255,13 +255,13 @@ implemented in <code>wasi_snapshot_preview1.rs</code>:</p>
 index e4e4a604f..0fc1fa22f 100644
 --- a/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
 +++ b/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
-@@ -1052,4 +1052,9 @@ impl&lt;'a&gt; WasiSnapshotPreview1 for WasiCtx {
+@@ -1052,4 +1052,9 @@ impl&lt;&#39;a&gt; WasiSnapshotPreview1 for WasiCtx {
      fn sock_shutdown(&amp;self, _fd: types::Fd, _how: types::Sdflags) -&gt; Result&lt;()&gt; {
-         unimplemented!(&quot;sock_shutdown&quot;)
+         unimplemented!(&#34;sock_shutdown&#34;)
      }
 +
 +    fn print_greeting(&amp;self) -&gt; Result&lt;()&gt; {
-+        println!(&quot;Hello World from the new print_greeting syscall in WASI&quot;);
++        println!(&#34;Hello World from the new print_greeting syscall in WASI&#34;);
 +        Ok(())
 +    }
  }
@@ -275,27 +275,27 @@ contains the <code>print_greet</code> function in the <code>wasi_snapshot_previe
 <p>At this point, we can write a WebAssembly module that imports the
 <code>print_greeting</code> function and calls it:</p>
 <pre tabindex="0"><code>(module
-    (import &quot;wasi_snapshot_preview1&quot; &quot;print_greeting&quot; (func $print_greeting (result i32)))
+    (import &#34;wasi_snapshot_preview1&#34; &#34;print_greeting&#34; (func $print_greeting (result i32)))
 
     (memory 1)
-    (export &quot;memory&quot; (memory 0))
+    (export &#34;memory&#34; (memory 0))
 
-    (func $main (export &quot;_start&quot;)
+    (func $main (export &#34;_start&#34;)
         (call $print_greeting)
         return
     )
 )
 </code></pre><p>If we use our newly built Wasmtime binary and filter the logs, we can see the
 runtime executing our <code>print_greeting</code> function:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">RUST_LOG=wasi_common=trace ./target/debug/wasmtime examples/greeting.wat
-TRACE wasi_common::wasi::wasi_snapshot_preview1
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>&gt; print_greeting<span style="color:#f92672">()</span>
-Hello World from the new print_greeting syscall in WASI
-<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>TRACE wasi_common::wasi::wasi_snapshot_preview1
-&gt; errno<span style="color:#f92672">=</span>No error occurred. System call completed successfully. <span style="color:#f92672">(</span>Errno::Success<span style="color:#f92672">(</span>0<span style="color:#f92672">))</span>
-</code></pre></div><p>This isn&rsquo;t terribly useful, as our syscall does not take any arguments, and just
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>RUST_LOG=wasi_common=trace ./target/debug/wasmtime examples/greeting.wat
+</span></span><span style="display:flex;"><span>TRACE wasi_common::wasi::wasi_snapshot_preview1
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&gt; print_greeting<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>Hello World from the new print_greeting syscall in WASI
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>TRACE wasi_common::wasi::wasi_snapshot_preview1
+</span></span><span style="display:flex;"><span>&gt; errno<span style="color:#f92672">=</span>No error occurred. System call completed successfully. <span style="color:#f92672">(</span>Errno::Success<span style="color:#f92672">(</span>0<span style="color:#f92672">))</span>
+</span></span></code></pre></div><p>This isn&rsquo;t terribly useful, as our syscall does not take any arguments, and just
 prints a static message - but it shows how to potentially add an implementation
 for very common operations that you might have in your runtime context, or
 extend existing runtimes.</p>

@@ -256,7 +256,6 @@ service/brigade-kashti                    ClusterIP   10.0.225.37    &lt;none&gt
 
 NAME                                                 HOSTS                              ADDRESS   PORTS     AGE
 ingress.extensions/brigade-brigade-generic-gateway   brigade-events-test.kube.radu.sh             80, 443   62m
-
 </code></pre><blockquote>
 <p>Note that the subdomain used for provisioning ingress objects is
 <code>*.kube.radu.sh</code> &ndash; if you own a domain, and have access to configuring the
@@ -330,16 +329,16 @@ details about it in <a href="https://docs.brigade.sh/topics/genericgateway/" tar
 JavaScript pipeline that creates a Brigade job, and schedules it on the
 <code>virtual-kubelet</code> node we just created:</p>
 <pre tabindex="0"><code class="language-javascript=" data-lang="javascript=">// save this as brigade.js
-const { events, Job } = require(&quot;@azure/brigadier&quot;);
+const { events, Job } = require(&#34;@azure/brigadier&#34;);
 
-events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
-  var hello = new Job(&quot;linux-job&quot;);
-  hello.image = &quot;alpine:3.4&quot;;
-  hello.tasks = [&quot;echo Hello Brigade from Azure&quot;];
+events.on(&#34;exec&#34;, (brigadeEvent, project) =&gt; {
+  var hello = new Job(&#34;linux-job&#34;);
+  hello.image = &#34;alpine:3.4&#34;;
+  hello.tasks = [&#34;echo Hello Brigade from Azure&#34;];
 
-  hello.host.name = &quot;virtual-kubelet&quot;;
-  hello.resourceRequests.cpu = &quot;1&quot;;
-  hello.resourceRequests.memory = &quot;1G&quot;;
+  hello.host.name = &#34;virtual-kubelet&#34;;
+  hello.resourceRequests.cpu = &#34;1&#34;;
+  hello.resourceRequests.memory = &#34;1G&#34;;
 
   hello.run();
 });
@@ -358,7 +357,7 @@ requests for CPU and memory.</li>
 doesn&rsquo;t include public IP services, or ingresses, you can still test this,
 provided you configured Virtual Kubelet correctly:</p>
 <pre tabindex="0"><code>$ brig exec testing/brigade-vk -f brigade.js
-Event created. Waiting for worker pod named &quot;brigade-worker-01d5c5g11spb27fzjwkjs7gktw&quot;.
+Event created. Waiting for worker pod named &#34;brigade-worker-01d5c5g11spb27fzjwkjs7gktw&#34;.
 Build: 01d5c5g11spb27fzjwkjs7gktw, Worker: brigade-worker-01d5c5g11spb27fzjwkjs7gktw
 prestart: no dependencies file found
 prestart: loading script from /etc/brigade/script
@@ -415,20 +414,20 @@ between the two</li>
 <li>in a sequential job, which does all 200 executions one after the other</li>
 </ul>
 <p>Notice how we are using two core Brigade concepts - a Job, and a Group.</p>
-<pre tabindex="0"><code class="language-javascript=" data-lang="javascript=">const { events, Job, Group } = require(&quot;@azure/brigadier&quot;);
+<pre tabindex="0"><code class="language-javascript=" data-lang="javascript=">const { events, Job, Group } = require(&#34;@azure/brigadier&#34;);
 
 const parallelism = 20;
 
-events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
+events.on(&#34;exec&#34;, (brigadeEvent, project) =&gt; {
   // Brigade grouping for jobs
   var g = new Group();
 
   for (i = 0; i &lt; parallelism; i++) {
     var job = new Job(`parallel-countdown-${i}`);
-    job.image = &quot;ubuntu&quot;;
-    job.shell = &quot;bash&quot;;
+    job.image = &#34;ubuntu&#34;;
+    job.shell = &#34;bash&#34;;
     job.tasks = [
-      &quot;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&quot;,
+      &#34;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&#34;,
     ];
 
     job.env = {
@@ -436,18 +435,18 @@ events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
       COUNTDOWN_TO: (i * 10 + 9).toString(),
     };
 
-    job.host.name = &quot;virtual-kubelet&quot;;
-    job.resourceRequests.cpu = &quot;1&quot;;
-    job.resourceRequests.memory = &quot;1G&quot;;
+    job.host.name = &#34;virtual-kubelet&#34;;
+    job.resourceRequests.cpu = &#34;1&#34;;
+    job.resourceRequests.memory = &#34;1G&#34;;
 
     g.add(job);
   }
 
-  var seq = new Job(&quot;sequential-countdown&quot;);
-  seq.image = &quot;ubuntu&quot;;
-  seq.shell = &quot;bash&quot;;
+  var seq = new Job(&#34;sequential-countdown&#34;);
+  seq.image = &#34;ubuntu&#34;;
+  seq.shell = &#34;bash&#34;;
   seq.tasks = [
-    &quot;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&quot;,
+    &#34;for((i=$COUNTDOWN_FROM;i&lt;=$COUNTDOWN_TO;i++)); do echo counting $i; sleep 1;  done&#34;,
   ];
 
   seq.env = {
@@ -455,9 +454,9 @@ events.on(&quot;exec&quot;, (brigadeEvent, project) =&gt; {
     COUNTDOWN_TO: (199).toString(),
   };
 
-  seq.host.name = &quot;virtual-kubelet&quot;;
-  seq.resourceRequests.cpu = &quot;1&quot;;
-  seq.resourceRequests.memory = &quot;1G&quot;;
+  seq.host.name = &#34;virtual-kubelet&#34;;
+  seq.resourceRequests.cpu = &#34;1&#34;;
+  seq.resourceRequests.memory = &#34;1G&#34;;
 
   g.add(seq);
 
@@ -507,14 +506,14 @@ event handler).</p>
 the Brigade gateway we just exposed to send POST requests in the CloudEvents
 format:</p>
 <pre tabindex="0"><code>{
-    &quot;specversion&quot; : &quot;0.2&quot;,
-    &quot;type&quot; : &quot;your.custom.event.type&quot;,
-    &quot;source&quot; : &quot;event source&quot;,
-    &quot;id&quot; : &quot;A234-1234-1234&quot;,
-    &quot;time&quot; : &quot;2018-04-05T17:31:00Z&quot;,
+    &#34;specversion&#34; : &#34;0.2&#34;,
+    &#34;type&#34; : &#34;your.custom.event.type&#34;,
+    &#34;source&#34; : &#34;event source&#34;,
+    &#34;id&#34; : &#34;A234-1234-1234&#34;,
+    &#34;time&#34; : &#34;2018-04-05T17:31:00Z&#34;,
 
-    &quot;contenttype&quot; : &quot;json&quot;,
-    &quot;data&quot; : {}
+    &#34;contenttype&#34; : &#34;json&#34;,
+    &#34;data&#34; : {}
 }
 </code></pre><p>Then, simply listen for <code>cloudevent</code> or <code>simpleevent</code> events in <code>brigade.js</code>,
 and you can execute your pipelines.</p>

@@ -189,11 +189,11 @@
 <li><code>services.AddSignalR()</code> - this adds SignalR to the available services and to the dependency injection engine</li>
 <li><code>app.UseFileServer()</code> - this allows the serving of static files - we will need this once we add a simple HTML page</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp">app.UseSignalR(routes =&gt;
-{
-    routes.MapHub&lt;ChatHub&gt;(<span style="color:#e6db74">&#34;chat&#34;</span>);
-});
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>app.UseSignalR(routes =&gt;
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    routes.MapHub&lt;ChatHub&gt;(<span style="color:#e6db74">&#34;chat&#34;</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><ul>
 <li>this instructs the app to use SignalR and to map the Hub we just created, and expose the endpoint as <code>/chat</code></li>
 </ul>
 <p>Below is the full <code>Startup.cs</code> file:</p>
@@ -212,20 +212,20 @@
 <li><code>var transport = signalR.TransportType.WebSockets;</code> - we specify that we want to use WebSockets</li>
 <li><code>var connection = new signalR.HubConnection(&quot;http://${document.location.host}/chat&quot;, { transport: transport });</code> - we create a new SignalR connection to the <code>/chat</code> endpoint we defined in <code>Startup.cs</code>, using WebSockets as the trasport</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;broadcastMessage&#39;</span>, (<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">message</span>) =&gt; {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">liElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;li&#39;</span>);
-    <span style="color:#a6e22e">liElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;strong&gt;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">name</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">message</span>;
-    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;discussion&#39;</span>).<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">liElement</span>);
-});
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;broadcastMessage&#39;</span>, (<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">message</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">liElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;li&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">liElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;strong&gt;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">name</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">message</span>;
+</span></span><span style="display:flex;"><span>    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;discussion&#39;</span>).<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">liElement</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><ul>
 <li>here we define and implement the <code>broadcastMessage</code> method we saw in the hub earlier - essentially, we add the message we received in an unordered list in the page</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">event</span> =&gt; {
-    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#e6db74">&#39;send&#39;</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span>);
-    <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
-    <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">focus</span>();
-});
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">event</span> =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#e6db74">&#39;send&#39;</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">focus</span>();
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><ul>
 <li>then we simply start the connection: <code>connection.start();</code></li>
 </ul>
 <p>Below is the full <code>index.html</code>:</p>
@@ -248,23 +248,23 @@
 <ul>
 <li>we first start the connection to <code>http://localhost:5000/chat</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task StartConnectionAsync()
-{
-    <span style="color:#ae81ff">_</span>connection = <span style="color:#66d9ef">new</span> HubConnectionBuilder()
-         .WithUrl(<span style="color:#e6db74">&#34;http://localhost:5000/chat&#34;</span>)
-         .WithConsoleLogger()
-         .Build();
-
-    <span style="color:#66d9ef">await</span> <span style="color:#ae81ff">_</span>connection.StartAsync();
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task StartConnectionAsync()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    _connection = <span style="color:#66d9ef">new</span> HubConnectionBuilder()
+</span></span><span style="display:flex;"><span>         .WithUrl(<span style="color:#e6db74">&#34;http://localhost:5000/chat&#34;</span>)
+</span></span><span style="display:flex;"><span>         .WithConsoleLogger()
+</span></span><span style="display:flex;"><span>         .Build();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> _connection.StartAsync();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>then, we register and implement the method for <code>broadcastMessage</code>:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#ae81ff">_</span>connection.On&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;broadcastMessage&#34;</span>, (name, message) =&gt;
-{
-    Console.WriteLine(<span style="color:#e6db74">$&#34;{name} said: {message}&#34;</span>);
-});
-</code></pre></div><p>Below is the full <code>Program.cs</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>_connection.On&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;broadcastMessage&#34;</span>, (name, message) =&gt;
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    Console.WriteLine(<span style="color:#e6db74">$&#34;{name} said: {message}&#34;</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><p>Below is the full <code>Program.cs</code>:</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
 
 <blockquote>
@@ -275,12 +275,12 @@
 <p><img src="/img/article-photos/signalr/gif2.gif" alt=""></p>
 <h2 id="handling-connection-and-disconnection-events">Handling connection and disconnection events</h2>
 <p>Another thing we used to do in the old SignalR was to handle connection and disconnection events through some overridden methods in our hubs. We can still do this in an extremely similar way - below you can find the <code>OnConnectedAsync</code> and <code>OnDisconnectedAsync</code> methods:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> Task OnConnectedAsync()
-{
-    Clients.All.InvokeAsync(<span style="color:#e6db74">&#34;broadcastMessage&#34;</span>, <span style="color:#e6db74">&#34;system&#34;</span>, <span style="color:#e6db74">$&#34;{Context.ConnectionId} joined the conversation&#34;</span>);
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">base</span>.OnConnectedAsync();
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> Task OnConnectedAsync()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    Clients.All.InvokeAsync(<span style="color:#e6db74">&#34;broadcastMessage&#34;</span>, <span style="color:#e6db74">&#34;system&#34;</span>, <span style="color:#e6db74">$&#34;{Context.ConnectionId} joined the conversation&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">base</span>.OnConnectedAsync();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li>
 <p>this method invokes the <code>broadcastMessage</code> and tells everybody the connection ID of the newly connected client, then returns and continues with the regular <code>OnConnectedAsync</code> implementation from the hub</p>
 </li>
@@ -290,7 +290,7 @@
 </ul>
 <pre tabindex="0"><code>public override Task OnDisconnectedAsync(System.Exception exception)
 {
-    Clients.All.InvokeAsync(&quot;broadcastMessage&quot;, &quot;system&quot;, $&quot;{Context.ConnectionId} left the conversation&quot;);
+    Clients.All.InvokeAsync(&#34;broadcastMessage&#34;, &#34;system&#34;, $&#34;{Context.ConnectionId} left the conversation&#34;);
     return base.OnDisconnectedAsync(exception);
 }
 </code></pre><h2 id="working-with-an-mvcwebapi-application">Working with an MVC/WebApi application</h2>
@@ -340,58 +340,58 @@
 <li>in order to stream from the method, we need it to return an <code>IObservable&lt;T&gt;</code> which will send a message every second</li>
 <li>the <code>SendStreamInit</code> method is used to broadcast to all connected clients that the streaming started, and each client will handle the stream event in their specific way - we&rsquo;ll see more when implementing the clients</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> SendStreamInit()
-{
-    Clients.All.InvokeAsync(<span style="color:#e6db74">&#34;streamStarted&#34;</span>);
-}
-
-<span style="color:#66d9ef">public</span> IObservable&lt;<span style="color:#66d9ef">string</span>&gt; StartStreaming()
-{
-    <span style="color:#66d9ef">return</span> Observable.Create(
-        <span style="color:#66d9ef">async</span> (IObserver&lt;<span style="color:#66d9ef">string</span>&gt; observer) =&gt;
-        {
-            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">10</span>; i++)
-            {
-                observer.OnNext(<span style="color:#e6db74">$&#34;sending...{i}&#34;</span>);
-                <span style="color:#66d9ef">await</span> Task.Delay(<span style="color:#ae81ff">1000</span>);
-            }
-        });
-    }
-}
-</code></pre></div><p>Now for the JavaScript client:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> SendStreamInit()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    Clients.All.InvokeAsync(<span style="color:#e6db74">&#34;streamStarted&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> IObservable&lt;<span style="color:#66d9ef">string</span>&gt; StartStreaming()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Observable.Create(
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">async</span> (IObserver&lt;<span style="color:#66d9ef">string</span>&gt; observer) =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">10</span>; i++)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                observer.OnNext(<span style="color:#e6db74">$&#34;sending...{i}&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">await</span> Task.Delay(<span style="color:#ae81ff">1000</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now for the JavaScript client:</p>
 <ul>
 <li>we define what should happen on the next streaming invocation - <code>next</code>, on error - <code>err</code> and when the streaming finishes - <code>complete</code></li>
 <li>we add an event listener for the button which invokes the hub method that starts the streaming on all clients</li>
 <li>then, we define and implement the <code>onStreamReceived</code> method which just adds the message to an unordered list</li>
 </ul>
 <p>The thing to notice here is that when one client pushes the stream button, all connected clients will start the streaming - you can directly call the streaming when the button is pressed if you only want the caller to start the streaming.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">startStreaming</span>(){
-    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">stream</span>(<span style="color:#e6db74">&#34;StartStreaming&#34;</span>).<span style="color:#a6e22e">subscribe</span>({
-        <span style="color:#a6e22e">next</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">onStreamReceived</span>,
-        <span style="color:#a6e22e">err</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">err</span>){
-            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">err</span>);
-        },
-        <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(){
-            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;finished streaming&#34;</span>);
-        }
-    });
-}
-
-<span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;streamStarted&#34;</span>, <span style="color:#66d9ef">function</span>(){
-    <span style="color:#a6e22e">startStreaming</span>();
-});
-
-<span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">event</span> =&gt; {
-    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#e6db74">&#34;sendStreamInit&#34;</span>);
-});
-
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">onStreamReceived</span>(<span style="color:#a6e22e">data</span>){
-    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;received: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">data</span>);
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">liElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;li&#39;</span>);
-    <span style="color:#a6e22e">liElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;strong&gt;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;received&#34;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">data</span>;
-    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;discussion&#39;</span>).<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">liElement</span>);
-}
-</code></pre></div><p>Now let&rsquo;s see a C# client handling the stream:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">startStreaming</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">stream</span>(<span style="color:#e6db74">&#34;StartStreaming&#34;</span>).<span style="color:#a6e22e">subscribe</span>({
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">next</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">onStreamReceived</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">err</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">err</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">err</span>);
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;finished streaming&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;streamStarted&#34;</span>, <span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">startStreaming</span>();
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">event</span> =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#e6db74">&#34;sendStreamInit&#34;</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">onStreamReceived</span>(<span style="color:#a6e22e">data</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;received: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">liElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;li&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">liElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;strong&gt;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;received&#34;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">data</span>;
+</span></span><span style="display:flex;"><span>    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;discussion&#39;</span>).<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">liElement</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now let&rsquo;s see a C# client handling the stream:</p>
 <ul>
 <li>here we see the most interesting part of the C# client, the part where we actually handle the streaming data - we start the streaming just like we did with the JavaScript client, then we try to read a <code>string</code> out of the channel - then, we simple print the message on the console.</li>
 </ul>
@@ -399,18 +399,18 @@
 <p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming" target="_blank" rel="noreferrer noopener">find the streaming sample on GitHub</a>
 </p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">static</span> Task StartStreaming()
-{
-    <span style="color:#66d9ef">var</span> channel = <span style="color:#66d9ef">await</span> <span style="color:#ae81ff">_</span>connection.StreamAsync&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;StartStreaming&#34;</span>, CancellationToken.None);
-    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">await</span> channel.WaitToReadAsync())
-    {
-        <span style="color:#66d9ef">while</span> (channel.TryRead(<span style="color:#66d9ef">out</span> <span style="color:#66d9ef">string</span> message))
-        {
-            Console.WriteLine(<span style="color:#e6db74">$&#34;Message received: {message}&#34;</span>);
-        }
-    }
-}
-</code></pre></div><p>Now let&rsquo;s take a look at both the web and the C# clients running:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">static</span> Task StartStreaming()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> channel = <span style="color:#66d9ef">await</span> _connection.StreamAsync&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;StartStreaming&#34;</span>, CancellationToken.None);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">await</span> channel.WaitToReadAsync())
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (channel.TryRead(<span style="color:#66d9ef">out</span> <span style="color:#66d9ef">string</span> message))
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Console.WriteLine(<span style="color:#e6db74">$&#34;Message received: {message}&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now let&rsquo;s take a look at both the web and the C# clients running:</p>
 <p><img src="/img/article-photos/signalr/gif3.gif" alt=""></p>
 <blockquote>
 <p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming" target="_blank" rel="noreferrer noopener">find the streaming sample on GitHub</a>
@@ -423,21 +423,21 @@
 </blockquote>
 <p>So far we only saw how to use the JSON protocol to send data. One of the awesome features of the new SignalR version is the ability to send binary encoded data. We will explore how to set the clients to use the binary format protocols.</p>
 <p>First, the C# client - when defining the connection, all we need to to is tell <code>HubConnectionBuilder</code> to use the message pack protocol - here&rsquo;s how the connection initialization looks like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task StartConnectionAsync()
-{
-    <span style="color:#ae81ff">_</span>connection = <span style="color:#66d9ef">new</span> HubConnectionBuilder()
-         .WithUrl(<span style="color:#e6db74">&#34;http://localhost:5000/chat&#34;</span>)
-         .WithConsoleLogger()
-         .WithMessagePackProtocol()
-         .Build();
-
-    <span style="color:#66d9ef">await</span> <span style="color:#ae81ff">_</span>connection.StartAsync();
-}
-</code></pre></div><p>The only difference is <code> .WithMessagePackProtocol()</code> - from this point on, the C# client will use the message pack protocol.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task StartConnectionAsync()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    _connection = <span style="color:#66d9ef">new</span> HubConnectionBuilder()
+</span></span><span style="display:flex;"><span>         .WithUrl(<span style="color:#e6db74">&#34;http://localhost:5000/chat&#34;</span>)
+</span></span><span style="display:flex;"><span>         .WithConsoleLogger()
+</span></span><span style="display:flex;"><span>         .WithMessagePackProtocol()
+</span></span><span style="display:flex;"><span>         .Build();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> _connection.StartAsync();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The only difference is <code> .WithMessagePackProtocol()</code> - from this point on, the C# client will use the message pack protocol.</p>
 <p>Now let&rsquo;s see the JavaScript client - here we also need to include the script for message pack: <code>signalr-msgpackprotocol-1.0.0-alpha2-final.js</code> (that you can get by doing <code>npm install @aspnet/signalr-client</code>), then define the protocol as being: <code>var protocol = new signalRMsgPack.MessagePackHubProtocol();</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">protocol</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">signalRMsgPack</span>.<span style="color:#a6e22e">MessagePackHubProtocol</span>();
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">connection</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">signalR</span>.<span style="color:#a6e22e">HubConnection</span>(<span style="color:#e6db74">`http://</span><span style="color:#e6db74">${</span>document.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">host</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/chat`</span>, { <span style="color:#a6e22e">transport</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">transport</span>, <span style="color:#a6e22e">protocol</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">protocol</span> });
-</code></pre></div><p>And that&rsquo;s pretty much it - you can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary" target="_blank" rel="noreferrer noopener">find a full example for the chat app and console client that use the binary protocol on GitHub</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">protocol</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">signalRMsgPack</span>.<span style="color:#a6e22e">MessagePackHubProtocol</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">connection</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">signalR</span>.<span style="color:#a6e22e">HubConnection</span>(<span style="color:#e6db74">`http://</span><span style="color:#e6db74">${</span>document.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">host</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/chat`</span>, { <span style="color:#a6e22e">transport</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">transport</span>, <span style="color:#a6e22e">protocol</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">protocol</span> });
+</span></span></code></pre></div><p>And that&rsquo;s pretty much it - you can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary" target="_blank" rel="noreferrer noopener">find a full example for the chat app and console client that use the binary protocol on GitHub</a>
 .</p>
 <p>If we run the binary samples, we can see that the protocol is set in both cases to <code>messsagepack</code>.</p>
 <p><img src="/img/article-photos/signalr/gif4.gif" alt=""></p>
@@ -453,15 +453,15 @@
 </blockquote>
 <p>For each connected client, SignalR will keep its connection ID in memory - this means that if we ever need to scale our app to multiple instances, sending a message to all connected clients will simply not work anymore, since each instance will hold only a portion of all connected clients.</p>
 <p>For these situations, we will use a Redis cache and SignalR will automatically pass messages between instances. Essentially, we only need to add the reference to Redis, and the SignalR.Redis package: <code>Microsoft.AspNetCore.SignalR.Redis</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
-{
-    services.AddSignalR()
-        .AddRedis(options =&gt; options.Factory = writer =&gt;
-        {
-            <span style="color:#66d9ef">return</span> ConnectionMultiplexer.Connect(<span style="color:#e6db74">&#34;localhost&#34;</span>, writer);
-        });
-}
-</code></pre></div><p>Now all you need is a Redis instance and you&rsquo;re set - hint: you can start a Redis Docker container within a couple of seconds with <code>docker run -p 6379:6379 --name redis  redis</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    services.AddSignalR()
+</span></span><span style="display:flex;"><span>        .AddRedis(options =&gt; options.Factory = writer =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> ConnectionMultiplexer.Connect(<span style="color:#e6db74">&#34;localhost&#34;</span>, writer);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now all you need is a Redis instance and you&rsquo;re set - hint: you can start a Redis Docker container within a couple of seconds with <code>docker run -p 6379:6379 --name redis  redis</code></p>
 <p>Now if we start two instances of the same web application, simulating how we would normally scale the app (here we will have two different port, but normally you would have a load balancer in front of your application): <code>ASPNETCORE_URLS=&quot;http://*:5000&quot; dotnet run</code> and <code>ASPNETCORE_URLS=&quot;http://*:5001&quot; dotnet run</code>, then go to a browser:</p>
 <p><img src="/img/article-photos/signalr/gif5.gif" alt=""></p>
 <blockquote>

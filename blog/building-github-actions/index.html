@@ -162,22 +162,22 @@
 .</p>
 </blockquote>
 <p>There are two important files we need to look at - first is the action definition file:</p>
-<pre tabindex="0"><code>name: &quot;The name of your action&quot;
-description: &quot;Description&quot;
-author: &quot;Engineerd&quot;
+<pre tabindex="0"><code>name: &#34;The name of your action&#34;
+description: &#34;Description&#34;
+author: &#34;Engineerd&#34;
 inputs:
   myInput:
-    description: &quot;Input to use&quot;
-    default: &quot;world&quot;
+    description: &#34;Input to use&#34;
+    default: &#34;world&#34;
 runs:
-  using: &quot;node12&quot;
-  main: &quot;lib/main.js&quot;
+  using: &#34;node12&#34;
+  main: &#34;lib/main.js&#34;
 </code></pre><p>This file contains metadata about our action, information about the runtime and entrypoint, and definitions for the inputs. All other inputs that we are going to use in the actions will be defined here.</p>
 <p>The other one is the entrypoint for the action (the transpiled <code>.js</code> files are found in <code>lib/</code> - the source code that you modify is in <code>src/</code> - you can change the destination for the transpiled code, but make sure to change the <code>.tsconfig</code>, <code>action.yml</code>, and <code>package.json</code> files with the appropriate directory.)</p>
-<pre tabindex="0"><code>import * as core from '@actions/core';
+<pre tabindex="0"><code>import * as core from &#39;@actions/core&#39;;
 async function run() {
   try {
-    const myInput = core.getInput('myInput');
+    const myInput = core.getInput(&#39;myInput&#39;);
     console.log(`Hello ${myInput}`);
   } catch (error) {
     core.setFailed(error.message);
@@ -190,44 +190,44 @@ run();
 <p>Then, consumers of the action will set the value for an input in the <code>with</code> field of the action:</p>
 <pre tabindex="0"><code>- uses: &lt;org&gt;/&lt;action&gt;@&lt;version&gt;
     with:
-        myInput: &quot;value for myInput&quot;
+        myInput: &#34;value for myInput&#34;
 </code></pre><p>Reading inputs in the action is done through <a href="https://github.com/actions/toolkit/blob/28803fc3b4374bf36e8878e38876d607b8b7107a/packages/core/src/core.ts#L61-L76" target="_blank" rel="noreferrer noopener">the <code>@action/core</code> library, which exposes a helper function, <code>core.getInput</code></a>
 .</p>
-<pre tabindex="0"><code>import * as core from '@actions/core';
+<pre tabindex="0"><code>import * as core from &#39;@actions/core&#39;;
 
-let input = core.getInput('myInput');
+let input = core.getInput(&#39;myInput&#39;);
 </code></pre><p>Keep in mind that all inputs are parsed as strings, and you have to be careful when casting to other types.</p>
 <p>The same <code>@action/core</code> package also exposes methods for exporting environment variables, secrets, adding directories to path, or logging.</p>
 <h3 id="downloading-tools-adding-them-to-the-path">Downloading tools, adding them to the path</h3>
 <p>Another task you might encounter when building a custom action is downloading tools and adding them to the path.</p>
 <p>The <code>@actions/tool-cache</code> package comes with a <code>downloadTool</code> method that you can use to pull files from a remote URL:</p>
-<pre tabindex="0"><code>import * as tc from '@actions/tool-cache';
+<pre tabindex="0"><code>import * as tc from &#39;@actions/tool-cache&#39;;
 
 let url: string = `&lt;URL for downloading the tool&gt;`;
 let downloadPath: string | null = null;
 downloadPath = await tc.downloadTool(url);
 </code></pre><p>If the tool you are downloading is platform dependent, you should check the runtime operating system and architecture first and download the correct file. Also, files are currently downloaded without extension.</p>
 <p>At this point, <code>downloadPath</code> will contain the tool you just downloaded. Setting the right permissions for a file to be executable is again platform dependent. For example, on UNIX you can use <code>chmod</code>:</p>
-<pre tabindex="0"><code>import * as exec from '@actions/exec';
+<pre tabindex="0"><code>import * as exec from &#39;@actions/exec&#39;;
 
-await exec.exec(&quot;chmod&quot;, [&quot;+x&quot;, downloadPath]);
+await exec.exec(&#34;chmod&#34;, [&#34;+x&#34;, downloadPath]);
 </code></pre><p>Now that the file we downloaded is executable, let&rsquo;s move it to a directory in path so future steps can use it.
 If you&rsquo;re trying to move things to <code>/usr/local/bin</code>, you won&rsquo;t have the right permissions - so let&rsquo;s just create a new directory and add it to path:</p>
-<pre tabindex="0"><code>import * as io from '@actions/io';
+<pre tabindex="0"><code>import * as io from &#39;@actions/io&#39;;
 
-const binPath: string = &quot;/home/runner/bin&quot;;
+const binPath: string = &#34;/home/runner/bin&#34;;
 await io.mkdirP(binPath);
-await io.mv(downloadPath, path.join(binPath, &quot;&lt;name-of-your-tool&gt;&quot;));
+await io.mv(downloadPath, path.join(binPath, &#34;&lt;name-of-your-tool&gt;&#34;));
 </code></pre><p>Make sure to change the name of the tool accordingly when moving it, since the file in <code>downloadPath</code> will have an auto-generated name.</p>
 <p>Next, adding the directory we just created to the path:</p>
 <pre tabindex="0"><code>core.addPath(binPath);
 </code></pre><p>Let&rsquo;s recap: we downloaded a file from a remote URL, made it an executable, and moved it to a directory that is in path. Any subsequent step that is declared after this action will have access to the tool we downloaded.</p>
 <h3 id="using-files-from-the-repository">Using files from the repository</h3>
 <p>If the action you&rsquo;re building is executed <em>after</em> the checkout action, you have access to all files in the repository. However, keep in mind the current directory you&rsquo;re executing in is a temporary directory, so you have to construct the right path to the files in the repo:</p>
-<pre tabindex="0"><code>import * as path from 'path';
+<pre tabindex="0"><code>import * as path from &#39;path&#39;;
 
-const wd: string = process.env[`GITHUB_WORKSPACE`] || &quot;&quot;;
-const absPath: string = path.join(wd, &quot;path-relative-to-the-repo-root&quot;);
+const wd: string = process.env[`GITHUB_WORKSPACE`] || &#34;&#34;;
+const absPath: string = path.join(wd, &#34;path-relative-to-the-repo-root&#34;);
 </code></pre><blockquote>
 <p>See <a href="https://help.github.com/en/articles/virtual-environments-for-github-actions" target="_blank" rel="noreferrer noopener">the article dedicated to the environment in Actions for a complete list of environment variables</a>
 .</p>
@@ -278,16 +278,16 @@ const absPath: string = path.join(wd, &quot;path-relative-to-the-repo-root&quot;
 .</p>
 <p>You might want to test you&rsquo;re getting the correct input - you can use the naming schema for environment variables:</p>
 <pre tabindex="0"><code>const testEnvVars = {
-    INPUT_MYINPUT: 'some-input',
+    INPUT_MYINPUT: &#39;some-input&#39;,
 };
 
-describe(&quot;checking input parsing&quot;, function () {
+describe(&#34;checking input parsing&#34;, function () {
     beforeEach(() =&gt; {
         for (const key in testEnvVars)
             process.env[key] = testEnvVars[key as keyof typeof testEnvVars]
     });
-    it(&quot;correctly parse input&quot;, () =&gt; {
-      let input = core.getInput('myInput');
+    it(&#34;correctly parse input&#34;, () =&gt; {
+      let input = core.getInput(&#39;myInput&#39;);
       assert.equal(input, testEnvVars.INPUT_MYINPUT);
     });
 });
@@ -314,34 +314,34 @@ describe(&quot;checking input parsing&quot;, function () {
     - uses: engineerd/setup-kind@v0.1.0
     - name: Testing
       run: |
-        export KUBECONFIG=&quot;$(kind get kubeconfig-path)&quot;
+        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
         kubectl cluster-info
 </code></pre><p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Creating cluster <span style="color:#e6db74">&#34;kind&#34;</span> ...
- ✓ Ensuring node image <span style="color:#f92672">(</span>kindest/node:v1.15.3<span style="color:#f92672">)</span> 🖼
- ✓ Preparing nodes 📦📦📦📦📦📦📦
- ✓ Configuring the external load balancer ⚖️
- ✓ Creating kubeadm config 📜
- ✓ Starting control-plane 🕹️
- ✓ Installing CNI 🔌
- ✓ Installing StorageClass 💾
- ✓ Joining more control-plane nodes 🎮
- ✓ Joining worker nodes 🚜
- ✓ Waiting ≤ 5m0s <span style="color:#66d9ef">for</span> control-plane <span style="color:#f92672">=</span> Ready ⏳
-Cluster creation complete.
-
-Kubernetes master is running at https://127.0.0.1:44867
-KubeDNS is running at https://127.0.0.1:44867/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-
-$ kubectl get nodes
-NAME                  STATUS     ROLES    AGE     VERSION
-kind-control-plane    Ready      master   2m42s   v1.15.3
-kind-control-plane2   Ready      master   2m11s   v1.15.3
-kind-control-plane3   Ready      master   65s     v1.15.3
-kind-worker           NotReady   &lt;none&gt;   28s     v1.15.3
-kind-worker2          NotReady   &lt;none&gt;   28s     v1.15.3
-kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Creating cluster <span style="color:#e6db74">&#34;kind&#34;</span> ...
+</span></span><span style="display:flex;"><span> ✓ Ensuring node image <span style="color:#f92672">(</span>kindest/node:v1.15.3<span style="color:#f92672">)</span> 🖼
+</span></span><span style="display:flex;"><span> ✓ Preparing nodes 📦📦📦📦📦📦📦
+</span></span><span style="display:flex;"><span> ✓ Configuring the external load balancer ⚖️
+</span></span><span style="display:flex;"><span> ✓ Creating kubeadm config 📜
+</span></span><span style="display:flex;"><span> ✓ Starting control-plane 🕹️
+</span></span><span style="display:flex;"><span> ✓ Installing CNI 🔌
+</span></span><span style="display:flex;"><span> ✓ Installing StorageClass 💾
+</span></span><span style="display:flex;"><span> ✓ Joining more control-plane nodes 🎮
+</span></span><span style="display:flex;"><span> ✓ Joining worker nodes 🚜
+</span></span><span style="display:flex;"><span> ✓ Waiting ≤ 5m0s <span style="color:#66d9ef">for</span> control-plane <span style="color:#f92672">=</span> Ready ⏳
+</span></span><span style="display:flex;"><span>Cluster creation complete.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Kubernetes master is running at https://127.0.0.1:44867
+</span></span><span style="display:flex;"><span>KubeDNS is running at https://127.0.0.1:44867/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl get nodes
+</span></span><span style="display:flex;"><span>NAME                  STATUS     ROLES    AGE     VERSION
+</span></span><span style="display:flex;"><span>kind-control-plane    Ready      master   2m42s   v1.15.3
+</span></span><span style="display:flex;"><span>kind-control-plane2   Ready      master   2m11s   v1.15.3
+</span></span><span style="display:flex;"><span>kind-control-plane3   Ready      master   65s     v1.15.3
+</span></span><span style="display:flex;"><span>kind-worker           NotReady   &lt;none&gt;   28s     v1.15.3
+</span></span><span style="display:flex;"><span>kind-worker2          NotReady   &lt;none&gt;   28s     v1.15.3
+</span></span><span style="display:flex;"><span>kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
+</span></span></code></pre></div><blockquote>
 <p>When creating multi-node clusters, make sure you wait for the nodes to become available - this is still a work in progress that will be fixed in future versions.</p>
 </blockquote>
 <h1 id="conclusions">Conclusions</h1>

@@ -152,20 +152,20 @@
 <p>This is directly related to how container images (and any potential artifact types) are represented in OCI registries - by their name and registry location.</p>
 <p>Consider the following (simplified, and non-canonical) bundle file:</p>
 <pre tabindex="0"><code>{
-  &quot;images&quot;: {
-    &quot;my-microservice&quot;: {
-      &quot;contentDigest&quot;: &quot;sha256:aaaaaaaaaaaa...&quot;,
-      &quot;image&quot;: &quot;org1/microservice:1.2.3&quot;
+  &#34;images&#34;: {
+    &#34;my-microservice&#34;: {
+      &#34;contentDigest&#34;: &#34;sha256:aaaaaaaaaaaa...&#34;,
+      &#34;image&#34;: &#34;org1/microservice:1.2.3&#34;
     }
   },
-  &quot;invocationImages&quot;: [
+  &#34;invocationImages&#34;: [
     {
-      &quot;contentDigest&quot;: &quot;sha256:aaaaaaa...&quot;,
-      &quot;image&quot;: &quot;org1/invocation:0.1.0&quot;,
+      &#34;contentDigest&#34;: &#34;sha256:aaaaaaa...&#34;,
+      &#34;image&#34;: &#34;org1/invocation:0.1.0&#34;,
     }
   ],
-  &quot;schemaVersion&quot;: &quot;v1.0.0-WD&quot;,
-  &quot;version&quot;: &quot;0.1.2&quot;
+  &#34;schemaVersion&#34;: &#34;v1.0.0-WD&#34;,
+  &#34;version&#34;: &#34;0.1.2&#34;
 }
 </code></pre><p>It references two container images: <code>org1/microservice:1.2.3</code>, and <code>org1/invocation:0.1.0</code>. If we wanted to move the referenced images from <code>org1</code> to <code>org2</code>, we automatically change the bundle file, which results in a new content digest of the bundle file, meaning any signature based on this content digest is invalidated - even if the the content of the bundle or of the referenced images has not changed.</p>
 <blockquote>
@@ -209,7 +209,7 @@
             --auto-update-bundle
 
 DEBU[0000] Fixing up bundle localhost:5000/cnab-test:v1
-DEBU[0000] Updating entry in relocation map for &quot;cnab/helloworld:0.1.1&quot;
+DEBU[0000] Updating entry in relocation map for &#34;cnab/helloworld:0.1.1&#34;
 Starting to copy image cnab/helloworld:0.1.1...
 Completed image cnab/helloworld:0.1.1 copy
 DEBU[0004] Bundle fixed
@@ -220,18 +220,18 @@ DEBU[0004] Trying to push CNAB Bundle Config
 DEBU[0004] CNAB Bundle Config Descriptor
 DEBU[0004]
 {
-    &quot;mediaType&quot;: &quot;application/vnd.cnab.config.v1+json&quot;,
-    &quot;digest&quot;: &quot;sha256:ba1c8f64781d8745ea9d004c5b24f2a1a0ff8fae4883c870aa4d30e77c6081f0&quot;,
-    &quot;size&quot;: 494
+    &#34;mediaType&#34;: &#34;application/vnd.cnab.config.v1+json&#34;,
+    &#34;digest&#34;: &#34;sha256:ba1c8f64781d8745ea9d004c5b24f2a1a0ff8fae4883c870aa4d30e77c6081f0&#34;,
+    &#34;size&#34;: 494
 }
 
 DEBU[0004] Trying to push CNAB Bundle Config Manifest
 DEBU[0004] CNAB Bundle Config Manifest Descriptor
 DEBU[0004]
 {
-    &quot;mediaType&quot;: &quot;application/vnd.oci.image.manifest.v1+json&quot;,
-    &quot;digest&quot;: &quot;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&quot;,
-    &quot;size&quot;: 188
+    &#34;mediaType&#34;: &#34;application/vnd.oci.image.manifest.v1+json&#34;,
+    &#34;digest&#34;: &#34;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&#34;,
+    &#34;size&#34;: 188
 }
 
 DEBU[0005] CNAB Bundle Config pushed
@@ -239,46 +239,46 @@ DEBU[0005] Pushing CNAB Index
 DEBU[0005] Trying to push OCI Index
 DEBU[0005]
 {
-    &quot;schemaVersion&quot;: 2,
-    &quot;manifests&quot;: [
+    &#34;schemaVersion&#34;: 2,
+    &#34;manifests&#34;: [
         {
-            &quot;mediaType&quot;: &quot;application/vnd.oci.image.manifest.v1+json&quot;,
-            &quot;digest&quot;: &quot;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&quot;,
-            &quot;size&quot;: 188,
-            &quot;annotations&quot;: {
-                &quot;io.cnab.manifest.type&quot;: &quot;config&quot;
+            &#34;mediaType&#34;: &#34;application/vnd.oci.image.manifest.v1+json&#34;,
+            &#34;digest&#34;: &#34;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&#34;,
+            &#34;size&#34;: 188,
+            &#34;annotations&#34;: {
+                &#34;io.cnab.manifest.type&#34;: &#34;config&#34;
             }
         },
         {
-            &quot;mediaType&quot;: &quot;application/vnd.docker.distribution.manifest.v2+json&quot;,
-            &quot;digest&quot;: &quot;sha256:a59a4e74d9cc89e4e75dfb2cc7ea5c108e4236ba6231b53081a9e2506d1197b6&quot;,
-            &quot;size&quot;: 942,
-            &quot;annotations&quot;: {
-                &quot;io.cnab.manifest.type&quot;: &quot;invocation&quot;
+            &#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+            &#34;digest&#34;: &#34;sha256:a59a4e74d9cc89e4e75dfb2cc7ea5c108e4236ba6231b53081a9e2506d1197b6&#34;,
+            &#34;size&#34;: 942,
+            &#34;annotations&#34;: {
+                &#34;io.cnab.manifest.type&#34;: &#34;invocation&#34;
             }
         }
     ],
-    &quot;annotations&quot;: {
-        &quot;io.cnab.keywords&quot;: &quot;[\&quot;helloworld\&quot;,\&quot;cnab\&quot;,\&quot;tutorial\&quot;]&quot;,
-        &quot;io.cnab.runtime_version&quot;: &quot;v1.0.0-WD&quot;,
-        &quot;org.opencontainers.artifactType&quot;: &quot;application/vnd.cnab.manifest.v1&quot;,
-        &quot;org.opencontainers.image.authors&quot;: &quot;[{\&quot;name\&quot;:\&quot;Jane Doe\&quot;,\&quot;email\&quot;:\&quot;jane.doe@example.com\&quot;,\&quot;url\&quot;:\&quot;https://example.com\&quot;}]&quot;,
-        &quot;org.opencontainers.image.description&quot;: &quot;A short description of your bundle&quot;,
-        &quot;org.opencontainers.image.title&quot;: &quot;helloworld&quot;,
-        &quot;org.opencontainers.image.version&quot;: &quot;0.1.1&quot;
+    &#34;annotations&#34;: {
+        &#34;io.cnab.keywords&#34;: &#34;[\&#34;helloworld\&#34;,\&#34;cnab\&#34;,\&#34;tutorial\&#34;]&#34;,
+        &#34;io.cnab.runtime_version&#34;: &#34;v1.0.0-WD&#34;,
+        &#34;org.opencontainers.artifactType&#34;: &#34;application/vnd.cnab.manifest.v1&#34;,
+        &#34;org.opencontainers.image.authors&#34;: &#34;[{\&#34;name\&#34;:\&#34;Jane Doe\&#34;,\&#34;email\&#34;:\&#34;jane.doe@example.com\&#34;,\&#34;url\&#34;:\&#34;https://example.com\&#34;}]&#34;,
+        &#34;org.opencontainers.image.description&#34;: &#34;A short description of your bundle&#34;,
+        &#34;org.opencontainers.image.title&#34;: &#34;helloworld&#34;,
+        &#34;org.opencontainers.image.version&#34;: &#34;0.1.1&#34;
     }
 }
 DEBU[0005] OCI Index Descriptor
 DEBU[0005]
 {
-    &quot;mediaType&quot;: &quot;application/vnd.oci.image.index.v1+json&quot;,
-    &quot;digest&quot;: &quot;sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40&quot;,
-    &quot;size&quot;: 929
+    &#34;mediaType&#34;: &#34;application/vnd.oci.image.index.v1+json&#34;,
+    &#34;digest&#34;: &#34;sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40&#34;,
+    &#34;size&#34;: 929
 }
 
 DEBU[0005] CNAB Index pushed
 DEBU[0005] CNAB Bundle pushed
-Pushed successfully, with digest &quot;sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40&quot;
+Pushed successfully, with digest &#34;sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40&#34;
 </code></pre><ul>
 <li>we use the <code>cnab-to-oci</code> binary to <em>push</em> a bundle to an OCI registry; we pass the path to the bundle file, and the location of our OCI registry</li>
 <li>the purpose of the <code>--auto-update-bundle</code> flag is to specify whether the runtime should stop the operation if, while pushing any image referenced in the bundle, the new digest generated by the new repository / registry differs from the original bundle (this addresses point 2 from the earlier section).</li>
@@ -292,84 +292,84 @@ Pushed successfully, with digest &quot;sha256:93fd4727cd317c3e035a3ce02e2201a013
 DEBU[0000] Pulling CNAB Bundle localhost:5000/cnab-test:v1
 DEBU[0000] Getting OCI Index Descriptor
 DEBU[0000] {
-  &quot;mediaType&quot;: &quot;application/vnd.oci.image.index.v1+json&quot;,
-  &quot;digest&quot;: &quot;sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40&quot;,
-  &quot;size&quot;: 929
+  &#34;mediaType&#34;: &#34;application/vnd.oci.image.index.v1+json&#34;,
+  &#34;digest&#34;: &#34;sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40&#34;,
+  &#34;size&#34;: 929
 }
 DEBU[0000] Fetching OCI Index sha256:93fd4727cd317c3e035a3ce02e2201a01322a4b673142ba8ee6a8532c9f3ca40
 DEBU[0000] {
-  &quot;schemaVersion&quot;: 2,
-  &quot;manifests&quot;: [
+  &#34;schemaVersion&#34;: 2,
+  &#34;manifests&#34;: [
     {
-      &quot;mediaType&quot;: &quot;application/vnd.oci.image.manifest.v1+json&quot;,
-      &quot;digest&quot;: &quot;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&quot;,
-      &quot;size&quot;: 188,
-      &quot;annotations&quot;: {
-        &quot;io.cnab.manifest.type&quot;: &quot;config&quot;
+      &#34;mediaType&#34;: &#34;application/vnd.oci.image.manifest.v1+json&#34;,
+      &#34;digest&#34;: &#34;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&#34;,
+      &#34;size&#34;: 188,
+      &#34;annotations&#34;: {
+        &#34;io.cnab.manifest.type&#34;: &#34;config&#34;
       }
     },
     {
-      &quot;mediaType&quot;: &quot;application/vnd.docker.distribution.manifest.v2+json&quot;,
-      &quot;digest&quot;: &quot;sha256:a59a4e74d9cc89e4e75dfb2cc7ea5c108e4236ba6231b53081a9e2506d1197b6&quot;,
-      &quot;size&quot;: 942,
-      &quot;annotations&quot;: {
-        &quot;io.cnab.manifest.type&quot;: &quot;invocation&quot;
+      &#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+      &#34;digest&#34;: &#34;sha256:a59a4e74d9cc89e4e75dfb2cc7ea5c108e4236ba6231b53081a9e2506d1197b6&#34;,
+      &#34;size&#34;: 942,
+      &#34;annotations&#34;: {
+        &#34;io.cnab.manifest.type&#34;: &#34;invocation&#34;
       }
     }
   ],
-  &quot;annotations&quot;: {
-    &quot;io.cnab.keywords&quot;: &quot;[\&quot;helloworld\&quot;,\&quot;cnab\&quot;,\&quot;tutorial\&quot;]&quot;,
-    &quot;io.cnab.runtime_version&quot;: &quot;v1.0.0-WD&quot;,
-    &quot;org.opencontainers.artifactType&quot;: &quot;application/vnd.cnab.manifest.v1&quot;,
-    &quot;org.opencontainers.image.authors&quot;: &quot;[{\&quot;name\&quot;:\&quot;Jane Doe\&quot;,\&quot;email\&quot;:\&quot;jane.doe@example.com\&quot;,\&quot;url\&quot;:\&quot;https://example.com\&quot;}]&quot;,
-    &quot;org.opencontainers.image.description&quot;: &quot;A short description of your bundle&quot;,
-    &quot;org.opencontainers.image.title&quot;: &quot;helloworld&quot;,
-    &quot;org.opencontainers.image.version&quot;: &quot;0.1.1&quot;
+  &#34;annotations&#34;: {
+    &#34;io.cnab.keywords&#34;: &#34;[\&#34;helloworld\&#34;,\&#34;cnab\&#34;,\&#34;tutorial\&#34;]&#34;,
+    &#34;io.cnab.runtime_version&#34;: &#34;v1.0.0-WD&#34;,
+    &#34;org.opencontainers.artifactType&#34;: &#34;application/vnd.cnab.manifest.v1&#34;,
+    &#34;org.opencontainers.image.authors&#34;: &#34;[{\&#34;name\&#34;:\&#34;Jane Doe\&#34;,\&#34;email\&#34;:\&#34;jane.doe@example.com\&#34;,\&#34;url\&#34;:\&#34;https://example.com\&#34;}]&#34;,
+    &#34;org.opencontainers.image.description&#34;: &#34;A short description of your bundle&#34;,
+    &#34;org.opencontainers.image.title&#34;: &#34;helloworld&#34;,
+    &#34;org.opencontainers.image.version&#34;: &#34;0.1.1&#34;
   }
 }
 DEBU[0000] Getting Bundle Config Manifest Descriptor
 DEBU[0000] {
-    &quot;mediaType&quot;: &quot;application/vnd.oci.image.manifest.v1+json&quot;,
-  &quot;digest&quot;: &quot;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&quot;,
-  &quot;size&quot;: 188,
-  &quot;annotations&quot;: {
-    &quot;io.cnab.manifest.type&quot;: &quot;config&quot;
+    &#34;mediaType&#34;: &#34;application/vnd.oci.image.manifest.v1+json&#34;,
+  &#34;digest&#34;: &#34;sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc&#34;,
+  &#34;size&#34;: 188,
+  &#34;annotations&#34;: {
+    &#34;io.cnab.manifest.type&#34;: &#34;config&#34;
   }
 }
 DEBU[0000] Getting Bundle Config Manifest sha256:47728a6b9381dd715001a376a690b7e625a5deef22423fdefd176f8d4f32a8fc
-DEBU[0000] {                                                                                                              &quot;schemaVersion&quot;: 2,
-  &quot;config&quot;: {
-    &quot;mediaType&quot;: &quot;application/vnd.cnab.config.v1+json&quot;,
-    &quot;digest&quot;: &quot;sha256:ba1c8f64781d8745ea9d004c5b24f2a1a0ff8fae4883c870aa4d30e77c6081f0&quot;,
-    &quot;size&quot;: 494
+DEBU[0000] {                                                                                                              &#34;schemaVersion&#34;: 2,
+  &#34;config&#34;: {
+    &#34;mediaType&#34;: &#34;application/vnd.cnab.config.v1+json&#34;,
+    &#34;digest&#34;: &#34;sha256:ba1c8f64781d8745ea9d004c5b24f2a1a0ff8fae4883c870aa4d30e77c6081f0&#34;,
+    &#34;size&#34;: 494
   },
-  &quot;layers&quot;: null
+  &#34;layers&#34;: null
 }
 DEBU[0000] Fetching Bundle sha256:ba1c8f64781d8745ea9d004c5b24f2a1a0ff8fae4883c870aa4d30e77c6081f0
 DEBU[0000] {
-  &quot;schemaVersion&quot;: &quot;v1.0.0-WD&quot;,
-  &quot;name&quot;: &quot;helloworld&quot;,
-  &quot;version&quot;: &quot;0.1.1&quot;,
-  &quot;description&quot;: &quot;A short description of your bundle&quot;,
-  &quot;keywords&quot;: [
-    &quot;helloworld&quot;,
-    &quot;cnab&quot;,
-    &quot;tutorial&quot;
+  &#34;schemaVersion&#34;: &#34;v1.0.0-WD&#34;,
+  &#34;name&#34;: &#34;helloworld&#34;,
+  &#34;version&#34;: &#34;0.1.1&#34;,
+  &#34;description&#34;: &#34;A short description of your bundle&#34;,
+  &#34;keywords&#34;: [
+    &#34;helloworld&#34;,
+    &#34;cnab&#34;,
+    &#34;tutorial&#34;
   ],
-  &quot;maintainers&quot;: [
+  &#34;maintainers&#34;: [
     {
-      &quot;name&quot;: &quot;Jane Doe&quot;,
-      &quot;email&quot;: &quot;jane.doe@example.com&quot;,
-      &quot;url&quot;: &quot;https://example.com&quot;
+      &#34;name&#34;: &#34;Jane Doe&#34;,
+      &#34;email&#34;: &#34;jane.doe@example.com&#34;,
+      &#34;url&#34;: &#34;https://example.com&#34;
     }
   ],
-  &quot;invocationImages&quot;: [
+  &#34;invocationImages&#34;: [
     {
-      &quot;imageType&quot;: &quot;docker&quot;,
-      &quot;image&quot;: &quot;cnab/helloworld:0.1.1&quot;,
-      &quot;digest&quot;: &quot;sha256:a59a4e74d9cc89e4e75dfb2cc7ea5c108e4236ba6231b53081a9e2506d1197b6&quot;,
-      &quot;size&quot;: 942,
-      &quot;mediaType&quot;: &quot;application/vnd.docker.distribution.manifest.v2+json&quot;
+      &#34;imageType&#34;: &#34;docker&#34;,
+      &#34;image&#34;: &#34;cnab/helloworld:0.1.1&#34;,
+      &#34;digest&#34;: &#34;sha256:a59a4e74d9cc89e4e75dfb2cc7ea5c108e4236ba6231b53081a9e2506d1197b6&#34;,
+      &#34;size&#34;: 942,
+      &#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;
     }
   ]
 }
@@ -385,7 +385,7 @@ DEBU[0004] Relocation map map[cnab/helloworld:0.1.1:localhost:5000/cnab-test@sha
 <p>We have seen how we can use <code>cnab-to-oci</code> to store bundles in supporting registries today, and hopefully now we have a better understanding of how all of it works.</p>
 <h2 id="changes-to-the-oci-index">Changes to the OCI Index</h2>
 <p>But how is the OCI index we are using to store CNAB bundles identified as representing a CNAB bundle? Right now, <code>cnab-to-oci</code> relies on an annotation to achieve this:</p>
-<pre tabindex="0"><code>&quot;org.opencontainers.artifactType&quot;: &quot;application/vnd.cnab.manifest.v1&quot;
+<pre tabindex="0"><code>&#34;org.opencontainers.artifactType&#34;: &#34;application/vnd.cnab.manifest.v1&#34;
 </code></pre><p>But as <a href="https://github.com/opencontainers/image-spec/blob/master/annotations.md" target="_blank" rel="noreferrer noopener">annotations are an optional part of the OCI specification</a>
 , using them to identify a bundle cannot be a long-term solution.
 Moreover, without additional ways of reliably identifying that an index is used to represent a CNAB bundle, tools or platforms that assume an OCI index is a multi-architecture container image might unintentionally fail.</p>

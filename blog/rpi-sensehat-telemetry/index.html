@@ -252,7 +252,7 @@ using RPiSenseHatTelemetry.Common;
                 {
                     return new TemperatureTelemetry()
                     {
-                        Time = DateTime.UtcNow.AddHours(3).ToString(&quot;yyyy-MM-dd HH:mm:ss.fff&quot;),
+                        Time = DateTime.UtcNow.AddHours(3).ToString(&#34;yyyy-MM-dd HH:mm:ss.fff&#34;),
                         Temperature = Math.Round(_senseHat.Sensors.Temperature.Value, 2)
                     };
                 }
@@ -291,9 +291,9 @@ In the <code>Activate</code> method, we get the reference to the <code>ISenseHat
             timer.Tick += async (x, y) =&gt;
             {
                 var temperatureTelemetry = _senseHat.GetTemperature();
-                this.temperatureTextBlock.Text = &quot;Temperature: &quot; +
+                this.temperatureTextBlock.Text = &#34;Temperature: &#34; +
                                                     temperatureTelemetry.Temperature.ToString() +
-                                                    &quot;at &quot; +
+                                                    &#34;at &#34; +
                                                     temperatureTelemetry.Time;
             };
 
@@ -359,7 +359,7 @@ using Microsoft.Azure.Devices.Client;
 
         private string GetConnectionString()
         {
-            return &quot;your-connection-string&quot;;
+            return &#34;your-connection-string&#34;;
         }
 
         public void Dispose()
@@ -377,9 +377,9 @@ using Microsoft.Azure.Devices.Client;
 <pre tabindex="0"><code>timer.Tick += async (x, y) =&gt;
 {
     var temperatureTelemetry = _senseHat.GetTemperature();
-    this.temperatureTextBlock.Text = &quot;Temperature: &quot; +
+    this.temperatureTextBlock.Text = &#34;Temperature: &#34; +
                                         temperatureTelemetry.Temperature.ToString() +
-                                        &quot;at &quot; +
+                                        &#34;at &#34; +
                                         temperatureTelemetry.Time;
 
     await _iotHubConnection.SendEventAsync(JsonConvert.SerializeObject(temperatureTelemetry));

@@ -141,28 +141,28 @@
 <h1 id="building-a-net-core-application-using-the-command-line-interface">Building a .NET Core application using the command line interface</h1>
 <p>In Windows PowerShell or the Linux / macOS Terminal, let&rsquo;s create a new directory. I will call it <code>dot-net-tutorial</code> and navigate to it and create a new console application here using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new" target="_blank" rel="noreferrer noopener"><code>dotnet new</code></a>
  command.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir dot-net-tutorial
-$ cd dot-net-tutorial
-$ dotnet new
-</code></pre></div><p>This is how it should look like after executing these commands.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ mkdir dot-net-tutorial
+</span></span><span style="display:flex;"><span>$ cd dot-net-tutorial
+</span></span><span style="display:flex;"><span>$ dotnet new
+</span></span></code></pre></div><p>This is how it should look like after executing these commands.</p>
 <p><img src="https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG" alt="enter image description here"></p>
 <p>Notice how we got two files after creating the project:</p>
 <ul>
 <li><code>Program.cs</code>- C# file containing the entry point in the console application - the <code>Main</code> method</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System;
-
-<span style="color:#66d9ef">namespace</span> ConsoleApplication
-  {
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
-      {
-        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
-        {
-            Console.WriteLine(<span style="color:#e6db74">&#34;Hello World!&#34;</span>);
-        }
-      }
-  }
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> ConsoleApplication
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Console.WriteLine(<span style="color:#e6db74">&#34;Hello World!&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><blockquote>
 <p>This is a basic <code>Hello World</code> example in C# and you can <a href="https://radu.microsoft.pub.ro/csharp-fundamentals-01/" target="_blank" rel="noreferrer noopener">find more information about everything in the code in this article</a>
 .</p>
 </blockquote>
@@ -170,21 +170,21 @@ $ dotnet new
 <li><code>project.json</code> - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.</li>
 </ul>
 <pre tabindex="0"><code>  {
-      &quot;version&quot;: &quot;1.0.0-*&quot;,
-      &quot;buildOptions&quot;: {
-          &quot;debugType&quot;: &quot;portable&quot;,
-          &quot;emitEntryPoint&quot;: true
+      &#34;version&#34;: &#34;1.0.0-*&#34;,
+      &#34;buildOptions&#34;: {
+          &#34;debugType&#34;: &#34;portable&#34;,
+          &#34;emitEntryPoint&#34;: true
       },
-      &quot;dependencies&quot;: {},
-      &quot;frameworks&quot;: {
-          &quot;netcoreapp1.0&quot;: {
-              &quot;dependencies&quot;: {
-                  &quot;Microsoft.NETCore.App&quot;: {
-                      &quot;type&quot;: &quot;platform&quot;,
-                      &quot;version&quot;: &quot;1.0.0&quot;
+      &#34;dependencies&#34;: {},
+      &#34;frameworks&#34;: {
+          &#34;netcoreapp1.0&#34;: {
+              &#34;dependencies&#34;: {
+                  &#34;Microsoft.NETCore.App&#34;: {
+                      &#34;type&#34;: &#34;platform&#34;,
+                      &#34;version&#34;: &#34;1.0.0&#34;
                   }
               },
-              &quot;imports&quot;: &quot;dnxcore50&quot;
+              &#34;imports&#34;: &#34;dnxcore50&#34;
           }
       }
   }
@@ -193,8 +193,8 @@ $ dotnet new
 </blockquote>
 <p>Calling <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore" target="_blank" rel="noreferrer noopener"><code>dotnet restore</code></a>
   will restore all dependencies of the application.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ dotnet restore
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ dotnet restore
+</span></span></code></pre></div><blockquote>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore" target="_blank" rel="noreferrer noopener"><code>dotnet restore</code></a>
  calls into NuGet to restore the tree of dependencies. NuGet analyzes the <code>project.json</code> file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the <code>project.lock.json</code> file. The <code>project.lock.json</code> file is necessary to be able to compile and run.</p>
 </blockquote>
@@ -279,7 +279,7 @@ namespace ConsoleApplication
 
         public void PrintPerson()
         {
-            Console.WriteLine(&quot;First Name: {0}, Last Name: {1}, Age: {2}&quot;, FirstName, LastName, Age);
+            Console.WriteLine(&#34;First Name: {0}, Last Name: {1}, Age: {2}&#34;, FirstName, LastName, Age);
         }
     }
 </code></pre><p>It is a very basic class with three properties, two constructors and a method that prints the information to the console.</p>

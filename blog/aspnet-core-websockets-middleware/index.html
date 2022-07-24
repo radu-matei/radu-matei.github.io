@@ -196,7 +196,7 @@ With WebSockets, you can send data between the server and the client over a sing
         _sockets.TryRemove(id, out socket);
 
         await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
-                                statusDescription: &quot;Closed by the ConnectionManager&quot;,
+                                statusDescription: &#34;Closed by the ConnectionManager&#34;,
                                 cancellationToken: CancellationToken.None);
     }
 
@@ -364,7 +364,7 @@ In order use the newly created middleware, we need to call the extension method 
         var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
 
         app.UseWebSockets();
-        app.MapWebSocketManager(&quot;/ws&quot;, serviceProvider.GetService&lt;ChatMessageHandler&gt;());
+        app.MapWebSocketManager(&#34;/ws&#34;, serviceProvider.GetService&lt;ChatMessageHandler&gt;());
         app.UseStaticFiles();
     }
 }
@@ -382,13 +382,13 @@ In order use the newly created middleware, we need to call the extension method 
         await base.OnConnected(socket);
 
         var socketId = WebSocketConnectionManager.GetId(socket);
-        await SendMessageToAllAsync($&quot;{socketId} is now connected&quot;);
+        await SendMessageToAllAsync($&#34;{socketId} is now connected&#34;);
     }
 
     public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
     {
         var socketId = WebSocketConnectionManager.GetId(socket);
-        var message = $&quot;{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}&quot;;
+        var message = $&#34;{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}&#34;;
 
         await SendMessageToAllAsync(message);
     }
@@ -396,45 +396,45 @@ In order use the newly created middleware, we need to call the extension method 
 </code></pre><p>It overrides the <code>OnConnected</code> method to send a message to everybody broadcasting that a new client connected and it implements the <code>ReceiveAsync</code> method (by just broadcasting the method to all clients).</p>
 <p>At this point, you can create a new message handler to separate the clients connected on a page from another, since there will be separate collections of connections.</p>
 <p>Now let&rsquo;s add a web client that connects through WebSockets:</p>
-<pre tabindex="0"><code>&lt;input type=text id=&quot;textInput&quot; placeholder=&quot;Enter your text&quot;/&gt;
-&lt;button id=&quot;sendButton&quot;&gt;Send&lt;/button&gt;
+<pre tabindex="0"><code>&lt;input type=text id=&#34;textInput&#34; placeholder=&#34;Enter your text&#34;/&gt;
+&lt;button id=&#34;sendButton&#34;&gt;Send&lt;/button&gt;
 
-&lt;ul id=&quot;messages&quot;&gt;&lt;/ul&gt;
+&lt;ul id=&#34;messages&#34;&gt;&lt;/ul&gt;
 
-    &lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
-    var uri = &quot;ws://&quot; + window.location.host + &quot;/ws&quot;;
+    &lt;script language=&#34;javascript&#34; type=&#34;text/javascript&#34;&gt;
+    var uri = &#34;ws://&#34; + window.location.host + &#34;/ws&#34;;
     function connect() {
         socket = new WebSocket(uri);
         socket.onopen = function(event) {
-            console.log(&quot;opened connection to &quot; + uri);
+            console.log(&#34;opened connection to &#34; + uri);
         };
         socket.onclose = function(event) {
-            console.log(&quot;closed connection from &quot; + uri);
+            console.log(&#34;closed connection from &#34; + uri);
         };
         socket.onmessage = function(event) {
             appendItem(list, event.data);
             console.log(event.data);
         };
         socket.onerror = function(event) {
-            console.log(&quot;error: &quot; + event.data);
+            console.log(&#34;error: &#34; + event.data);
         };
     }
     connect();
-    var list = document.getElementById(&quot;messages&quot;);
-    var button = document.getElementById(&quot;sendButton&quot;);
-    button.addEventListener(&quot;click&quot;, function() {
+    var list = document.getElementById(&#34;messages&#34;);
+    var button = document.getElementById(&#34;sendButton&#34;);
+    button.addEventListener(&#34;click&#34;, function() {
 
-        var input = document.getElementById(&quot;textInput&quot;);
+        var input = document.getElementById(&#34;textInput&#34;);
         sendMessage(input.value);
 
-        input.value = &quot;&quot;;
+        input.value = &#34;&#34;;
     });
     function sendMessage(message) {
-        console.log(&quot;Sending: &quot; + message);
+        console.log(&#34;Sending: &#34; + message);
         socket.send(message);
     }
     function appendItem(list, message) {
-        var item = document.createElement(&quot;li&quot;);
+        var item = document.createElement(&#34;li&#34;);
         item.appendChild(document.createTextNode(message));
         list.appendChild(item);
     }
@@ -451,7 +451,7 @@ In order use the newly created middleware, we need to call the extension method 
     var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
 
     app.UseWebSockets();
-    app.MapWebSocketManager(&quot;/ws&quot;, serviceProvider.GetService&lt;NotificationsMessageHandler&gt;());
+    app.MapWebSocketManager(&#34;/ws&#34;, serviceProvider.GetService&lt;NotificationsMessageHandler&gt;());
     app.UseStaticFiles();
     app.UseEndpoints(endpoints =&gt;
     {
@@ -489,11 +489,11 @@ In order use the newly created middleware, we need to call the extension method 
 </code></pre><p>In the controller we will have a <code>NotificationsMessageHandler</code> instance that will handle the sending of notifications to all connected clients.</p>
 <p>The HTML page is very similar to the previous ones, but this time the message will be sent using the API we created, so through HTTP and not WebSockets, so only the <code>sendMessage</code> method is different:</p>
 <pre tabindex="0"><code>function sendMessage(message) {
-    console.log(&quot;Sending: &quot; + message);
+    console.log(&#34;Sending: &#34; + message);
 
     $.ajax({
-        url: &quot;http://&quot; + window.location.host + &quot;/api/messages/sendmessage?message=&quot; + message,
-        method: 'GET'
+        url: &#34;http://&#34; + window.location.host + &#34;/api/messages/sendmessage?message=&#34; + message,
+        method: &#39;GET&#39;
     });
 }
 </code></pre><p>Let&rsquo;s see how it works:</p>
@@ -512,9 +512,9 @@ In order use the newly created middleware, we need to call the extension method 
     private static async Task RunWebSockets()
     {
         var client = new ClientWebSocket();
-        await client.ConnectAsync(new Uri(&quot;ws://localhost:5000/ws&quot;), CancellationToken.None);
+        await client.ConnectAsync(new Uri(&#34;ws://localhost:5000/ws&#34;), CancellationToken.None);
 
-        Console.WriteLine(&quot;Connected!&quot;);
+        Console.WriteLine(&#34;Connected!&#34;);
 
         var sending = Task.Run(async() =&gt;
         {
@@ -525,7 +525,7 @@ In order use the newly created middleware, we need to call the extension method 
                 await client.SendAsync(new ArraySegment&lt;byte&gt;(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
             }
 
-            await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &quot;&quot;, CancellationToken.None);
+            await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &#34;&#34;, CancellationToken.None);
         });
 
         var receiving = Receiving(client);
@@ -546,7 +546,7 @@ In order use the newly created middleware, we need to call the extension method 
 
             else if(result.MessageType == WebSocketMessageType.Close)
             {
-                await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &quot;&quot;, CancellationToken.None);
+                await client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, &#34;&#34;, CancellationToken.None);
                 break;
             }
         }

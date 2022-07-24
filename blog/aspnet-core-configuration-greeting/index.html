@@ -133,10 +133,10 @@
 <p>Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in <code>Startup</code> anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.</p>
 <p>More clearly, we want to map the keys from the JSON file below as routes and the values as the responses we want our application to give, so when a user browses in our application to <code>/some-route</code>, if <code>some-route</code> is present in the JSON configuration file, then the response will be the value from the file, if else to display a default message.</p>
 <pre tabindex="0"><code>{
-    &quot;hi&quot;: &quot;Hi!&quot;,
-    &quot;hello&quot;: &quot;Hello!&quot;,
-    &quot;bye&quot;: &quot;Goodbye!&quot;,
-    &quot;default&quot;: &quot;This is default!&quot;
+    &#34;hi&#34;: &#34;Hi!&#34;,
+    &#34;hello&#34;: &#34;Hello!&#34;,
+    &#34;bye&#34;: &#34;Goodbye!&#34;,
+    &#34;default&#34;: &#34;This is default!&#34;
 }
 </code></pre><p>Also, if we modify the configuration file while the application is running, our application should be able to use the latest configuration. (As we will see, we will not have much to do here since this is built into ASP .NET).</p>
 <p>There can be any number of defined paths in our configuration file and they can change with any frequency (so that hard-coding them in our application is not an option).</p>
@@ -157,10 +157,10 @@
 <h3 id="building-the-configurable-greeting-service">Building the configurable Greeting service</h3>
 <p>First of all, we create a new web application using the <code>dotnet</code> CLI, then, we create a new file, <code>greetings.json</code>, in the same directory as our <code>Program.cs</code>, <code>Startup.cs</code> files, where we add our custom routes and messages we want our application to respond with:</p>
 <pre tabindex="0"><code>{
-    &quot;hi&quot;: &quot;Hi!&quot;,
-    &quot;hello&quot;: &quot;Hello!&quot;,
-    &quot;bye&quot;: &quot;Goodbye!&quot;,
-    &quot;default&quot;: &quot;This is default!&quot;
+    &#34;hi&#34;: &#34;Hi!&#34;,
+    &#34;hello&#34;: &#34;Hello!&#34;,
+    &#34;bye&#34;: &#34;Goodbye!&#34;,
+    &#34;default&#34;: &#34;This is default!&#34;
 }
 </code></pre><p>In <code>Startup</code> we create a property of type <code>IConfiguration</code> where we will keep the data from the configuration file, the add a constructor for the <code>Startup</code> class that will instantiate a <code>ConfigurationBuilder</code>, which will populate the configuration object:</p>
 <pre tabindex="0"><code>public IConfiguration Configuration { get; set; }
@@ -168,7 +168,7 @@ public Startup()
 {
     var cb = new ConfigurationBuilder(IWebHostEnvironment env)
         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile(&quot;greetings.json&quot;, optional: false, reloadOnChange: true);
+        .AddJsonFile(&#34;greetings.json&#34;, optional: false, reloadOnChange: true);
 
     Configuration = cb.Build();
 }
@@ -188,15 +188,15 @@ public Startup()
 <pre tabindex="0"><code>public void Configure(IApplicationBuilder app)
 {
     var rb = new RouteBuilder(app);
-    rb.MapGet(&quot;{route}&quot;, ctx =&gt;
+    rb.MapGet(&#34;{route}&#34;, ctx =&gt;
     {
         var routeMessage = Configuration.AsEnumerable()
-            .FirstOrDefault(r =&gt; r.Key == ctx.GetRouteValue(&quot;route&quot;)
+            .FirstOrDefault(r =&gt; r.Key == ctx.GetRouteValue(&#34;route&#34;)
             .ToString())
             .Value;
 
         var defaultMessage = Configuration.AsEnumerable()
-            .FirstOrDefault(r =&gt; r.Key == &quot;default&quot;)
+            .FirstOrDefault(r =&gt; r.Key == &#34;default&#34;)
             .Value;
 
         return ctx.Response.WriteAsync(routeMessage ?? defaultMessage);
@@ -206,7 +206,7 @@ public Startup()
 }
 </code></pre><p>We create a new <code>RouteBuilder</code> and map a new <code>GET</code> request, then read the route parameter and try to retrieve it from our configuration file, through <code>Configuration</code>, which contains all configuration data:</p>
 <pre tabindex="0"><code>var routeMessage = Configuration.AsEnumerable()
-    .FirstOrDefault(r =&gt; r.Key == context.GetRouteValue(&quot;route&quot;)
+    .FirstOrDefault(r =&gt; r.Key == context.GetRouteValue(&#34;route&#34;)
     .ToString())
     .Value;
 </code></pre><p>We know that our configuration is now accessible through the <code>Configuration</code> property that we populated in the <code>Startup</code> constructor, and the configuration settings are an <code>IEnumerable&lt;KeyValuePair&lt;string, string&gt;&gt;</code>, that is a collection of key-value pairs of strings, so we can use Linq to search for the key-value pair in our file that has the same key as our path and take the value from that pair.</p>
@@ -216,7 +216,7 @@ public Startup()
 </blockquote>
 <p>We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard response.</p>
 <pre tabindex="0"><code>var defaultMessage = Configuration.AsEnumerable()
-    .FirstOrDefault(r =&gt; r.Key == &quot;default&quot;)
+    .FirstOrDefault(r =&gt; r.Key == &#34;default&#34;)
     .Value;
 </code></pre><p>Then, depending on wether the route actually exists in our configuration file or not, we return either the message of that specific route, or the default message.</p>
 <p>If we run the application and open a browser, we can check if our routing works:</p>
@@ -262,7 +262,7 @@ public class GreetingService : IGreetingService
                 .Value;
 
             var defaultMessage = Configuration.AsEnumerable()
-                .FirstOrDefault(r =&gt; r.Key == &quot;default&quot;)
+                .FirstOrDefault(r =&gt; r.Key == &#34;default&#34;)
                 .Value;
 
             return (routeMessage != null) ? routeMessage : defaultMessage;
@@ -274,9 +274,9 @@ public class GreetingService : IGreetingService
 {
     var routeBuilder = new RouteBuilder(app);
 
-    routeBuilder.MapGet(&quot;{route}&quot;, context =&gt;
+    routeBuilder.MapGet(&#34;{route}&#34;, context =&gt;
     {
-        var route = context.GetRouteValue(&quot;route&quot;).ToString();
+        var route = context.GetRouteValue(&#34;route&#34;).ToString();
         return context.Response.WriteAsync(greetingService.Greet(route));
     });
 
@@ -291,7 +291,7 @@ public class GreetingService : IGreetingService
     services.Add(new ServiceDescriptor(typeof(IConfiguration),
                     provider =&gt; new ConfigurationBuilder()
                                 .SetBasePath(Directory.GetCurrentDirectory())
-                                .AddJsonFile(&quot;greetings.json&quot;,
+                                .AddJsonFile(&#34;greetings.json&#34;,
                                                 optional: false,
                                                 reloadOnChange: true)
                                 .Build(),
@@ -304,7 +304,7 @@ public class GreetingService : IGreetingService
 <p>The second method call is the most difficult of all: it says that every time someone requests an <code>IConfiguration</code> parameter, the engine should provide the same instance (singleton) generated by this chain of method calls:</p>
 <pre tabindex="0"><code> new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile(&quot;greetings.json&quot;,
+    .AddJsonFile(&#34;greetings.json&#34;,
                  optional: false,
                  reloadOnChange: true)
      .Build(),
