@@ -32,7 +32,7 @@ If you need to, you can find me on the Internet:
 
 - [twitter.com/matei_radu](https://twitter.com/matei_radu)
 - [github.com/radu-matei](https://github.com/radu-matei)
-- [root@radu.sh](mailto:root@radu.sh)
+- [radu@matei.ai](mailto:radu@matei.ai)
 
 Obviously, _the views and opinions presented here are my own and are not
 affiliated with any organization I am part of._
