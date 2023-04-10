@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <title>The Six Ways of Optimizing WebAssembly | radu&#39;s blog</title>
+     
+    
+
+    <meta name='twitter:card' content='summary'>
+<meta name='twitter:site' content='@matei_radu'>
+<meta name="twitter:image" content="https://radu-matei.com">
+<meta name="twitter:title" content="The Six Ways of Optimizing WebAssembly" />
+<meta name="twitter:description" content="" />
+
+<meta name="description" content="" />
+    <meta property='og:title' content='The Six Ways of Optimizing WebAssembly - radu&#39;s blog'>
+<meta property='og:description' content='This post is co-authored with Matt Butcher, and it originally appeared on InfoQ.com .
+Key Takeaways While many languages support Wasm, some are faster than others. Some compilers natively support optimizing Wasm for efficiency and speed. The wasm-opt tool can optimize a Wasm binary regardless of the original language it was used to create it. Using a JIT-enabled runtime can improve runtime performance depending on the hardware platform you are using.'>
+<meta property='og:url' content='https://radu-matei.com/blog/six-ways-optimize-webassembly/'>
+<meta property='og:site_name' content='radu&#39;s blog'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:published_time' content='2023-01-26T02:00:00Z'/><meta property='article:modified_time' content='2023-01-26T02:00:00Z'/>
+    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+
+
+    
+    
+
+
+    <link rel="stylesheet" href="/css/github-gist.css">
+    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff"> 
+    <link rel="canonical" href="https://www.infoq.com/articles/six-ways-optimize-webassembly"> 
+
+</head>
+
+<body>
+ <section class="section" id="header">
+  <div class="container">
+    <nav class="nav">
+      
+      
+
+      <a class="nav-item" href="https://radu-matei.com">
+        <h1 class="title is-4">radu&#39;s blog</h1>
+      </a>
+      
+
+      <a class="nav-item" href="https://radu-matei.com/about">
+        <h1 class="title is-5">about</h1>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
+            href="https://twitter.com/matei_radu" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+    
+  </svg></i>
+            </span>
+          </a><a class="level-item" aria-label="github" title=Github
+            href="https://github.com/radu-matei" target="_blank"
+            rel="noopener">
+            <span class="icon">
+              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+    
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    
+  </svg></i>
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+
+    
+    <p class="author">
+      
+    </p>
+  </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="subtitle tags is-6 is-pulled-right">
+             
+<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+
+
+ 
+        </div>
+        
+        <h2 class="subtitle is-6"> January 26, 2023. 10 minutes read.  </h2>
+
+        <style type="text/css">
+            .brxsmall {
+                display: block;
+                margin-bottom: -.9em;
+            }
+
+        </style>
+        <span class="brxsmall"></span>
+        <h1 class="title">The Six Ways of Optimizing WebAssembly</h1>
+
+        
+        <div class="content">
+            
+
+
+            <p><em><a href="https://www.infoq.com/articles/six-ways-optimize-webassembly" target="_blank" rel="noreferrer noopener">This post is co-authored with Matt Butcher, and it originally appeared on InfoQ.com</a>
+.</em></p>
+<h3 id="key-takeaways">Key Takeaways</h3>
+<ul>
+<li>While many languages support Wasm, some are faster than others.</li>
+<li>Some compilers natively support optimizing Wasm for efficiency and speed.</li>
+<li>The wasm-opt tool can optimize a Wasm binary regardless of the original language it was used to create it.</li>
+<li>Using a JIT-enabled runtime can improve runtime performance depending on the hardware platform you are using.</li>
+<li>Some Wasm runtimes can even compile applications ahead-of-time (AOT) to reach native execution speed.</li>
+<li>The experimental Wizer project achieves a further performance boost by pre-initializing a Wasm binary to reduce the time it takes to launch it.</li>
+<li>In our practice, we saw good optimization can reduce Wasm binary size by a factor of ten.</li>
+</ul>
+<p>WebAssembly (often abbreviated to Wasm) is a binary executable format. <a href="https://github.com/fermyon/wasm-languages" target="_blank" rel="noreferrer noopener">Many different languages</a>
+ can be executed via Wasm, including Rust, C, JavaScript, Python, Ruby, and the .NET languages.</p>
+<p>Additionally, Wasm can run on a huge range of hardware and operating systems. The <a href="https://www.w3.org/TR/wasm-core-1/" target="_blank" rel="noreferrer noopener">specification</a>
+ is designed to be fast, compact, and above all secure.</p>
+<p>In 2022, Wasm has cropped up in many different contexts. While it was originally designed for the browser, it turns out to be useful for embedded programming, plugins, cloud, and edge computing.</p>
+<p>One thing these different use cases have in common is that performance is tremendously important. Since loading an executable quickly is part of performance, file size often has a direct impact on raw performance.</p>
+<p>In this article, we’ll look at six ways to optimize Wasm for performance and file size.</p>
+<h3 id="language-choice">Language Choice</h3>
+<p>Each programming language has its own nuances, and one of those is how large a runtime the language requires in order to execute. On the lightweight side, low-level system languages like C and Rust require small runtime overhead.</p>
+<p>Other compiled languages like Swift bring a hefty runtime along for the ride. A Swift binary may be substantially larger simply because it includes a lot of built-in behavior. Java and .NET also tend to bring larger binary sizes for a similar reason.</p>
+<p>To illustrate, let’s take a look at a “hello world” program in Rust and in Swift.</p>
+<p>In Rust, a basic “hello world” program looks like this:</p>
+<pre tabindex="0"><code>fn main() {
+    println!(&#34;Hello, world!&#34;);
+}
+</code></pre><p>Compiled with <code>cargo build —target wasm32-wasi</code>, this binary is 2.0M. (This is an unoptimized binary. We’ll return to this file size later.)</p>
+<p>Here’s a similar program in Swift: </p>
+<pre tabindex="0"><code>print(&#34;Hello, World!\\n&#34;)
+</code></pre><p>Compiling this to Wasm  with the <a href="https://swiftwasm.org/" target="_blank" rel="noreferrer noopener">Swiftwasm</a>
+ project using the command <code>swiftc -target wasm32-unknown-wasi hello.swift -o hello.wasm</code> produces a 9.1M image. That makes the Swift version over 4x larger than the equivalent Rust version.</p>
+<p>So which language you choose will impact the file sizes of your binaries as well as the startup time  (at least to some degree). This is not the final word on file sizes, though. There are ways to optimize the binary sizes further.</p>
+<h3 id="using-compiler-flags-to-optimize">Using Compiler Flags to Optimize</h3>
+<p>Some compilers offer built-in compiler flags that can optimize the binaries they produce. Long-time C and C++ users are accustomed to this. And new languages like Rust and Zig also provide optimization options.</p>
+<p>In the previous section, we looked at a simple three-line Rust program. When we compiled it with the default <code>cargocommand</code>, it produced a 2.0M binary. But by adding another flag, we can trim that size down: <code>cargo build --target wasm32-wasi --release</code>. This produces a 1.9M binary. On a small program like this, and with Rust’s svelte runtime, not much can be shaved off. On bigger projects, though, the &ndash;release flag can drastically reduce the file size. For example, compiling the <a href="https://bartholomew.fermyon.dev/" target="_blank" rel="noreferrer noopener">Bartholomew CMS</a>
+ without the release flag yields an 84M binary, while using the release flag reduces it to 7M. That’s a huge savings. </p>
+<p>Rust’s release target does more than merely reduce the file size. It can also speed up execution because it removes symbols that are used by debuggers and analysis tools. This is almost always a worthwhile feature when you are running code in production. Launching the full 84M version of Bartholomew may take up to a second to execute, but that reduces to a mere couple milliseconds when using the optimized version.</p>
+<h3 id="optimizing-size-with-wasm-opt">Optimizing Size with <code>wasm-opt</code></h3>
+<p>In the above section, we saw how some compilers provide optimization flags. But not all of them do. Furthermore, even compilers that can produce some optimizations might not aggressively optimize.</p>
+<p>Wasm optimization tools can perform robust analysis of a Wasm binary and further optimize the file size and even the performance characteristics of a Wasm executable. The <a href="http://webassembly.github.io/binaryen/" target="_blank" rel="noreferrer noopener">Binaryen</a>
+ project provides a number of command line tools for working with Wasm, including the wasm-opt optimizer.</p>
+<p>Before, we looked at a Swift program that was 9.1M in size.  Let’s take a look at what happens when we run wasm-opt <code>-O hello.wasm -o hello-optimized.wasm</code>. This command will produce an optimized binary named <code>hello-optimized.wasm</code>. The resulting size is 4.0M, a reduction of over 50%.</p>
+<p>The wasm-opt tool performs dozens of optimizations on a binary, ranging from removing duplicate code to re-organizing the code. Code, here, means the Wasm instructions, not the source code you edit. So running wasm-opt won’t change the source Swift code. It just rewrites the Wasm binary. While optimizing this way definitely cuts down the file size, it also improves runtime performance. On my system, the optimized “hello world” program executed twice as fast as the unoptimized one.</p>
+<p>Indeed, wasm-opt can even further optimize the already-optimized Rust code. Running it on the 1.9M Rust binary from the previous section generates an even more compact 1.6M binary. In such a simple case performance did not improve. Both run in a tenth of a second. But larger Rust binaries likely also gain speed improvements with <code>wasm-opt</code>.</p>
+<h3 id="the-runtime-matters">The Runtime Matters</h3>
+<p>Wasm is a flexible binary format. It can be executed by an interpreter such as <a href="https://github.com/wasm3/wasm3" target="_blank" rel="noreferrer noopener">wasm3</a>
+, which will read and execute small chunks of the code in sequence. But other Wasm runtimes like <a href="https://wasmtime.dev/" target="_blank" rel="noreferrer noopener">Wasmtime</a>
+ use a technology called JIT (Just-In-Time) compiling to speed up execution.</p>
+<p>For small programs, like our “hello world” examples, or on devices with constrained resources such as a Raspberry Pi, an interpreter is often desirable since it does the least amount of work and uses the fewest resources.</p>
+<p>But for larger programs like the Bartholomew CMS, a JIT-style runtime will outperform an interpreter. The reason for this discrepancy is that a JIT compiler does extra work at startup and during early execution in order to optimize the in-memory representation of the program. And this optimization shows up as the code continues to run. Because the JIT process takes time, though, this can appear to be a performance penalty for small programs that only run for a moment.</p>
+<p>How do you choose? The traditional rule of thumb is this: If you are running on a constrained device smaller than a Raspberry Pi, use an interpreter. Otherwise, favor a JIT-enabled runtime.</p>
+<p>When it comes to runtimes, there’s one more trick.</p>
+<h3 id="ahead-of-time-aot-compiling">Ahead-Of-Time (AOT) Compiling</h3>
+<p>A JIT runtime performs in-memory optimizations at startup time. But what if we could perform optimizations once, write those optimizations back out to disk, and then take advantage of those optimizations the next time the program is run? This strategy is called Ahead-Of-Time (AOT) compiling.</p>
+<p>There’s a big drawback to AOT compiling: the optimizations done during this stage are different-in-kind than the ones we saw earlier with wasm-opt. With AOT, optimizations are machine-specific. These optimizations take into account operating system and processor architecture, which means once we perform these optimizations, our Wasm binary is no longer portable. Furthermore, each runtime has its own format for these optimizations, so a program AOT-compiled with one Wasm runtime will no longer be runnable by other Wasm runtimes.</p>
+<p>The Wasmtime runtime can compile a Wasm module to an AOT format. For example, we can run <code>wasmtime compile hello.wasm</code> to compile our Swift example. This will produce a new file named <code>hello.cwasm</code> that can be executed by Wasmtime.</p>
+<p>Again, for trivial programs like our “hello world” example, AOT compiling will not have a large benefit. But when working with non-trivial programs, AOT compiling will achieve higher performance numbers than either interpreter or JIT-enabled runs. Note, however, that most AOT compilers produce binaries that may be larger than their Wasm equivalent because many elements of the Wasm runtime itself are compiled into the binary to improve performance.</p>
+<p>There is a very specific rule of thumb for knowing when to use an AOT compiler for Wasm: only use it when you know that the program will only ever be run with exactly the same configuration of Wasm runtime, operating system, and architecture. Wasm modules should be distributed in their normal Wasm form, and only AOT-compiled at or after the installation step.</p>
+<h3 id="pre-initializing-a-binary">Pre-Initializing a Binary</h3>
+<p>The fifth and final optimization technique is the most peculiar of the lot. Wasm is a stack-based virtual machine, and at any given time it can be stopped and even written out to disk, to be resumed later. (There are a few limitations to this, but these limitations are not important here.) This feature of Wasm has an interesting application.</p>
+<p>Sometimes there are parts of your code that you need to run every single time on startup. This code may do banal things like setting the default value of a variable or creating an instance of a data structure. Every time the code is run, this same bit of initialization logic must be performed. And with each run, the resulting state of the program is the same. The variable is initialized to the same value, or the data structure is initialized into the same state.</p>
+<p>What if there was a way to run that first initialization, then freeze the Wasm state and write it back out to disk? Then the next time the program is executed, it wouldn’t have to run the initialization step. That would already be done!</p>
+<p>This is the idea behind the <a href="https://github.com/bytecodealliance/wizer" target="_blank" rel="noreferrer noopener">Wizer</a>
+ project. Wizer provides a way to annotate your code with initialization blocks that can then be executed once and then written out to a new post-initialization Wasm binary. Unlike AOT compiling, the resulting binary is still a plain old Wasm binary, so this technique is portable.</p>
+<p>Wizer can be a little finicky to use. But systems like .NET can benefit greatly from Wizer.</p>
+<h3 id="bringing-it-all-together">Bringing It All Together</h3>
+<p>Based on our experience at Fermyon, optimization is important for both developer tools and Cloud runtime, but the two cases differ substantially.</p>
+<p>On the developer side, the best practice is to use as many optimization tools as your compiler gives you. For example, we always use the <code>—release</code> flag when compiling our Rust code. Our open source <a href="https://github.com/fermyon/spin" target="_blank" rel="noreferrer noopener">Spin</a>
+ tool, which allows developers to build WebAssembly microservices and web applications using several languages, includes these optimizations in per-language templates. We have also found including wasm-opt in the local compile pass to be useful, especially with languages that have a large runtime.</p>
+<p>During the development process, we use a JIT-enabled runtime. There is little value in AOT compiling during the development phase.</p>
+<p>The server side is different. For example, our SaaS-based Wasm runtime platform, Fermyon Cloud, only accepts Wasm binaries, but when it deploys them to the cloud cluster, those binaries are AOT-compiled. This is possible in a reliable way because that is the moment we know exactly what the host runtime’s configuration is. If the Wasm file is deployed to an Arm64 system, it can be AOT-compiled accordingly, without the concern that it will be executed on an Intel architecture.</p>
+<p>When it comes to Wizer, we really only use it in the <a href="https://www.fermyon.com/blog/webassembly-for-dotnet-developers-spin-sdk-intro" target="_blank" rel="noreferrer noopener">case of .NET</a>
+, which benefits tremendously from this optimization.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>We’ve picked our way through six different ways of optimizing Wasm for performance and for file size. Each method has pros and cons, and many of these methods can be combined for added benefit. Employing these techniques for production Wasm environments can be beneficial.</p>
+
+
+            
+            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
+                    rel="noreferrer">Radu Matei<br>
+                    <small>@matei_radu</a></small>
+            </p>
+
+            
+        </div>
+        
+    </div>
+</section>
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+    
+  </div>
+
+</section>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-81142224-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+<script src="/js/dark.js "></script>
+
+
+</body>
+
+</html>
+
