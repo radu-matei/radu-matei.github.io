@@ -22,6 +22,7 @@ summary:
   modules."
 date: "2021-07-07"
 authorname: "Radu Matei"
+weight: "2"
 author: "@matei_radu"
 authorlink: "https://twitter.com/matei_radu"
 canonicalUrl: "https://deislabs.io/posts/wasi-nn-onnx/"

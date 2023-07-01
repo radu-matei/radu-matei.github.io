@@ -36,7 +36,7 @@ it's just not possible to use Go to build your controller.
 A few days ago, Matt Butcher shared a [Rust library that simplifies writing a
 controller][operator-rs], which got me wondering:
 
-{{< tweet 1124403345135939585 >}}
+{{< tweet technosophos 1124403345135939585 >}}
 
 How difficult is it today to build controllers for CRDs in other programming
 languages? As it turns out, the Rust library makes it really easy to get

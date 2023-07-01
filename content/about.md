@@ -1,12 +1,11 @@
 +++
 title = "About Me"
 date = "2017-09-05"
-disable_comments = true
 +++
 
 Hi, I'm Radu!
 
-I am an open source software engineer passionate about WebAssembly, distributed
+I am a software engineer passionate about WebAssembly, distributed
 systems, and artificial intelligence, working as the co-founder and CTO of
 [Fermyon](https://fermyon.com).
 

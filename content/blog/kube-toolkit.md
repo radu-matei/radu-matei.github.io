@@ -56,7 +56,7 @@ Now for the actual implementation and how you can get started, and the first iss
 
 Since this tool was built from the ground-up, the first step was to put together the correct versions of the dependencies to `k8s.io/client-go`, `github.com/kubernetes/helm`, `k8s.io/api`, `k8s.io/apimachinery` and a bunch more. A trivial step you might say, but in the times of Kubernetes 1.8, this was incredibly frustrating...
 
-{{< tweet 924321387128508419 >}}
+{{< tweet matei_radu 924321387128508419 >}}
 
 Essentially, during a 4 hour period (is was probably much more than that...), I was in the process of swapping git commit hashes and plugging them into `dep`, then trying to compile the project... Word of advice - check various release branches when working with vendored dependencies of Kubernetes!
 
@@ -73,7 +73,7 @@ Defining and using gRPC services
 
 In its current form, [`v0.1`](https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1), the service is able to return the server and client version and showcase how to stream some data - [essentially, the `.proto` looks like this](https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto):
 
-```go
+```
 syntax = "proto3";
 
 package rpc;
@@ -99,7 +99,7 @@ Now if we take a look at the [`Makefile`](https://github.com/radu-matei/kube-too
 
 Now it's about creating actual implementations for the client and server. [For example, the client implementation for `GetVersion` is as straightforward as simply as calling the `GetVersion` on the generated client](https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40):
 
-```go
+```
 // GetVersion returns the ktk version
 func (client *Client) GetVersion(ctx context.Context) (*rpc.Version, error) {
 	return client.RPC.GetVersion(ctx, &rpc.Empty{})
@@ -108,7 +108,7 @@ func (client *Client) GetVersion(ctx context.Context) (*rpc.Version, error) {
 
 This function call will simply return the version from the server - note that we have to [implement the server method as below](https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74):
 
-```go
+```
 // GetVersion returns the current version of the server.
 func (server *Server) GetVersion(ctx context.Context, _ *rpc.Empty) (*rpc.Version, error) {
 	log.Debugf("executing ktkd version")
@@ -122,7 +122,7 @@ func (server *Server) GetVersion(ctx context.Context, _ *rpc.Empty) (*rpc.Versio
 
 Now let's take a look at some streaming messages - [first the server](https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82):
 
-```go
+```
 // ServerStream starts a new stream from the server
 func (server *Server) ServerStream(_ *rpc.Empty, stream rpc.KTK_ServerStreamServer) error {
 	log.Debugf("received server stream command")
@@ -145,7 +145,7 @@ This will send 5 messages back to the client, 2 seconds apart.
 
 [Receiving the stream is done like this](https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49):
 
-```go
+```
 // ServerStream starts a stream from the server
 func (client *Client) ServerStream(ctx context.Context, opts ...grpc.CallOption) error {
 	log.Debugf("called InitializeCloud client method...")
@@ -182,7 +182,7 @@ For this part, I will [give 100% credits to the Draft team](https://github.com/A
 
 Essentially, this creates a new "SSH-like tunnel" back to a pod in the Kubernetes cluster - normally, the pod is the one running our server-side component, `ktkd` (you have to specify the name and labels for it):
 
-```go
+```
 //New returns a tunnel to the ktkd pod.
 func New(clientset *kubernetes.Clientset, config *restclient.Config, namespace string) (*kube.Tunnel, error) {
 	podName, err := getKTKDPodName(clientset, namespace)
@@ -213,7 +213,7 @@ Both the client and the server are essentially [`cobra`](https://github.com/spf1
 
 Let's have a look at the folder structure:
 
-```makefile
+```
 kube-toolkit
 └───cmd
 │   └───ktk
@@ -243,7 +243,7 @@ Let's take a look at how everything works together for the version command:
 
 - first of all, I briefly mentioned that the version and git commit are injected at build time using compilation flags - the `LFFLAGS` inject into `GitCommit`and `SemVer` the respective values from the `version` package from `pkg` into both the client and the server (which can have different versions!):
 
-```makefile
+```
 VERSION_PACKAGE = github.com/radu-matei/kube-toolkit/pkg/version
 LDFLAGS += -X $(VERSION_PACKAGE).GitCommit=${GIT_COMMIT}
 LDFLAGS += -X $(VERSION_PACKAGE).SemVer=${SEMVER}
@@ -255,7 +255,7 @@ LDFLAGS += -X $(VERSION_PACKAGE).SemVer=${SEMVER}
 
 Now let's see how to put together the server app:
 
-```go
+```
 func newStartCmd(out io.Writer) *cobra.Command {
 	startCmd := &startCmd{}
 
@@ -288,7 +288,7 @@ We will simply call `ktkd start`, which will start the gRPC server and we will b
 
 - now the cobra `run` method for `ktk version`:
 
-```go
+```
 func (cmd *versionCmd) run() error {
 
 	log.Debugf("making request to: %s", ktkdHost)

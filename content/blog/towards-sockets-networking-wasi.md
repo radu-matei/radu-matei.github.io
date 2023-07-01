@@ -123,7 +123,7 @@ follows the signature defined in WITX, directly starts a TCP connection to the
 desired IP address and port, and retains a handle for the socket's file
 descriptor:
 
-```rust
+```
 fn sock_connect(
     &self,
     ipv4_addr: u32,
@@ -144,7 +144,7 @@ Next, `sock_recv` and `sock_send` are implemented in a similar manner - get the
 socket's file descriptor, data buffers, and flags as arguments, and either read
 from the buffer, or write into it:
 
-```rust
+```
 fn sock_recv(
     &self,
   fd: types::Fd,
@@ -299,7 +299,7 @@ Assuming there is an echo server running on `localhost:3333` (there is a simple
 C socket server you can find in [this `as-wasi` fork][as-wasi-fork] that can be
 used), we should be able to send and receive data:
 
-```plaintext
+```
 $ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
 $ wasmtime test/sockets.wat
 
@@ -315,7 +315,7 @@ protocol that works on top of sockets (with the mention that while our
 implementation only sends and receives strings, it can manipulate arbitrary data
 as well) - for example, if we start a static HTTP file server on the same port:
 
-```plaintext
+```
 $ echo "this is a file that will be served by an
         HTTP server to a WebAssembly module" > file.txt
 $ ls
@@ -345,7 +345,7 @@ export function _start(): void {
 
 We can see the response from the HTTP server:
 
-```plaintext
+```
 $ asc test/sockets.ts -t test/sockets.wat --use abort=wasi_abort
 $ wasmtime test/sockets.wat
 
@@ -382,7 +382,7 @@ These steps result in a forked Rust standard library (together with a stage 2
 compiler build) that can be used to compile Rust programs - for example,
 attempting to execute the same request for `file.txt`:
 
-```rust
+```
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::str::from_utf8;

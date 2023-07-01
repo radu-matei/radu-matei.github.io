@@ -4,7 +4,6 @@ description: "Introducing the first stable release for Spin, the open source dev
 summary: "Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."
 date: "2023-03-22T16:00:00Z"
 tags: ["spin", "wasm"]
-
 canonicalUrl: "https://www.fermyon.com/blog/introducing-spin-v1"
 ---
 
@@ -34,7 +33,7 @@ Spin is an open source developer tool and framework that helps the user through 
 
 Below is an example of using the `spin` CLI to create a new Spin Python application, then adding a JavaScript component:
 
-```bash
+```
 # Create a new Spin application based on the Python language template.
 $ spin new http-py hello-python
 # Add a new JavaScript component based on the language template.
@@ -43,7 +42,7 @@ $ spin add http-js goodbye-javascript
 
 Running the `spin add` command will generate the proper configuration for our component and add it to the [`spin.toml` manifest file](https://developer.fermyon.com/spin/manifest-reference). For example, here is the `spin.toml` section for our Python component:
 
-```toml
+```
 [[component]]
 # The ID of the component.
 id = "hello-python"
@@ -61,7 +60,7 @@ workdir = "hello-python"
 
 We can now build our application with `spin build`, then run it locally with `spin up`:
 
-```bash
+```
 # Compile all components to Wasm by executing their `build` commands.
 $ spin build
 Executing the build command for component hello-python: spin py2wasm app -o app.wasm
@@ -80,7 +79,7 @@ Available Routes:
 
 Once the application is running, we can start testing it by sending requests to its components:
 
-```bash
+```
 # Send a request to the Python component.
 $ curl localhost:3000/hello
 Hello, Python!

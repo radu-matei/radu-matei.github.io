@@ -17,6 +17,7 @@ checking for some basic memory leaks using Valgrind, or exchanging strings
 between runtimes and modules using Wasmtime."
 date: 2021-01-11
 tags: ["wasm", "rust"]
+weight: "1"
 pdf: "/pdf/practical-guide-to-wasm-memory.pdf"
 ---
 
@@ -800,7 +801,7 @@ application.
   https://developer.mozilla.org/en-US/docs/WebAssembly/Using_the_JavaScript_API
 [set]: https://developer.mozilla.org/en-US/docs/Web/JavaScript
 [forget]:
-  https://doc.rust-lang.org/std/mem/fn.forget.html/Reference/Global_Objects/TypedArray/set
+  https://doc.rust-lang.org/std/mem/fn.forget.html
 [typedarray]:
   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray
 [valgrind]: https://www.valgrind.org/

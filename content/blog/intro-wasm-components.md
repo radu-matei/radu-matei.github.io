@@ -175,7 +175,7 @@ the main piece to implement here is
 [a Rust trait](https://doc.rust-lang.org/book/ch10-02-traits.html) that models
 the API from the interface:
 
-```rust
+```
 // lib.rs
 wit_bindgen_rust::export!("../cache.wit");
 
@@ -244,7 +244,7 @@ the interface and generates Rust bindings, but crucially, because this component
 _imports_ the interface, the bindings will be different (they can be inspected
 by executing `wit-bindgen rust-wasm --import ../cache.wit`):
 
-```rust
+```
 wit_bindgen_rust::import!("../cache.wit");
 
 fn main() {
@@ -295,7 +295,7 @@ At this point, the implementation is a C++ main program that uses the header
 file defined in bindings/cache.h and calls the functions to get and set
 key/value pairs:
 
-```cpp
+```
 #include "bindings/cache.h"
 
 int main(int argc, char **argv)
