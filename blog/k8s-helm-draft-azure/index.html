@@ -1,160 +1,348 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Get started with Helm and Draft for Kubernetes | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Get started with Helm and Draft for Kubernetes" />
-<meta name="twitter:description" content="Easy Kubernetes with Helm and Draft" />
-
-<meta name="description" content="Easy Kubernetes with Helm and Draft" />
-    <meta property='og:title' content='Get started with Helm and Draft for Kubernetes - radu&#39;s blog'>
-<meta property='og:description' content='Easy Kubernetes with Helm and Draft'>
-<meta property='og:url' content='https://radu-matei.com/blog/k8s-helm-draft-azure/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='kubernetes'><meta property='article:tag' content='azure'><meta property='article:published_time' content='2017-10-07T00:00:00Z'/><meta property='article:modified_time' content='2017-10-07T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/k8s-helm-draft-azure/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Get started with Helm and Draft for Kubernetes - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/k8s-helm-draft-azure/">
+  
+  
+  
+  
+  <meta name="description" content="This post shows you how to automatize and simplify working with multiple Kubernetes clusters and multiple tools such as kubectl, helm or draft - creating a container image with your desired version of the tools and mounting the config files to the container" />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Get started with Helm and Draft for Kubernetes" />
+<meta property="og:description" content="Easy Kubernetes with Helm and Draft" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/k8s-helm-draft-azure/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2017-10-07T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-07T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Get started with Helm and Draft for Kubernetes">
+<meta itemprop="description" content="Easy Kubernetes with Helm and Draft"><meta itemprop="datePublished" content="2017-10-07T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-07T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1935">
+<meta itemprop="keywords" content="kubernetes,azure," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Get started with Helm and Draft for Kubernetes"/>
+<meta name="twitter:description" content="Easy Kubernetes with Helm and Draft"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/kubernetes">#kubernetes</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> October 7, 2017. 10 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Get started with Helm and Draft for Kubernetes</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <!-- raw HTML omitted -->
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Get started with Helm and Draft for Kubernetes</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Saturday, October 7, 2017</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p><a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank" rel="noreferrer noopener">In the previous tutorial</a>
- I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a" target="_blank" rel="noreferrer noopener">create a free account and get $200 for 12 months</a>
-.</p>
+<p><a href="https://radu-matei.com/blog/k8s18-azure/">In the previous tutorial</a> I used Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">create a free account and get $200 for 12 months</a>.</p>
 <p>I deployed 4 D2_V2 VMs (1 master + 3 agents) with Linux and will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2 in the cluster definition, and the cost will go down to $6 / day.</p>
 <blockquote>
 <p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p>
 </blockquote>
 <blockquote>
-<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank" rel="noreferrer noopener">Azure Pricing Calculator</a>
-</p>
+<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/">Azure Pricing Calculator</a></p>
 </blockquote>
 <p><img src="/img/article-photos/k8s18-azure/pricing.png" alt=""></p>
 <h3 id="introduction">Introduction</h3>
-<p><a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank" rel="noreferrer noopener">In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell</a>
-. Now we will use that cluster to get started with Helm and Draft to simplify our development process.</p>
+<p><a href="https://radu-matei.com/blog/k8s18-azure/">In the previous post we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell</a>. Now we will use that cluster to get started with Helm and Draft to simplify our development process.</p>
 <p>In the next post we will see how to integrate Jenkins with Azure Container Instances in this process, so stay tuned :)</p>
 <blockquote>
-<p>If you don&rsquo;t have your <code>kubeconfig</code> and SSH keys to your <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank" rel="noreferrer noopener">cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article</a>
-.</p>
+<p>If you don&rsquo;t have your <code>kubeconfig</code> and SSH keys to your <a href="https://radu-matei.com/blog/k8s18-azure/">cluster and you deployed using the previous article, you might want to download the certificates and config files so you can access the cluster from outside the Azure Cloud Shell, as instructed in the previous article</a>.</p>
 </blockquote>
 <h3 id="using-kubectl-helm-and-draft">Using <code>kubectl</code>, <code>helm</code> and <code>draft</code></h3>
 <p>Normally at this point you would manually download and install the latest version for <code>kubectl</code>, <code>helm</code> and <code>draft</code>. Luckily, you can use the Dockerfile below to create yourself an image that already has those installed.</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/dba91743ae04784076f31485a5a521a2.js"></script>
 
 <blockquote>
-<p>You can find <a href="https://github.com/radu-matei/kubectl-helm-draft" target="_blank" rel="noreferrer noopener">the repository on GitHub here</a>
- and <a href="https://hub.docker.com/r/radumatei/kubectl-helm-draft/" target="_blank" rel="noreferrer noopener">the image on Docker Hub</a>
-.</p>
+<p>You can find <a href="https://github.com/radu-matei/kubectl-helm-draft">the repository on GitHub here</a> and <a href="https://hub.docker.com/r/radumatei/kubectl-helm-draft/">the image on Docker Hub</a>.</p>
 </blockquote>
 <blockquote>
 <p>Please note that at the time of writing this article, the latest versions are: <code>v1.8.0</code> for <code>kubectl</code>, <code>v2.6.2</code> for <code>helm</code> and <code>v0.7.0</code> for <code>draft</code>.</p>
@@ -170,8 +358,7 @@
 
 <p><img src="/img/article-photos/k8s-helm-draft-azure/initial-run.png" alt=""></p>
 <blockquote>
-<p>If you don&rsquo;t know where those certificates came from, <a href="https://radu-matei.com/blog/k8s18-azure/" target="_blank" rel="noreferrer noopener">check out this article</a>
- and modify the path to match your own.</p>
+<p>If you don&rsquo;t know where those certificates came from, <a href="https://radu-matei.com/blog/k8s18-azure/">check out this article</a> and modify the path to match your own.</p>
 </blockquote>
 <blockquote>
 <p>I also mounted a local directory so I can later create an application from outside the container and exposed port 8080 (you can choose another one) to access the dashboard.</p>
@@ -209,8 +396,7 @@
 <p>Charts can be stored on disk, or fetched from remote chart repositories (like Debian or RedHat packages)</p>
 </blockquote>
 <blockquote>
-<p>More on <a href="https://github.com/kubernetes/helm" target="_blank" rel="noreferrer noopener">the GitHub repo for Helm</a>
-</p>
+<p>More on <a href="https://github.com/kubernetes/helm">the GitHub repo for Helm</a></p>
 </blockquote>
 <p>We now need to initialize <code>helm</code>. Since we are in a container, once we exit all config files written by <code>helm</code> and <code>draft</code> will be lost. That&rsquo;s why we have the <code>cluster</code> directory, which is mounted from the host.</p>
 <p>We will now need to point <code>helm</code> to write its config in <code>/cluster</code> and run <code>helm init</code>:</p>
@@ -242,11 +428,9 @@
 <p>Once the developer is happy with changes made via Draft, they commit and push to version control, after which a continuous integration (CI) system takes over. Draft builds upon Kubernetes Helm and the Kubernetes Chart format, making it easy to construct CI pipelines from Draft-enabled applications.</p>
 </blockquote>
 <blockquote>
-<p>More on <a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">the GitHub repo for Draft</a>
-</p>
+<p>More on <a href="https://github.com/azure/draft">the GitHub repo for Draft</a></p>
 </blockquote>
-<p>Now we are going to use <a href="https://github.com/Azure/draft/blob/master/docs/ingress.md" target="_blank" rel="noreferrer noopener">a very cool feature of Draft called ingress</a>
-. Basically, this will allow us to use a base domain - <code>*.draft.yourdomain.com</code> to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard <code>A Record</code> pointing back to an nginx controller in your cluster.</p>
+<p>Now we are going to use <a href="https://github.com/Azure/draft/blob/master/docs/ingress.md">a very cool feature of Draft called ingress</a>. Basically, this will allow us to use a base domain - <code>*.draft.yourdomain.com</code> to expose your apps while testing. Of course, you will need to own a domain and to be able to create a wildcard <code>A Record</code> pointing back to an nginx controller in your cluster.</p>
 <p>You will use <code>helm</code> to deploy an nginx ingress controller with a public IP address (if you are on Azure or GKE this will be done automatically for you after a couple of minutes):</p>
 <p><code>helm install stable/nginx-ingress --namespace=kube-system --name=nginx-ingress</code></p>
 <p><img src="/img/article-photos/k8s-helm-draft-azure/nginx.png" alt=""></p>
@@ -269,20 +453,16 @@
 <p>Now if we inspect our cluster we can see the <code>draftd</code> server, <code>tiller</code> and the ingress controller.</p>
 <p><img src="/img/article-photos/k8s-helm-draft-azure/inspect.png" alt=""></p>
 <blockquote>
-<p><a href="https://github.com/Azure/draft/blob/master/docs/ingress.md#i-dont-manage-a-domain" target="_blank" rel="noreferrer noopener">If you don&rsquo;t manage a domain, please see the instructions here</a>
-.</p>
+<p><a href="https://github.com/Azure/draft/blob/master/docs/ingress.md#i-dont-manage-a-domain">If you don&rsquo;t manage a domain, please see the instructions here</a>.</p>
 </blockquote>
 <h3 id="creating-an-application">Creating an application</h3>
 <p>Remember earlier that we also mounted a local directory where we will write our application. This was to allow us to easily use VS Code to develop the application.</p>
 <p>Now to the part where we actually create an application.</p>
 <blockquote>
-<p>You can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">find a getting started guide at the GitHub repo for Draft</a>
-.</p>
+<p>You can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md">find a getting started guide at the GitHub repo for Draft</a>.</p>
 </blockquote>
-<p><a href="https://github.com/Azure/draft/blob/master/docs/packs.md" target="_blank" rel="noreferrer noopener">Draft already has packs</a>
- that can autodetect your application and deploy it to your cluster for you.</p>
-<p>The packs are basically <code>helm</code> chart templates for <a href="https://github.com/Azure/draft/tree/master/packs" target="_blank" rel="noreferrer noopener">various programming languages and frameworks</a>
-, and you can easily write your own pack.</p>
+<p><a href="https://github.com/Azure/draft/blob/master/docs/packs.md">Draft already has packs</a> that can autodetect your application and deploy it to your cluster for you.</p>
+<p>The packs are basically <code>helm</code> chart templates for <a href="https://github.com/Azure/draft/tree/master/packs">various programming languages and frameworks</a>, and you can easily write your own pack.</p>
 <p>This is the application we will use, a very simple Go web app:</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/7de20b06733ffcc187153cdfa8abf087.js"></script>
 
@@ -305,8 +485,7 @@
 <p>Then there is the release step, which will install the Helm chart of your application on the cluster, also configuring the public endpoint of your application as: http:// draft-app-name.A-Record.yourdomain.com.</p>
 <p><img src="/img/article-photos/k8s-helm-draft-azure/build.png" alt="">
 <img src="/img/article-photos/k8s-helm-draft-azure/app.png" alt=""></p>
-<p>In my case, the public endpoint of my application will be: <a href="http://simple-go.draft.k8s.radu-matei.com" target="_blank" rel="noreferrer noopener">http://simple-go.draft.k8s.radu-matei.com</a>
- :</p>
+<p>In my case, the public endpoint of my application will be: <a href="http://simple-go.draft.k8s.radu-matei.com">http://simple-go.draft.k8s.radu-matei.com</a> :</p>
 <p><img src="/img/article-photos/k8s-helm-draft-azure/public-app.png" alt=""></p>
 <p>Note that for any update of your application (that is you modifying the app locally and saving it) while the <code>draft up</code> process is running, you will get the updated version of your application deployed automatically.</p>
 <h3 id="investigating-what-actually-happens">Investigating what actually happens</h3>
@@ -331,48 +510,50 @@ You don&rsquo;t need to have Go (or whatever language you use for developement) 
 We configured <code>helm</code> and <code>draft</code>, set up an ingress controller that used a domain we own, then deployed new apps to the cluster in seconds without writing Dockerfiles, Kubernetes deployment files or Helm charts.  We just worry about our app.</p>
 <p>If you have a better approach at any of the concepts presented in this article, or have any questions, please use the comments below.
 As always, thanks for reading, and any feedback is highly appreciated :)</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/kubernetes">kubernetes</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/azure">azure</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/kubernetes-jenkins-azure/"><span class="mr-1.5">←</span><span>Jenkins pipelines with Kubernetes </span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/k8s18-azure/"><span>Kubernetes 1.8 on Azure</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

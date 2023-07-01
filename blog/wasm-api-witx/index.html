@@ -1,140 +1,332 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Writing a simple WASM API layer using interface types and Wasmtime | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Writing a simple WASM API layer using interface types and Wasmtime" />
-<meta name="twitter:description" content="In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime" />
-
-<meta name="description" content="In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime" />
-    <meta property='og:title' content='Writing a simple WASM API layer using interface types and Wasmtime - radu&#39;s blog'>
-<meta property='og:description' content='In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime'>
-<meta property='og:url' content='https://radu-matei.com/blog/wasm-api-witx/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:tag' content='rust'><meta property='article:published_time' content='2020-06-23T00:00:00Z'/><meta property='article:modified_time' content='2020-06-23T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/wasm-api-witx/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Writing a simple WASM API layer using interface types and Wasmtime - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/wasm-api-witx/">
+  
+  
+  
+  
+  <meta name="description" content="In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime" />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Writing a simple WASM API layer using interface types and Wasmtime" />
+<meta property="og:description" content="In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/wasm-api-witx/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2020-06-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-06-23T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Writing a simple WASM API layer using interface types and Wasmtime">
+<meta itemprop="description" content="In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime"><meta itemprop="datePublished" content="2020-06-23T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-06-23T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1601">
+<meta itemprop="keywords" content="wasm,rust," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Writing a simple WASM API layer using interface types and Wasmtime"/>
+<meta name="twitter:description" content="In this short article we explore how to get started with WebAssembly interface types by defining a simple API layer, then implementing that using Wiggle and Wasmtime"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/rust">#rust</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> June 23, 2020. 8 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Writing a simple WASM API layer using interface types and Wasmtime</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <p><a href="https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md" target="_blank" rel="noreferrer noopener">The WebAssembly interface types proposal</a>
- aims to
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Writing a simple WASM API layer using interface types and Wasmtime</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Tuesday, June 23, 2020</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><p><a href="https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md">The WebAssembly interface types proposal</a> aims to
 add a new common set of interface types to the core specification that would
 describe abstract, higher level values, and the ability to adapt the interface
 of a module so that different hosts can inter-operate using the higher level
 types. For a comprehensive explainer of the problems interface types are
-supposed to solve, <a href="https://twitter.com/linclark" target="_blank" rel="noreferrer noopener">Lin Clark</a>
- has an <a href="https://hacks.mozilla.org/2019/08/webassembly-interface-types/" target="_blank" rel="noreferrer noopener">excellent article on the Mozilla
-Hacks blog</a>
-, with a demo of using the same markdown
+supposed to solve, <a href="https://twitter.com/linclark">Lin Clark</a> has an <a href="https://hacks.mozilla.org/2019/08/webassembly-interface-types/">excellent article on the Mozilla
+Hacks blog</a>, with a demo of using the same markdown
 renderer compiled to WebAssembly, and using native strings from languages like
 Rust, Python, or JavaScript:</p>
 
@@ -146,26 +338,19 @@ Rust, Python, or JavaScript:</p>
 when compiling a module, as well as to read interface types and adapt the types
 needed in the module to the types used by the host. For the purpose of this
 article, however, you can think of an interface type as a regular interface or
-<a href="https://doc.rust-lang.org/book/ch10-02-traits.html" target="_blank" rel="noreferrer noopener">trait</a>
-: it <em>defines shared behavior in an abstract way</em>, without
+<a href="https://doc.rust-lang.org/book/ch10-02-traits.html">trait</a>: it <em>defines shared behavior in an abstract way</em>, without
 providing an actual implementation for how to achieve that behavior.</p>
 <p>In this article, we will manually write an interface type for a simple
 calculator module, then use Wasmtime tooling to <em>correctly</em> implement that
 interface type in Rust, link our implementation, and use it in a module that
 requires a calculator library. The examples used will be purposefully simple,
 and the goal is to show how to currently use this set of tools.</p>
-<p>You can find <a href="https://github.com/radu-matei/wasm-calc" target="_blank" rel="noreferrer noopener">the complete project on GitHub</a>
-.</p>
+<p>You can find <a href="https://github.com/radu-matei/wasm-calc">the complete project on GitHub</a>.</p>
 <h3 id="writing-a-simple-interface-type-in-witx">Writing a simple interface type in WITX</h3>
-<p>The current proposal describes interface types using <a href="https://github.com/WebAssembly/WASI/blob/master/docs/witx.md" target="_blank" rel="noreferrer noopener"><code>WITX</code></a>
-, an
-experimental file format based on the <a href="https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0" target="_blank" rel="noreferrer noopener">WebAssembly Text Format</a>
-, with added
-support for <a href="https://github.com/WebAssembly/module-linking/blob/master/proposals/module-linking/Explainer.md" target="_blank" rel="noreferrer noopener">module types</a>
- and <a href="https://github.com/WebAssembly/annotations/" target="_blank" rel="noreferrer noopener">annotations</a>
-. It is
-how the <a href="https://github.com/WebAssembly/WASI/blob/master/phases/ephemeral/docs.md" target="_blank" rel="noreferrer noopener">WASI</a>
- API is defined, and if you are familiar with <code>.wat</code>
+<p>The current proposal describes interface types using <a href="https://github.com/WebAssembly/WASI/blob/master/docs/witx.md"><code>WITX</code></a>, an
+experimental file format based on the <a href="https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0">WebAssembly Text Format</a>, with added
+support for <a href="https://github.com/WebAssembly/module-linking/blob/master/proposals/module-linking/Explainer.md">module types</a> and <a href="https://github.com/WebAssembly/annotations/">annotations</a>. It is
+how the <a href="https://github.com/WebAssembly/WASI/blob/master/phases/ephemeral/docs.md">WASI</a> API is defined, and if you are familiar with <code>.wat</code>
 files, <code>.witx</code> should seem familiar.</p>
 <p>The goal is to have a calculator module with a single function that adds two
 numbers. Let&rsquo;s describe this using WITX in a file called <code>calculator.witx</code>:</p>
@@ -183,13 +368,11 @@ numbers. Let&rsquo;s describe this using WITX in a file called <code>calculator.
 </code></pre><blockquote>
 <p><code>errno.witx</code> is another WITX file that describes a custom, user-defined error
 type returned from the function. You can find its definition in the repository
-<a href="https://github.com/radu-matei/wasm-calc/blob/master/examples/errno.witx" target="_blank" rel="noreferrer noopener">here</a>
-.</p>
+<a href="https://github.com/radu-matei/wasm-calc/blob/master/examples/errno.witx">here</a>.</p>
 </blockquote>
 <p>The WITX file defines a <code>calculator</code> module with a single function, <code>add</code>, which
 takes two 32-bit signed integers and returns a 32-bit signed integer, or an
-error. Now we can use <a href="https://docs.rs/wiggle/0.18.0/wiggle/" target="_blank" rel="noreferrer noopener"><code>wiggle</code></a>
-, a Rust crate that generates Rust code
+error. Now we can use <a href="https://docs.rs/wiggle/0.18.0/wiggle/"><code>wiggle</code></a>, a Rust crate that generates Rust code
 based on interface types definitions, and get a strongly-typed Rust trait based
 on the WITX file above:</p>
 <pre tabindex="0"><code>wiggle::from_witx!({
@@ -198,8 +381,7 @@ on the WITX file above:</p>
 });
 
 pub struct CalculatorCtx {}
-</code></pre><p>According to the <a href="https://docs.rs/wiggle/0.18.0/wiggle/macro.from_witx.html" target="_blank" rel="noreferrer noopener"><code>wiggle</code> documentation</a>
-, the <code>from_witx</code> macro
+</code></pre><p>According to the <a href="https://docs.rs/wiggle/0.18.0/wiggle/macro.from_witx.html"><code>wiggle</code> documentation</a>, the <code>from_witx</code> macro
 takes a WITX file and generates a set of public Rust modules based on the
 interface type definition. Specifically, it generates a <code>types</code> module that
 contains all user-defined types, and one module for each WITX <code>module</code> defined
@@ -241,11 +423,9 @@ our implementation for the calculator interface.</p>
 }
 </code></pre><p>The interface type definition for the <code>add</code> method uses <code>s32</code>, or signed
 integers. However, <code>s32</code> is not a fundamental WebAssembly data type (quick
-reminder that <a href="https://webassembly.github.io/spec/core/syntax/types.html" target="_blank" rel="noreferrer noopener">the fundamental data types in WebAssembly are:
-<code>𝗂𝟥𝟤 | 𝗂𝟨𝟦 | 𝖿𝟥𝟤 | 𝖿𝟨𝟦</code></a>
-). This is where the <a href="https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md#integers" target="_blank" rel="noreferrer noopener">interface types
-proposal</a>
- defines the additional integer data types:</p>
+reminder that <a href="https://webassembly.github.io/spec/core/syntax/types.html">the fundamental data types in WebAssembly are:
+<code>𝗂𝟥𝟤 | 𝗂𝟨𝟦 | 𝖿𝟥𝟤 | 𝖿𝟨𝟦</code></a>). This is where the <a href="https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md#integers">interface types
+proposal</a> defines the additional integer data types:</p>
 <blockquote>
 <p>In addition to <code>string</code>, the proposal includes the integer types <code>u8</code>, <code>s8</code>,
 <code>u16</code>, <code>s16</code>, <code>u32</code>, <code>s32</code>, <code>u64</code>, and <code>s64</code>. [&hellip;] Since values of these
@@ -254,8 +434,7 @@ values, there is no additional information needed to interpret their value as
 a number.</p>
 </blockquote>
 <p>The trait generated by <code>wiggle</code> maps the signed 32-bit integer from the
-interface types proposal to <a href="https://doc.rust-lang.org/std/primitive.i32.html" target="_blank" rel="noreferrer noopener">the Rust <em>signed</em> integer, <code>i32</code></a>
- (not to
+interface types proposal to <a href="https://doc.rust-lang.org/std/primitive.i32.html">the Rust <em>signed</em> integer, <code>i32</code></a> (not to
 be confused with the WebAssembly <code>i32</code> data type, which is <em>not inherently
 signed or unsigned, [its] interpretation is determined by individual
 operations</em>). Before actually instantiating the module that will use this
@@ -284,8 +463,7 @@ parameters are fundamental WebAssembly types). Then, we call this function later
 in our module&rsquo;s implementation.</p>
 <p>In order to successfully instantiate the module above, we need to satisfy its
 imports. This is where our implementation becomes useful - we can use the
-<a href="https://docs.rs/wasmtime/0.18.0/wasmtime/struct.Linker.html" target="_blank" rel="noreferrer noopener">Wasmtime linker</a>
- to define the implementation for the <code>add</code> function
+<a href="https://docs.rs/wasmtime/0.18.0/wasmtime/struct.Linker.html">Wasmtime linker</a> to define the implementation for the <code>add</code> function
 required by the module by creating an instance of the <code>CalculatorCtx</code> structure
 defined earlier, and returning the result of its <code>add</code> method.</p>
 <pre tabindex="0"><code>let mut linker = Linker::new(store);
@@ -299,8 +477,7 @@ linker.instantiate(&amp;module)
 output and error reporting, and link the current WASI implementation. The result
 of building the Rust program that instantiates WebAssembly modules using
 Wasmtime and links our calculator implementation is an executable, <code>wasm-calc</code>,
-<a href="https://github.com/radu-matei/wasm-calc/blob/master/src/main.rs" target="_blank" rel="noreferrer noopener">whose complete implementation can be found on GitHub</a>
-. Now we can use
+<a href="https://github.com/radu-matei/wasm-calc/blob/master/src/main.rs">whose complete implementation can be found on GitHub</a>. Now we can use
 this binary to instantiate any generic WASI module, as well as modules that
 require a <code>calculator</code> module. Similarly to how Wasmtime works, the arguments
 are the module to run, the name of the function to execute, followed by its
@@ -310,13 +487,11 @@ implementation is properly linked, the module correctly instantiated, and the
 <code>consume_add</code> function from the module successfully executed:</p>
 <pre tabindex="0"><code>$ ./target/debug/wasm-calc examples/using_add.wat consume_add 1 2
 3
-</code></pre><p>For simplicity, the example above is written in the <a href="https://webassembly.github.io/spec/core/text/index.html" target="_blank" rel="noreferrer noopener">WebAssembly text
-format</a>
- - but in a real scenario, something similar to that would
+</code></pre><p>For simplicity, the example above is written in the <a href="https://webassembly.github.io/spec/core/text/index.html">WebAssembly text
+format</a> - but in a real scenario, something similar to that would
 be generated by a compiler. If compiled using a WebAssembly target
-(<code>wasm32-unknown-unknown</code> or <code>wasm32-wasi</code>), <a href="https://github.com/radu-matei/wasm-calc/blob/master/examples/using_add/src/lib.rs" target="_blank" rel="noreferrer noopener">the following Rust
-program</a>
- generates an equivalent module:</p>
+(<code>wasm32-unknown-unknown</code> or <code>wasm32-wasi</code>), <a href="https://github.com/radu-matei/wasm-calc/blob/master/examples/using_add/src/lib.rs">the following Rust
+program</a> generates an equivalent module:</p>
 <pre tabindex="0"><code>#[link(wasm_import_module = &#34;calculator&#34;)]
 extern &#34;C&#34; {
     fn add(lh: i32, rh: i32) -&gt; i32;
@@ -327,15 +502,13 @@ pub unsafe extern &#34;C&#34; fn consume_add(lh: i32, rh: i32) -&gt; i32 {
     add(lh, rh)
 }
 </code></pre><blockquote>
-<p>For a guide on manually linking WASI imports in Rust, check out <a href="https://www.jakubkonka.com/2020/04/28/rust-wasi-from-scratch.html" target="_blank" rel="noreferrer noopener">@kubkon&rsquo;s
-article</a>
-.</p>
+<p>For a guide on manually linking WASI imports in Rust, check out <a href="https://www.jakubkonka.com/2020/04/28/rust-wasi-from-scratch.html">@kubkon&rsquo;s
+article</a>.</p>
 </blockquote>
 <blockquote>
 <p>For an example of using .NET to instantiate WebAssembly modules using
-Wasmtime, <a href="https://hacks.mozilla.org/2019/12/using-webassembly-from-dotnet-with-wasmtime/" target="_blank" rel="noreferrer noopener">check out @peterhuene&rsquo;s article on the Mozilla Hacks
-blog</a>
-.</p>
+Wasmtime, <a href="https://hacks.mozilla.org/2019/12/using-webassembly-from-dotnet-with-wasmtime/">check out @peterhuene&rsquo;s article on the Mozilla Hacks
+blog</a>.</p>
 </blockquote>
 <p>While the semantics are different, functionally, the same thing happens: we
 declare the signature of an external function that we expect from a module
@@ -352,69 +525,65 @@ ensuring that the interface and implementation are always in sync.</p>
 determining if an interface type definition satisfies the imports for
 instantiating a given module, compiler support for generating interface types,
 or automatically linking all the exports required by a module given a list of
-dependent modules (the <a href="https://docs.rs/wig/0.18.0/wig/index.html" target="_blank" rel="noreferrer noopener"><code>wig</code> crate</a>
- does something similar for WASI
+dependent modules (the <a href="https://docs.rs/wig/0.18.0/wig/index.html"><code>wig</code> crate</a> does something similar for WASI
 imports).</p>
 <p>In this article we explored a very narrow use case by manually writing an
 interface type file. But as more and more compiler toolchains start supporting
 WebAssembly, that is probably not how most people will end up using interface
 types, and in an ideal scenario, most consumers of modules would not be aware of
 interface types, but benefit from tools that automatically generate them and
-code based on them (<a href="https://github.com/rustwasm/wasm-bindgen" target="_blank" rel="noreferrer noopener"><code>wasm-bindgen</code></a>
- is an excellent example of
+code based on them (<a href="https://github.com/rustwasm/wasm-bindgen"><code>wasm-bindgen</code></a> is an excellent example of
 tooling that generates both Rust bindings based on interface types, as well as
 interface types based on exported members in Rust code).</p>
-<p>The interface types proposal is still in <a href="https://github.com/webassembly/proposals#phase-1---feature-proposal-cg" target="_blank" rel="noreferrer noopener">early stages</a>
-, but if you
+<p>The interface types proposal is still in <a href="https://github.com/webassembly/proposals#phase-1---feature-proposal-cg">early stages</a>, but if you
 are interested in language interoperability and sandboxing, these are incredibly
 exciting times.</p>
-<p>Special thanks to <a href="https://twitter.com/peterhuene" target="_blank" rel="noreferrer noopener">@peterhuene</a>
-, <a href="https://twitter.com/kubkon" target="_blank" rel="noreferrer noopener">@kubkon</a>
-, and
-<a href="https://twitter.com/ppog_penguin" target="_blank" rel="noreferrer noopener">@ppog_penguin</a>
- for reviewing this article.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
+<p>Special thanks to <a href="https://twitter.com/peterhuene">@peterhuene</a>, <a href="https://twitter.com/kubkon">@kubkon</a>, and
+<a href="https://twitter.com/ppog_penguin">@ppog_penguin</a> for reviewing this article.</p>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/rust">rust</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/nodejs-wasi/"><span class="mr-1.5">←</span><span>Getting started with NodeJS and the WebAssembly System Interface</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/adding-wasi-syscall/"><span>A beginner&#39;s guide to adding a new WASI syscall in Wasmtime</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

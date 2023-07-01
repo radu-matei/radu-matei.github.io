@@ -1,129 +1,327 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Introduction to .NET Core | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Introduction to .NET Core" />
-<meta name="twitter:description" content="What is .NET Core?" />
-
-<meta name="description" content="What is .NET Core?" />
-    <meta property='og:title' content='Introduction to .NET Core - radu&#39;s blog'>
-<meta property='og:description' content='What is .NET Core?'>
-<meta property='og:url' content='https://radu-matei.com/blog/dot-net-core-introduction/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='dotnet-core'><meta property='article:published_time' content='2016-07-16T00:00:00Z'/><meta property='article:modified_time' content='2016-07-16T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/dot-net-core-introduction/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Introduction to .NET Core - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/dot-net-core-introduction/">
+  
+  
+  
+  
+  <meta name="description" content="Introduction to .NET Core" />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Introduction to .NET Core" />
+<meta property="og:description" content="What is .NET Core?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/dot-net-core-introduction/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2016-07-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-07-16T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Introduction to .NET Core">
+<meta itemprop="description" content="What is .NET Core?"><meta itemprop="datePublished" content="2016-07-16T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2016-07-16T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1045">
+<meta itemprop="keywords" content="dotnet-core," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Introduction to .NET Core"/>
+<meta name="twitter:description" content="What is .NET Core?"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/dotnet-core">#dotnet-core</a>
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
+
+  
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> July 16, 2016. 5 minutes read.  </h2>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Introduction to .NET Core</h1>
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Introduction to .NET Core</h1>
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Saturday, July 16, 2016</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
 
-        
-        <div class="content">
-            
-
-
-            <blockquote>
-<p>.NET Core is a general purpose development platform maintained by Microsoft and the .NET community on <a href="https://github.com/dotnet" target="_blank" rel="noreferrer noopener">GitHub</a>
-. It is cross-platform, <strong>supporting Windows, macOS and Linux</strong>, and can be used in device, cloud, and embedded/IoT scenarios.</p>
+  <section><blockquote>
+<p>.NET Core is a general purpose development platform maintained by Microsoft and the .NET community on <a href="https://github.com/dotnet">GitHub</a>. It is cross-platform, <strong>supporting Windows, macOS and Linux</strong>, and can be used in device, cloud, and embedded/IoT scenarios.</p>
 </blockquote>
 <blockquote>
 <p>The following characteristics best define .NET Core:</p>
@@ -159,41 +357,32 @@
 </ul>
 </blockquote>
 <blockquote>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index" target="_blank" rel="noreferrer noopener">More on the Official .NET Core Documentation from Microsoft</a>
-</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index">More on the Official .NET Core Documentation from Microsoft</a></p>
 </blockquote>
 <p>Basically, Microsoft built a version of .NET to allow developers to write cross-platform and cloud-optimized applications.</p>
 <p>First, .NET is cross-platform. It runs on Windows, macOS and Linux, which allows the developer to share and run the exact same code between machines running different operating systems, with no changes in code and minimum or no changes in the development process.
 (Watch out for OS specific APIs!)</p>
 <p>But the true innovation in .NET came with the modular design and architecture.
-The compiler (<a href="https://github.com/dotnet/roslyn" target="_blank" rel="noreferrer noopener">Roslyn</a>
-) and the runtime (<a href="https://github.com/dotnet/coreclr" target="_blank" rel="noreferrer noopener">CoreCLR</a>
-) are separate components that allow you to use different implementations (or even write your own).</p>
+The compiler (<a href="https://github.com/dotnet/roslyn">Roslyn</a>) and the runtime (<a href="https://github.com/dotnet/coreclr">CoreCLR</a>) are separate components that allow you to use different implementations (or even write your own).</p>
 <p>Every library comes as a NuGet package, so when you start a new project, you don&rsquo;t have any libraries, but a project file (currently a <code>.json</code>, in the future a <code>.csproj</code> to maintain consistency with all .NET projects) and a <code>Program.cs</code>.  As you develop your app, you add libraries as you need them, allowing you to minimize the size of your application.</p>
 <p>.NET Core also allows you to have multiple versions installed at the same time without having apps / parts of the OS breaking when you update or install a newer version of the framework, and will even allow you to ship the framework / parts of the framework with the application (since the footprint of the framework si small enough).</p>
 <blockquote>
 <p>.NET Core will favor performance with a standard library that minimizes allocations and the overall memory footprint of your system.
-<a href="https://msdn.microsoft.com/en-us/magazine/mt694084.aspx" target="_blank" rel="noreferrer noopener">The complete MSDN article.</a>
-</p>
+<a href="https://msdn.microsoft.com/en-us/magazine/mt694084.aspx">The complete MSDN article.</a></p>
 </blockquote>
 <h1 id="scenarios-for-net-core">Scenarios for .NET Core</h1>
 <ul>
 <li>
-<p><a href="https://developer.microsoft.com/en-us/windows/develop/building-universal-windows-apps" target="_blank" rel="noreferrer noopener">Universal Windows Apps</a>
- that run on all various Windows versions (on laptops, tablets, phones, IoT devices, xBox, HoloLens)</p>
+<p><a href="https://developer.microsoft.com/en-us/windows/develop/building-universal-windows-apps">Universal Windows Apps</a> that run on all various Windows versions (on laptops, tablets, phones, IoT devices, xBox, HoloLens)</p>
 </li>
 <li>
-<p><a href="https://www.xamarin.com/platform" target="_blank" rel="noreferrer noopener">Xamarin Apps</a>
- that run on Android, iOS and macOS using the same shared C# code</p>
+<p><a href="https://www.xamarin.com/platform">Xamarin Apps</a> that run on Android, iOS and macOS using the same shared C# code</p>
 </li>
 <li>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index" target="_blank" rel="noreferrer noopener">.NET Core</a>
- - cross-platform console applications and libraries</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/index">.NET Core</a> - cross-platform console applications and libraries</p>
 </li>
 <li>
-<p><a href="https://docs.asp.net/" target="_blank" rel="noreferrer noopener">ASP .NET Core</a>
- - cross-platform web applications that run on Windows (inside IIS and with the dedicated web server - Kestrel), macOS and Linux (with the dedicated web server - Kestrel) with <a href="http://web.ageofascent.com/asp-net-core-exeeds-1-15-million-requests-12-6-gbps/" target="_blank" rel="noreferrer noopener">superior performance</a>
- compared to the standard ASP .NET 4.6 or to Node.</p>
+<p><a href="https://docs.asp.net/">ASP .NET Core</a> - cross-platform web applications that run on Windows (inside IIS and with the dedicated web server - Kestrel), macOS and Linux (with the dedicated web server - Kestrel) with <a href="http://web.ageofascent.com/asp-net-core-exeeds-1-15-million-requests-12-6-gbps/">superior performance</a> compared to the standard ASP .NET 4.6 or to Node.</p>
 </li>
 </ul>
 <p>So right now, using C# and .NET you can build almost any type of application and target multiple frameworks.</p>
@@ -220,76 +409,64 @@ The compiler (<a href="https://github.com/dotnet/roslyn" target="_blank" rel="no
 </ul>
 </blockquote>
 <blockquote>
-<p>More on the .NET Standard Library on the <a href="https://docs.microsoft.com/en-us/dotnet/articles/standard/library" target="_blank" rel="noreferrer noopener">Official Microsoft Documentation</a>
-.</p>
+<p>More on the .NET Standard Library on the <a href="https://docs.microsoft.com/en-us/dotnet/articles/standard/library">Official Microsoft Documentation</a>.</p>
 </blockquote>
 <p>The goal of .NET Standard is to have a single, unified set of libraries that you target when building an application, regardless of the type - console, web or mobile - you simply target .NET Standard and you are guaranteed that libraries there will work when shared across all platforms.</p>
-<p>This is the part of the framework most of the work will take place in the future and you can follow the progress or contribute in <a href="https://github.com/dotnet/corefx" target="_blank" rel="noreferrer noopener">this GitHub repository</a>
-.</p>
+<p>This is the part of the framework most of the work will take place in the future and you can follow the progress or contribute in <a href="https://github.com/dotnet/corefx">this GitHub repository</a>.</p>
 <h1 id="tools">Tools</h1>
 <p>Historically, .NET developers didn&rsquo;t have to (or couldn&rsquo;t) use the command line so often. Visual Studio took care of most processes involved in building and running the applications.</p>
 <p>But with the open-source of .NET Core, all development efforts became CLI-first, so everything involved in building, compiling or running .NET Core applications can be done using the command line.</p>
 <p>In fact, all these things were built for the command line first and then were wrapped in the multiple tools available.</p>
-<p>Regardless of the OS, you use the same command line interface (which is also <a href="https://github.com/dotnet/cli" target="_blank" rel="noreferrer noopener">open source and available on GitHub</a>
-) to create new apps, build, or run.</p>
+<p>Regardless of the OS, you use the same command line interface (which is also <a href="https://github.com/dotnet/cli">open source and available on GitHub</a>) to create new apps, build, or run.</p>
 <p><img src="https://9o6coq.bn1301.livefilestore.com/y3m9rWnsOG_vk6tONR1SWQFdThTblC_-OgmT8LZKbysS2EONc3azyFoPROy9DRCaauouG9HlOUBqk29uFbPK9Q_OPFC7QEyG_KcihlQYolIjnzOwTyhm1m_vI9ck5FfypPYz5mYRUDXW2V_8_Dn8YrvP5vSD88fXwvHKou-pU1PzsA?width=1280&amp;height=720&amp;cropmode=none" alt="Tools"></p>
-<p><a href="https://www.visualstudio.com/en-us/products/code-vs.aspx" target="_blank" rel="noreferrer noopener">Visual Studio Code</a>
- is the cross-platform code editor for Linux, macOS and Windows. With VS Code you can build, debug and run web applications (ASP .NET Core, Node) or .NET Core console applications, with IntelliSense, code completion and Git integration.</p>
+<p><a href="https://www.visualstudio.com/en-us/products/code-vs.aspx">Visual Studio Code</a> is the cross-platform code editor for Linux, macOS and Windows. With VS Code you can build, debug and run web applications (ASP .NET Core, Node) or .NET Core console applications, with IntelliSense, code completion and Git integration.</p>
 <blockquote>
-<p>Using <a href="http://www.omnisharp.net/" target="_blank" rel="noreferrer noopener">OmniSharp</a>
- you can add IntelliSense to any of the following code editors - Atom, Brackets, Emacs, Sublime or Vim.</p>
+<p>Using <a href="http://www.omnisharp.net/">OmniSharp</a> you can add IntelliSense to any of the following code editors - Atom, Brackets, Emacs, Sublime or Vim.</p>
 </blockquote>
-<p><a href="https://www.xamarin.com/studio" target="_blank" rel="noreferrer noopener">Xamarin Studio</a>
- is the IDE for macOS that lets you build cross-platform mobile applications for iOS, Android or macOS, and even web applications.</p>
-<p>With <a href="https://www.visualstudio.com/products/visual-studio-community-vs" target="_blank" rel="noreferrer noopener">Visual Studio Community</a>
- you can build all types of applications on the .NET Framework, including Xamarin apps, Azure integration and source control support. For Windows, it is the best IDE for building .NET applications.</p>
+<p><a href="https://www.xamarin.com/studio">Xamarin Studio</a> is the IDE for macOS that lets you build cross-platform mobile applications for iOS, Android or macOS, and even web applications.</p>
+<p>With <a href="https://www.visualstudio.com/products/visual-studio-community-vs">Visual Studio Community</a> you can build all types of applications on the .NET Framework, including Xamarin apps, Azure integration and source control support. For Windows, it is the best IDE for building .NET applications.</p>
 <h1 id="conclusion">Conclusion</h1>
-<p><a href="https://www.microsoft.com/net" target="_blank" rel="noreferrer noopener">You can install .NET Core 1.0 on your system right now</a>
- and start using the command line interface (<code>dotnet new</code>, <code>dotnet restore</code>, <code>dotnet build</code>, <code>dotnet run</code>) or install <a href="https://www.visualstudio.com/en-us/products/code-vs.aspx" target="_blank" rel="noreferrer noopener">Visual Studio Code</a>
- with IntelliSense and debugging.</p>
+<p><a href="https://www.microsoft.com/net">You can install .NET Core 1.0 on your system right now</a> and start using the command line interface (<code>dotnet new</code>, <code>dotnet restore</code>, <code>dotnet build</code>, <code>dotnet run</code>) or install <a href="https://www.visualstudio.com/en-us/products/code-vs.aspx">Visual Studio Code</a> with IntelliSense and debugging.</p>
 <p>It is one of the most exciting times to be a .NET developer, being able to write code that runs across IoT devices, phones, tablets, laptops, desktops, holographic devices, servers or the cloud and share it across multiple operating systems, with familiar processes and tools.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/dot-net-core-getting-started/"><span class="mr-1.5">←</span><span>Getting Started with .NET Core and VS Code</span></a>
+    
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

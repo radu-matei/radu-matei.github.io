@@ -1,148 +1,336 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>ASP.NET Core MVC and SignalR Core | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="ASP.NET Core MVC and SignalR Core" />
-<meta name="twitter:description" content="" />
-
-<meta name="description" content="" />
-    <meta property='og:title' content='ASP.NET Core MVC and SignalR Core - radu&#39;s blog'>
-<meta property='og:description' content='In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!'>
-<meta property='og:url' content='https://radu-matei.com/blog/aspnet-core-mvc-signalr/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='dotnet-core'><meta property='article:tag' content='azure'><meta property='article:tag' content='signalr'><meta property='article:published_time' content='2016-09-09T00:00:00Z'/><meta property='article:modified_time' content='2016-09-09T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>ASP.NET Core MVC and SignalR Core - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/">
+  
+  
+  
+  
+  <meta name="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="ASP.NET Core MVC and SignalR Core" />
+<meta property="og:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-mvc-signalr/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2016-09-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-09-09T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="ASP.NET Core MVC and SignalR Core">
+<meta itemprop="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta itemprop="datePublished" content="2016-09-09T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2016-09-09T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1755">
+<meta itemprop="keywords" content="dotnet-core,azure,signalr," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ASP.NET Core MVC and SignalR Core"/>
+<meta name="twitter:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/dotnet-core">#dotnet-core</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
-  
-  | <a class="subtitle is-6" href="/tags/signalr">#signalr</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> September 9, 2016. 9 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">ASP.NET Core MVC and SignalR Core</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <h2 id="notice">NOTICE</h2>
-<p><a href="https://radu-matei.com/blog/signalr-core" target="_blank" rel="noreferrer noopener"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a>
-</p>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">ASP.NET Core MVC and SignalR Core</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Friday, September 9, 2016</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="notice">NOTICE</h2>
+<p><a href="https://radu-matei.com/blog/signalr-core"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
 <h2 id="introduction">Introduction</h2>
-<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server" target="_blank" rel="noreferrer noopener"><code>0.2.0-alpha1-22107</code></a>
-) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
+<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
 <blockquote>
-<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank" rel="noreferrer noopener">This article</a>
- does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
+<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
 </blockquote>
 <blockquote>
-<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/" target="_blank" rel="noreferrer noopener">take a look at this article</a>
-.</p>
+<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/">take a look at this article</a>.</p>
 </blockquote>
-<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank" rel="noreferrer noopener">this application</a>
- and add real time functionality to it.</p>
+<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/">this application</a> and add real time functionality to it.</p>
 <p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p>
 <h2 id="configure-the-application">Configure the application</h2>
 <p>NuGet has the ability to get packages from more than one source, and we need it to download alpha packages that are only available on the MyGet server of the ASP.NET team, besides the ASP.NET Core packages available on NuGet. So in the root of the application add a file called <code>NuGet.Config</code> with the following content:</p>
@@ -174,8 +362,7 @@
      host.Run();
  }
 </code></pre><h2 id="post-ipostrepository-and-postrepository"><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2>
-<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/" target="_blank" rel="noreferrer noopener">This article</a>
- explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
+<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
 <pre tabindex="0"><code>public class Post
 {
     public int Id { get; set; }
@@ -281,8 +468,7 @@ public class PostsHub : Hub
 <h2 id="camel-case-issues-and-custom-contract-resolvers">Camel case issues and custom contract resolvers</h2>
 <p>At this moment, MVC uses camel case notation to pass JSON to clients. That means that even if on the server you write your class properties with Pascal case notation (as you should!), JavaScript clients would get Camel cased objects.</p>
 <p>This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse methods across the JavaScript client, thing we cannot tolerate.</p>
-<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751" target="_blank" rel="noreferrer noopener">this old SignalR GitHub issue</a>
- and adapt it to our versions of ASP.NET and SignalR.</p>
+<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
 <h2 id="add-a-custom-contract-resolvers">Add a custom contract resolvers</h2>
 <p>A first try could be to change the default contract resolver to a <code>CamelCasePropertyNamesContractResolver()</code> inside the <code>ConfigureServices</code> method:</p>
 <pre tabindex="0"><code>var settings = new JsonSerializerSettings();
@@ -482,48 +668,52 @@ public class PostsController : Controller
 <h2 id="conclusion">Conclusion</h2>
 <p>In this article we saw how to use MVC Core and SignalR for providing real time data to users.</p>
 <p>Since SignalR is still in alpha, at this moment there are some issues to be addressed and many breaking changes to come and I will try to keep this example up-to-date.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/azure">azure</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/signalr">signalr</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/rpi-sensehat-telemetry/"><span class="mr-1.5">←</span><span>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/aspnet-core-json-dependency-injection/"><span>Inject ASP.NET Core Dependencies from JSON files</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

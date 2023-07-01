@@ -1,136 +1,332 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>ASP .NET Core JSON Configuration and Dependency Injection | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="ASP .NET Core JSON Configuration and Dependency Injection" />
-<meta name="twitter:description" content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection" />
-
-<meta name="description" content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection" />
-    <meta property='og:title' content='ASP .NET Core JSON Configuration and Dependency Injection - radu&#39;s blog'>
-<meta property='og:description' content='Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection'>
-<meta property='og:url' content='https://radu-matei.com/blog/aspnet-core-configuration-greeting/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='dotnet-core'><meta property='article:published_time' content='2016-07-23T00:00:00Z'/><meta property='article:modified_time' content='2016-07-23T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-configuration-greeting/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>ASP .NET Core JSON Configuration and Dependency Injection - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-configuration-greeting/">
+  
+  
+  
+  
+  <meta name="description" content="The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to create your custom configuration provider. Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in Startup anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="ASP .NET Core JSON Configuration and Dependency Injection" />
+<meta property="og:description" content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-configuration-greeting/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2016-07-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-07-23T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="ASP .NET Core JSON Configuration and Dependency Injection">
+<meta itemprop="description" content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection"><meta itemprop="datePublished" content="2016-07-23T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2016-07-23T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1682">
+<meta itemprop="keywords" content="dotnet-core," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ASP .NET Core JSON Configuration and Dependency Injection"/>
+<meta name="twitter:description" content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/dotnet-core">#dotnet-core</a>
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
+
+  
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> July 23, 2016. 8 minutes read.  </h2>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">ASP .NET Core JSON Configuration and Dependency Injection</h1>
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">ASP .NET Core JSON Configuration and Dependency Injection</h1>
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Saturday, July 23, 2016</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
 
-        
-        <div class="content">
-            
-
-
-            <!-- raw HTML omitted -->
+  <section><!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <blockquote>
-<p>This article was originally written in July 2016, and has been updated in November 2019 to the latest .NET Core 3 version, and the <a href="https://github.com/radu-matei/dotnetcore-samples/tree/dotnetcore3/dotnetcore3-configuration" target="_blank" rel="noreferrer noopener">updated sample can be found in this GitHub repository</a>
-.</p>
+<p>This article was originally written in July 2016, and has been updated in November 2019 to the latest .NET Core 3 version, and the <a href="https://github.com/radu-matei/dotnetcore-samples/tree/dotnetcore3/dotnetcore3-configuration">updated sample can be found in this GitHub repository</a>.</p>
 </blockquote>
-<p>In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in <code>web.config</code> <a href="http://www.codeproject.com/Articles/301726/Web-config-File-ASP-NET" target="_blank" rel="noreferrer noopener">(complete description of the old <code>web.config</code> file)</a>
-, or added in a separate XML file and referenced in <code>web.config</code> (for scenarios like database connection strings, or storing APIs access tokens).</p>
-<p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers" target="_blank" rel="noreferrer noopener">create your custom configuration provider</a>
-.</p>
+<p>In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in <code>web.config</code> <a href="http://www.codeproject.com/Articles/301726/Web-config-File-ASP-NET">(complete description of the old <code>web.config</code> file)</a>, or added in a separate XML file and referenced in <code>web.config</code> (for scenarios like database connection strings, or storing APIs access tokens).</p>
+<p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers">create your custom configuration provider</a>.</p>
 <p>Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in <code>Startup</code> anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.</p>
 <p>More clearly, we want to map the keys from the JSON file below as routes and the values as the responses we want our application to give, so when a user browses in our application to <code>/some-route</code>, if <code>some-route</code> is present in the JSON configuration file, then the response will be the value from the file, if else to display a default message.</p>
 <pre tabindex="0"><code>{
@@ -144,8 +340,7 @@
 <h3 id="using-the-asp-net-core-json-configuration-provider">Using the ASP .NET Core JSON Configuration Provider</h3>
 <p>As we said earlier, the new ASP .NET implements a JSON configuration provider that allows us to read and use configurations from JSON files (and not only), and we can have strong typing (where we define classes for our configuration settings) or we can access them using directly their key.</p>
 <blockquote>
-<p>For a complete article on creating <a href="https://weblog.west-wind.com/posts/2016/May/23/Strongly-Typed-Configuration-Settings-in-ASPNET-Core" target="_blank" rel="noreferrer noopener">Strongly Typed Configuration Settings in ASP .NET Core, see this article by Rick Strahl</a>
-.</p>
+<p>For a complete article on creating <a href="https://weblog.west-wind.com/posts/2016/May/23/Strongly-Typed-Configuration-Settings-in-ASPNET-Core">Strongly Typed Configuration Settings in ASP .NET Core, see this article by Rick Strahl</a>.</p>
 </blockquote>
 <p>To use configuration settings in ASP .NET Core, simply instantiate a <code>Configuration</code> object (using a <code>ConfigurationBuilder</code>)  and indicate the source of the JSON file. Then, we can add multiple sources and types of sources that populate our application&rsquo;s configuration.</p>
 <blockquote>
@@ -212,8 +407,7 @@ public Startup()
     .Value;
 </code></pre><p>We know that our configuration is now accessible through the <code>Configuration</code> property that we populated in the <code>Startup</code> constructor, and the configuration settings are an <code>IEnumerable&lt;KeyValuePair&lt;string, string&gt;&gt;</code>, that is a collection of key-value pairs of strings, so we can use Linq to search for the key-value pair in our file that has the same key as our path and take the value from that pair.</p>
 <blockquote>
-<p>For some examples of using Linq with lambdas <a href="http://www.codemag.com/article/1001051" target="_blank" rel="noreferrer noopener">check this article from Code Magazine</a>
-.</p>
+<p>For some examples of using Linq with lambdas <a href="http://www.codemag.com/article/1001051">check this article from Code Magazine</a>.</p>
 </blockquote>
 <p>We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard response.</p>
 <pre tabindex="0"><code>var defaultMessage = Configuration.AsEnumerable()
@@ -228,16 +422,14 @@ http://localhost:5000/default or http://localhost:5000/anything-else - This shou
 </code></pre><p>Without closing the application, go to <code>greeting.json</code> and either add a new key-value pair, or modify an existing one&rsquo;s value, save the file and navigate to that path. You will see that the application was able to load the configuration file without restarting or recompiling.</p>
 <h3 id="making-use-of-asp-net-core-dependency-injection">Making use of ASP .NET Core Dependency Injection</h3>
 <blockquote>
-<p>For a more detailed view of dependency injection in ASP .NET Core applications, <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html" target="_blank" rel="noreferrer noopener">read the article from the Official ASP .NET Core Documentation</a>
-.</p>
+<p>For a more detailed view of dependency injection in ASP .NET Core applications, <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html">read the article from the Official ASP .NET Core Documentation</a>.</p>
 </blockquote>
 <p>Our application works, but there is a lot of logic code in <code>Startup</code>, a place for configuration.</p>
 <p>We will try to extract the part of <code>Startup</code> that deals with actually getting the response from the <code>JSON</code> file in a separate class and learn how to inject that service in various places (like other services, controllers or even in <code>Startup</code>).</p>
 <p>First of all, let&rsquo;s think at what public methods and properties should a greeting service should have. Basically, it should only have a single method that receives the path a user navigated to and should return a string, the response taken from the JSON file.</p>
 <p>In order to make dependency injection work, we will make use of interfaces. Meaning we will build an interface for the greeting service, <code>IGreetingService</code>.</p>
 <blockquote>
-<p>To see an example with interfaces, <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp09%20-%20Interfaces" target="_blank" rel="noreferrer noopener">check this tutorial</a>
-.</p>
+<p>To see an example with interfaces, <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp09%20-%20Interfaces">check this tutorial</a>.</p>
 </blockquote>
 <p>Let&rsquo;s create a new file, <code>IGreetingService.cs</code>:</p>
 <pre tabindex="0"><code>public interface IGreetingService
@@ -312,48 +504,48 @@ public class GreetingService : IGreetingService
 </code></pre><p>which is the same as earlier.</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>We created a web application for which we configured the paths and the associated responses in an external JSON file. We extracted this functionality in a service, <code>GreetingService</code> that was provided using dependency injection.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/aspnet-core-api/"><span class="mr-1.5">←</span><span>Introduction to ASP .NET Core MVC API</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/aspnet-core-routing/"><span>ASP .NET Core Routing</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

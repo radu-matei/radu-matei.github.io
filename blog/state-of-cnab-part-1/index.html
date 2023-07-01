@@ -1,137 +1,329 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>The state of CNAB: Part 1 - CNAB Core | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary_large_image'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/cnab/cnab-twitter-card.png">
-<meta name="twitter:title" content="The state of CNAB: Part 1 - CNAB Core" />
-<meta name="twitter:description" content="In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation." />
-
-<meta name="description" content="In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation." />
-    <meta property='og:title' content='The state of CNAB: Part 1 - CNAB Core - radu&#39;s blog'>
-<meta property='og:description' content='In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation.'>
-<meta property='og:url' content='https://radu-matei.com/blog/state-of-cnab-part-1/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://radu-matei.com/img/article-photos/cnab/cnab-twitter-card.png'><meta property='article:published_time' content='2019-09-04T00:00:00Z'/><meta property='article:modified_time' content='2019-09-04T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://deislabs.io/posts/state-of-cnab-part-1"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>The state of CNAB: Part 1 - CNAB Core - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://deislabs.io/posts/state-of-cnab-part-1">
+  
+  
+  
+  
+  <meta name="description" content="In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="The state of CNAB: Part 1 - CNAB Core" />
+<meta property="og:description" content="In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/state-of-cnab-part-1/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2019-09-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-09-04T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="The state of CNAB: Part 1 - CNAB Core">
+<meta itemprop="description" content="In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation."><meta itemprop="datePublished" content="2019-09-04T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-09-04T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1110">
+<meta itemprop="keywords" content="cnab," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="The state of CNAB: Part 1 - CNAB Core"/>
+<meta name="twitter:description" content="In this series, we explore the state of the Cloud Native Application Bundles (CNAB) specifications, and do a deep dive into the distribution of bundles, and security and attestation."/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/cnab">#cnab</a>
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
+
+  
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> September 4, 2019. 6 minutes read.  </h2>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">The state of CNAB: Part 1 - CNAB Core</h1>
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">The state of CNAB: Part 1 - CNAB Core</h1>
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Wednesday, September 4, 2019</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
 
-        
-        <div class="content">
-            
-
-
-            <p><img src="/img/article-photos/cnab/cnab-twitter-card.png" alt=""></p>
-<p><em><a href="https://deislabs.io/posts/state-of-cnab-part-1/" target="_blank" rel="noreferrer noopener">This article originally appeared on the DeisLabs blog</a>
-</em>.</p>
-<p>Late last year, the <a href="https://deislabs.io/cnab/" target="_blank" rel="noreferrer noopener">CNAB (Cloud Native Application Bundles)</a>
- specification was announced - <a href="https://techcrunch.com/2018/12/04/microsoft-and-docker-team-up-to-make-packaging-and-running-cloud-native-applications-easier/" target="_blank" rel="noreferrer noopener">the news made it to TechCrunch</a>
- and other tech publications, and partner organizations wrote about how they&rsquo;re using CNAB (for example <a href="https://blog.docker.com/2018/12/docker-app-and-cnab/" target="_blank" rel="noreferrer noopener">Docker</a>
-, <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes" target="_blank" rel="noreferrer noopener">Pivotal</a>
-, or <a href="https://engineering.bitnami.com/articles/production-ready-packaging-with-cnab-and-bitnami-kubernetes-production-runtime-bkpr.html" target="_blank" rel="noreferrer noopener">Bitnami</a>
-).</p>
-<p>So what is CNAB? According to <a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md" target="_blank" rel="noreferrer noopener">the official specification</a>
-:</p>
+  <section><p><img src="/img/article-photos/cnab/cnab-twitter-card.png" alt=""></p>
+<p><em><a href="https://deislabs.io/posts/state-of-cnab-part-1/">This article originally appeared on the DeisLabs blog</a></em>.</p>
+<p>Late last year, the <a href="https://deislabs.io/cnab/">CNAB (Cloud Native Application Bundles)</a> specification was announced - <a href="https://techcrunch.com/2018/12/04/microsoft-and-docker-team-up-to-make-packaging-and-running-cloud-native-applications-easier/">the news made it to TechCrunch</a> and other tech publications, and partner organizations wrote about how they&rsquo;re using CNAB (for example <a href="https://blog.docker.com/2018/12/docker-app-and-cnab/">Docker</a>, <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes">Pivotal</a>, or <a href="https://engineering.bitnami.com/articles/production-ready-packaging-with-cnab-and-bitnami-kubernetes-production-runtime-bkpr.html">Bitnami</a>).</p>
+<p>So what is CNAB? According to <a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md">the official specification</a>:</p>
 <blockquote>
 <p>CNAB is a standard packaging format for multi-component distributed applications. It is not a platform-specific tool, and developers can bundle applications targeting environments spanning IaaS (like OpenStack or Azure), container orchestrators (like Kubernetes or Nomad), container runtimes (like local Docker or ACI), and cloud platform services (like object storage or Database as a Service).</p>
 </blockquote>
@@ -142,9 +334,7 @@
 <li>We must be able to provision our applications without having to master dozens of tools; and</li>
 <li>We need to manage lifecycle (particularly installation, upgrade, and deletion) of our applications.</li>
 </ol>
-<p><a href="https://deislabs.io/cnab/" target="_blank" rel="noreferrer noopener">You can read an introduction to CNAB</a>
-, and here you can find the <a href="https://cloudblogs.microsoft.com/opensource/2018/12/04/announcing-cnab-cloud-agnostic-format-packaging-running-distributed-applications/" target="_blank" rel="noreferrer noopener">CNAB announcement blog post</a>
-.</p>
+<p><a href="https://deislabs.io/cnab/">You can read an introduction to CNAB</a>, and here you can find the <a href="https://cloudblogs.microsoft.com/opensource/2018/12/04/announcing-cnab-cloud-agnostic-format-packaging-running-distributed-applications/">CNAB announcement blog post</a>.</p>
 </blockquote>
 <p>The same introduction document introduced the desired functionality CNAB hoped to bring:</p>
 <blockquote>
@@ -163,47 +353,29 @@
 <p>In the months following the initial announcement, the specification was split into three separate specifications:</p>
 <ul>
 <li>
-<p><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md" target="_blank" rel="noreferrer noopener">CNAB Core</a>
- - addresses 1, 2, and part of 5.</p>
+<p><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md">CNAB Core</a> - addresses 1, 2, and part of 5.</p>
 </li>
 <li>
-<p><a href="https://github.com/deislabs/cnab-spec/blob/master/200-CNAB-registries.md" target="_blank" rel="noreferrer noopener">CNAB Registries</a>
- - addresses part of 5 and 6.</p>
+<p><a href="https://github.com/deislabs/cnab-spec/blob/master/200-CNAB-registries.md">CNAB Registries</a> - addresses part of 5 and 6.</p>
 </li>
 <li>
-<p><a href="https://github.com/deislabs/cnab-spec/blob/master/300-CNAB-security.md" target="_blank" rel="noreferrer noopener">CNAB Security</a>
- - addresses 3 and 4.</p>
+<p><a href="https://github.com/deislabs/cnab-spec/blob/master/300-CNAB-security.md">CNAB Security</a> - addresses 3 and 4.</p>
 </li>
 </ul>
-<p>(Two more sub-specifications followed, for <a href="https://github.com/deislabs/cnab-spec/blob/master/400-claims.md" target="_blank" rel="noreferrer noopener">claims</a>
- and <a href="https://github.com/deislabs/cnab-spec/blob/master/500-CNAB-dependencies.md" target="_blank" rel="noreferrer noopener">bundle dependencies</a>
-.)</p>
+<p>(Two more sub-specifications followed, for <a href="https://github.com/deislabs/cnab-spec/blob/master/400-claims.md">claims</a> and <a href="https://github.com/deislabs/cnab-spec/blob/master/500-CNAB-dependencies.md">bundle dependencies</a>.)</p>
 <p>Why break down into multiple specifications in the first place? The scope of the problem is objectively broad, and it&rsquo;s much easier to iterate and agree on a subset of changes, with a reduced problem space. Also, all other areas depended on the core specification, so it made sense to reach a stability point there, then turn to the other parts of the ecosystem.
 So as a community, we decided to focus on having a stable core specification first.</p>
-<p>But this doesn&rsquo;t come without any risks - the most obvious is potentially realizing that the core specifications needs (breaking) changes in order to accommodate distribution or security. We hope this will not be the case, and we think that we&rsquo;ve covered potential issues (adding <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-extensions" target="_blank" rel="noreferrer noopener">custom extensions</a>
-, <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-actions" target="_blank" rel="noreferrer noopener">custom actions</a>
-, handling <a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md#image-relocation" target="_blank" rel="noreferrer noopener">image relocation</a>
- without mutating the bundle, to name a few), but realizing another part of the ecosystem will only work with a future CNAB Core 2.0 is a possibility until those parts reach stability.</p>
-<h2 id="the-cnab-core-specificationcore"><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md" target="_blank" rel="noreferrer noopener">The CNAB Core Specification</a>
-</h2>
+<p>But this doesn&rsquo;t come without any risks - the most obvious is potentially realizing that the core specifications needs (breaking) changes in order to accommodate distribution or security. We hope this will not be the case, and we think that we&rsquo;ve covered potential issues (adding <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-extensions">custom extensions</a>, <a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md#custom-actions">custom actions</a>, handling <a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md#image-relocation">image relocation</a> without mutating the bundle, to name a few), but realizing another part of the ecosystem will only work with a future CNAB Core 2.0 is a possibility until those parts reach stability.</p>
+<h2 id="the-cnab-core-specificationcore"><a href="https://github.com/deislabs/cnab-spec/blob/master/100-CNAB.md">The CNAB Core Specification</a></h2>
 <p>The core specification covers the following areas:</p>
 <ul>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md" target="_blank" rel="noreferrer noopener">the <code>bundle.json</code> file</a>
-</li>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/102-invocation-image.md" target="_blank" rel="noreferrer noopener">the invocation image format</a>
-</li>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md" target="_blank" rel="noreferrer noopener">the bundle runtime</a>
-</li>
-<li><a href="https://github.com/deislabs/cnab-spec/blob/master/104-bundle-formats.md" target="_blank" rel="noreferrer noopener">the bundle formats</a>
-</li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/101-bundle-json.md">the <code>bundle.json</code> file</a></li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/102-invocation-image.md">the invocation image format</a></li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/103-bundle-runtime.md">the bundle runtime</a></li>
+<li><a href="https://github.com/deislabs/cnab-spec/blob/master/104-bundle-formats.md">the bundle formats</a></li>
 </ul>
-<p>This is the area of CNAB that has seen the most interest so far, and at the beginning of August, a core <a href="https://github.com/deislabs/cnab-spec/pull/238" target="_blank" rel="noreferrer noopener">specification freeze</a>
- has been instated, stabilizing the core specification even more, and allowing <a href="https://github.com/deislabs/duffle" target="_blank" rel="noreferrer noopener">the reference implementation</a>
- and other tools implementing the specification (such as <a href="https://porter.sh" target="_blank" rel="noreferrer noopener">Porter</a>
- or <a href="https://github.com/docker/app" target="_blank" rel="noreferrer noopener">Docker App</a>
-) to implement the latest changes.</p>
-<p>Of course following the specification freeze <a href="https://github.com/deislabs/cnab-spec/issues" target="_blank" rel="noreferrer noopener">a number of issues have been raised regarding some clarifications</a>
-, but none of them has lead to major changes.</p>
+<p>This is the area of CNAB that has seen the most interest so far, and at the beginning of August, a core <a href="https://github.com/deislabs/cnab-spec/pull/238">specification freeze</a> has been instated, stabilizing the core specification even more, and allowing <a href="https://github.com/deislabs/duffle">the reference implementation</a> and other tools implementing the specification (such as <a href="https://porter.sh">Porter</a> or <a href="https://github.com/docker/app">Docker App</a>) to implement the latest changes.</p>
+<p>Of course following the specification freeze <a href="https://github.com/deislabs/cnab-spec/issues">a number of issues have been raised regarding some clarifications</a>, but none of them has lead to major changes.</p>
 <p>So what does stabilizing the core specification mean for the community?
 It means that you can build a bundle with tool A, install it with tool B, then upgrade it or uninstall it with tool C - so the following workflow could be possible:</p>
 <pre tabindex="0"><code>$ porter build &lt;bundle&gt;
@@ -214,75 +386,65 @@ $ duffle uninstall &lt;bundle&gt;
 <p>The arguments and flags passed to the tools above are not representative.</p>
 </blockquote>
 <blockquote>
-<p>There is also a <a href="https://github.com/deislabs/cnab-spec/issues?q=is%3Aissue&#43;is%3Aopen&#43;sort%3Aupdated-desc&#43;label%3A%22Post&#43;1.0%22" target="_blank" rel="noreferrer noopener">list of issues deferred for a post 1.0 version of the core specification</a>
- - and as the tools using CNAB mature, that list is expected to grow.</p>
+<p>There is also a <a href="https://github.com/deislabs/cnab-spec/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Post+1.0%22">list of issues deferred for a post 1.0 version of the core specification</a> - and as the tools using CNAB mature, that list is expected to grow.</p>
 </blockquote>
 <h2 id="where-is-cnab-used-today">Where is CNAB used today?</h2>
 <p>There are multiple public (and even more still private) projects that implement parts of the CNAB specification, or use CNAB as a way of deployment:</p>
 <ul>
-<li><a href="https://github.com/deislabs/duffle" target="_blank" rel="noreferrer noopener">Duffle</a>
- is the reference implementation of the specification, and its goal is to provide functionality for all parts of the specification. You can use it to build, install, and manage bundles, as well as export bundles in thick format for distributing in air-gapped environments.</li>
-<li><a href="https://porter.sh" target="_blank" rel="noreferrer noopener">Porter</a>
- is an opinionated CNAB builder that <em>gives you building blocks to create a cloud installer for your application, handling all the necessary infrastructure and configuration setup. It is a declarative authoring experience that lets you focus on what you know best: your application.</em></li>
-<li><a href="https://blog.docker.com/2018/12/docker-app-and-cnab/" target="_blank" rel="noreferrer noopener">Docker App</a>
- is an opinionated CNAB builder and installer that leverages the Docker Compose format to define your applications. To facilitate developer to operator handover, you can add metadata and runtime parameters. These applications can easily be shared using existing container registries. Docker App is available as part of the <a href="https://blog.docker.com/2019/07/announcing-docker-enterprise-3-0-ga/" target="_blank" rel="noreferrer noopener">the latest Docker release</a>
-.</li>
-<li>the <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes" target="_blank" rel="noreferrer noopener">Pivotal Build Service (alpha)</a>
-, <em>a declarative way to build an OCI-compatible container image from source code</em>, and is using CNAB to deploy the service on Kubernetes clusters.</li>
-<li>the next alpha release of <a href="https://pivotal.io/platform/pivotal-function-service" target="_blank" rel="noreferrer noopener">Pivotal Function Service</a>
- (a platform for building and running Functions, Applications, and Containers on Kubernetes, based on the <a href="https://projectriff.io/blog/2019/08/21/announcing-riff-0-4-0" target="_blank" rel="noreferrer noopener">Project Riff (v0.4.0)</a>
- open source project) is likely to be distributed as (CNAB) bundles.</li>
-<li><a href="https://github.com/deislabs/duffle-vscode" target="_blank" rel="noreferrer noopener">VS Code extension</a>
- and <a href="https://github.com/deislabs/duffle-bag" target="_blank" rel="noreferrer noopener">graphical installer for bundles</a>
- - graphical user interfaces for interacting with CNAB bundles</li>
+<li><a href="https://github.com/deislabs/duffle">Duffle</a> is the reference implementation of the specification, and its goal is to provide functionality for all parts of the specification. You can use it to build, install, and manage bundles, as well as export bundles in thick format for distributing in air-gapped environments.</li>
+<li><a href="https://porter.sh">Porter</a> is an opinionated CNAB builder that <em>gives you building blocks to create a cloud installer for your application, handling all the necessary infrastructure and configuration setup. It is a declarative authoring experience that lets you focus on what you know best: your application.</em></li>
+<li><a href="https://blog.docker.com/2018/12/docker-app-and-cnab/">Docker App</a> is an opinionated CNAB builder and installer that leverages the Docker Compose format to define your applications. To facilitate developer to operator handover, you can add metadata and runtime parameters. These applications can easily be shared using existing container registries. Docker App is available as part of the <a href="https://blog.docker.com/2019/07/announcing-docker-enterprise-3-0-ga/">the latest Docker release</a>.</li>
+<li>the <a href="https://content.pivotal.io/blog/pivotal-build-service-now-alpha-assembles-and-updates-containers-in-kubernetes">Pivotal Build Service (alpha)</a>, <em>a declarative way to build an OCI-compatible container image from source code</em>, and is using CNAB to deploy the service on Kubernetes clusters.</li>
+<li>the next alpha release of <a href="https://pivotal.io/platform/pivotal-function-service">Pivotal Function Service</a> (a platform for building and running Functions, Applications, and Containers on Kubernetes, based on the <a href="https://projectriff.io/blog/2019/08/21/announcing-riff-0-4-0">Project Riff (v0.4.0)</a> open source project) is likely to be distributed as (CNAB) bundles.</li>
+<li><a href="https://github.com/deislabs/duffle-vscode">VS Code extension</a> and <a href="https://github.com/deislabs/duffle-bag">graphical installer for bundles</a> - graphical user interfaces for interacting with CNAB bundles</li>
 <li>several groups in Azure are also evaluating the use of CNAB as a delivery and operational pillar.</li>
 </ul>
 <p>If a tool or platform wants to be CNAB compliant, it must implement the core specification, but it can choose <em>not</em> to implement the distribution or security specifications.
 (One example for this scenario is a team that needs the application definition of a bundle, but already has mechanisms in place for distributing it, and ways of attesting the provenance. This team could decide to only implement the CNAB Core specification.)</p>
 <p>Finally, CNAB is a community effort, and we would like to thank everyone involved with the project!</p>
 <p>In the next article, we will discuss the distribution of CNAB bundles.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/cnab">cnab</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/state-of-cnab-part-2/"><span class="mr-1.5">←</span><span>The state of CNAB: Part 2 - CNAB Registries</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/self-contained-dotnet-cli/"><span>Building self-contained, single executable .NET Core 3 CLI tools</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

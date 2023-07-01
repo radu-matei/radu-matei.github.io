@@ -1,159 +1,344 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Distributing WebAssembly modules using OCI registries | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary_large_image'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png">
-<meta name="twitter:title" content="Distributing WebAssembly modules using OCI registries" />
-<meta name="twitter:description" content="" />
-
-<meta name="description" content="" />
-    <meta property='og:title' content='Distributing WebAssembly modules using OCI registries - radu&#39;s blog'>
-<meta property='og:description' content='WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so.'>
-<meta property='og:url' content='https://radu-matei.com/blog/wasm-to-oci/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png'><meta property='article:published_time' content='2019-10-13T00:00:00Z'/><meta property='article:modified_time' content='2019-10-13T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/wasm-to-oci/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Distributing WebAssembly modules using OCI registries - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/wasm-to-oci/">
+  
+  
+  
+  
+  <meta name="description" content="WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Distributing WebAssembly modules using OCI registries" />
+<meta property="og:description" content="WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/wasm-to-oci/" /><meta property="og:image" content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2019-10-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-10-13T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Distributing WebAssembly modules using OCI registries">
+<meta itemprop="description" content="WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so."><meta itemprop="datePublished" content="2019-10-13T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-10-13T00:00:00+00:00" />
+<meta itemprop="wordCount" content="911"><meta itemprop="image" content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png">
+<meta itemprop="keywords" content="wasm,golang," />
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png"/>
+
+<meta name="twitter:title" content="Distributing WebAssembly modules using OCI registries"/>
+<meta name="twitter:description" content="WebAssembly (WASM) is a binary instruction format for a stack-based virtual machine. In familiar terms, WASM is used as a compilation target for various programming languages (C, C&#43;&#43;, Rust, or Golang, for example), generating a compact binary with a known format. Mozilla Developer Network describes WebAssembly as having huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so."/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/golang">#golang</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> October 13, 2019. 5 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Distributing WebAssembly modules using OCI registries</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <p><img src="/img/article-photos/wasm-to-oci/wasm-to-oci.png" alt=""></p>
-<p><a href="https://webassembly.org" target="_blank" rel="noreferrer noopener">WebAssembly (WASM)</a>
- <em>is a binary instruction format for a stack-based virtual machine.</em> In familiar terms, WASM is used as a compilation target for various programming languages (C, C++, Rust, or Golang, for example), generating a compact binary with a known format. <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts" target="_blank" rel="noreferrer noopener">Mozilla Developer Network describes</a>
- WebAssembly as having <em>huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so.</em></p>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Distributing WebAssembly modules using OCI registries</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Sunday, October 13, 2019</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><p><img src="/img/article-photos/wasm-to-oci/wasm-to-oci.png" alt=""></p>
+<p><a href="https://webassembly.org">WebAssembly (WASM)</a> <em>is a binary instruction format for a stack-based virtual machine.</em> In familiar terms, WASM is used as a compilation target for various programming languages (C, C++, Rust, or Golang, for example), generating a compact binary with a known format. <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts">Mozilla Developer Network describes</a> WebAssembly as having <em>huge implications for the web platform — it provides a way to run code written in multiple languages on the web at near native speed, with client apps running on the web that previously couldn’t have done so.</em></p>
 <p>The very big implication here is being able to execute modules on the web <em>at near native speed</em>. Tasks that have historically had low performance when written in JavaScript can be rewritten in high performance programming languages, like C++, or Rust.</p>
-<p>But WebAssembly isn&rsquo;t only for the web. The <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank" rel="noreferrer noopener">WebAssembly System Interface project (WASI)</a>
- aims to standardize WebAssembly to run outside of the web by providing an abstraction over the tasks of the operating system. This brings two major advantages: portability, and security. Today, you can use runtimes like <a href="https://github.com/CraneStation/wasmtime" target="_blank" rel="noreferrer noopener"><code>wasmtime</code></a>
- to execute WASM modules on a variety of operating systems (Linux, macOS, Windows), in a sandboxed environment with granular access to the file system and network.</p>
+<p>But WebAssembly isn&rsquo;t only for the web. The <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">WebAssembly System Interface project (WASI)</a> aims to standardize WebAssembly to run outside of the web by providing an abstraction over the tasks of the operating system. This brings two major advantages: portability, and security. Today, you can use runtimes like <a href="https://github.com/CraneStation/wasmtime"><code>wasmtime</code></a> to execute WASM modules on a variety of operating systems (Linux, macOS, Windows), in a sandboxed environment with granular access to the file system and network.</p>
 <p>And if you&rsquo;re thinking: <em>wait a second - aren&rsquo;t those advantages also mentioned when talking about containers?</em></p>
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">If WASM+WASI existed in 2008, we wouldn&#39;t have needed to created Docker. That&#39;s how important it is. Webassembly on the server is the future of computing. A standardized system interface was the missing link. Let&#39;s hope WASI is up to the task! <a href="https://t.co/wnXQg4kwa4">https://t.co/wnXQg4kwa4</a></p>&mdash; Solomon Hykes / @shykes@hachyderm.io (@solomonstre) <a href="https://twitter.com/solomonstre/status/1111004913222324225?ref_src=twsrc%5Etfw">March 27, 2019</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>WASI could provide a very interesting alternative to the container ecosystem - but for this article, we are only interested in discussing how to distribute WebAssembly modules.</p>
 <blockquote>
-<p>Read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank" rel="noreferrer noopener">the WASI announcement blog post</a>
- if you want to learn more about how it works, and the principles behind WASI.</p>
+<p>Read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">the WASI announcement blog post</a> if you want to learn more about how it works, and the principles behind WASI.</p>
 </blockquote>
 <h3 id="distributing-webassembly-modules-using-oci-registries">Distributing WebAssembly modules using OCI registries</h3>
-<p>Right now there are a couple of ways to distribute WebAssembly modules - <a href="https://rustwasm.github.io/wasm-pack/book/commands/pack-and-publish.html" target="_blank" rel="noreferrer noopener"><code>wasm-pack</code></a>
- (which uses NPM to store modules), or <a href="https://wapm.io/" target="_blank" rel="noreferrer noopener">WAPM</a>
- (independent of programming language and toolchain, but still a very early stage tool, without much adoption yet outside of the Wasmer ecosystem), to name a few. But if we consider WebAssembly as a potential cross-platform alternative to Linux containers, then we also need a way to distribute them, independent of programming language and toolchain. And why not use exactly the method for distributing container images, OCI registries?</p>
-<p>Additionally, OCI recently announced <a href="https://github.com/opencontainers/artifacts" target="_blank" rel="noreferrer noopener">the OCI Artifacts project</a>
-, which aims to extend the OCI registry specification and store other cloud native artifacts (think about Helm charts, or CNAB bundles). This has immediate advantages - a consistent way to distribute multiple artifacts type, using already existing registry services, or reusing and extending the current security model (like <a href="https://theupdateframework.github.io/" target="_blank" rel="noreferrer noopener">TUF</a>
-).</p>
-<p><a href="https://github.com/deislabs/oras" target="_blank" rel="noreferrer noopener">ORAS</a>
- (OCI Registry as Storage) is a proposed implementation for the OCI Artifacts project, and significantly simplifies storing arbitrary content in OCI registries. So we could use the ORAS client library to build a really simple tool to push and pull WebAssembly modules to OCI registries.</p>
-<p>Note however, that currently, most registry services reject an unknown artifact type - and ORAS has been tested with <a href="https://github.com/docker/distribution" target="_blank" rel="noreferrer noopener">the open source Docker Distribution project</a>
- and <a href="https://docs.microsoft.com/en-us/azure/container-registry" target="_blank" rel="noreferrer noopener">Azure Container Registry</a>
-.</p>
+<p>Right now there are a couple of ways to distribute WebAssembly modules - <a href="https://rustwasm.github.io/wasm-pack/book/commands/pack-and-publish.html"><code>wasm-pack</code></a> (which uses NPM to store modules), or <a href="https://wapm.io/">WAPM</a> (independent of programming language and toolchain, but still a very early stage tool, without much adoption yet outside of the Wasmer ecosystem), to name a few. But if we consider WebAssembly as a potential cross-platform alternative to Linux containers, then we also need a way to distribute them, independent of programming language and toolchain. And why not use exactly the method for distributing container images, OCI registries?</p>
+<p>Additionally, OCI recently announced <a href="https://github.com/opencontainers/artifacts">the OCI Artifacts project</a>, which aims to extend the OCI registry specification and store other cloud native artifacts (think about Helm charts, or CNAB bundles). This has immediate advantages - a consistent way to distribute multiple artifacts type, using already existing registry services, or reusing and extending the current security model (like <a href="https://theupdateframework.github.io/">TUF</a>).</p>
+<p><a href="https://github.com/deislabs/oras">ORAS</a> (OCI Registry as Storage) is a proposed implementation for the OCI Artifacts project, and significantly simplifies storing arbitrary content in OCI registries. So we could use the ORAS client library to build a really simple tool to push and pull WebAssembly modules to OCI registries.</p>
+<p>Note however, that currently, most registry services reject an unknown artifact type - and ORAS has been tested with <a href="https://github.com/docker/distribution">the open source Docker Distribution project</a> and <a href="https://docs.microsoft.com/en-us/azure/container-registry">Azure Container Registry</a>.</p>
 <p>First step is defining the media types we are going to associate WebAssembly modules - this helps identifying the artifact type, and can be used when configuring a registry to explicitly allow or disallow storing them.</p>
 <pre tabindex="0"><code>ConfigMediaType       = &#34;application/vnd.wasm.config.v1+json&#34;
 ContentLayerMediaType = &#34;application/vnd.wasm.content.layer.v1+wasm&#34;
@@ -178,11 +363,9 @@ manifest, err := oras.Push(ctx, resolver, ref, store, layers, pushOpts...)
 _, layers, err := oras.Pull(ctx, resolver, ref, store, pullOpts...)
 manifest, contents, _ := store.Get(layers[0])
 ioutil.WriteFile(outFile, contents, 0755)
-</code></pre><p>The Go package and a <code>wasm-to-oci</code> utility <a href="https://github.com/engineerd/wasm-to-oci" target="_blank" rel="noreferrer noopener">can be found on GitHub</a>
-.</p>
+</code></pre><p>The Go package and a <code>wasm-to-oci</code> utility <a href="https://github.com/engineerd/wasm-to-oci">can be found on GitHub</a>.</p>
 <h3 id="testing-with-an-oci-registry">Testing with an OCI registry</h3>
-<p>We have a local module (which can be found in the <code>testdata</code> directory of the <a href="https://github.com/engineerd/wasm-to-oci" target="_blank" rel="noreferrer noopener">repo</a>
-), and we use the <code>wasm-to-oci</code> to push to an Azure Container Registry repository that we are currently logged in to (using the Docker CLI):</p>
+<p>We have a local module (which can be found in the <code>testdata</code> directory of the <a href="https://github.com/engineerd/wasm-to-oci">repo</a>), and we use the <code>wasm-to-oci</code> to push to an Azure Container Registry repository that we are currently logged in to (using the Docker CLI):</p>
 <pre tabindex="0"><code>$ ls
 .rwxr-xr-x 1.6M radu  hello.wasm
 
@@ -219,50 +402,51 @@ Hello from WebAssembly!
   ]
 }
 </code></pre><h3 id="conclusion">Conclusion</h3>
-<p>This was an interesting proof of concept for storing WASM in OCI registries. Most likely you don&rsquo;t need this if you&rsquo;re using WebAssembly on the web right now, but it can be useful in the context of WASI, and particularly considering this extremely cool <a href="https://github.com/dmcgowan/containerd-wasm" target="_blank" rel="noreferrer noopener">containerd shim for WebAssembly</a>
-.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
+<p>This was an interesting proof of concept for storing WASM in OCI registries. Most likely you don&rsquo;t need this if you&rsquo;re using WebAssembly on the web right now, but it can be useful in the context of WASI, and particularly considering this extremely cool <a href="https://github.com/dmcgowan/containerd-wasm">containerd shim for WebAssembly</a>.</p>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/golang">golang</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/wasm-oci-tuf/"><span class="mr-1.5">←</span><span>Securely distributing and signing WebAssembly modules using OCI and TUF</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/github-action-cross-plat-configure-tools/"><span>Cross platform GitHub Action for downloading, extracting, and adding tools to path</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

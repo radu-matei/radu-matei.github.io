@@ -1,151 +1,342 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>A simple WebAssembly linker in JavaScript | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="A simple WebAssembly linker in JavaScript" />
-<meta name="twitter:description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules." />
-
-<meta name="description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules." />
-    <meta property='og:title' content='A simple WebAssembly linker in JavaScript - radu&#39;s blog'>
-<meta property='og:description' content='An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules.'>
-<meta property='og:url' content='https://radu-matei.com/blog/a-simple-wasm-linker-js/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:published_time' content='2020-11-13T00:00:00Z'/><meta property='article:modified_time' content='2020-11-13T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://deislabs.io/posts/a-simple-wasm-linker-js"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>A simple WebAssembly linker in JavaScript - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://deislabs.io/posts/a-simple-wasm-linker-js">
+  
+  
+  
+  
+  <meta name="description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="A simple WebAssembly linker in JavaScript" />
+<meta property="og:description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/a-simple-wasm-linker-js/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2020-11-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-11-13T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="A simple WebAssembly linker in JavaScript">
+<meta itemprop="description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules."><meta itemprop="datePublished" content="2020-11-13T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-11-13T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1375">
+<meta itemprop="keywords" content="wasm," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A simple WebAssembly linker in JavaScript"/>
+<meta name="twitter:description" content="An experimental JavaScript library that helps instantiating WebAssembly modules with imports by providing functionality to link JavaScript objects as imports, as well as automatically perform name based resolution for linking entire modules."/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
+
+  
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> November 13, 2020. 7 minutes read.  <a href="/pdf/a-simple-wasm-linker-js.pdf" target="_blank">PDF </a>  </h2>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">A simple WebAssembly linker in JavaScript</h1>
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">A simple WebAssembly linker in JavaScript</h1>
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Friday, November 13, 2020</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
 
-        
-        <div class="content">
-            
-
-
-            <p><em><a href="https://deislabs.io/posts/a-simple-wasm-linker-js" target="_blank" rel="noreferrer noopener">This article originally appeared on the DeisLabs blog</a>
-</em>.</p>
+  <section><p><em><a href="https://deislabs.io/posts/a-simple-wasm-linker-js">This article originally appeared on the DeisLabs blog</a></em>.</p>
 <p>Over the last few months, our team has been experimenting with executing
 WebAssembly modules in various environments, and we released projects such as
-<a href="https://deislabs.io/posts/introducing-krustlet/" target="_blank" rel="noreferrer noopener">Krustlet</a>
- (for executing Wasm modules in Kubernetes), and
-<a href="https://deislabs.io/posts/introducing-wagi-easiest-way-to-build-webassembly-microservices/" target="_blank" rel="noreferrer noopener">WAGI</a>
- (for writing HTTP response handlers in WebAssembly). But while most
+<a href="https://deislabs.io/posts/introducing-krustlet/">Krustlet</a> (for executing Wasm modules in Kubernetes), and
+<a href="https://deislabs.io/posts/introducing-wagi-easiest-way-to-build-webassembly-microservices/">WAGI</a> (for writing HTTP response handlers in WebAssembly). But while most
 of our experiments are built in Rust, we are also exploring ways to execute
 WebAssembly workloads in other environments, such as JavaScript runtimes.</p>
-<p>Today, we are <a href="https://github.com/deislabs/wasm-linker-js" target="_blank" rel="noreferrer noopener">releasing a small experimental JavaScript
-library</a>
- to help with instantiating WebAssembly modules by
+<p>Today, we are <a href="https://github.com/deislabs/wasm-linker-js">releasing a small experimental JavaScript
+library</a> to help with instantiating WebAssembly modules by
 providing functionality to link JavaScript objects as module imports, and
 automatically perform name based resolution for linking entire modules and
 instances. The library also enables optionally defining asynchronous import
 functions, by leveraging a set of great open source projects, such as
-<a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener">Binaryen</a>
- and <a href="https://github.com/GoogleChromeLabs/asyncify" target="_blank" rel="noreferrer noopener">Asyncify</a>
-.</p>
+<a href="https://github.com/WebAssembly/binaryen">Binaryen</a> and <a href="https://github.com/GoogleChromeLabs/asyncify">Asyncify</a>.</p>
 <p>Given that most of our WebAssembly experiments are built with
-<a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
-, the API of the JavaScript linker we are releasing is
-modeled after the excellent <a href="https://docs.rs/wasmtime/0.21.0/wasmtime/" target="_blank" rel="noreferrer noopener">Wasmtime linker</a>
-, which offers a
+<a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a>, the API of the JavaScript linker we are releasing is
+modeled after the excellent <a href="https://docs.rs/wasmtime/0.21.0/wasmtime/">Wasmtime linker</a>, which offers a
 similar functionality for Rust runtimes, and using the JavaScript linker should
 be familiar to people using Wasmtime.</p>
 <h3 id="using-the-javascript-linker">Using the JavaScript linker</h3>
@@ -159,21 +350,16 @@ const { Linker } = require(&#34;@deislabs/wasm-linker-js&#34;);
 </code></pre><p>The next sections contain a few examples of using the JavaScript linker. In
 order to show the text format of the WebAssembly modules we are trying to use,
 <code>binaryen</code> is also required to run the examples
-(<a href="https://www.npmjs.com/package/binaryen" target="_blank" rel="noreferrer noopener"><code>npm install binaryen</code></a>
-). This is not necessary in real world
+(<a href="https://www.npmjs.com/package/binaryen"><code>npm install binaryen</code></a>). This is not necessary in real world
 scenarios, and the modules can be compiled from their binary representation
 without additional dependencies. For more examples of using the Linker in both
-TypeScript and JavaScript, check the <a href="https://github.com/deislabs/wasm-linker-js/blob/main/tests/linker.ts" target="_blank" rel="noreferrer noopener">linker tests</a>
- and the
-<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/node-example.js" target="_blank" rel="noreferrer noopener">Node.js examples</a>
- from <a href="https://github.com/deislabs/wasm-linker-js" target="_blank" rel="noreferrer noopener">the project&rsquo;s repository on
-GitHub</a>
-.</p>
+TypeScript and JavaScript, check the <a href="https://github.com/deislabs/wasm-linker-js/blob/main/tests/linker.ts">linker tests</a> and the
+<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/node-example.js">Node.js examples</a> from <a href="https://github.com/deislabs/wasm-linker-js">the project&rsquo;s repository on
+GitHub</a>.</p>
 <h4 id="defining-a-single-import">Defining a single import</h4>
 <p>Let&rsquo;s assume we have a simple WebAssembly module (represented in its text format
 and contained in the <code>usingAdd</code> variable, transformed to its binary
-representation using <a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener">Binaryen</a>
-) that imports a function <code>add</code> from a
+representation using <a href="https://github.com/WebAssembly/binaryen">Binaryen</a>) that imports a function <code>add</code> from a
 module <code>calculator</code>.</p>
 <p>In order to instantiate this module, we have to satisfy its import - in this
 case, provide an implementation for the <code>add</code> function from the <code>calculator</code>
@@ -273,26 +459,20 @@ the items already defined in the linker, then adds its exported items to the
 linker so they can be used when instantiating other modules using the
 <code>instantiate</code> method. The linker also allows adding an already instantiated
 module, through the <code>instance</code> method, as well as aliasing a module under a new
-name, through the <code>alias</code> method (<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/node-example.js" target="_blank" rel="noreferrer noopener">Node.js examples for all the public linker
-methods can be found in the project repository</a>
- ).</p>
+name, through the <code>alias</code> method (<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/node-example.js">Node.js examples for all the public linker
+methods can be found in the project repository</a> ).</p>
 <p>The linker methods we have seen so far (<code>define</code>, <code>module</code>, <code>instance</code>, <code>alias</code>,
-and <code>instantiate</code>) all have correspondents in the <a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
- linker,
+and <code>instantiate</code>) all have correspondents in the <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> linker,
 and the APIs are purposefully similar.</p>
 <h4 id="defining-asynchronous-imports">Defining asynchronous imports</h4>
 <p>One of the most popular scenarios in JavaScript applications is waiting for
 network or I/O operations. Unfortunately, the current WebAssembly MVP does not
-have a way of waiting for the execution of asynchronous imports (see <a href="https://github.com/WebAssembly/design/issues/720" target="_blank" rel="noreferrer noopener">this
-issue</a>
-). To enable this functionality, <a href="https://github.com/WebAssembly/binaryen" target="_blank" rel="noreferrer noopener">Binaryen</a>
-
-has a pass that <a href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html" target="_blank" rel="noreferrer noopener">transforms a Wasm module and allows it to pause and resume by
-unwiding and rewinding the call stack</a>
-.</p>
-<p>When enabled, this library can use the <a href="https://github.com/GoogleChromeLabs/asyncify" target="_blank" rel="noreferrer noopener">JavaScript wrapper of
-Asyncify</a>
- and define asynchronous import functions for WebAssembly
+have a way of waiting for the execution of asynchronous imports (see <a href="https://github.com/WebAssembly/design/issues/720">this
+issue</a>). To enable this functionality, <a href="https://github.com/WebAssembly/binaryen">Binaryen</a>
+has a pass that <a href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html">transforms a Wasm module and allows it to pause and resume by
+unwiding and rewinding the call stack</a>.</p>
+<p>When enabled, this library can use the <a href="https://github.com/GoogleChromeLabs/asyncify">JavaScript wrapper of
+Asyncify</a> and define asynchronous import functions for WebAssembly
 modules (note that the Asyncify pass must have been applied to the module before
 instantiating using the linker). This allows us to use satisfy the import of a
 WebAssembly module by providing a JavaScript function that performs network or
@@ -330,77 +510,71 @@ var calc = await linker.instantiate(bytes.emitBinary());
 var result = await calc.instance.exports.add(1, 2);
 console.log(result);
 </code></pre><blockquote>
-<p>Be sure to read <a href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html" target="_blank" rel="noreferrer noopener">Alon Zakai&rsquo;s blog post</a>
- to better understand
+<p>Be sure to read <a href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html">Alon Zakai&rsquo;s blog post</a> to better understand
 how Asyncify works and the overhead it introduces.</p>
-<p>Ingvar Stepanyan has a <a href="https://rreverser.com/webassembly-shell-with-a-real-filesystem-access-in-a-browser/" target="_blank" rel="noreferrer noopener">great blog post about building a WebAssembly shell
-with a real filesystem access in a browser</a>
- using
+<p>Ingvar Stepanyan has a <a href="https://rreverser.com/webassembly-shell-with-a-real-filesystem-access-in-a-browser/">great blog post about building a WebAssembly shell
+with a real filesystem access in a browser</a> using
 WASI and Asyncify.</p>
 </blockquote>
 <h4 id="using-the-linker-in-the-browser">Using the linker in the browser</h4>
 <p>Currently, this library has limited support for running in a browser. The
-easiest way to use it is to pull the library through <a href="https://unpkg.com/" target="_blank" rel="noreferrer noopener">UNPKG</a>
-, and you can
+easiest way to use it is to pull the library through <a href="https://unpkg.com/">UNPKG</a>, and you can
 check a complete example of this library in the browser in the
-<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/index.html" target="_blank" rel="noreferrer noopener">repository</a>
-:</p>
+<a href="https://github.com/deislabs/wasm-linker-js/blob/main/examples/index.html">repository</a>:</p>
 <pre tabindex="0"><code>&lt;script
   type=&#34;module&#34;
   src=&#34;https://unpkg.com/@deislabs/wasm-linker-js/dist/wasm-linker.js&#34;
 &gt;&lt;/script&gt;
 </code></pre><p>However, keep in mind the library does not currently have support for
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming" target="_blank" rel="noreferrer noopener"><code>instantiateStreaming</code></a>
-, which is the preferred way of
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming"><code>instantiateStreaming</code></a>, which is the preferred way of
 instantiating Wasm modules in browsers. The module system for generating a
-browser compatible library is also far from ideal - <a href="https://github.com/deislabs/wasm-linker-js/issues/4" target="_blank" rel="noreferrer noopener">check this
-issue</a>
- if you want to help make it better!</p>
+browser compatible library is also far from ideal - <a href="https://github.com/deislabs/wasm-linker-js/issues/4">check this
+issue</a> if you want to help make it better!</p>
 <p>We want to thank the WebAssembly community for building great tools, and we hope
 this little library will be helpful for people working with WebAssembly from
 JavaScript runtimes!</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/wasi-experimental-http/"><span class="mr-1.5">←</span><span>An experimental outbound HTTP library for the WebAssembly System Interface</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/tensorflow-inferencing-wasi/"><span>TensorFlow inferencing using WebAssembly and WASI</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

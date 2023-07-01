@@ -1,137 +1,329 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary_large_image'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/aspnet-core-docker-azure/ci-cd-workflow.png">
-<meta name="twitter:title" content="Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure" />
-<meta name="twitter:description" content="" />
-
-<meta name="description" content="" />
-    <meta property='og:title' content='Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure - radu&#39;s blog'>
-<meta property='og:description' content='In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.'>
-<meta property='og:url' content='https://radu-matei.com/blog/aspnet-core-docker-azure/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://radu-matei.com/img/article-photos/aspnet-core-docker-azure/ci-cd-workflow.png'><meta property='article:published_time' content='2016-11-26T00:00:00Z'/><meta property='article:modified_time' content='2016-11-26T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-docker-azure/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-docker-azure/">
+  
+  
+  
+  
+  <meta name="description" content="In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure" />
+<meta property="og:description" content="In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-docker-azure/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2016-11-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-11-26T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure">
+<meta itemprop="description" content="In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud."><meta itemprop="datePublished" content="2016-11-26T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2016-11-26T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2689">
+<meta itemprop="keywords" content="dotnet-core,docker,azure," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure"/>
+<meta name="twitter:description" content="In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud."/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/dotnet-core">#dotnet-core</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/docker">#docker</a>
-  
-  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> November 26, 2016. 13 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <!-- raw HTML omitted -->
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Saturday, November 26, 2016</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <p>In this article, we will take the simplest ASP.NET Core application, run it with Docker locally, then create Continuous Integration and Continuous Deployment flows using a GitHub repository, Docker Cloud and an Azure virtual machine that will act as a node for Docker Cloud.</p>
-<p>If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, <a href="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">you might want to skip to the part we start creating the CI/CD workflow.</a>
-</p>
+<p>If you don&rsquo;t want to create an ASP.NET Core application but are interested in the CI/CD workflow, or if you already have a GitHub repository with a complete application with a Dockerfile, <a href="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!">you might want to skip to the part we start creating the CI/CD workflow.</a></p>
 <h3 id="moving-parts-and-used-components">Moving parts and used components</h3>
 <p>The main part of a CI/CD workflow like this is the application itself. It can be however complicated, but in this case I want to emphasize the workflow itself and will only build a very simple application with ASP.NET Core.</p>
 <blockquote>
@@ -145,18 +337,15 @@
 <p>Docker Hub is a cloud-based registry service which allows you to link to code repositories, build your images and test them, stores manually pushed images, and links to Docker Cloud so you can deploy images to your hosts. It provides a centralized resource for container image discovery, distribution and change management, user and team collaboration, and workflow automation throughout the development pipeline.</p>
 </blockquote>
 <blockquote>
-<p>More information about Docker Hub on <a href="https://docs.docker.com/docker-hub/" target="_blank" rel="noreferrer noopener">the Official Docker Documentation</a>
-.</p>
+<p>More information about Docker Hub on <a href="https://docs.docker.com/docker-hub/">the Official Docker Documentation</a>.</p>
 </blockquote>
 <p>Then, we will configure an Azure VM to be a node for Docker Cloud and Docker Cloud will automatically publish containers to that VM. Then, every time there are changes in the GitHub repository, Docker Cloud will build the image and publish the container again automatically.</p>
 <blockquote>
-<p>More information about Docker Cloud on <a href="https://docs.docker.com/docker-cloud/overview/" target="_blank" rel="noreferrer noopener">the Official Docker Documentation</a>
-.</p>
+<p>More information about Docker Cloud on <a href="https://docs.docker.com/docker-cloud/overview/">the Official Docker Documentation</a>.</p>
 </blockquote>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/ci-cd-workflow.png" alt=""></p>
 <blockquote>
-<p><a href="https://blog.docker.com/2016/04/cicd-with-docker-cloud/" target="_blank" rel="noreferrer noopener">Photo source on the Docker Blog</a>
-</p>
+<p><a href="https://blog.docker.com/2016/04/cicd-with-docker-cloud/">Photo source on the Docker Blog</a></p>
 </blockquote>
 <h3 id="create-a-github-repository">Create a GitHub repository</h3>
 <p>First, we need a GitHub repository. If you already have a repo with an application you want to use you can do that. However, I will create a new repo and clone it on my computer.</p>
@@ -172,13 +361,9 @@
 <h3 id="creating-the-aspnet-core-application">Creating the ASP.NET Core application</h3>
 <p>This will be the part with the least focus in this article, since we have covered building ASP.NET Core applications for a while now and you can find a lot resources on this topic, including some on this site.</p>
 <blockquote>
-<p>For ASP.NET Core tutorials, you can <a href="https://radu-matei.github.io/categories/aspnet-core/" target="_blank" rel="noreferrer noopener">take a look at some resources on this blog</a>
-, consult the <a href="https://docs.microsoft.com/en-us/aspnet/core/" target="_blank" rel="noreferrer noopener">official documentation</a>
-, or you can watch this <a href="https://mva.microsoft.com/en-US/training-courses/introduction-to-aspnet-core-10-16841" target="_blank" rel="noreferrer noopener">Microsoft Virtual Academy course presented by Scott Hanselman and Maria Naggaga</a>
-.</p>
+<p>For ASP.NET Core tutorials, you can <a href="https://radu-matei.github.io/categories/aspnet-core/">take a look at some resources on this blog</a>, consult the <a href="https://docs.microsoft.com/en-us/aspnet/core/">official documentation</a>, or you can watch this <a href="https://mva.microsoft.com/en-US/training-courses/introduction-to-aspnet-core-10-16841">Microsoft Virtual Academy course presented by Scott Hanselman and Maria Naggaga</a>.</p>
 </blockquote>
-<p>Basically, we will create the same application as explained in <a href="https://radu-matei.github.io/blog/aspnet-core-startup/" target="_blank" rel="noreferrer noopener">this blog post</a>
-, but we will build it against .NET Core 1.0.1 (which is the latest stable version at the moment of writing this article).</p>
+<p>Basically, we will create the same application as explained in <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">this blog post</a>, but we will build it against .NET Core 1.0.1 (which is the latest stable version at the moment of writing this article).</p>
 <blockquote>
 <p>While .NET Core 1.0.1 is the latest version at the moment of writing this article, you can also use other versions, since the Docker images are available on Docker Hub.</p>
 </blockquote>
@@ -212,12 +397,10 @@
 <p>Docker can build images automatically by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image. Using docker build users can create an automated build that executes several command-line instructions in succession.</p>
 </blockquote>
 <blockquote>
-<p><a href="https://docs.docker.com/engine/reference/builder/" target="_blank" rel="noreferrer noopener">More information on the Dockerfile on the Official Docker Documentation</a>
-</p>
+<p><a href="https://docs.docker.com/engine/reference/builder/">More information on the Dockerfile on the Official Docker Documentation</a></p>
 </blockquote>
 <p>Basically, the Dockerfile is like a recipe for building container images. It is a script composed of multiple commands executed successively to create images based on other images.</p>
-<p>You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you <a href="https://code.visualstudio.com/Docs/languages/dockerfile" target="_blank" rel="noreferrer noopener">install the VS Code Docker extension</a>
-, press F1 and search for Docker, you should see something similar to:</p>
+<p>You have two options for writing the Dockerfile: you can write it manually, or you can have VS Code write it for you. If you <a href="https://code.visualstudio.com/Docs/languages/dockerfile">install the VS Code Docker extension</a>, press F1 and search for Docker, you should see something similar to:</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/vscode-docker.png" alt=""></p>
 <p>In this case, we will write the Dockerfile manually, mainly because we want to understand all the things involved.</p>
 <p>Create a new file called <code>Dockerfile</code> (without extension) to the root of the application (in this case in the same folder as <code>project.json</code> and <code>Program.cs</code>) with the following content:</p>
@@ -290,8 +473,7 @@ ENTRYPOINT [&#34;dotnet&#34;, &#34;run&#34;]
 <p><img src="/img/article-photos/aspnet-core-docker-azure/docker-cloud-bring-node.png" alt=""></p>
 <p>I created an Ubuntu Server 14.04 VM (at the moment of writing this article, only Ubuntu 14.04 and 15.04 are supported by Docker Cloud).</p>
 <p><img src="/img/article-photos/aspnet-core-docker-azure/azure-create-vm-1.png" alt=""></p>
-<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal" target="_blank" rel="noreferrer noopener">In this article you can see the detailed process on how to open ports for Azure VMs.</a>
-</p>
+<p>After the deployment succeeds, we will need to open some ports on that VM so the Docker Cloud self discovery service can work. <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-nsg-quickstart-portal">In this article you can see the detailed process on how to open ports for Azure VMs.</a></p>
 <blockquote>
 <p><strong>We recommend you open incoming port 2375 in your firewall for Docker Cloud to communicate with the Docker daemon running in the node. For the overlay network to work, you must open port 6783/tcp and 6783/udp.</strong></p>
 </blockquote>
@@ -357,8 +539,7 @@ ENTRYPOINT [&#34;dotnet&#34;, &#34;run&#34;]
 </ol>
 </blockquote>
 <blockquote>
-<p>More on Docker Cloud services on <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/" target="_blank" rel="noreferrer noopener">the Official Docker Documentation</a>
-.</p>
+<p>More on Docker Cloud services on <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/">the Official Docker Documentation</a>.</p>
 </blockquote>
 <p>We will create a service based on the image we just created.</p>
 <p>The only custom settings will be to enable the <code>AUTOREDEPLOY</code> option and to specify the port to be 80 on the machine.</p>
@@ -387,48 +568,52 @@ ENTRYPOINT [&#34;dotnet&#34;, &#34;run&#34;]
 <p>This is basically how the entire process looks like. It is not production ready, as it does not have any testing workflow put in place and the application is rather simple.</p>
 <p>Real world scenarios would most certainly involve more containers, so composing and orchestrating containers, as well as testing.</p>
 <p>We will try to deal with these aspects in future articles, but for now we created a very simple CI/CD workflow using GitHub, Docker Cloud and an Azure VM.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/docker">docker</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/azure">azure</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/aspnet-core-websockets-middleware/"><span class="mr-1.5">←</span><span>Creating a WebSockets middleware for ASP .NET Core 3</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/rpi-sensehat-telemetry/"><span>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

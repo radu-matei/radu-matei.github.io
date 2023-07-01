@@ -1,180 +1,356 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine" />
-<meta name="twitter:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine" />
-
-<meta name="description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine" />
-    <meta property='og:title' content='The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine - radu&#39;s blog'>
-<meta property='og:description' content='Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine'>
-<meta property='og:url' content='https://radu-matei.com/blog/hybrid-swarmmode/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='docker'><meta property='article:tag' content='azure'><meta property='article:tag' content='windows-containers'><meta property='article:published_time' content='2017-07-03T00:00:00Z'/><meta property='article:modified_time' content='2017-07-03T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/hybrid-swarmmode/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/hybrid-swarmmode/">
+  
+  
+  
+  
+  <meta name="description" content="We&rsquo;ll explore how to create a hybrid Docker Swarm Mode cluster with Linux and Windows agents, deploy it on Azure Container Service using ACS Engine, see how to connect to the cluster and manage it and finally how to deploy hybrid services with both Linux and Windows Server containers." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine" />
+<meta property="og:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/hybrid-swarmmode/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2017-07-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-07-03T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine">
+<meta itemprop="description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"><meta itemprop="datePublished" content="2017-07-03T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-07-03T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1790">
+<meta itemprop="keywords" content="docker,azure,windows-containers," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine"/>
+<meta name="twitter:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/docker">#docker</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/azure">#azure</a>
-  
-  | <a class="subtitle is-6" href="/tags/windows-containers">#windows-containers</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> July 3, 2017. 9 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <p>Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.</p>
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Monday, July 3, 2017</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><p>Now, you can create yourself a hybrid cluster within any private network where you have a Windows Server 2016 with Containers and a Linux machine - it can be locally, with VirtualBox, Hyper-V or VMWare, or it can be on your cloud provider of choice. The simplicity of Docker Swarm allows us to easily create a swarm within minutes of having our VMs deployed.</p>
 <p>Here is a list of resources you might want to get started with before diving into this article:</p>
 <ul>
-<li><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/" target="_blank" rel="noreferrer noopener">Getting started with Swarm Mode and Linux Containers - Docker docs</a>
-</li>
-<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode" target="_blank" rel="noreferrer noopener">Getting started with Swarm Mode and Windows Containers - Microsoft docs</a>
-</li>
-<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters" target="_blank" rel="noreferrer noopener">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a>
-</li>
+<li><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/">Getting started with Swarm Mode and Linux Containers - Docker docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode">Getting started with Swarm Mode and Windows Containers - Microsoft docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/swarm-mode#linuxwindows-mixed-os-clusters">Initializing a Linux+Windows mixed-os cluster - Microsoft docs</a></li>
 </ul>
 <h3 id="how-is-this-article-different-compared-to-the-docs-above">How is this article different compared to the docs above?</h3>
-<p>In this article we will focus on deploying the cluster on Azure programmatically, using <a href="https://github.com/Azure/acs-engine" target="_blank" rel="noreferrer noopener">acs-engine</a>
-, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview" target="_blank" rel="noreferrer noopener">ARM (Azure Resource Manager) templates</a>
- for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
-<p>While you can <a href="https://github.com/Azure/acs-engine" target="_blank" rel="noreferrer noopener">find more information about acs-engine on the GitHub repo</a>
-, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/" target="_blank" rel="noreferrer noopener">various Azure command-line interfaces</a>
- like Azure CLI 2.0 or Azure PowerShell.</p>
+<p>In this article we will focus on deploying the cluster on Azure programmatically, using <a href="https://github.com/Azure/acs-engine">acs-engine</a>, a tool that generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview">ARM (Azure Resource Manager) templates</a> for Docker enabled clusters on Microsoft Azure. It will also deploy all resources necessary for our cluster, like load balancers, configure DNS for masters and agents and scale sets for agents and masters. More on this later.</p>
+<p>While you can <a href="https://github.com/Azure/acs-engine">find more information about acs-engine on the GitHub repo</a>, in short, the tool takes a cluster definition file and outputs ARM templates that can be deployed using the <a href="https://azure.github.io/projects/clis/">various Azure command-line interfaces</a> like Azure CLI 2.0 or Azure PowerShell.</p>
 <h3 id="getting-started---prerequisites">Getting started - prerequisites</h3>
-<p>This article will continue under the assumption that you have an active Azure subscription. If you don&rsquo;t, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/" target="_blank" rel="noreferrer noopener">Visual Studio Dev Essentials</a>
- (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md" target="_blank" rel="noreferrer noopener">this link on how to activate your free monthly $25</a>
-), or a <a href="https://azure.microsoft.com/en-us/free/" target="_blank" rel="noreferrer noopener">free trial</a>
-.</p>
+<p>This article will continue under the assumption that you have an active Azure subscription. If you don&rsquo;t, there are various ways to get a free subscription, like <a href="https://www.visualstudio.com/dev-essentials/">Visual Studio Dev Essentials</a> (see <a href="https://github.com/awesome-opening-opportunities/technical-documentation/blob/master/docs/vs-dev-essentials.md">this link on how to activate your free monthly $25</a>), or a <a href="https://azure.microsoft.com/en-us/free/">free trial</a>.</p>
 <blockquote>
-<p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster" target="_blank" rel="noreferrer noopener">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a>
- where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
+<p>Before you get started, there is a <a href="https://channel9.msdn.com/Events/DXPortugal/OSCAMP-Open-Source-Software-powered-by-Bright-Pixel/The-Hybrid-Swarm-Running-Windows-and-Linux-Apps-in-one-Docker-Cluster">great talk by Docker Developer Advocate and Microsoft MVP Elton Stoneman titled: The Hybrid Swarm: Running Windows and Linux Apps in one Docker Cluster</a> where he talks about the concepts involved in having a hybrid swarm cluster and that I highly recommend.</p>
 </blockquote>
 <h3 id="understanding-all-types-of-containers">Understanding all types of containers</h3>
 <p>First, there are Linux containers. They have been around for a while now (no, Docker did not invent them) and Docker created awesome tooling and integrations.</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/journey.png" alt=""></p>
 <blockquote>
-<p><a href="https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/" target="_blank" rel="noreferrer noopener">Photo credits to Bruno Terkaly, from this article</a>
-</p>
+<p><a href="https://blogs.msdn.microsoft.com/allthingscontainer/2016/10/14/why-containers/">Photo credits to Bruno Terkaly, from this article</a></p>
 </blockquote>
 <p>Linux containers use the host kernel to run &ldquo;containerized&rdquo; workloads - that is execute the process inside the container using Linux kernel features like cgroups and namespaces. Of course, to run Linux containers you need a Linux kernel - this hasn&rsquo;t changed and will not change any time soon.</p>
-<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank" rel="noreferrer noopener">When we talk about the Windows ecosystem</a>
-, we have Windows Server Containers and Hyper-V Containers.</p>
-<p>Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank" rel="noreferrer noopener">source - Microsoft docs</a>
-)</p>
-<p>Hyper-V Containers - &ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/" target="_blank" rel="noreferrer noopener">source - Microsoft docs</a>
-)</p>
+<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">When we talk about the Windows ecosystem</a>, we have Windows Server Containers and Hyper-V Containers.</p>
+<p>Windows Server Containers, much like Linux containers, share the kernel with the host and other containers. &ldquo;These containers do not provide a hostile security boundary and should not be used to isolate untrusted code.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">source - Microsoft docs</a>)</p>
+<p>Hyper-V Containers - &ldquo;expands on the isolation provided by Windows Server Containers by running each container in a highly optimized virtual machine. In this configuration, the kernel of the container host is not shared with other containers on the same host. These containers are designed for hostile multitenant hosting with the same security assurances of a virtual machine. Since these containers do not share the kernel with the host or other containers on the host, they can run kernels with different versions and configurations.&rdquo; (<a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/">source - Microsoft docs</a>)</p>
 <p>However, there&rsquo;s a twist: announced at DockerCon 2017, you will be able to run Linux containers on Windows hosts using Hyper-V Isolation</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/win-linux-containers.jpg" alt=""></p>
 <blockquote>
-<p><a href="https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/" target="_blank" rel="noreferrer noopener">Image from The New Stack</a>
-</p>
+<p><a href="https://thenewstack.io/finally-linux-containers-really-will-run-windows-linuxkit/">Image from The New Stack</a></p>
 </blockquote>
-<p>This is all possible through the new <a href="https://github.com/linuxkit/linuxkit" target="_blank" rel="noreferrer noopener">LinuxKit project</a>
-, but more on this on a separate article in the future.</p>
+<p>This is all possible through the new <a href="https://github.com/linuxkit/linuxkit">LinuxKit project</a>, but more on this on a separate article in the future.</p>
 <p>After we deploy our cluster, we will be able to deploy all types of containers described above.</p>
 <h3 id="the-acs-engine-cluster-definition">The <code>acs-engine</code> cluster definition</h3>
 <p>As said earlier, we will use a JSON cluster definition file to, well, define our cluster.</p>
@@ -182,8 +358,7 @@
 
 <p>This is a pretty standard cluster definition file for acs-engine, except for the addition of <code>windowspool</code>, a pool of Windows Server agents in our cluster.</p>
 <blockquote>
-<p>You can find <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md" target="_blank" rel="noreferrer noopener">in-depth documentation for the cluster definition on the acs-engine GitHub repo here.</a>
-</p>
+<p>You can find <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md">in-depth documentation for the cluster definition on the acs-engine GitHub repo here.</a></p>
 </blockquote>
 <p>From the definition file, we see that we have a Swarm Mode cluster, with 3 Linux masters, 3 Linux agents and 3 Windows Server 2016 agents. Before we can use this definition file, we need to add the required values for <code>dnxPrefix</code> for the masters, Linux and Windows agents.</p>
 <p>You must also provide a username and public SSH key for the Linux VMs and a username and password for the Windows VMs, and you can change the default number of 3 for the agent and master count.</p>
@@ -191,17 +366,14 @@
 <p>Compared to the image above, there is an additional VM Scale Set with the Windows agents. All VMs are in the same VNET, with the masters on a private subnet. All VMs are fully accessible to each other.</p>
 <h3 id="deploying-the-cluster-to-azure">Deploying the cluster to Azure</h3>
 <p>So far we only have a cluster definition (with values for FQDN, usernames and passwords). Before we can actually deploy, we need to generate the ARM templates using acs-engine.</p>
-<p>In order to do this, we will use the <code>acs-engine</code> tool. After we have the ARM template, we will use the <code>az</code> CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the <a href="https://docs.microsoft.com/en-us/azure/cloud-shell/overview" target="_blank" rel="noreferrer noopener">Azure Cloud Shell</a>
-.</p>
+<p>In order to do this, we will use the <code>acs-engine</code> tool. After we have the ARM template, we will use the <code>az</code> CLI to deploy them. You could install these either locally, or within containers, but the easiest way to do it is to use the <a href="https://docs.microsoft.com/en-us/azure/cloud-shell/overview">Azure Cloud Shell</a>.</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/cloud-shell.png" alt=""></p>
 <blockquote>
 <p>List of tools and languages supported in the Azure Cloud Shell</p>
 </blockquote>
-<p>Log into <a href="https://portal.azure.com" target="_blank" rel="noreferrer noopener">portal.azure.com</a>
- and request a cloud shell. You should see something like this:</p>
+<p>Log into <a href="https://portal.azure.com">portal.azure.com</a> and request a cloud shell. You should see something like this:</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/portal-shell.PNG" alt=""></p>
-<p>Now we should <a href="https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine" target="_blank" rel="noreferrer noopener">follow the instructions in the acs-engine documentation</a>
- and install acs-engine in the Azure Cloud Shell.</p>
+<p>Now we should <a href="https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#downloading-and-building-acs-engine">follow the instructions in the acs-engine documentation</a> and install acs-engine in the Azure Cloud Shell.</p>
 <p>First, we need to create a new directory called <code>go</code> and set it as <code>GOPATH</code>: <code>mkdir go</code> and <code>export GOPATH=/home/{yourusername}/go</code>.</p>
 <p>Then, we need to download the package for acs-engine: <code>go get github.com/Azure/acs-engine</code>, then navigate to the source of the package and build it: <code>go build</code>.</p>
 <p>Then, we add the <code>bin</code> folder from the <code>go</code> directory in the path:</p>
@@ -245,8 +417,7 @@
 <p>This means we only see the 3 masters and the 3 Linux agents. This means that even though the Windows nodes were deployed, they did not join the swarm.</p>
 <p>A very quick solution is to reimage the Windows agents. This means restoring them to the initial state and executing all scripts that were executed when initializing the cluster.</p>
 <blockquote>
-<p>A very probable cause of this could be that <a href="https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1" target="_blank" rel="noreferrer noopener">the script that joins the Windows agents to the cluster</a>
- might get executed before the masters actually start.</p>
+<p>A very probable cause of this could be that <a href="https://github.com/Azure/acs-engine/blob/dd2edf94e182dd9006ddf3fa8f8388b4e5a1eed5/parts/Install-ContainerHost-And-Join-Swarm.ps1">the script that joins the Windows agents to the cluster</a> might get executed before the masters actually start.</p>
 </blockquote>
 <p>After reimaging or restarting the VMs, your cluster should look like this:</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/node-ls-wc.PNG" alt=""></p>
@@ -256,24 +427,20 @@
 <p>From now on, you can treat this cluster as any other Docker Swarm Mode cluster: with the single mention that you cannot run Linux containers on Windows and Windows containers on Linux. This means that when starting services, we need to put some restrictions in place.</p>
 <p>We will deploy a simple Python web application on Linux that will use a Redis data store that we will run on Windows.</p>
 <blockquote>
-<p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis" target="_blank" rel="noreferrer noopener">The Python application can be found here</a>
- and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/" target="_blank" rel="noreferrer noopener">Docker Compose one from the Official Docker Docs</a>
-</p>
+<p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis">The Python application can be found here</a> and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/">Docker Compose one from the Official Docker Docs</a></p>
 </blockquote>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/7543e906e3633075cd32231e46628bf1.js"></script>
 
 <p>The most important thing to notice in the stack file is the deployment constraint on the node operating system. As stated earlier, this is very important in the stack file as a Linux service will not run in a Windows host and vice-versa.</p>
 <p>You can see that the <code>redis</code> service is based on the Windows version of Redis (not something that you would use in production, here just for showcase) and is based on the Nano Server image.</p>
 <p>To deploy this on the master, you need the file above. You can copy it, or <code>wget</code> it directly: <code>wget https://gist.githubusercontent.com/radu-matei/7543e906e3633075cd32231e46628bf1/raw/f5e06e372c9a5c57f555e8580eee1c1a5ccb635e/hybrid-stack.yml</code></p>
-<p>Then, you need to <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/" target="_blank" rel="noreferrer noopener">create a new stack deployment</a>
-:</p>
+<p>Then, you need to <a href="https://docs.docker.com/engine/reference/commandline/stack_deploy/">create a new stack deployment</a>:</p>
 <p><code>docker stack deploy --compose-file hybrid-stack.yml python-redis</code></p>
 <p><img src="/img/article-photos/hybrid-swarmmode/stack-deploy.PNG" alt=""></p>
 <p>This will create two new services, the web and Redis ones, and a new network for them.</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/service-ls.PNG" alt=""></p>
 <blockquote>
-<p><a href="https://hub.docker.com/r/library/redis/" target="_blank" rel="noreferrer noopener">Since the Nanoserver Redis image</a>
- is around 340 MB, it will take a little to pull it, then start a container.</p>
+<p><a href="https://hub.docker.com/r/library/redis/">Since the Nanoserver Redis image</a> is around 340 MB, it will take a little to pull it, then start a container.</p>
 </blockquote>
 <p>Now since the application that exposes ports is the one running on a Linux node (the web application), we will access it on the port 80 (the one exposed) of the Linux agent FQDN:</p>
 <p><img src="/img/article-photos/hybrid-swarmmode/running.PNG" alt=""></p>
@@ -282,48 +449,52 @@
 Next, we will explore how to create a consistent CI/CD story with GitHub and Jenkins (with Linux and Windows slaves that are created dynamically for each build).</p>
 <p>If you think this article could be better, please provide your feedback in the comments below.</p>
 <p>Thanks for reading :)</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/docker">docker</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/azure">azure</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/windows-containers">windows-containers</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/k8s18-azure/"><span class="mr-1.5">←</span><span>Kubernetes 1.8 on Azure</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/real-time-aspnet-core/"><span>Real-Time ASP .NET Core</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

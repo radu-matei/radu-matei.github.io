@@ -1,175 +1,358 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Update Azure Container Instances with Docker Hub webhooks | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Update Azure Container Instances with Docker Hub webhooks" />
-<meta name="twitter:description" content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group" />
-
-<meta name="description" content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group" />
-    <meta property='og:title' content='Update Azure Container Instances with Docker Hub webhooks - radu&#39;s blog'>
-<meta property='og:description' content='Automatically update the image of your Azure Container Instance and keep the public IP address of the container group'>
-<meta property='og:url' content='https://radu-matei.com/blog/aci-update/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='azure'><meta property='article:tag' content='docker'><meta property='article:tag' content='golang'><meta property='article:published_time' content='2017-12-14T00:00:00Z'/><meta property='article:modified_time' content='2017-12-14T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/aci-update/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Update Azure Container Instances with Docker Hub webhooks - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/aci-update/">
+  
+  
+  
+  
+  <meta name="description" content="Back in July, Microsoft announced Azure Container Instances, a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud. In this article we will see how to update Azure Container Instances based on webhooks from Docker Hub" />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Update Azure Container Instances with Docker Hub webhooks" />
+<meta property="og:description" content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/aci-update/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2017-12-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-12-14T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Update Azure Container Instances with Docker Hub webhooks">
+<meta itemprop="description" content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group"><meta itemprop="datePublished" content="2017-12-14T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-12-14T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1152">
+<meta itemprop="keywords" content="azure,docker,golang," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Update Azure Container Instances with Docker Hub webhooks"/>
+<meta name="twitter:description" content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/azure">#azure</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/docker">#docker</a>
-  
-  | <a class="subtitle is-6" href="/tags/golang">#golang</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> December 14, 2017. 6 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Update Azure Container Instances with Docker Hub webhooks</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <!-- raw HTML omitted -->
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Update Azure Container Instances with Docker Hub webhooks</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Thursday, December 14, 2017</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>Back in July, <a href="https://azure.microsoft.com/en-us/blog/announcing-azure-container-instances/" target="_blank" rel="noreferrer noopener">Microsoft announced Azure Container Instances</a>
-, <em>a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud.</em></p>
+<p>Back in July, <a href="https://azure.microsoft.com/en-us/blog/announcing-azure-container-instances/">Microsoft announced Azure Container Instances</a>, <em>a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud.</em></p>
 <p>Essentially, this allowed you to run single or multi-container groups (scheduled on the same host machine, within the same local network, storage and lifetime) with fast startup times, hypervisor-level security, public IP address connectivity and billing by the second.</p>
 <blockquote>
-<p><a href="https://docs.microsoft.com/en-us/azure/container-instances/" target="_blank" rel="noreferrer noopener">Here&rsquo;s the quickstart from the Azure Documentation where you can get started with ACI from the portal or the CLI</a>
-</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/container-instances/">Here&rsquo;s the quickstart from the Azure Documentation where you can get started with ACI from the portal or the CLI</a></p>
 </blockquote>
 <blockquote>
-<p><a href="https://medium.com/@lizrice/azure-container-instances-with-multiple-containers-512c022c04ec" target="_blank" rel="noreferrer noopener">Here&rsquo;s an awesome Medium article by Liz Rice where you can learn how to deploy multi-container groups on ACI</a>
-</p>
+<p><a href="https://medium.com/@lizrice/azure-container-instances-with-multiple-containers-512c022c04ec">Here&rsquo;s an awesome Medium article by Liz Rice where you can learn how to deploy multi-container groups on ACI</a></p>
 </blockquote>
 <p>One thing that Azure Container Instances didn&rsquo;t have when first launched was the ability to update the image of a container while keeping the public IP address of the container group - essentially, when you had a new version / tag of your image, you had to redeploy the everything and you would have gotten a different public IP address.</p>
 <blockquote>
-<p>Here we are only talking about using ACI without any orchestrator - you can use ACI with Kubernetes through the <a href="https://github.com/Azure/aci-connector-k8s" target="_blank" rel="noreferrer noopener">aci-connector-k8s</a>
- project, or through the new <a href="https://github.com/virtual-kubelet/virtual-kubelet" target="_blank" rel="noreferrer noopener">virtual-kubelet</a>
-, which creates a virtual node in your Kubernetes cluster that schedules pods on top of Azure Container Instances.</p>
+<p>Here we are only talking about using ACI without any orchestrator - you can use ACI with Kubernetes through the <a href="https://github.com/Azure/aci-connector-k8s">aci-connector-k8s</a> project, or through the new <a href="https://github.com/virtual-kubelet/virtual-kubelet">virtual-kubelet</a>, which creates a virtual node in your Kubernetes cluster that schedules pods on top of Azure Container Instances.</p>
 </blockquote>
-<p>In this article we will not use any of the two projects mentioned, but build a simple app that listens for webhooks from Docker Hub (or any other container registry) and uses the <a href="https://github.com/Azure/azure-sdk-for-go" target="_blank" rel="noreferrer noopener">Azure Go SDK</a>
- to update the container.</p>
+<p>In this article we will not use any of the two projects mentioned, but build a simple app that listens for webhooks from Docker Hub (or any other container registry) and uses the <a href="https://github.com/Azure/azure-sdk-for-go">Azure Go SDK</a> to update the container.</p>
 <p>Please note that while you will not be able to do this from the portal, it can be done through the Azure REST API or various language SDKs.</p>
 <h3 id="webhooks-from-docker-hub">Webhooks from Docker Hub</h3>
 <p>As I was saying earlier, we will accept incoming webhooks from Docker Hub and update the Azure containers accordingly. First let&rsquo;s see how a Docker Hub webhook looks like:</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/92aad3a204d954f4316875528fbe6a23.js"></script>
 
 <blockquote>
-<p><a href="https://docs.docker.com/docker-hub/webhooks/" target="_blank" rel="noreferrer noopener">Taken from the Docker Hub documentation</a>
-</p>
+<p><a href="https://docs.docker.com/docker-hub/webhooks/">Taken from the Docker Hub documentation</a></p>
 </blockquote>
 <p>Essentially, in the webhook data we have all necessary information to update the container with the newly pushed image.</p>
-<p>Now taking that JSON and using it with <a href="https://mholt.github.io/json-to-go/" target="_blank" rel="noreferrer noopener">this little cool utility that generates Go structs from JSON</a>
-, we get the Go struct that contains the webhook data:</p>
+<p>Now taking that JSON and using it with <a href="https://mholt.github.io/json-to-go/">this little cool utility that generates Go structs from JSON</a>, we get the Go struct that contains the webhook data:</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/bf9c1eaf61cd7bc548a2fc80e6c40421.js"></script>
 
 <blockquote>
-<p>You can <a href="https://github.com/radu-matei/aci-hooks/blob/master/main.go#L17" target="_blank" rel="noreferrer noopener">find the project on GitHub</a>
-</p>
+<p>You can <a href="https://github.com/radu-matei/aci-hooks/blob/master/main.go#L17">find the project on GitHub</a></p>
 </blockquote>
 <p>From this point, we&rsquo;ll create a simple web server that listens for webhook requests and will update the container using the Go SDK.</p>
 <h3 id="using-the-azure-go-sdk-to-update-container-groups">Using the Azure Go SDK to update container groups</h3>
-<p>In order to use the Azure Go SDK you need some credentials - first of all, <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal" target="_blank" rel="noreferrer noopener">go through the documentation showing you how to create a service principal</a>
-.</p>
+<p>In order to use the Azure Go SDK you need some credentials - first of all, <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal">go through the documentation showing you how to create a service principal</a>.</p>
 <p>You will need the following:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>AZURE_TENANT_ID: contains your Azure Active Directory tenant ID or domain
 </span></span><span style="display:flex;"><span>AZURE_SUBSCRIPTION_ID: contains your Azure Subscription ID
@@ -179,16 +362,14 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>RESOURCE_GROUP_NAME: the name of the resource group where the container group is deployed
 </span></span><span style="display:flex;"><span>CONTAINER_GROUP_NAME: name of the container group
 </span></span></code></pre></div><blockquote>
-<p>If you use <code>vndr</code> as dependency manager for Go, check the <code>vndr.conf</code> file for this project - otherwise, add <code>github.com/Azure/azure-sdk-for-go</code> to your project, or <a href="https://github.com/radu-matei/aci-hooks" target="_blank" rel="noreferrer noopener">simply clone this repo which contains the entire application</a>
-.</p>
+<p>If you use <code>vndr</code> as dependency manager for Go, check the <code>vndr.conf</code> file for this project - otherwise, add <code>github.com/Azure/azure-sdk-for-go</code> to your project, or <a href="https://github.com/radu-matei/aci-hooks">simply clone this repo which contains the entire application</a>.</p>
 </blockquote>
 <p>First, we need an instance of <code>ContainerGroupsClient</code>:</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/2e3e0a95640c65b33940f7a9c5ff73e5.js"></script>
 
 <p>Here we simply use the SDK to authenticate using the credentials we got earlier and retrieve a new instance of <code>ContainerGroupsClient</code>.</p>
 <blockquote>
-<p>This is the standard procedure to authenticate the Go SDK to your Azure subscription and you can use it to create <a href="https://github.com/Azure/azure-sdk-for-go/tree/master/arm" target="_blank" rel="noreferrer noopener">other types of clients</a>
-.</p>
+<p>This is the standard procedure to authenticate the Go SDK to your Azure subscription and you can use it to create <a href="https://github.com/Azure/azure-sdk-for-go/tree/master/arm">other types of clients</a>.</p>
 </blockquote>
 <p>Then, we iterate through the desired container group, searching for the container with the same image as the one in the webhook, then update it:</p>
 <script type="application/javascript" src="https://gist.github.com/radu-matei/e886f85fcb4dd316f3016aa9a60210a2.js"></script>
@@ -218,11 +399,9 @@
 <p>Don&rsquo;t forget to add the environment variables for the Azure credentials and the resource group and container group name!</p>
 </blockquote>
 <blockquote>
-<p>I will use <a href="https://ngrok.com/download" target="_blank" rel="noreferrer noopener">ngrok to expose my local webserver</a>
- to accept webhooks from Docker Hub - in another article we will see another way to run our function that updates the container group.</p>
+<p>I will use <a href="https://ngrok.com/download">ngrok to expose my local webserver</a> to accept webhooks from Docker Hub - in another article we will see another way to run our function that updates the container group.</p>
 </blockquote>
-<p><a href="https://github.com/radu-matei/aci-hooks" target="_blank" rel="noreferrer noopener">The webserver from the repo</a>
- listens on port 8080 by default (you can change it) - so I will start a tunnel to my local port 8080 through: <code>ngrok http 8080</code>:</p>
+<p><a href="https://github.com/radu-matei/aci-hooks">The webserver from the repo</a> listens on port 8080 by default (you can change it) - so I will start a tunnel to my local port 8080 through: <code>ngrok http 8080</code>:</p>
 <p><img src="/img/article-photos/aci-update/ngrok.png" alt=""></p>
 <p>Then, I&rsquo;ll setup the Docker Hub webhook to push to the public endpoint exposed by <code>ngrok</code>:</p>
 <p><img src="/img/article-photos/aci-update/hub.jpg" alt=""></p>
@@ -234,8 +413,7 @@
 <p>Our container is actually updated to the new version (notice the public IP address is unchanged):
 <img src="/img/article-photos/aci-update/v2.jpg" alt=""></p>
 <blockquote>
-<p><a href="https://github.com/ashleymcnamara/gophers" target="_blank" rel="noreferrer noopener">Credit for the awesome Gophers photo used in the sample goes to Ashley McNamara!</a>
-</p>
+<p><a href="https://github.com/ashleymcnamara/gophers">Credit for the awesome Gophers photo used in the sample goes to Ashley McNamara!</a></p>
 </blockquote>
 <blockquote>
 <p>Of course, we can deploy this application to Azure Container Instance - Inception!</p>
@@ -246,52 +424,54 @@
 <blockquote>
 <p>Please note that while the container gets updated, your app will be down for a couple of seconds!</p>
 </blockquote>
-<p>Thanks for reading! If you want to extend the functionality of this little tool, <a href="https://github.com/radu-matei/aci-hooks" target="_blank" rel="noreferrer noopener">you are welcome to contribute on GitHub</a>
- with issues and pull requests.</p>
-<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a>
-</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
+<p>Thanks for reading! If you want to extend the functionality of this little tool, <a href="https://github.com/radu-matei/aci-hooks">you are welcome to contribute on GitHub</a> with issues and pull requests.</p>
+<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a></p>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/azure">azure</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/docker">docker</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/golang">golang</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/kube-toolkit/"><span class="mr-1.5">←</span><span>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/signalr-core/"><span>Getting started with SignalR Alpha 2</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

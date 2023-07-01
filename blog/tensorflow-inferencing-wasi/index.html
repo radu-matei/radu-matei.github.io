@@ -1,168 +1,351 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>TensorFlow inferencing using WebAssembly and WASI | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="TensorFlow inferencing using WebAssembly and WASI" />
-<meta name="twitter:description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed." />
-
-<meta name="description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed." />
-    <meta property='og:title' content='TensorFlow inferencing using WebAssembly and WASI - radu&#39;s blog'>
-<meta property='og:description' content='In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed.'>
-<meta property='og:url' content='https://radu-matei.com/blog/tensorflow-inferencing-wasi/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:tag' content='rust'><meta property='article:tag' content='tensorflow'><meta property='article:tag' content='ml'><meta property='article:published_time' content='2020-10-18T00:00:00Z'/><meta property='article:modified_time' content='2020-10-18T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/tensorflow-inferencing-wasi/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>TensorFlow inferencing using WebAssembly and WASI - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/tensorflow-inferencing-wasi/">
+  
+  
+  
+  
+  <meta name="description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="TensorFlow inferencing using WebAssembly and WASI" />
+<meta property="og:description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/tensorflow-inferencing-wasi/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2020-10-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-10-18T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="TensorFlow inferencing using WebAssembly and WASI">
+<meta itemprop="description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed."><meta itemprop="datePublished" content="2020-10-18T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-10-18T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2881">
+<meta itemprop="keywords" content="wasm,rust,tensorflow,ml," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TensorFlow inferencing using WebAssembly and WASI"/>
+<meta name="twitter:description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed."/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/rust">#rust</a>
-  
-  | <a class="subtitle is-6" href="/tags/tensorflow">#tensorflow</a>
-  
-  | <a class="subtitle is-6" href="/tags/ml">#ml</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> October 18, 2020. 14 minutes read.  <a href="/pdf/tensorflow-inferencing-wasi.pdf" target="_blank">PDF </a>  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">TensorFlow inferencing using WebAssembly and WASI</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <p>As edge devices become more powerful, being able to perform inferencing on
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">TensorFlow inferencing using WebAssembly and WASI</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Sunday, October 18, 2020</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><p>As edge devices become more powerful, being able to perform inferencing on
 trained neural network models without recompiling application components for
-each architecture becomes important, and <a href="https://webassembly.org/" target="_blank" rel="noreferrer noopener">WebAssembly</a>
- could serve as the
+each architecture becomes important, and <a href="https://webassembly.org/">WebAssembly</a> could serve as the
 portable compilation target for such scenarios, running both in and outside
 browser environments.</p>
 <p>In this article, we experiment with building a Rust program that performs image
-classification using the <a href="https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet" target="_blank" rel="noreferrer noopener">MobileNet V2</a>
- TensorFlow model, compile it
+classification using the <a href="https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet">MobileNet V2</a> TensorFlow model, compile it
 to WebAssembly, and instantiate the module using two WebAssembly runtimes that
-use the <a href="https://wasi.dev" target="_blank" rel="noreferrer noopener">WebAssembly System Interface (WASI)</a>
-, the native NodeJS WASI
-runtime, and <a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
-. A special interest is given to writing model
+use the <a href="https://wasi.dev">WebAssembly System Interface (WASI)</a>, the native NodeJS WASI
+runtime, and <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a>. A special interest is given to writing model
 and image data into the module&rsquo;s linear memory, with implementations in both
 JavaScript and Rust. Finally, a simple prediction API is exemplified running on
 top of the Wasmtime runtime, and some limitations of this approach are
 discussed.</p>
 <blockquote>
-<p><a href="https://github.com/radu-matei/wasi-tensorflow-inference" target="_blank" rel="noreferrer noopener">The completed project can be found on GitHub</a>
-.</p>
+<p><a href="https://github.com/radu-matei/wasi-tensorflow-inference">The completed project can be found on GitHub</a>.</p>
 </blockquote>
 <h3 id="tensorflow-rust-and-webassembly">TensorFlow, Rust, and WebAssembly</h3>
 <p>While there are still limitations to compiling some crates to WebAssembly, Rust
 is a programming language with excellent support for Wasm. Additionally, there
 is a Rust library that focuses on performing neural network model inferencing
-from Rust - <a href="https://github.com/sonos/tract" target="_blank" rel="noreferrer noopener"><code>tract</code></a>
-, from Sonos - and while the crate is <em>very
+from Rust - <a href="https://github.com/sonos/tract"><code>tract</code></a>, from Sonos - and while the crate is <em>very
 far from supporting any arbitrary [TensorFlow] model</em>, it can be used to run
-non-trivial models, and the project has an <a href="https://github.com/sonos/tract/tree/main/examples/tensorflow-mobilenet-v2" target="_blank" rel="noreferrer noopener">excellent quick start
-example</a>
- that shows how to perform image
-classifications using the <a href="https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet" target="_blank" rel="noreferrer noopener">MobileNet V2</a>
- model, which will be used as
+non-trivial models, and the project has an <a href="https://github.com/sonos/tract/tree/main/examples/tensorflow-mobilenet-v2">excellent quick start
+example</a> that shows how to perform image
+classifications using the <a href="https://github.com/tensorflow/models/tree/master/research/slim/nets/mobilenet">MobileNet V2</a> model, which will be used as
 a starting point for our Wasm module:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> model <span style="color:#f92672">=</span> tract_tensorflow::tensorflow()
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// load the model
@@ -172,7 +355,7 @@ a starting point for our Wasm module:</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">0</span>,
 </span></span><span style="display:flex;"><span>        InferenceFact::dt_shape(
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">f32</span>::datum_type(),
-</span></span><span style="display:flex;"><span>            tvec<span style="color:#f92672">!</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>            tvec!(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
 </span></span><span style="display:flex;"><span>        ),
 </span></span><span style="display:flex;"><span>    )
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// make the model runnable and fix its inputs and outputs
@@ -188,18 +371,16 @@ a starting point for our Wasm module:</p>
 </span></span><span style="display:flex;"><span>    .into();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">// run the model on the input
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image))<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec!(image))<span style="color:#f92672">?</span>;
 </span></span></code></pre></div><blockquote>
-<p>Source code adapted from <a href="https://github.com/sonos/tract/blob/main/examples/tensorflow-mobilenet-v2/src/main.rs" target="_blank" rel="noreferrer noopener">the Sonos Tract examples</a>
-.</p>
+<p>Source code adapted from <a href="https://github.com/sonos/tract/blob/main/examples/tensorflow-mobilenet-v2/src/main.rs">the Sonos Tract examples</a>.</p>
 </blockquote>
 <p>The program above loads the TensorFlow model from a file, opens and resizes the
 target image to a resolution of 224 x 224 (which is the resolution of the
 training images for the MobileNet model), runs the model, and prints the class
 of the best prediction. Using Rust&rsquo;s <code>wasm32-wasi</code> compilation target, the
 project compiles to WebAssembly successfully, but executing it with
-<a href="https://github.com/bytecodealliance/wasmtime" target="_blank" rel="noreferrer noopener">Wasmtime</a>
- (or any other runtime) results in a panic:</p>
+<a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> (or any other runtime) results in a panic:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ wasmtime run tf-example.wasm --dir=.
 </span></span><span style="display:flex;"><span>&#39;The global thread pool has not been initialized.:
 </span></span><span style="display:flex;"><span>ThreadPoolBuildError { kind: IOError(Custom
@@ -214,11 +395,9 @@ project compiles to WebAssembly successfully, but executing it with
 </span></span><span style="display:flex;"><span>         13: image::jpeg::decoder::JpegDecoder&lt;R&gt; as read_image
 </span></span><span style="display:flex;"><span>         16: image::io::free_functions::open_impl
 </span></span><span style="display:flex;"><span>         ...
-</span></span></code></pre></div><p>The runtime error is caused by <a href="https://crates.io/crates/image" target="_blank" rel="noreferrer noopener">the <code>image</code> crate</a>
- attempting to use
+</span></span></code></pre></div><p>The runtime error is caused by <a href="https://crates.io/crates/image">the <code>image</code> crate</a> attempting to use
 multiple threads when loading the picture, and since there is no threads support
-in WebAssembly (<a href="https://github.com/WebAssembly/threads" target="_blank" rel="noreferrer noopener">here is an early proposal</a>
-), the program panics.
+in WebAssembly (<a href="https://github.com/WebAssembly/threads">here is an early proposal</a>), the program panics.
 Fortunately, turning off all crate features except JPEG loading solves the
 problem:</p>
 <pre tabindex="0"><code>image = { ... default-features = false, features = [&#34;jpeg&#34;] }
@@ -236,27 +415,22 @@ that are not on disk, but received by the runtime in some other ways (such as
 HTTP requests). In short, we need to pass both model and image data from the
 runtime to the module, using WebAssembly memory.</p>
 <h3 id="using-webassembly-memory">Using WebAssembly memory</h3>
-<p><a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-mem" target="_blank" rel="noreferrer noopener">Memory in WebAssembly</a>
- is represented as a contiguous vector of
+<p><a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-mem">Memory in WebAssembly</a> is represented as a contiguous vector of
 uninterpreted bytes, with the memory size being a multiple of 64Ki (the length
-of one <em>memory page</em>). Lin Clark has an <a href="https://hacks.mozilla.org/2017/07/memory-in-webassembly-and-why-its-safer-than-you-think/" target="_blank" rel="noreferrer noopener">excellent explainer with code
-cartoons</a>
- about WebAssembly memory, and in short, we will use
+of one <em>memory page</em>). Lin Clark has an <a href="https://hacks.mozilla.org/2017/07/memory-in-webassembly-and-why-its-safer-than-you-think/">excellent explainer with code
+cartoons</a> about WebAssembly memory, and in short, we will use
 it to pass arbitrary data between the Wasm runtime and guest modules.</p>
 <p>Because the WebAssembly module is ultimately responsible for managing its own
 linear memories, it must export functionality to allocate memory, which the
 underlying host runtime can write into, and read from. In most cases, when using
-code generation libraries such as <a href="https://github.com/rustwasm/wasm-bindgen" target="_blank" rel="noreferrer noopener"><code>wasm-bindgen</code></a>
-, this is
+code generation libraries such as <a href="https://github.com/rustwasm/wasm-bindgen"><code>wasm-bindgen</code></a>, this is
 handled by the library - but to better understand how everything works together,
 it is worth building our module without <code>wasm-bindgen</code>.</p>
 <p>Recall the task at hand - pass model and image data from the runtime into the
 Wasm module&rsquo;s memory. Because both model and image data can be represented as
 arrays of 8-bit unsigned integers, we can write a single function, <code>alloc</code>,
-which <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.with_capacity" target="_blank" rel="noreferrer noopener">allocates memory</a>
- for a new <code>Vec&lt;u8&gt;</code> with capacity <code>len</code>.
-Before returning, the function calls <a href="https://doc.rust-lang.org/std/mem/fn.forget.html" target="_blank" rel="noreferrer noopener"><code>mem::forget</code></a>
- to take
+which <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.with_capacity">allocates memory</a> for a new <code>Vec&lt;u8&gt;</code> with capacity <code>len</code>.
+Before returning, the function calls <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>mem::forget</code></a> to take
 ownership of the memory block and ensure the vector&rsquo;s destructor is not called
 when the object goes out of scope. Finally, the function returns the pointer to
 the start of the memory block.</p>
@@ -275,8 +449,7 @@ writing should expect to get the pointers and length of the model and image
 data - specifically, for each of the two input objects (model and image), the
 module expects a pointer (offset relative to the start of its entire linear
 memory) and the length of the object. Then, it uses
-<a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts" target="_blank" rel="noreferrer noopener"><code>Vec::from_raw_parts</code></a>
- to create a <code>Vec&lt;u8&gt;</code> with the respective
+<a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts"><code>Vec::from_raw_parts</code></a> to create a <code>Vec&lt;u8&gt;</code> with the respective
 length and capacity (equal to the length) for each of the two objects:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// This is the module&#39;s entry point for executing inferences.
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// It takes as arguments pointers to the start of the module&#39;s
@@ -327,7 +500,7 @@ file system (hence the slight changes in loading them):</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::load_from_memory(image_bytes);
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec!(image));
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>We can now compile the code to the Rust <code>wasm32-wasi</code> target and get a
@@ -335,16 +508,14 @@ WebAssembly module that can be instantiated and executed in any WASI compatible
 runtime, and in the following section we will explore running it in Node&rsquo;s WASI
 runtime and Wasmtime.</p>
 <blockquote>
-<p><a href="https://github.com/radu-matei/wasi-tensorflow-inference" target="_blank" rel="noreferrer noopener">The complete implementation can be found on GitHub</a>
-.</p>
+<p><a href="https://github.com/radu-matei/wasi-tensorflow-inference">The complete implementation can be found on GitHub</a>.</p>
 </blockquote>
 <h3 id="testing-the-module-from-nodes-wasi-runtime">Testing the module from Node&rsquo;s WASI runtime</h3>
 <p>This section will not focus on instantiating the module, but rather on
 allocating and copying the model and image data into the module&rsquo;s memory, as
 well as on invoking the inferencing function. For a guide on getting started
-with the NodeJS WASI runtime, you can check <a href="https://radu-matei.com/blog/nodejs-wasi/" target="_blank" rel="noreferrer noopener">the article I wrote in
-July</a>
-.</p>
+with the NodeJS WASI runtime, you can check <a href="https://radu-matei.com/blog/nodejs-wasi/">the article I wrote in
+July</a>.</p>
 <p>First, we need a helper method that copies a byte array into the module&rsquo;s
 memory. The function takes as arguments the actual bytes to copy and an instance
 of the module, calls the module&rsquo;s exported <code>alloc</code> function, and copies the
@@ -396,8 +567,7 @@ function getPrediction(model_bytes, img_bytes, instance) {
   // label from the index of the class
   return getLabel(pred);
 }
-</code></pre><p>The <a href="https://github.com/radu-matei/wasi-tensorflow-inference" target="_blank" rel="noreferrer noopener">GitHub repository</a>
- of this project contains the complete logic for
+</code></pre><p>The <a href="https://github.com/radu-matei/wasi-tensorflow-inference">GitHub repository</a> of this project contains the complete logic for
 instantiating the module, a compiled version of the WebAssembly module, the
 MobilNet V2 model, as well as a directory with a couple of images we can test:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ node --experimental-wasi-unstable-preview1 \
@@ -417,9 +587,8 @@ images.</p>
 <p>When first experimenting with compiling the module, we used the Wasmtime CLI to
 quickly execute the module. This works great if the module needs to access
 files, for example, but we now need to write into the module&rsquo;s memory, and we
-cannot achieve that using the CLI - we now have to use the <a href="https://docs.rs/wasmtime/0.20.0/wasmtime/" target="_blank" rel="noreferrer noopener">Wasmtime&rsquo;s excellent
-API</a>
-. First, we need to implement a Rust function which, given a
+cannot achieve that using the CLI - we now have to use the <a href="https://docs.rs/wasmtime/0.20.0/wasmtime/">Wasmtime&rsquo;s excellent
+API</a>. First, we need to implement a Rust function which, given a
 byte array and an instance of the WebAssembly module, writes the data into the
 module&rsquo;s memory - essentially the same functionality we implemented in
 JavaScript in the previous section:</p>
@@ -433,13 +602,13 @@ JavaScript in the previous section:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic, since
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// we are not going to be able to copy any data.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_memory(MEMORY)
+</span></span><span style="display:flex;"><span>        .get_memory(<span style="color:#66d9ef">MEMORY</span>)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the guest&#39;s exported `alloc` function, and call
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// it with the length of the byte array.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(ALLOC_FN)
+</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ALLOC_FN</span>)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
@@ -479,7 +648,7 @@ class:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// instance for every prediction, since a
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// `Wasmtime::Instance` cannot be safely sent between threads.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// See https://github.com/bytecodealliance/wasmtime/issues/793
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(WASM.to_string())<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(<span style="color:#66d9ef">WASM</span>.to_string())<span style="color:#f92672">?</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Write the MobileNet model and the image contents to
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s linear memory, and get their pointers.
@@ -495,7 +664,7 @@ class:</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the module&#39;s &#34;infer_from_ptrs&#34; function,
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is the entrypoint for our module.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> infer <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(INFER_FN)
+</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">INFER_FN</span>)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected inference function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Call the inference function with the pointer
@@ -520,9 +689,8 @@ class:</p>
 </span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(<span style="color:#e6db74">&#34;cannot get prediction&#34;</span>),
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>As the comment suggests, <a href="https://github.com/bytecodealliance/wasmtime/issues/793" target="_blank" rel="noreferrer noopener">a <code>Wasmtime::Instance</code> cannot be sent across
-threads</a>
- (not in a memory-safe manner) - which means we cannot
+</span></span></code></pre></div><p>As the comment suggests, <a href="https://github.com/bytecodealliance/wasmtime/issues/793">a <code>Wasmtime::Instance</code> cannot be sent across
+threads</a> (not in a memory-safe manner) - which means we cannot
 use the same instance in a multi-threaded environment (for example when
 responding to HTTP requests). The impact of this is that we pay the price of
 instantiating the module every time we make an inference (which, for this
@@ -532,17 +700,14 @@ milliseconds).</p>
 very similar - we are essentially performing the same operations: create
 instance, write data into memory, invoke inference function.</p>
 <blockquote>
-<p><a href="https://github.com/radu-matei/wasi-tensorflow-inference" target="_blank" rel="noreferrer noopener">The complete implementation can be found on GitHub</a>
-.</p>
+<p><a href="https://github.com/radu-matei/wasi-tensorflow-inference">The complete implementation can be found on GitHub</a>.</p>
 </blockquote>
 <h3 id="creating-a-simple-prediction-api">Creating a simple prediction API</h3>
 <p>Now that we are able to perform predictions using the module we built with
 Wasmtime, we can easily expose this functionality over an HTTP API, using the
-Rust <a href="https://docs.rs/hyper/0.13.8/hyper/" target="_blank" rel="noreferrer noopener"><code>hyper</code></a>
- crate.</p>
-<p>Running <code>cargo run --release</code> at the root of the <a href="https://github.com/radu-matei/wasi-tensorflow-inference" target="_blank" rel="noreferrer noopener">GitHub repository of this
-project</a>
-, an HTTP server is started on port 3000 which expects an image
+Rust <a href="https://docs.rs/hyper/0.13.8/hyper/"><code>hyper</code></a> crate.</p>
+<p>Running <code>cargo run --release</code> at the root of the <a href="https://github.com/radu-matei/wasi-tensorflow-inference">GitHub repository of this
+project</a>, an HTTP server is started on port 3000 which expects an image
 URL as request body, downloads the image contents, gets a prediction using the
 method described above, then returns its human-friendly label:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ cargo run --release
@@ -559,8 +724,7 @@ method described above, then returns its human-friendly label:</p>
 console, and this is where not being able to share a <code>Wasmtime::Instance</code> across
 threads affects the overall response time of the API we built. But as
 WebAssembly and WASI mature, hardware devices (such as GPUs) will be available
-in WebAssembly, and as proposals such as <a href="https://www.w3.org/2020/06/machine-learning-workshop/talks/introducing_wasi_nn.html" target="_blank" rel="noreferrer noopener">WASI-NN</a>
- are implemented, we
+in WebAssembly, and as proposals such as <a href="https://www.w3.org/2020/06/machine-learning-workshop/talks/introducing_wasi_nn.html">WASI-NN</a> are implemented, we
 can expect the both the instantiation and inference times to decrease.</p>
 <p>In this article we experimented with compiling a Rust program that performs
 inferencing on a pre-trained neural network to WebAssembly, and executed it in
@@ -570,61 +734,65 @@ host and guest using WebAssembly memory.</p>
 <ul>
 <li>Should I use this in production? Probably not, as the code presented here is
 experimental, using an approach mostly suited for educational purposes.</li>
-<li>How does this compare to <a href="https://blog.tensorflow.org/2020/03/introducing-webassembly-backend-for-tensorflow-js.html" target="_blank" rel="noreferrer noopener">the TensorFlow.js WebAssembly backend</a>
-? The
+<li>How does this compare to <a href="https://blog.tensorflow.org/2020/03/introducing-webassembly-backend-for-tensorflow-js.html">the TensorFlow.js WebAssembly backend</a>? The
 Wasm backend for TensorFlow.js can only be used from JavaScript environments,
 browsers and NodeJS. This means it can&rsquo;t be used with other WebAssembly
-runtimes. Check <a href="https://github.com/tensorflow/tfjs/tree/master/tfjs-backend-wasm" target="_blank" rel="noreferrer noopener">the official documentation for running MobileNet in the
-browser, using the WebAssembly backend</a>
-.</li>
+runtimes. Check <a href="https://github.com/tensorflow/tfjs/tree/master/tfjs-backend-wasm">the official documentation for running MobileNet in the
+browser, using the WebAssembly backend</a>.</li>
 <li>How easily can I use my own model? While the <em>approach</em> used by this project
 can be used to execute inferences using different neural network models, the
 implementation is specialized for using the MobileNet V2 model, and changing
 the model architecture or its inputs would require changes in the WebAssembly
 module and its instantiation.</li>
 </ul>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/rust">rust</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/tensorflow">tensorflow</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/ml">ml</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/a-simple-wasm-linker-js/"><span class="mr-1.5">←</span><span>A simple WebAssembly linker in JavaScript</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/towards-sockets-networking-wasi/"><span>Towards sockets and networking in WebAssembly and WASI</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

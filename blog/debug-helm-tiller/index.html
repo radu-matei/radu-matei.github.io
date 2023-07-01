@@ -1,154 +1,341 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>Debug Helm and Tiller using VS Code and Draft | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="Debug Helm and Tiller using VS Code and Draft" />
-<meta name="twitter:description" content="" />
-
-<meta name="description" content="" />
-    <meta property='og:title' content='Debug Helm and Tiller using VS Code and Draft - radu&#39;s blog'>
-<meta property='og:description' content='In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes , the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.'>
-<meta property='og:url' content='https://radu-matei.com/blog/debug-helm-tiller/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='kubernetes'><meta property='article:tag' content='draft'><meta property='article:tag' content='helm'><meta property='article:tag' content='vscode'><meta property='article:published_time' content='2018-04-29T00:00:00Z'/><meta property='article:modified_time' content='2018-04-29T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/debug-helm-tiller/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Debug Helm and Tiller using VS Code and Draft - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/debug-helm-tiller/">
+  
+  
+  
+  
+  <meta name="description" content="In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes, the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
+Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application." />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="Debug Helm and Tiller using VS Code and Draft" />
+<meta property="og:description" content="In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes, the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
+Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/debug-helm-tiller/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2018-04-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-04-29T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="Debug Helm and Tiller using VS Code and Draft">
+<meta itemprop="description" content="In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes, the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
+Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application."><meta itemprop="datePublished" content="2018-04-29T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2018-04-29T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1872">
+<meta itemprop="keywords" content="kubernetes,draft,helm,vscode," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Debug Helm and Tiller using VS Code and Draft"/>
+<meta name="twitter:description" content="In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use Helm, the package manager for Kubernetes, the newly released Kubernetes extension for VS Code and Draft to develop, debug and deploy is Helm itself.
+Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application."/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/kubernetes">#kubernetes</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/draft">#draft</a>
-  
-  | <a class="subtitle is-6" href="/tags/helm">#helm</a>
-  
-  | <a class="subtitle is-6" href="/tags/vscode">#vscode</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> April 29, 2018. 9 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">Debug Helm and Tiller using VS Code and Draft</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <!-- raw HTML omitted -->
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">Debug Helm and Tiller using VS Code and Draft</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Sunday, April 29, 2018</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use <a href="https://github.com/kubernetes/helm" target="_blank" rel="noreferrer noopener">Helm, the package manager for Kubernetes</a>
-, the newly released <a href="https://github.com/azure/vscode-kubernetes-tools" target="_blank" rel="noreferrer noopener">Kubernetes extension for VS Code</a>
- and <a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
- to develop, debug and deploy is Helm itself.</p>
+<p>In today&rsquo;s article we will explore how to take a real-world application and start developing, debugging and deploying it to a Kubernetes cluster and how to use a couple of open-source tools to make our lives easier in the process. Specifically, we will use <a href="https://github.com/kubernetes/helm">Helm, the package manager for Kubernetes</a>, the newly released <a href="https://github.com/azure/vscode-kubernetes-tools">Kubernetes extension for VS Code</a> and <a href="https://github.com/azure/draft">Draft</a> to develop, debug and deploy is Helm itself.</p>
 <blockquote>
-<p><a href="https://github.com/kubernetes/helm" target="_blank" rel="noreferrer noopener">Helm</a>
- helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
+<p><a href="https://github.com/kubernetes/helm">Helm</a> helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
 Charts are easy to create, version, share, and publish — so start using Helm and stop the copy-and-paste madness.
 The latest version of Helm is maintained by the CNCF - in collaboration with Microsoft, Google, Bitnami and the Helm contributor community.
-More about Helm in <a href="https://docs.helm.sh" target="_blank" rel="noreferrer noopener">the official documentation</a>
-.</p>
+More about Helm in <a href="https://docs.helm.sh">the official documentation</a>.</p>
 </blockquote>
 <blockquote>
-<p><a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
- is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.
-To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">follow the official Draft documentation</a>
- or watch an <a href="https://www.youtube.com/watch?v=DvaT3H8Wyf8" target="_blank" rel="noreferrer noopener">introduction to Draft from Azure Friday</a>
-.</p>
+<p><a href="https://github.com/azure/draft">Draft</a> is an open-source tool that makes it easy to develop container-based applications and deploy them to Kubernetes clusters without knowing much about Docker and Kubernetes &ndash; Using tools like Draft lets you and your teams focus on building the application rather than on configuring clusters and writing deployment manifests.
+To get started with Draft you can <a href="https://github.com/Azure/draft/blob/master/docs/getting-started.md">follow the official Draft documentation</a> or watch an <a href="https://www.youtube.com/watch?v=DvaT3H8Wyf8">introduction to Draft from Azure Friday</a>.</p>
 </blockquote>
 <p>In a nutshell, Draft performs the following steps automatically for each iteration of your application:</p>
 <ul>
@@ -158,15 +345,10 @@ To get started with Draft you can <a href="https://github.com/Azure/draft/blob/m
 </ul>
 <p>We will use Draft (which uses Helm, but more on that later!) to develop, debug and deploy Helm itself. Here&rsquo;s what we&rsquo;re going to achieve:</p>
 <ul>
-<li>build and debug the Helm CLI using VS Code, the <a href="https://github.com/Microsoft/vscode-go" target="_blank" rel="noreferrer noopener">Golang extension for VS Code</a>
- and <a href="https://github.com/derekparker/delve" target="_blank" rel="noreferrer noopener">Delve, the Golang debugger</a>
-</li>
-<li>build, deploy and debug Helm&rsquo;s server-side component, Tiller, using the <a href="https://github.com/azure/vscode-kubernetes-tools" target="_blank" rel="noreferrer noopener">VS Code Kubernetes extension</a>
- and <a href="https://github.com/azure/draft" target="_blank" rel="noreferrer noopener">Draft</a>
-</li>
+<li>build and debug the Helm CLI using VS Code, the <a href="https://github.com/Microsoft/vscode-go">Golang extension for VS Code</a> and <a href="https://github.com/derekparker/delve">Delve, the Golang debugger</a></li>
+<li>build, deploy and debug Helm&rsquo;s server-side component, Tiller, using the <a href="https://github.com/azure/vscode-kubernetes-tools">VS Code Kubernetes extension</a> and <a href="https://github.com/azure/draft">Draft</a></li>
 </ul>
-<p>To follow along this article, you can use <a href="https://github.com/radu-matei/helm/tree/debugging-draft" target="_blank" rel="noreferrer noopener">my branch of Helm</a>
- which contains all the assets necessary assets for debugging:</p>
+<p>To follow along this article, you can use <a href="https://github.com/radu-matei/helm/tree/debugging-draft">my branch of Helm</a> which contains all the assets necessary assets for debugging:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone -b debugging-draft https://github.com/radu-matei/helm
 </span></span></code></pre></div><p>Before moving to actually debugging, it is worth mentioning that Helm has two components - a client-side CLI, that runs locally on the machine and a server-side component, Tiller, which is deployed in your cluster. We will debug both components.</p>
 <h3 id="debugging-the-helm-cli">Debugging the Helm CLI</h3>
@@ -216,11 +398,9 @@ Server: &amp;version.Version{SemVer:&#34;v2.8.2&#34;, GitCommit:&#34;a80231648a1
 </ul>
 <p>The entire concept of <em>debugging</em> means that most likely you will have to to this process multiple times, which can be incredibly time consuming, repetitive and annoying. This is where Draft and the VS Code Kubernetes extension come in extremely handy - Draft will automate the process of building and pushing the container image, then releasing the new version of your application, and the VS Code Kubernetes extension makes sure to attach the correct debugger after all the ports in your pod are forwarded. Let&rsquo;s see how to setup the process specifically for Tiller - we will take each step above and particularize it for the current version of Helm:</p>
 <h3 id="building-the-tiller-binary-for-debugging">Building the Tiller binary for debugging</h3>
-<p>The <a href="https://github.com/kubernetes/helm/blob/master/Makefile#L59" target="_blank" rel="noreferrer noopener">Helm&rsquo;s Makefile</a>
- contains a target called <code>docker-binary</code> which will create a Linux binary. Since that binary is intended for production use, it will omit the debugging symbols (the <code>-w</code> flag is passed, more information below).</p>
+<p>The <a href="https://github.com/kubernetes/helm/blob/master/Makefile#L59">Helm&rsquo;s Makefile</a> contains a target called <code>docker-binary</code> which will create a Linux binary. Since that binary is intended for production use, it will omit the debugging symbols (the <code>-w</code> flag is passed, more information below).</p>
 <blockquote>
-<p>Pass the &lsquo;-w&rsquo; flag to the linker to omit the debug information (for example, go build -ldflags=-w prog.go). - from <a href="https://golang.org/doc/gdb" target="_blank" rel="noreferrer noopener">the Golang documentation on debugging</a>
-</p>
+<p>Pass the &lsquo;-w&rsquo; flag to the linker to omit the debug information (for example, go build -ldflags=-w prog.go). - from <a href="https://golang.org/doc/gdb">the Golang documentation on debugging</a></p>
 </blockquote>
 <p>We will not be able to use this binary for debugging, so we simply create a new Make target where we pass the desired Golang build flags:</p>
 <pre tabindex="0"><code>.PHONY: docker-debug
@@ -230,8 +410,7 @@ docker-debug:
 </code></pre><blockquote>
 <p>For simplicity I also removed some other flags from building the binary - to be as close as possible to production, pass the desired flags, while also making sure you&rsquo;re not breaking the Delve debugger.</p>
 </blockquote>
-<p>Before we get to building the image and push it to a registry, we need a way to <code>make docker-debug</code>. Draft has a feature called <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-008.md" target="_blank" rel="noreferrer noopener">Draft tasks</a>
- which we will use to build the Tiller binary -  add a <code>.draft-tasks.toml</code> file which contains a <code>pre-up</code> task:</p>
+<p>Before we get to building the image and push it to a registry, we need a way to <code>make docker-debug</code>. Draft has a feature called <a href="https://github.com/Azure/draft/blob/master/docs/reference/dep-008.md">Draft tasks</a> which we will use to build the Tiller binary -  add a <code>.draft-tasks.toml</code> file which contains a <code>pre-up</code> task:</p>
 <pre tabindex="0"><code>[pre-up]
     build-tiller = &#34;make docker-debug&#34;
 </code></pre><blockquote>
@@ -330,48 +509,54 @@ spec:
 <p>Iterating through multiple versions of your application simply means starting the Draft debug session again in VS Code - Draft will automatically build the new image for you, push it and then upgrade the deployment, and the extension will attach the remote debugger again. No more searching through the logs for errors, searching through the kubernetes resources for the name of your pods and deployments and manually starting port forwards. The VS Code Kubernetes extension will automate the entire process of deploying the new version of your application and will attach the debugger at the right time.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>In this article we saw how to debug a real-world application deployed on Kubernetes, Helm, and we saw how VS Code and Draft can make our lives much easier when developing, deploying and debugging applications to Kubernetes. Let me know in the comments below your thoughts, and as always, thanks for reading :)</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/kubernetes">kubernetes</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/draft">draft</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/helm">helm</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/vscode">vscode</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"><span class="mr-1.5">←</span><span>The state of debugging microservices on Kubernetes</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/real-world-draft/"><span>Using Draft to develop front-end &#43; back-end applications. Experimenting with Draft, VS Code and remote debugging.</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-

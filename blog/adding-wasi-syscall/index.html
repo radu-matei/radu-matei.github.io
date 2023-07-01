@@ -1,143 +1,335 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en-us" >
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
-    <title>A beginner&#39;s guide to adding a new WASI syscall in Wasmtime | radu&#39;s blog</title>
-     
-    
-
-    <meta name='twitter:card' content='summary'>
-<meta name='twitter:site' content='@matei_radu'>
-<meta name="twitter:image" content="https://radu-matei.com">
-<meta name="twitter:title" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime" />
-<meta name="twitter:description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime" />
-
-<meta name="description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime" />
-    <meta property='og:title' content='A beginner&#39;s guide to adding a new WASI syscall in Wasmtime - radu&#39;s blog'>
-<meta property='og:description' content='In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime'>
-<meta property='og:url' content='https://radu-matei.com/blog/adding-wasi-syscall/'>
-<meta property='og:site_name' content='radu&#39;s blog'>
-<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/7b35cc1e79a4b56517919884a9ea60f2?s=256'><meta property='article:section' content='Blog'><meta property='article:tag' content='wasm'><meta property='article:tag' content='rust'><meta property='article:published_time' content='2020-03-31T00:00:00Z'/><meta property='article:modified_time' content='2020-03-31T00:00:00Z'/>
-    <link href="https://radu-matei.com/index.xml" rel="alternate" type="application/rss+xml" title="radu&#39;s blog" /> <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    
 
 
-    
-    
 
 
-    <link rel="stylesheet" href="/css/github-gist.css">
-    <link disabled id="dark-mode-theme" rel="stylesheet" href="/css/dark.css">
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
-    
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff"> 
-    <link rel="canonical" href="https://radu-matei.com/blog/adding-wasi-syscall/"> 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready text-sm lg:text-base"
+  style="--bg: #faf6f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>A beginner&#39;s guide to adding a new WASI syscall in Wasmtime - radu&#39;s blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  <link rel="canonical" href="https://radu-matei.com/blog/adding-wasi-syscall/">
+  
+  
+  
+  
+  <meta name="description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime" />
+  <meta name="author" content="Radu Matei" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
+
+  
+  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
+    onload="hljs.highlightAll();"></script>
+  
+
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
+    media="screen" />
+  <link disabled id="hljs-dark" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
+    media="screen" />
+
+  
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
+
+  
+  
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
+  
+  
+
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"
+></script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.115.0">
+
+  
+  
+
+  
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-ZQL609R2RZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-ZQL609R2RZ', { 'anonymize_ip': false });
+}
+</script>
+
+  
+  <meta property="og:title" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime" />
+<meta property="og:description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://radu-matei.com/blog/adding-wasi-syscall/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2020-03-31T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-03-31T00:00:00+00:00" />
+
+  
+  <meta itemprop="name" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime">
+<meta itemprop="description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"><meta itemprop="datePublished" content="2020-03-31T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-03-31T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1119">
+<meta itemprop="keywords" content="wasm,rust," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime"/>
+<meta name="twitter:description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"/>
+
+  
+  
+
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQL609R2RZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZQL609R2RZ');
+  </script>
 </head>
 
-<body>
- <section class="section" id="header">
-  <div class="container">
-    <nav class="nav">
-      
-      
-
-      <a class="nav-item" href="https://radu-matei.com">
-        <h1 class="title is-4">radu&#39;s blog</h1>
-      </a>
-      
-
-      <a class="nav-item" href="https://radu-matei.com/about">
-        <h1 class="title is-5">about</h1>
-      </a>
-
-      <div class="nav-right">
-        <nav class="nav-item level is-mobile">
-          <i class="far fa-moon" id="dark-mode-toggle" style="font-size: 21px;"></i><a class="level-item" aria-label="twitter" title=Twitter
-            href="https://twitter.com/matei_radu" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-    
-  </svg></i>
-            </span>
-          </a><a class="level-item" aria-label="github" title=Github
-            href="https://github.com/radu-matei" target="_blank"
-            rel="noopener">
-            <span class="icon">
-              <i class><svg viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
-    
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    
-  </svg></i>
-            </span>
-          </a></nav>
-      </div>
-    </nav>
-
-    
-    <p class="author">
-      
-    </p>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+      role="button" aria-label="Dark"></div>
   </div>
-</section>
 
-<section class="section">
-    <div class="container">
-        <div class="subtitle tags is-6 is-pulled-right">
-             
-<a class="subtitle is-6" href="/tags/wasm">#wasm</a>
-
-
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button" aria-label="Menu"></div>
 
   
-  | <a class="subtitle is-6" href="/tags/rust">#rust</a>
-  
- 
-        </div>
-        
-        <h2 class="subtitle is-6"> March 31, 2020. 6 minutes read.  </h2>
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+    const hljsDark = document.getElementById("hljs-dark");
 
-        <style type="text/css">
-            .brxsmall {
-                display: block;
-                margin-bottom: -.9em;
-            }
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
 
-        </style>
-        <span class="brxsmall"></span>
-        <h1 class="title">A beginner&#39;s guide to adding a new WASI syscall in Wasmtime</h1>
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf6f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
+    };
 
-        
-        <div class="content">
-            
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
+      
+    </nav>
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./twitter.svg)"
+        href="https://twitter.com/matei_radu"
+        target="_blank" rel="me">
+        twitter
+      </a>
+      
+      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href="https://github.com/radu-matei"
+        target="_blank" rel="me">
+        github
+      </a>
+      
+    </nav>
+    
+  </div>
+</header>
 
 
-            <p><a href="https://webassembly.org" target="_blank" rel="noreferrer noopener">WebAssembly (WASM)</a>
- <em>is a binary instruction format for a stack-based
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-20">
+    <h1 class="!my-0 pb-2.5">A beginner&#39;s guide to adding a new WASI syscall in Wasmtime</h1>
+
+    
+    <div class="text-sm opacity-60">
+      
+      <time>Tuesday, March 31, 2020</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
+        style="text-decoration: none"><span>Radu Matei</span></a>
+      
+    </div>
+    
+  </header>
+
+  <section><p><a href="https://webassembly.org">WebAssembly (WASM)</a> <em>is a binary instruction format for a stack-based
 virtual machine.</em> In familiar terms, WASM is used as a compilation target for
 various programming languages (C, C++, or Rust, for example), generating a
 compact binary with a known format. Despite the name, WebAssembly is not a
 technology that can be used only on the web. While most initial use cases for it
-came from browsers, <a href="https://webassembly.github.io/spec/core/index.html" target="_blank" rel="noreferrer noopener">the core specification</a>
- does not assume a browser
+came from browsers, <a href="https://webassembly.github.io/spec/core/index.html">the core specification</a> does not assume a browser
 runtime, but rather describes the binary and text formats for modules, types,
 values, and instruction types. And as a result, there are multiple runtimes
 implemented for various scenarios, both in and outside of browser environments.</p>
-<p><a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-overview.md" target="_blank" rel="noreferrer noopener">WASI, the WebAssembly System Interface</a>
-, is a
+<p><a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-overview.md">WASI, the WebAssembly System Interface</a>, is a
 capability-oriented set of APIs designed to standardize the sandboxed execution
 of WebAssembly modules outside of browsers. Specifically, WASI aims to be the
 common layer that WebAssembly modules can use to interface with host runtimes,
@@ -145,48 +337,32 @@ and get granular access to OS specific objects such as files, environment
 variables, or networking sockets. Because of the apparent resemblance to OS
 system calls, the API functions exposed by WASI are often referred to as
 <code>syscalls</code>, term used by this article as well. For an introduction to the goals
-and architecture of WASI, head over to the Mozilla blog and read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/" target="_blank" rel="noreferrer noopener">Lin Clark&rsquo;s
-announcement post</a>
-.</p>
+and architecture of WASI, head over to the Mozilla blog and read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">Lin Clark&rsquo;s
+announcement post</a>.</p>
 <p>In this article we will explore how to add such a function interface to WASI,
-and how to implement it in <a href="https://wasmtime.dev/" target="_blank" rel="noreferrer noopener">Wasmtime</a>
-, one WebAssembly runtimes
+and how to implement it in <a href="https://wasmtime.dev/">Wasmtime</a>, one WebAssembly runtimes
 that implements the WASI specification. This article is not intended to be a
-tutorial on <em>using</em> WASI as a compilation target for your applications (see <a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-tutorial.md" target="_blank" rel="noreferrer noopener">the
-official tutorial</a>
-), but document my experience in learning how
+tutorial on <em>using</em> WASI as a compilation target for your applications (see <a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-tutorial.md">the
+official tutorial</a>), but document my experience in learning how
 to add such a system call to WASI and a very simple implementation to Wasmtime.
-The article is based on the talk <a href="https://twitter.com/josh_triplett" target="_blank" rel="noreferrer noopener">Josh Triplett</a>
- gave in December at the
-<a href="https://www.meetup.com/wasmsf/events/265881345/" target="_blank" rel="noreferrer noopener">WebAssembly San Francisco meetup</a>
-, and updated to the significant API
+The article is based on the talk <a href="https://twitter.com/josh_triplett">Josh Triplett</a> gave in December at the
+<a href="https://www.meetup.com/wasmsf/events/265881345/">WebAssembly San Francisco meetup</a>, and updated to the significant API
 changes that happened to the WASI and Wasmtime projects since December, with the
-very prompt help of <a href="https://twitter.com/kubkon" target="_blank" rel="noreferrer noopener">Jakub Konka</a>
-.</p>
-<p><a href="https://bytecodealliance.github.io/wasmtime/contributing.html" target="_blank" rel="noreferrer noopener">To get started</a>
-, first clone the Wasmtime repository:</p>
+very prompt help of <a href="https://twitter.com/kubkon">Jakub Konka</a>.</p>
+<p><a href="https://bytecodealliance.github.io/wasmtime/contributing.html">To get started</a>, first clone the Wasmtime repository:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ git clone --recursive https://github.com/bytecodealliance/wasmtime
 </span></span></code></pre></div><blockquote>
 <p>If you want to avoid any changes made to the Wasmtime repository since writing
-this article, you can checkout <a href="https://github.com/bytecodealliance/wasmtime/tree/ac7cd4c46abdc9d4f3ef3230386afd52177e5f7c" target="_blank" rel="noreferrer noopener">this revision</a>
- of the
+this article, you can checkout <a href="https://github.com/bytecodealliance/wasmtime/tree/ac7cd4c46abdc9d4f3ef3230386afd52177e5f7c">this revision</a> of the
 repository.</p>
 </blockquote>
 <h3 id="how-is-the-wasi-api-defined">How is the WASI API defined?</h3>
-<p>The WASI API is declared using <a href="https://github.com/WebAssembly/WASI/blob/master/docs/witx.md" target="_blank" rel="noreferrer noopener"><code>witx</code></a>
-, an experimental file format based
-on the <a href="https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0" target="_blank" rel="noreferrer noopener">WebAssembly Text Format</a>
-, with added support for <a href="https://github.com/WebAssembly/module-types/blob/master/proposals/module-types/Overview.md" target="_blank" rel="noreferrer noopener">module
-types</a>
- and <a href="https://github.com/WebAssembly/annotations/" target="_blank" rel="noreferrer noopener">annotations</a>
-. WASI also uses a
+<p>The WASI API is declared using <a href="https://github.com/WebAssembly/WASI/blob/master/docs/witx.md"><code>witx</code></a>, an experimental file format based
+on the <a href="https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0">WebAssembly Text Format</a>, with added support for <a href="https://github.com/WebAssembly/module-types/blob/master/proposals/module-types/Overview.md">module
+types</a> and <a href="https://github.com/WebAssembly/annotations/">annotations</a>. WASI also uses a
 three-phase process for making changes to the API, with
-<a href="https://github.com/WebAssembly/WASI/tree/master/phases/ephemeral" target="_blank" rel="noreferrer noopener"><code>ephemeral</code></a>
-, <a href="https://github.com/WebAssembly/WASI/tree/master/phases/snapshot" target="_blank" rel="noreferrer noopener"><code>snapshot</code></a>
-, and <a href="https://github.com/WebAssembly/WASI/tree/master/phases/old" target="_blank" rel="noreferrer noopener"><code>old</code></a>
- phases that
-define the stability for a given API. <a href="https://github.com/WebAssembly/WASI/tree/master/phases" target="_blank" rel="noreferrer noopener">This document</a>
- describes how
+<a href="https://github.com/WebAssembly/WASI/tree/master/phases/ephemeral"><code>ephemeral</code></a>, <a href="https://github.com/WebAssembly/WASI/tree/master/phases/snapshot"><code>snapshot</code></a>, and <a href="https://github.com/WebAssembly/WASI/tree/master/phases/old"><code>old</code></a> phases that
+define the stability for a given API. <a href="https://github.com/WebAssembly/WASI/tree/master/phases">This document</a> describes how
 the phases are used in which development cycle.</p>
 <p>If you cloned the Wasmtime repository recursively, you should have the WASI
 repository pulled as a submodule in <code>crates/wasi-common/WASI</code>.</p>
@@ -224,9 +400,8 @@ index 98cd947..9c74dae 100644
 +  )
  )
 </code></pre><blockquote>
-<p>Tip: you can get basic syntax highlighting for <code>.witx</code> files using this <a href="https://marketplace.visualstudio.com/items?itemName=dtsvet.vscode-wasm" target="_blank" rel="noreferrer noopener">VS
-Code extension for WebAssembly</a>
- and set the file type as
+<p>Tip: you can get basic syntax highlighting for <code>.witx</code> files using this <a href="https://marketplace.visualstudio.com/items?itemName=dtsvet.vscode-wasm">VS
+Code extension for WebAssembly</a> and set the file type as
 WebAssembly Text Format.</p>
 </blockquote>
 <p>By <em>declaring</em> our <code>print_greeting</code> API we achieved half of our goal. Now we
@@ -248,8 +423,7 @@ must also provide an actual implementation for it.</p>
 9  | | });
    | |___- `print_greeting` from trait
 </code></pre><p>This means there is a component that automatically generates Rust traits based
-on the snapshot <code>.witx</code> files - <a href="https://github.com/bytecodealliance/wasmtime/tree/master/crates/wiggle" target="_blank" rel="noreferrer noopener">the <code>wiggle</code> crate</a>
-, used by
+on the snapshot <code>.witx</code> files - <a href="https://github.com/bytecodealliance/wasmtime/tree/master/crates/wiggle">the <code>wiggle</code> crate</a>, used by
 <code>wasi-common</code> to generate the <code>WasiSnapshotPreview1</code> trait that needs to be
 implemented in <code>wasi_snapshot_preview1.rs</code>:</p>
 <pre tabindex="0"><code>diff --git a/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs b/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
@@ -305,48 +479,50 @@ parameters and other return values, and potentially building modules that use
 the newly added function from programming languages that compile to WASI (such
 as Rust, or C++). Hopefully, this article gives you a starting point for getting
 started with WASI and Wasmtime.</p>
-
-
-            
-            <p class="author"><a href="https://twitter.com/matei_radu" target="_blank"
-                    rel="noreferrer">Radu Matei<br>
-                    <small>@matei_radu</a></small>
-            </p>
-
-            
-        </div>
-        
-    </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <p>&copy; <a href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a> 2023</p>
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
+     
+    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/rust">rust</a>
     
+  </footer>
+  
+
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/wasm-api-witx/"><span class="mr-1.5">←</span><span>Writing a simple WASM API layer using interface types and Wasmtime</span></a>
+    
+    
+    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/"><span>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</span><span class="ml-1.5">→</span></a>
+    
+  </nav>
+  
+
+  
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
+  <div class="mr-auto">
+    &copy; 2023
+    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
+</footer>
 
-</section>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-81142224-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-<script src="/js/dark.js "></script>
-
-
-</body>
-
+  </body>
 </html>
-
