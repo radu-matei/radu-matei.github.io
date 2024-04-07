@@ -8,7 +8,6 @@ authorname: "Radu Matei"
 author: "@matei_radu"
 authorlink: "https://twitter.com/matei_radu"
 canonicalUrl: "https://www.fermyon.com/blog/introducing-fermyon-serverless-ai"
-weight: "1"
 ---
 
 _[This post originally appeared on the Fermyon blog](https://www.fermyon.com/blog/introducing-fermyon-serverless-ai)_.
