@@ -135,7 +135,7 @@
   <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
 
   
-  <meta name="generator" content="Hugo 0.118.2">
+  <meta name="generator" content="Hugo 0.101.0" />
 
   
   
@@ -153,6 +153,7 @@
 <meta property="og:url" content="https://radu-matei.com/blog/wagi-updates/" /><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2021-05-10T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-05-10T00:00:00+00:00" />
+
 
   
   <meta itemprop="name" content="Updates on WAGI, the WebAssembly Gateway Interface">
@@ -309,7 +310,7 @@ processed), and in Rust it can be done in the following way:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::io::{copy, stdin, stdout};
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain\n&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Server received body:&#34;</span>);
 </span></span><span style="display:flex;"><span>    copy(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> stdin(), <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> stdout()).unwrap();
@@ -396,7 +397,7 @@ cases when we want a single module to handle more than one sub-route, by
 implementing and exporting a <code>_routes()</code> function in the module that maps routes
 to custom handler functions:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74"> Hello from main()&#34;</span>);
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain\n\n Hello from main()&#34;</span>);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">// Use no_mangle so we can call this
@@ -405,14 +406,14 @@ to custom handler functions:</p>
 </span></span><span style="display:flex;"><span><span style="color:#e6db74">/// A provider function that can be
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// called directly
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">hello</span>() {
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74"> Hello&#34;</span>)
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain\n\n Hello&#34;</span>)
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#[no_mangle]</span>
 </span></span><span style="display:flex;"><span><span style="color:#e6db74">/// Another provider function that can
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// be called directly.
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">goodbye</span>() {
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74"> Goodbye&#34;</span>)
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Content-Type: text/plain\n\n Goodbye&#34;</span>)
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">// This maps a few routes:
@@ -533,7 +534,7 @@ and we are looking forward to your pull requests, issues, and suggestion.</p>
 
     <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
   <div class="mr-auto">
-    &copy; 2023
+    &copy; 2024
     <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
 </footer>

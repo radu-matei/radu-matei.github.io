@@ -135,7 +135,7 @@
   <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
 
   
-  <meta name="generator" content="Hugo 0.118.2">
+  <meta name="generator" content="Hugo 0.101.0" />
 
   
   
@@ -153,6 +153,7 @@
 <meta property="og:url" content="https://radu-matei.com/blog/practical-guide-to-wasm-memory/" /><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2021-01-11T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-01-11T00:00:00+00:00" />
+
 
   
   <meta itemprop="name" content="A practical guide to WebAssembly memory">
@@ -517,7 +518,7 @@ WebAssembly runtime:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        res <span style="color:#f92672">=</span> array_sum(ptr, input.len());
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// print the result
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    println!(<span style="color:#e6db74">&#34;Result: </span><span style="color:#e6db74">{:#?}</span><span style="color:#e6db74">&#34;</span>, res);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    println!(<span style="color:#e6db74">&#34;Result: {:#?}&#34;</span>, res);
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>This is is <em>not</em> using a WebAssembly runtime yet, but using plain Rust to
 compile a program that can be profiled for memory leaks. We can directly use the
@@ -568,7 +569,7 @@ computation result:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// after calling `array_sum`
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        dealloc(ptr, input.len());
 </span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Result: </span><span style="color:#e6db74">{:#?}</span><span style="color:#e6db74">&#34;</span>, res);
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Result: {:#?}&#34;</span>, res);
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>Trying to execute the program now, it fails because it is trying to deallocate
 an already freed memory block:</p>
@@ -697,7 +698,7 @@ the same thing that the <code>copyMemory</code> JavaScript function implements:<
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic,
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// since we are not going to be able to copy the data.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_memory(<span style="color:#66d9ef">MEMORY</span>)
+</span></span><span style="display:flex;"><span>        .get_memory(MEMORY)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The module is not using any bindgen libraries,
@@ -709,7 +710,7 @@ the same thing that the <code>copyMemory</code> JavaScript function implements:<
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is used to copy the bytes into the module&#39;s memory.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Then, return the offset.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ALLOC_FN</span>)
+</span></span><span style="display:flex;"><span>        .get_func(ALLOC_FN)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(<span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)])<span style="color:#f92672">?</span>;
 </span></span><span style="display:flex;"><span>
@@ -734,12 +735,12 @@ and prints the result on the console:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// and print the result to the console.
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">array_sum</span>(input: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>) -&gt; Result<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">i32</span>, anyhow::Error<span style="color:#f92672">&gt;</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a new Wasmtime instance
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(<span style="color:#66d9ef">WASM</span>.to_string())<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(WASM.to_string())<span style="color:#f92672">?</span>;
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// write the input array to the module&#39;s linear memory
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> copy_memory(<span style="color:#f92672">&amp;</span>input, <span style="color:#f92672">&amp;</span>instance)<span style="color:#f92672">?</span>;
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// get the module&#39;s exported `array_sum` function
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> array_sum <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ARRAY_SUM_FN</span>)
+</span></span><span style="display:flex;"><span>        .get_func(ARRAY_SUM_FN)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected array_sum function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call the `array_sum` function with the pointer to the
@@ -762,7 +763,7 @@ the functionality in a completely different WebAssembly runtime:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> input <span style="color:#f92672">=</span> vec![<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>];
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> array_sum(input).unwrap();
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Result from running </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">: </span><span style="color:#e6db74">{:#?}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">WASM</span>, res);
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Result from running {}: {:#?}&#34;</span>, WASM, res);
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>So far, we have exclusively passed byte arrays <em>from</em> the runtime <em>to</em> the
 module. While this is enough for passing any sort of binary data to modules, it
@@ -933,12 +934,9 @@ application.</p>
   
   <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
     
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/introducing-fermyon-serverless-ai/"><span class="mr-1.5">←</span><span>Introducing Fermyon Serverless AI</span></a>
-    
     
     <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/introducing-spin-v1/"><span>Spin 1.0 — The Developer Tool for Serverless WebAssembly</span><span class="ml-1.5">→</span></a>
+      href="https://radu-matei.com/blog/introducing-fermyon-serverless-ai/"><span>Introducing Fermyon Serverless AI</span><span class="ml-1.5">→</span></a>
     
   </nav>
   
@@ -955,7 +953,7 @@ application.</p>
 
     <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
   <div class="mr-auto">
-    &copy; 2023
+    &copy; 2024
     <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
 </footer>

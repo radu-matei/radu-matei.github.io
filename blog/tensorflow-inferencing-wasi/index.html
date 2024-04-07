@@ -135,7 +135,7 @@
   <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
 
   
-  <meta name="generator" content="Hugo 0.118.2">
+  <meta name="generator" content="Hugo 0.101.0" />
 
   
   
@@ -153,6 +153,7 @@
 <meta property="og:url" content="https://radu-matei.com/blog/tensorflow-inferencing-wasi/" /><meta property="article:section" content="blog" />
 <meta property="article:published_time" content="2020-10-18T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-10-18T00:00:00+00:00" />
+
 
   
   <meta itemprop="name" content="TensorFlow inferencing using WebAssembly and WASI">
@@ -323,7 +324,7 @@ a starting point for our Wasm module:</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">0</span>,
 </span></span><span style="display:flex;"><span>        InferenceFact::dt_shape(
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">f32</span>::datum_type(),
-</span></span><span style="display:flex;"><span>            tvec!(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>            tvec<span style="color:#f92672">!</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
 </span></span><span style="display:flex;"><span>        ),
 </span></span><span style="display:flex;"><span>    )
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// make the model runnable and fix its inputs and outputs
@@ -339,7 +340,7 @@ a starting point for our Wasm module:</p>
 </span></span><span style="display:flex;"><span>    .into();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">// run the model on the input
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec!(image))<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image))<span style="color:#f92672">?</span>;
 </span></span></code></pre></div><blockquote>
 <p>Source code adapted from <a href="https://github.com/sonos/tract/blob/main/examples/tensorflow-mobilenet-v2/src/main.rs">the Sonos Tract examples</a>.</p>
 </blockquote>
@@ -468,7 +469,7 @@ file system (hence the slight changes in loading them):</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::load_from_memory(image_bytes);
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec!(image));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image));
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>We can now compile the code to the Rust <code>wasm32-wasi</code> target and get a
@@ -570,13 +571,13 @@ JavaScript in the previous section:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic, since
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// we are not going to be able to copy any data.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_memory(<span style="color:#66d9ef">MEMORY</span>)
+</span></span><span style="display:flex;"><span>        .get_memory(MEMORY)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the guest&#39;s exported `alloc` function, and call
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// it with the length of the byte array.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ALLOC_FN</span>)
+</span></span><span style="display:flex;"><span>        .get_func(ALLOC_FN)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
@@ -616,7 +617,7 @@ class:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// instance for every prediction, since a
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// `Wasmtime::Instance` cannot be safely sent between threads.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// See https://github.com/bytecodealliance/wasmtime/issues/793
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(<span style="color:#66d9ef">WASM</span>.to_string())<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(WASM.to_string())<span style="color:#f92672">?</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Write the MobileNet model and the image contents to
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s linear memory, and get their pointers.
@@ -632,7 +633,7 @@ class:</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the module&#39;s &#34;infer_from_ptrs&#34; function,
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is the entrypoint for our module.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> infer <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">INFER_FN</span>)
+</span></span><span style="display:flex;"><span>        .get_func(INFER_FN)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected inference function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Call the inference function with the pointer
@@ -757,7 +758,7 @@ module and its instantiation.</li>
 
     <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
   <div class="mr-auto">
-    &copy; 2023
+    &copy; 2024
     <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
   </div>
 </footer>
