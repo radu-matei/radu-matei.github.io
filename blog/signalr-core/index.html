@@ -45,6 +45,34 @@
   lang="en-us"
 >
   <head>
+  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: 'Spin Quasi';
+      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Spin Mono';
+      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    html {
+      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    code,
+    kbd,
+    samp,
+    pre {
+      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+
+
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -106,36 +134,13 @@
 
   
   
-  <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
-  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
-  crossorigin="anonymous"
-/>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
-  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
-  crossorigin="anonymous"
-></script>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
-  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
-  crossorigin="anonymous"
-  onload="renderMathInElement(document.body);"
-></script>
-
-  
-  
-  
 
   
   <link rel="icon" href="https://radu-matei.com/favicon.ico" />
   <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
 
   
-  <meta name="generator" content="Hugo 0.101.0" />
+  <meta name="generator" content="Hugo 0.124.1">
 
   
   
@@ -154,7 +159,6 @@
 <meta property="article:published_time" content="2017-11-26T00:00:00+00:00" />
 <meta property="article:modified_time" content="2017-11-26T00:00:00+00:00" />
 
-
   
   <meta itemprop="name" content="Getting started with SignalR Alpha 2">
 <meta itemprop="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta itemprop="datePublished" content="2017-11-26T00:00:00+00:00" />
@@ -162,8 +166,7 @@
 <meta itemprop="wordCount" content="2420">
 <meta itemprop="keywords" content="dotnet-core,signalr," />
   
-  <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Getting started with SignalR Alpha 2"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Getting started with SignalR Alpha 2"/>
 <meta name="twitter:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"/>
 
   
@@ -174,7 +177,7 @@
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
   <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
     <div
       class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
       role="button" aria-label="Dark"></div>
@@ -329,10 +332,10 @@
 <p>As I was saying earlier, you need .NET Core 2.0.0 in order to get started - we will create a new empty web application with <code>dotnet new web</code>, which gives us the simplest ASP.NET Core web application possible - a <code>Program.cs</code>, a  <code>Startup.cs</code> and a <code>.csproj</code>.</p>
 <p>First, we need to add a reference to SignalR in our <code>.csproj</code> file - <code>&lt;PackageReference Include=&quot;Microsoft.AspNetCore.SignalR&quot; Version=&quot;1.0.0-alpha2-final&quot; /&gt;</code>, then do a <code>dotnet restore</code>.</p>
 <p>This is how your <code>.csproj</code> should look like:</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/6446f5d4b4c7076d76e3e50622d7a00d.js"></script>
+<script src="https://gist.github.com/radu-matei/6446f5d4b4c7076d76e3e50622d7a00d.js"></script>
 
 <p>Now let&rsquo;s create our Chat Hub - essentially, it is a class that inherits the base <code>Hub</code> class from SignalR. It only has a single method, <code>Send</code>, which sends messages to all connected clients - in fact, the method tells all clients to execute their <code>broadcastMessage</code> with <code>name</code> and <code>message</code> as parameters.</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/5d28200e30e0bf9af6f755bc85625884.js"></script>
+<script src="https://gist.github.com/radu-matei/5d28200e30e0bf9af6f755bc85625884.js"></script>
 
 <p>Now we need to tell our app to add the SignalR service and instruct it on how to expose the chat service we just created: all you need to notice here:</p>
 <ul>
@@ -347,7 +350,7 @@
 <li>this instructs the app to use SignalR and to map the Hub we just created, and expose the endpoint as <code>/chat</code></li>
 </ul>
 <p>Below is the full <code>Startup.cs</code> file:</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js"></script>
+<script src="https://gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js"></script>
 
 <p>Now to the client: we need to create a simple HTML page that can send messages. It will use the SignalR JavaScript client, which you can either download using <code>npm</code>: <code>npm install @aspnet/signalr-client</code>, or <a href="https://gist.github.com/radu-matei/84f12b835fbd0fbe3cbe165a70e13e34">use the gist from here</a>.</p>
 <p>Here&rsquo;s a breakdown on what&rsquo;s happening in the web page:</p>
@@ -378,7 +381,7 @@
 <li>then we simply start the connection: <code>connection.start();</code></li>
 </ul>
 <p>Below is the full <code>index.html</code>:</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/015f4bcb856659d33484adf030bde50a.js"></script>
+<script src="https://gist.github.com/radu-matei/015f4bcb856659d33484adf030bde50a.js"></script>
 
 <p>Now if we want to actually see if it works, we need to start the web app (either from Visual Studio/Code, or through <code>dotnet run</code>), then in a browser go to <code>http://localhost:5000</code>:</p>
 <p><img src="/img/article-photos/signalr/gif1.gif" alt=""></p>
@@ -412,7 +415,7 @@
 </span></span><span style="display:flex;"><span>    Console.WriteLine(<span style="color:#e6db74">$&#34;{name} said: {message}&#34;</span>);
 </span></span><span style="display:flex;"><span>});
 </span></span></code></pre></div><p>Below is the full <code>Program.cs</code>:</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
+<script src="https://gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
 
 <blockquote>
 <p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client">find the full implementation of the console client on GitHub</a></p>
@@ -446,7 +449,7 @@
 <p>Another popular situation of using SignalR is to provide notifications through an MVC or WebAPI application, more specifically through a controller method. This means the initial point of interaction will not by directly calling a hub method, but after one client making a REST request to a controller - then, from the controller method, we need to send an update to all connected clients.</p>
 <p>We will start with a simple <code>dotnet new webapi</code> application and add SignalR the same way as we did earlier. Then, we will work with the <code>ValuesController</code> aleady generated for us.</p>
 <p>Now we add a simple <code>NotificationsHub</code> that doesn&rsquo;t have any methods - since clients will not call directly hub methods, but rather be notified from the controller.</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/4df09d4a3b955e697ef64bb7fba06382.js"></script>
+<script src="https://gist.github.com/radu-matei/4df09d4a3b955e697ef64bb7fba06382.js"></script>
 
 <p>Now the client is pretty much the same, the only difference is that when the button is pressed, there is no SignalR hub invocation, but a simple fetch to a controller method - and the controller is the interesting one:</p>
 <ul>
@@ -457,7 +460,7 @@
 <p>then, we simply call some method on the connected clients as if we were inside a hub</p>
 </li>
 </ul>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js"></script>
+<script src="https://gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js"></script>
 
 <blockquote>
 <p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc">find the MVC sample on GitHub</a></p>

@@ -45,6 +45,34 @@
   lang="en-us"
 >
   <head>
+  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: 'Spin Quasi';
+      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Spin Mono';
+      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    html {
+      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    code,
+    kbd,
+    samp,
+    pre {
+      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+
+
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -106,36 +134,13 @@
 
   
   
-  <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
-  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
-  crossorigin="anonymous"
-/>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
-  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
-  crossorigin="anonymous"
-></script>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
-  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
-  crossorigin="anonymous"
-  onload="renderMathInElement(document.body);"
-></script>
-
-  
-  
-  
 
   
   <link rel="icon" href="https://radu-matei.com/favicon.ico" />
   <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
 
   
-  <meta name="generator" content="Hugo 0.101.0" />
+  <meta name="generator" content="Hugo 0.124.1">
 
   
   
@@ -154,7 +159,6 @@
 <meta property="article:published_time" content="2020-10-18T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-10-18T00:00:00+00:00" />
 
-
   
   <meta itemprop="name" content="TensorFlow inferencing using WebAssembly and WASI">
 <meta itemprop="description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed."><meta itemprop="datePublished" content="2020-10-18T00:00:00+00:00" />
@@ -162,8 +166,7 @@
 <meta itemprop="wordCount" content="2881">
 <meta itemprop="keywords" content="wasm,rust,tensorflow,ml," />
   
-  <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="TensorFlow inferencing using WebAssembly and WASI"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="TensorFlow inferencing using WebAssembly and WASI"/>
 <meta name="twitter:description" content="In this article, we experiment with building a Rust program that performs image classification using the MobileNet V2 TensorFlow model, compile it to WebAssembly, and instantiate the module using two WebAssembly runtimes that use the WebAssembly System Interface (WASI), the native NodeJS WASI runtime, and Wasmtime. A special interest is given to writing model and image data into the module’s linear memory, with implementations in both JavaScript and Rust. Finally, a simple prediction API is exemplified running on top of the Wasmtime runtime, and some limitations of this approach are discussed."/>
 
   
@@ -174,7 +177,7 @@
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
   <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
     <div
       class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
       role="button" aria-label="Dark"></div>
@@ -326,7 +329,7 @@ a starting point for our Wasm module:</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">0</span>,
 </span></span><span style="display:flex;"><span>        InferenceFact::dt_shape(
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">f32</span>::datum_type(),
-</span></span><span style="display:flex;"><span>            tvec<span style="color:#f92672">!</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>            tvec!(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">224</span>, <span style="color:#ae81ff">3</span>)
 </span></span><span style="display:flex;"><span>        ),
 </span></span><span style="display:flex;"><span>    )
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// make the model runnable and fix its inputs and outputs
@@ -342,7 +345,7 @@ a starting point for our Wasm module:</p>
 </span></span><span style="display:flex;"><span>    .into();
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">// run the model on the input
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image))<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec!(image))<span style="color:#f92672">?</span>;
 </span></span></code></pre></div><blockquote>
 <p>Source code adapted from <a href="https://github.com/sonos/tract/blob/main/examples/tensorflow-mobilenet-v2/src/main.rs">the Sonos Tract examples</a>.</p>
 </blockquote>
@@ -471,7 +474,7 @@ file system (hence the slight changes in loading them):</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> image <span style="color:#f92672">=</span> image::load_from_memory(image_bytes);
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec<span style="color:#f92672">!</span>(image));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> model.run(tvec!(image));
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>We can now compile the code to the Rust <code>wasm32-wasi</code> target and get a
@@ -573,13 +576,13 @@ JavaScript in the previous section:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic, since
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// we are not going to be able to copy any data.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_memory(MEMORY)
+</span></span><span style="display:flex;"><span>        .get_memory(<span style="color:#66d9ef">MEMORY</span>)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the guest&#39;s exported `alloc` function, and call
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// it with the length of the byte array.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(ALLOC_FN)
+</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ALLOC_FN</span>)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)]
@@ -619,7 +622,7 @@ class:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// instance for every prediction, since a
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// `Wasmtime::Instance` cannot be safely sent between threads.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// See https://github.com/bytecodealliance/wasmtime/issues/793
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(WASM.to_string())<span style="color:#f92672">?</span>;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(<span style="color:#66d9ef">WASM</span>.to_string())<span style="color:#f92672">?</span>;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Write the MobileNet model and the image contents to
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the module&#39;s linear memory, and get their pointers.
@@ -635,7 +638,7 @@ class:</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the module&#39;s &#34;infer_from_ptrs&#34; function,
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is the entrypoint for our module.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> infer <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(INFER_FN)
+</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">INFER_FN</span>)
 </span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected inference function not found&#34;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Call the inference function with the pointer

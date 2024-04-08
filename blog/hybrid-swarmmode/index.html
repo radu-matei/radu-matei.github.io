@@ -45,6 +45,34 @@
   lang="en-us"
 >
   <head>
+  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: 'Spin Quasi';
+      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Spin Mono';
+      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    html {
+      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    code,
+    kbd,
+    samp,
+    pre {
+      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+
+
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -106,36 +134,13 @@
 
   
   
-  <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
-  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
-  crossorigin="anonymous"
-/>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
-  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
-  crossorigin="anonymous"
-></script>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
-  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
-  crossorigin="anonymous"
-  onload="renderMathInElement(document.body);"
-></script>
-
-  
-  
-  
 
   
   <link rel="icon" href="https://radu-matei.com/favicon.ico" />
   <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
 
   
-  <meta name="generator" content="Hugo 0.101.0" />
+  <meta name="generator" content="Hugo 0.124.1">
 
   
   
@@ -154,7 +159,6 @@
 <meta property="article:published_time" content="2017-07-03T00:00:00+00:00" />
 <meta property="article:modified_time" content="2017-07-03T00:00:00+00:00" />
 
-
   
   <meta itemprop="name" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine">
 <meta itemprop="description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"><meta itemprop="datePublished" content="2017-07-03T00:00:00+00:00" />
@@ -162,8 +166,7 @@
 <meta itemprop="wordCount" content="1790">
 <meta itemprop="keywords" content="docker,azure,windows-containers," />
   
-  <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine"/>
 <meta name="twitter:description" content="Configuring a hybrid Docker Swarm Mode cluster on Azure using acs-engine"/>
 
   
@@ -174,7 +177,7 @@
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
   <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com">radu&#39;s blog</a>
+    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
     <div
       class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
       role="button" aria-label="Dark"></div>
@@ -325,7 +328,7 @@
 <p>After we deploy our cluster, we will be able to deploy all types of containers described above.</p>
 <h3 id="the-acs-engine-cluster-definition">The <code>acs-engine</code> cluster definition</h3>
 <p>As said earlier, we will use a JSON cluster definition file to, well, define our cluster.</p>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f.js"></script>
+<script src="https://gist.github.com/radu-matei/f610287201e4c08eb2e69eb5ebd02b2f.js"></script>
 
 <p>This is a pretty standard cluster definition file for acs-engine, except for the addition of <code>windowspool</code>, a pool of Windows Server agents in our cluster.</p>
 <blockquote>
@@ -400,7 +403,7 @@
 <blockquote>
 <p><a href="https://github.com/microsoft-dx/docker-lab/tree/master/apps/python-redis">The Python application can be found here</a> and is very similar to the <a href="https://docs.docker.com/compose/gettingstarted/">Docker Compose one from the Official Docker Docs</a></p>
 </blockquote>
-<script type="application/javascript" src="https://gist.github.com/radu-matei/7543e906e3633075cd32231e46628bf1.js"></script>
+<script src="https://gist.github.com/radu-matei/7543e906e3633075cd32231e46628bf1.js"></script>
 
 <p>The most important thing to notice in the stack file is the deployment constraint on the node operating system. As stated earlier, this is very important in the stack file as a Linux service will not run in a Windows host and vice-versa.</p>
 <p>You can see that the <code>redis</code> service is based on the Windows version of Redis (not something that you would use in production, here just for showcase) and is based on the Nano Server image.</p>
