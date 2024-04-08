@@ -6,6 +6,7 @@ title = "From (C)Go to Rust: A practical guide to building shared and static lib
 description = "In this article we will explore how to build shared and static libraries in Go, and import them in Rust."
 summary = "In this article we will explore how to build shared and static libraries in Go, and import them in Rust."
 image = ""
+weight = "10"
 +++
 
 Rust is quickly becoming a popular language for systems programming, and [its public crate ecosystem][crates] contains packages for common tasks, such as HTTP servers, building command line interfaces, or JSON handling. But if you are coming from a different ecosystem, there might be specialized packages that do not have an equivalent yet. So what happens if you need to use such a package in your Rust project?
