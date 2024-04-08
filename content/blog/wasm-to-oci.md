@@ -23,7 +23,7 @@ But WebAssembly isn't only for the web. The [WebAssembly System Interface projec
 
 And if you're thinking: _wait a second - aren't those advantages also mentioned when talking about containers?_
 
-{{< tweet solomonstre 1111004913222324225 >}}
+{{< tweet user="solomonstre" id="1111004913222324225" >}}
 
 WASI could provide a very interesting alternative to the container ecosystem - but for this article, we are only interested in discussing how to distribute WebAssembly modules.
 
