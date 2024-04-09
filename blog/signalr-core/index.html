@@ -1,658 +1,122 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Getting started with SignalR Alpha 2 - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/signalr-core/">
-  
-  
-  
-  
-  <meta name="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Getting started with SignalR Alpha 2" />
-<meta property="og:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/signalr-core/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2017-11-26T00:00:00+00:00" />
-<meta property="article:modified_time" content="2017-11-26T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Getting started with SignalR Alpha 2">
-<meta itemprop="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta itemprop="datePublished" content="2017-11-26T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2017-11-26T00:00:00+00:00" />
-<meta itemprop="wordCount" content="2420">
-<meta itemprop="keywords" content="dotnet-core,signalr," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Getting started with SignalR Alpha 2"/>
-<meta name="twitter:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Getting started with SignalR Alpha 2</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Sunday, November 26, 2017</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#chat-of-course">Chat, of course</a></li>
-<li><a href="#adding-a-c-console-client">Adding a C# console client</a></li>
-<li><a href="#handling-connection-and-disconnection-events">Handling connection and disconnection events</a></li>
-<li><a href="#working-with-an-mvc-webapi-application">Working with an MVC/WebApi application</a></li>
-<li><a href="#streaming">Streaming</a></li>
-<li><a href="#sending-binary-data">Sending binary data</a></li>
-<li><a href="#redis-scaleout">Redis scaleout</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul>
-<h2 id="introduction">Introduction</h2>
-<blockquote>
-<p>ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.</p>
-</blockquote>
-<blockquote>
-<p>You can <a href="https://github.com/aspnet/signalr">follow the development of SignalR on GitHub</a></p>
-</blockquote>
-<p>While ASP.NET hit version 2.0, SignalR has been in development for the better part of the last couple if years - and if you want to get an insight on new things, <a href="https://vimeo.com/204078084">I recommend watching this talk by David Fowler and Damian Edwards, the people in charge of SignalR (and the creators of it)</a>.</p>
-<p>In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 - you can <a href="https://blogs.msdn.microsoft.com/webdev/2017/10/09/announcing-signalr-for-asp-net-core-alpha-2/">read the announcement blog post on MSDN</a>, but here are some of the of the news in case you haven&rsquo;t followed SignalR for a while:</p>
-<ul>
-<li>new JavaScript and TypeScript clients</li>
-<li>JSON and binary messages based on <a href="https://msgpack.org/">MessagePack</a> - and while <a href="https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#protocol-buffers-protobuf-encoding">ProtoBuf is not yet implemented</a>, there are some [samples available](- <a href="https://github.com/aspnet/SignalR/blob/357f5f85bbc7b794f95bcb63799f98bc1dcee68e/samples/SocialWeather/Protobuf/WeatherReport.proto">https://github.com/aspnet/SignalR/blob/357f5f85bbc7b794f95bcb63799f98bc1dcee68e/samples/SocialWeather/Protobuf/WeatherReport.proto</a>
-) and I hope it will be one of the officially supported protocols</li>
-<li>streaming support (this is incredibly exciting!)</li>
-<li>no more automatic reconnection</li>
-<li>single hub per connection</li>
-</ul>
-<p>In this blog post we will explore how to get started with some of the most common scenarios for SignalR, and in order to follow along you need version 2.0.0 of .NET Core installed on your machine - <a href="https://www.microsoft.com/net/download/">you can get started here</a></p>
-<h2 id="chat-of-course">Chat, of course</h2>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/simple-chat">find the chat sample on GitHub</a></p>
-</blockquote>
-<p>Every article, talk or piece of documentation on SignalR needs to include a chat sample - this has been the standard ever since the beginning, and I will also include a sample here - it will be a very simple sample, just enough to make sure you have everything configured correctly and to understand the basic concepts of SignalR.</p>
-<p>As I was saying earlier, you need .NET Core 2.0.0 in order to get started - we will create a new empty web application with <code>dotnet new web</code>, which gives us the simplest ASP.NET Core web application possible - a <code>Program.cs</code>, a  <code>Startup.cs</code> and a <code>.csproj</code>.</p>
-<p>First, we need to add a reference to SignalR in our <code>.csproj</code> file - <code>&lt;PackageReference Include=&quot;Microsoft.AspNetCore.SignalR&quot; Version=&quot;1.0.0-alpha2-final&quot; /&gt;</code>, then do a <code>dotnet restore</code>.</p>
-<p>This is how your <code>.csproj</code> should look like:</p>
-<script src="https://gist.github.com/radu-matei/6446f5d4b4c7076d76e3e50622d7a00d.js"></script>
-
-<p>Now let&rsquo;s create our Chat Hub - essentially, it is a class that inherits the base <code>Hub</code> class from SignalR. It only has a single method, <code>Send</code>, which sends messages to all connected clients - in fact, the method tells all clients to execute their <code>broadcastMessage</code> with <code>name</code> and <code>message</code> as parameters.</p>
-<script src="https://gist.github.com/radu-matei/5d28200e30e0bf9af6f755bc85625884.js"></script>
-
-<p>Now we need to tell our app to add the SignalR service and instruct it on how to expose the chat service we just created: all you need to notice here:</p>
-<ul>
-<li><code>services.AddSignalR()</code> - this adds SignalR to the available services and to the dependency injection engine</li>
-<li><code>app.UseFileServer()</code> - this allows the serving of static files - we will need this once we add a simple HTML page</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>app.UseSignalR(routes =&gt;
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    routes.MapHub&lt;ChatHub&gt;(<span style="color:#e6db74">&#34;chat&#34;</span>);
-</span></span><span style="display:flex;"><span>});
-</span></span></code></pre></div><ul>
-<li>this instructs the app to use SignalR and to map the Hub we just created, and expose the endpoint as <code>/chat</code></li>
-</ul>
-<p>Below is the full <code>Startup.cs</code> file:</p>
-<script src="https://gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js"></script>
-
-<p>Now to the client: we need to create a simple HTML page that can send messages. It will use the SignalR JavaScript client, which you can either download using <code>npm</code>: <code>npm install @aspnet/signalr-client</code>, or <a href="https://gist.github.com/radu-matei/84f12b835fbd0fbe3cbe165a70e13e34">use the gist from here</a>.</p>
-<p>Here&rsquo;s a breakdown on what&rsquo;s happening in the web page:</p>
-<ul>
-<li>we have some input of type text, where we write the messages</li>
-<li>we have a button that when we press we want to send the message</li>
-<li>then we make a reference to the SignalR JavaScript client that should be in the same folder as your HTML file</li>
-</ul>
-<p>Now for the SignalR magic:</p>
-<ul>
-<li><code>var transport = signalR.TransportType.WebSockets;</code> - we specify that we want to use WebSockets</li>
-<li><code>var connection = new signalR.HubConnection(&quot;http://${document.location.host}/chat&quot;, { transport: transport });</code> - we create a new SignalR connection to the <code>/chat</code> endpoint we defined in <code>Startup.cs</code>, using WebSockets as the trasport</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;broadcastMessage&#39;</span>, (<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">message</span>) =&gt; {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">liElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;li&#39;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">liElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;strong&gt;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">name</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">message</span>;
-</span></span><span style="display:flex;"><span>    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;discussion&#39;</span>).<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">liElement</span>);
-</span></span><span style="display:flex;"><span>});
-</span></span></code></pre></div><ul>
-<li>here we define and implement the <code>broadcastMessage</code> method we saw in the hub earlier - essentially, we add the message we received in an unordered list in the page</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">event</span> =&gt; {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#e6db74">&#39;send&#39;</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">focus</span>();
-</span></span><span style="display:flex;"><span>});
-</span></span></code></pre></div><ul>
-<li>then we simply start the connection: <code>connection.start();</code></li>
-</ul>
-<p>Below is the full <code>index.html</code>:</p>
-<script src="https://gist.github.com/radu-matei/015f4bcb856659d33484adf030bde50a.js"></script>
-
-<p>Now if we want to actually see if it works, we need to start the web app (either from Visual Studio/Code, or through <code>dotnet run</code>), then in a browser go to <code>http://localhost:5000</code>:</p>
-<p><img src="/img/article-photos/signalr/gif1.gif" alt=""></p>
-<p>At this point, you successfully created a very simple SignalR chat application - you now know how to create hub methods and client methods, and how to connect a web app using the JavaScript client.</p>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/simple-chat">find the chat sample on GitHub</a></p>
-</blockquote>
-<h2 id="adding-a-c-console-client">Adding a C# console client</h2>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client">find the full implementation of the console client on GitHub</a></p>
-</blockquote>
-<p>Now if we want to connect a C#-based client, we only need to add the <code>Microsoft.AspNetCore.SignalR.Client</code> package to a <code>dotnet new console</code> newly created app, specifically <code>&lt;PackageReference Include=&quot;Microsoft.AspNetCore.SignalR.Client&quot; Version=&quot;1.0.0-alpha2-final&quot; /&gt;</code></p>
-<p>Let&rsquo;s explore the most important things about the console client:</p>
-<ul>
-<li>we first start the connection to <code>http://localhost:5000/chat</code></li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task StartConnectionAsync()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    _connection = <span style="color:#66d9ef">new</span> HubConnectionBuilder()
-</span></span><span style="display:flex;"><span>         .WithUrl(<span style="color:#e6db74">&#34;http://localhost:5000/chat&#34;</span>)
-</span></span><span style="display:flex;"><span>         .WithConsoleLogger()
-</span></span><span style="display:flex;"><span>         .Build();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> _connection.StartAsync();
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><ul>
-<li>then, we register and implement the method for <code>broadcastMessage</code>:</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>_connection.On&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;broadcastMessage&#34;</span>, (name, message) =&gt;
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    Console.WriteLine(<span style="color:#e6db74">$&#34;{name} said: {message}&#34;</span>);
-</span></span><span style="display:flex;"><span>});
-</span></span></code></pre></div><p>Below is the full <code>Program.cs</code>:</p>
-<script src="https://gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js"></script>
-
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/console-client">find the full implementation of the console client on GitHub</a></p>
-</blockquote>
-<p>Let&rsquo;s see how it works:</p>
-<p><img src="/img/article-photos/signalr/gif2.gif" alt=""></p>
-<h2 id="handling-connection-and-disconnection-events">Handling connection and disconnection events</h2>
-<p>Another thing we used to do in the old SignalR was to handle connection and disconnection events through some overridden methods in our hubs. We can still do this in an extremely similar way - below you can find the <code>OnConnectedAsync</code> and <code>OnDisconnectedAsync</code> methods:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> Task OnConnectedAsync()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    Clients.All.InvokeAsync(<span style="color:#e6db74">&#34;broadcastMessage&#34;</span>, <span style="color:#e6db74">&#34;system&#34;</span>, <span style="color:#e6db74">$&#34;{Context.ConnectionId} joined the conversation&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">base</span>.OnConnectedAsync();
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><ul>
-<li>
-<p>this method invokes the <code>broadcastMessage</code> and tells everybody the connection ID of the newly connected client, then returns and continues with the regular <code>OnConnectedAsync</code> implementation from the hub</p>
-</li>
-<li>
-<p>the <code>OnDisconnectedAsync</code> method basically does the same thing</p>
-</li>
-</ul>
-<pre tabindex="0"><code>public override Task OnDisconnectedAsync(System.Exception exception)
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Getting started with SignalR Alpha 2 - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/signalr-core/><meta name=description content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Getting started with SignalR Alpha 2"><meta property="og:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/signalr-core/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2017-11-26T00:00:00+00:00"><meta property="article:modified_time" content="2017-11-26T00:00:00+00:00"><meta itemprop=name content="Getting started with SignalR Alpha 2"><meta itemprop=description content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta itemprop=datePublished content="2017-11-26T00:00:00+00:00"><meta itemprop=dateModified content="2017-11-26T00:00:00+00:00"><meta itemprop=wordCount content="2420"><meta itemprop=keywords content="dotnet-core,signalr,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Getting started with SignalR Alpha 2"><meta name=twitter:description content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Getting started with SignalR Alpha 2</h1><div class="text-sm opacity-60"><time>Sunday, November 26, 2017</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><h2 id=table-of-contents>Table of Contents</h2><ul><li><a href=#introduction>Introduction</a></li><li><a href=#chat-of-course>Chat, of course</a></li><li><a href=#adding-a-c-console-client>Adding a C# console client</a></li><li><a href=#handling-connection-and-disconnection-events>Handling connection and disconnection events</a></li><li><a href=#working-with-an-mvc-webapi-application>Working with an MVC/WebApi application</a></li><li><a href=#streaming>Streaming</a></li><li><a href=#sending-binary-data>Sending binary data</a></li><li><a href=#redis-scaleout>Redis scaleout</a></li><li><a href=#conclusion>Conclusion</a></li></ul><h2 id=introduction>Introduction</h2><blockquote><p>ASP.NET SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.</p></blockquote><blockquote><p>You can <a href=https://github.com/aspnet/signalr>follow the development of SignalR on GitHub</a></p></blockquote><p>While ASP.NET hit version 2.0, SignalR has been in development for the better part of the last couple if years - and if you want to get an insight on new things, <a href=https://vimeo.com/204078084>I recommend watching this talk by David Fowler and Damian Edwards, the people in charge of SignalR (and the creators of it)</a>.</p><p>In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 - you can <a href=https://blogs.msdn.microsoft.com/webdev/2017/10/09/announcing-signalr-for-asp-net-core-alpha-2/>read the announcement blog post on MSDN</a>, but here are some of the of the news in case you haven&rsquo;t followed SignalR for a while:</p><ul><li>new JavaScript and TypeScript clients</li><li>JSON and binary messages based on <a href=https://msgpack.org/>MessagePack</a> - and while <a href=https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#protocol-buffers-protobuf-encoding>ProtoBuf is not yet implemented</a>, there are some [samples available](- <a href=https://github.com/aspnet/SignalR/blob/357f5f85bbc7b794f95bcb63799f98bc1dcee68e/samples/SocialWeather/Protobuf/WeatherReport.proto>https://github.com/aspnet/SignalR/blob/357f5f85bbc7b794f95bcb63799f98bc1dcee68e/samples/SocialWeather/Protobuf/WeatherReport.proto</a>
+) and I hope it will be one of the officially supported protocols</li><li>streaming support (this is incredibly exciting!)</li><li>no more automatic reconnection</li><li>single hub per connection</li></ul><p>In this blog post we will explore how to get started with some of the most common scenarios for SignalR, and in order to follow along you need version 2.0.0 of .NET Core installed on your machine - <a href=https://www.microsoft.com/net/download/>you can get started here</a></p><h2 id=chat-of-course>Chat, of course</h2><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/simple-chat>find the chat sample on GitHub</a></p></blockquote><p>Every article, talk or piece of documentation on SignalR needs to include a chat sample - this has been the standard ever since the beginning, and I will also include a sample here - it will be a very simple sample, just enough to make sure you have everything configured correctly and to understand the basic concepts of SignalR.</p><p>As I was saying earlier, you need .NET Core 2.0.0 in order to get started - we will create a new empty web application with <code>dotnet new web</code>, which gives us the simplest ASP.NET Core web application possible - a <code>Program.cs</code>, a <code>Startup.cs</code> and a <code>.csproj</code>.</p><p>First, we need to add a reference to SignalR in our <code>.csproj</code> file - <code>&lt;PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-alpha2-final" /></code>, then do a <code>dotnet restore</code>.</p><p>This is how your <code>.csproj</code> should look like:</p><script src=https://gist.github.com/radu-matei/6446f5d4b4c7076d76e3e50622d7a00d.js></script><p>Now let&rsquo;s create our Chat Hub - essentially, it is a class that inherits the base <code>Hub</code> class from SignalR. It only has a single method, <code>Send</code>, which sends messages to all connected clients - in fact, the method tells all clients to execute their <code>broadcastMessage</code> with <code>name</code> and <code>message</code> as parameters.</p><script src=https://gist.github.com/radu-matei/5d28200e30e0bf9af6f755bc85625884.js></script><p>Now we need to tell our app to add the SignalR service and instruct it on how to expose the chat service we just created: all you need to notice here:</p><ul><li><code>services.AddSignalR()</code> - this adds SignalR to the available services and to the dependency injection engine</li><li><code>app.UseFileServer()</code> - this allows the serving of static files - we will need this once we add a simple HTML page</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>app.UseSignalR(routes =&gt;
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    routes.MapHub&lt;ChatHub&gt;(<span style=color:#e6db74>&#34;chat&#34;</span>);
+</span></span><span style=display:flex><span>});
+</span></span></code></pre></div><ul><li>this instructs the app to use SignalR and to map the Hub we just created, and expose the endpoint as <code>/chat</code></li></ul><p>Below is the full <code>Startup.cs</code> file:</p><script src=https://gist.github.com/radu-matei/e1e41940adc28bbe002feefde96cacef.js></script><p>Now to the client: we need to create a simple HTML page that can send messages. It will use the SignalR JavaScript client, which you can either download using <code>npm</code>: <code>npm install @aspnet/signalr-client</code>, or <a href=https://gist.github.com/radu-matei/84f12b835fbd0fbe3cbe165a70e13e34>use the gist from here</a>.</p><p>Here&rsquo;s a breakdown on what&rsquo;s happening in the web page:</p><ul><li>we have some input of type text, where we write the messages</li><li>we have a button that when we press we want to send the message</li><li>then we make a reference to the SignalR JavaScript client that should be in the same folder as your HTML file</li></ul><p>Now for the SignalR magic:</p><ul><li><code>var transport = signalR.TransportType.WebSockets;</code> - we specify that we want to use WebSockets</li><li><code>var connection = new signalR.HubConnection("http://${document.location.host}/chat", { transport: transport });</code> - we create a new SignalR connection to the <code>/chat</code> endpoint we defined in <code>Startup.cs</code>, using WebSockets as the trasport</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#a6e22e>connection</span>.<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#39;broadcastMessage&#39;</span>, (<span style=color:#a6e22e>name</span>, <span style=color:#a6e22e>message</span>) =&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>liElement</span> <span style=color:#f92672>=</span> document.<span style=color:#a6e22e>createElement</span>(<span style=color:#e6db74>&#39;li&#39;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>liElement</span>.<span style=color:#a6e22e>innerHTML</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;&lt;strong&gt;&#39;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>name</span> <span style=color:#f92672>+</span> <span style=color:#e6db74>&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>message</span>;
+</span></span><span style=display:flex><span>    document.<span style=color:#a6e22e>getElementById</span>(<span style=color:#e6db74>&#39;discussion&#39;</span>).<span style=color:#a6e22e>appendChild</span>(<span style=color:#a6e22e>liElement</span>);
+</span></span><span style=display:flex><span>});
+</span></span></code></pre></div><ul><li>here we define and implement the <code>broadcastMessage</code> method we saw in the hub earlier - essentially, we add the message we received in an unordered list in the page</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#a6e22e>button</span>.<span style=color:#a6e22e>addEventListener</span>(<span style=color:#e6db74>&#34;click&#34;</span>, <span style=color:#a6e22e>event</span> =&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>connection</span>.<span style=color:#a6e22e>invoke</span>(<span style=color:#e6db74>&#39;send&#39;</span>, <span style=color:#a6e22e>name</span>, <span style=color:#a6e22e>messageInput</span>.<span style=color:#a6e22e>value</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>messageInput</span>.<span style=color:#a6e22e>value</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;&#39;</span>;
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>messageInput</span>.<span style=color:#a6e22e>focus</span>();
+</span></span><span style=display:flex><span>});
+</span></span></code></pre></div><ul><li>then we simply start the connection: <code>connection.start();</code></li></ul><p>Below is the full <code>index.html</code>:</p><script src=https://gist.github.com/radu-matei/015f4bcb856659d33484adf030bde50a.js></script><p>Now if we want to actually see if it works, we need to start the web app (either from Visual Studio/Code, or through <code>dotnet run</code>), then in a browser go to <code>http://localhost:5000</code>:</p><p><img src=/img/article-photos/signalr/gif1.gif alt></p><p>At this point, you successfully created a very simple SignalR chat application - you now know how to create hub methods and client methods, and how to connect a web app using the JavaScript client.</p><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/simple-chat>find the chat sample on GitHub</a></p></blockquote><h2 id=adding-a-c-console-client>Adding a C# console client</h2><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/console-client>find the full implementation of the console client on GitHub</a></p></blockquote><p>Now if we want to connect a C#-based client, we only need to add the <code>Microsoft.AspNetCore.SignalR.Client</code> package to a <code>dotnet new console</code> newly created app, specifically <code>&lt;PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.0-alpha2-final" /></code></p><p>Let&rsquo;s explore the most important things about the console client:</p><ul><li>we first start the connection to <code>http://localhost:5000/chat</code></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>async</span> Task StartConnectionAsync()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    _connection = <span style=color:#66d9ef>new</span> HubConnectionBuilder()
+</span></span><span style=display:flex><span>         .WithUrl(<span style=color:#e6db74>&#34;http://localhost:5000/chat&#34;</span>)
+</span></span><span style=display:flex><span>         .WithConsoleLogger()
+</span></span><span style=display:flex><span>         .Build();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>await</span> _connection.StartAsync();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ul><li>then, we register and implement the method for <code>broadcastMessage</code>:</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>_connection.On&lt;<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>string</span>&gt;(<span style=color:#e6db74>&#34;broadcastMessage&#34;</span>, (name, message) =&gt;
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    Console.WriteLine(<span style=color:#e6db74>$&#34;{name} said: {message}&#34;</span>);
+</span></span><span style=display:flex><span>});
+</span></span></code></pre></div><p>Below is the full <code>Program.cs</code>:</p><script src=https://gist.github.com/radu-matei/068b6615beab5d1fdd251d0b56427c79.js></script><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/console-client>find the full implementation of the console client on GitHub</a></p></blockquote><p>Let&rsquo;s see how it works:</p><p><img src=/img/article-photos/signalr/gif2.gif alt></p><h2 id=handling-connection-and-disconnection-events>Handling connection and disconnection events</h2><p>Another thing we used to do in the old SignalR was to handle connection and disconnection events through some overridden methods in our hubs. We can still do this in an extremely similar way - below you can find the <code>OnConnectedAsync</code> and <code>OnDisconnectedAsync</code> methods:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>override</span> Task OnConnectedAsync()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    Clients.All.InvokeAsync(<span style=color:#e6db74>&#34;broadcastMessage&#34;</span>, <span style=color:#e6db74>&#34;system&#34;</span>, <span style=color:#e6db74>$&#34;{Context.ConnectionId} joined the conversation&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>base</span>.OnConnectedAsync();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ul><li><p>this method invokes the <code>broadcastMessage</code> and tells everybody the connection ID of the newly connected client, then returns and continues with the regular <code>OnConnectedAsync</code> implementation from the hub</p></li><li><p>the <code>OnDisconnectedAsync</code> method basically does the same thing</p></li></ul><pre tabindex=0><code>public override Task OnDisconnectedAsync(System.Exception exception)
 {
     Clients.All.InvokeAsync(&#34;broadcastMessage&#34;, &#34;system&#34;, $&#34;{Context.ConnectionId} left the conversation&#34;);
     return base.OnDisconnectedAsync(exception);
 }
-</code></pre><h2 id="working-with-an-mvcwebapi-application">Working with an MVC/WebApi application</h2>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc">find the MVC sample on GitHub</a></p>
-</blockquote>
-<p>Another popular situation of using SignalR is to provide notifications through an MVC or WebAPI application, more specifically through a controller method. This means the initial point of interaction will not by directly calling a hub method, but after one client making a REST request to a controller - then, from the controller method, we need to send an update to all connected clients.</p>
-<p>We will start with a simple <code>dotnet new webapi</code> application and add SignalR the same way as we did earlier. Then, we will work with the <code>ValuesController</code> aleady generated for us.</p>
-<p>Now we add a simple <code>NotificationsHub</code> that doesn&rsquo;t have any methods - since clients will not call directly hub methods, but rather be notified from the controller.</p>
-<script src="https://gist.github.com/radu-matei/4df09d4a3b955e697ef64bb7fba06382.js"></script>
-
-<p>Now the client is pretty much the same, the only difference is that when the button is pressed, there is no SignalR hub invocation, but a simple fetch to a controller method - and the controller is the interesting one:</p>
-<ul>
-<li>
-<p>in the constructor of the controller we inject an instance of the hub context for <code>NotificationsHub</code> - this will allow us to have a way to interact with the clients connected to <code>NotificationsHub</code> from outside the hub (remember <code>GlobalHost</code> in older versions of SignalR?)</p>
-</li>
-<li>
-<p>then, we simply call some method on the connected clients as if we were inside a hub</p>
-</li>
-</ul>
-<script src="https://gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js"></script>
-
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc">find the MVC sample on GitHub</a></p>
-</blockquote>
-<ul>
-<li>basically, whenever you need a hub context in ASP.NET Core outside of a hub, you can request an instance of the hub context from the dependency injection engine, and the framework will take care of it.</li>
-</ul>
-<p>So far we saw how to create a chat application with web and console clients, then how to send notifications from a controller. Let&rsquo;s now see how to stream data!</p>
-<h2 id="streaming">Streaming</h2>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming">find the streaming sample on GitHub</a></p>
-</blockquote>
-<blockquote>
-<p>To get up to date with the observable pattern, you can <a href="https://docs.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern">read this article from the docs</a></p>
-</blockquote>
-<blockquote>
-<p>We will not get into details on how the streaming actually works, you can <a href="https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#streaming">read the specification int the SignalR repo</a></p>
-</blockquote>
-<p>We will start again from a <code>dotnet new web</code> empty application and add SignalR as in the first example and add a <code>StreamingHub</code> class, and we will add a new streaming method in our hub. Let&rsquo;s see what&rsquo;s happening here:</p>
-<ul>
-<li>in order to stream from the method, we need it to return an <code>IObservable&lt;T&gt;</code> which will send a message every second</li>
-<li>the <code>SendStreamInit</code> method is used to broadcast to all connected clients that the streaming started, and each client will handle the stream event in their specific way - we&rsquo;ll see more when implementing the clients</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> SendStreamInit()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    Clients.All.InvokeAsync(<span style="color:#e6db74">&#34;streamStarted&#34;</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> IObservable&lt;<span style="color:#66d9ef">string</span>&gt; StartStreaming()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Observable.Create(
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">async</span> (IObserver&lt;<span style="color:#66d9ef">string</span>&gt; observer) =&gt;
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">10</span>; i++)
-</span></span><span style="display:flex;"><span>            {
-</span></span><span style="display:flex;"><span>                observer.OnNext(<span style="color:#e6db74">$&#34;sending...{i}&#34;</span>);
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">await</span> Task.Delay(<span style="color:#ae81ff">1000</span>);
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Now for the JavaScript client:</p>
-<ul>
-<li>we define what should happen on the next streaming invocation - <code>next</code>, on error - <code>err</code> and when the streaming finishes - <code>complete</code></li>
-<li>we add an event listener for the button which invokes the hub method that starts the streaming on all clients</li>
-<li>then, we define and implement the <code>onStreamReceived</code> method which just adds the message to an unordered list</li>
-</ul>
-<p>The thing to notice here is that when one client pushes the stream button, all connected clients will start the streaming - you can directly call the streaming when the button is pressed if you only want the caller to start the streaming.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">startStreaming</span>(){
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">stream</span>(<span style="color:#e6db74">&#34;StartStreaming&#34;</span>).<span style="color:#a6e22e">subscribe</span>({
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">next</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">onStreamReceived</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">err</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">err</span>){
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">err</span>);
-</span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">complete</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(){
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;finished streaming&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    });
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;streamStarted&#34;</span>, <span style="color:#66d9ef">function</span>(){
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">startStreaming</span>();
-</span></span><span style="display:flex;"><span>});
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">event</span> =&gt; {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#e6db74">&#34;sendStreamInit&#34;</span>);
-</span></span><span style="display:flex;"><span>});
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">onStreamReceived</span>(<span style="color:#a6e22e">data</span>){
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;received: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">data</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">liElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;li&#39;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">liElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;strong&gt;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;received&#34;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">data</span>;
-</span></span><span style="display:flex;"><span>    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;discussion&#39;</span>).<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">liElement</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Now let&rsquo;s see a C# client handling the stream:</p>
-<ul>
-<li>here we see the most interesting part of the C# client, the part where we actually handle the streaming data - we start the streaming just like we did with the JavaScript client, then we try to read a <code>string</code> out of the channel - then, we simple print the message on the console.</li>
-</ul>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming">find the streaming sample on GitHub</a></p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">static</span> Task StartStreaming()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> channel = <span style="color:#66d9ef">await</span> _connection.StreamAsync&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;StartStreaming&#34;</span>, CancellationToken.None);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">await</span> channel.WaitToReadAsync())
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (channel.TryRead(<span style="color:#66d9ef">out</span> <span style="color:#66d9ef">string</span> message))
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            Console.WriteLine(<span style="color:#e6db74">$&#34;Message received: {message}&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Now let&rsquo;s take a look at both the web and the C# clients running:</p>
-<p><img src="/img/article-photos/signalr/gif3.gif" alt=""></p>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/streaming">find the streaming sample on GitHub</a></p>
-</blockquote>
-<h2 id="sending-binary-data">Sending binary data</h2>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary">find the sample for the binary protocol on GitHub</a></p>
-</blockquote>
-<p>So far we only saw how to use the JSON protocol to send data. One of the awesome features of the new SignalR version is the ability to send binary encoded data. We will explore how to set the clients to use the binary format protocols.</p>
-<p>First, the C# client - when defining the connection, all we need to to is tell <code>HubConnectionBuilder</code> to use the message pack protocol - here&rsquo;s how the connection initialization looks like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task StartConnectionAsync()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    _connection = <span style="color:#66d9ef">new</span> HubConnectionBuilder()
-</span></span><span style="display:flex;"><span>         .WithUrl(<span style="color:#e6db74">&#34;http://localhost:5000/chat&#34;</span>)
-</span></span><span style="display:flex;"><span>         .WithConsoleLogger()
-</span></span><span style="display:flex;"><span>         .WithMessagePackProtocol()
-</span></span><span style="display:flex;"><span>         .Build();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> _connection.StartAsync();
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>The only difference is <code> .WithMessagePackProtocol()</code> - from this point on, the C# client will use the message pack protocol.</p>
-<p>Now let&rsquo;s see the JavaScript client - here we also need to include the script for message pack: <code>signalr-msgpackprotocol-1.0.0-alpha2-final.js</code> (that you can get by doing <code>npm install @aspnet/signalr-client</code>), then define the protocol as being: <code>var protocol = new signalRMsgPack.MessagePackHubProtocol();</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">protocol</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">signalRMsgPack</span>.<span style="color:#a6e22e">MessagePackHubProtocol</span>();
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">connection</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">signalR</span>.<span style="color:#a6e22e">HubConnection</span>(<span style="color:#e6db74">`http://</span><span style="color:#e6db74">${</span>document.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">host</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/chat`</span>, { <span style="color:#a6e22e">transport</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">transport</span>, <span style="color:#a6e22e">protocol</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">protocol</span> });
-</span></span></code></pre></div><p>And that&rsquo;s pretty much it - you can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary">find a full example for the chat app and console client that use the binary protocol on GitHub</a>.</p>
-<p>If we run the binary samples, we can see that the protocol is set in both cases to <code>messsagepack</code>.</p>
-<p><img src="/img/article-photos/signalr/gif4.gif" alt=""></p>
-<p>So far we saw how to create a simple chat, to inject the hub context into a controller, stream data for JavaScript and C# clients and set the protocol to binary. Now we&rsquo;ll take a look at another common use case - Redis scaleout.</p>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/binary">find the sample for the binary protocol on GitHub</a></p>
-</blockquote>
-<h2 id="redis-scaleout">Redis scaleout</h2>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout">find the Redis scaleout sample on GitHub</a></p>
-</blockquote>
-<p>For each connected client, SignalR will keep its connection ID in memory - this means that if we ever need to scale our app to multiple instances, sending a message to all connected clients will simply not work anymore, since each instance will hold only a portion of all connected clients.</p>
-<p>For these situations, we will use a Redis cache and SignalR will automatically pass messages between instances. Essentially, we only need to add the reference to Redis, and the SignalR.Redis package: <code>Microsoft.AspNetCore.SignalR.Redis</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    services.AddSignalR()
-</span></span><span style="display:flex;"><span>        .AddRedis(options =&gt; options.Factory = writer =&gt;
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> ConnectionMultiplexer.Connect(<span style="color:#e6db74">&#34;localhost&#34;</span>, writer);
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Now all you need is a Redis instance and you&rsquo;re set - hint: you can start a Redis Docker container within a couple of seconds with <code>docker run -p 6379:6379 --name redis  redis</code></p>
-<p>Now if we start two instances of the same web application, simulating how we would normally scale the app (here we will have two different port, but normally you would have a load balancer in front of your application): <code>ASPNETCORE_URLS=&quot;http://*:5000&quot; dotnet run</code> and <code>ASPNETCORE_URLS=&quot;http://*:5001&quot; dotnet run</code>, then go to a browser:</p>
-<p><img src="/img/article-photos/signalr/gif5.gif" alt=""></p>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout">find the Redis scaleout sample on GitHub</a></p>
-</blockquote>
-<h2 id="conclusion">Conclusion</h2>
-<p>In this example I tried to exemplify most common scenarios when using SignalR - if there is a scenario you would like to see in more detail, please let me know in the comments below!</p>
-<h2 id="feedback">Feedback</h2>
-<p>Thanks for reading, feedback si welcome as always - you can use the comments below, or send me an email!</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/signalr">signalr</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/aci-update/"><span class="mr-1.5">←</span><span>Update Azure Container Instances with Docker Hub webhooks</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/k8s-appsvc/"><span>Best of Both worlds: Azure App Service and Kubernetes</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><h2 id=working-with-an-mvcwebapi-application>Working with an MVC/WebApi application</h2><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc>find the MVC sample on GitHub</a></p></blockquote><p>Another popular situation of using SignalR is to provide notifications through an MVC or WebAPI application, more specifically through a controller method. This means the initial point of interaction will not by directly calling a hub method, but after one client making a REST request to a controller - then, from the controller method, we need to send an update to all connected clients.</p><p>We will start with a simple <code>dotnet new webapi</code> application and add SignalR the same way as we did earlier. Then, we will work with the <code>ValuesController</code> aleady generated for us.</p><p>Now we add a simple <code>NotificationsHub</code> that doesn&rsquo;t have any methods - since clients will not call directly hub methods, but rather be notified from the controller.</p><script src=https://gist.github.com/radu-matei/4df09d4a3b955e697ef64bb7fba06382.js></script><p>Now the client is pretty much the same, the only difference is that when the button is pressed, there is no SignalR hub invocation, but a simple fetch to a controller method - and the controller is the interesting one:</p><ul><li><p>in the constructor of the controller we inject an instance of the hub context for <code>NotificationsHub</code> - this will allow us to have a way to interact with the clients connected to <code>NotificationsHub</code> from outside the hub (remember <code>GlobalHost</code> in older versions of SignalR?)</p></li><li><p>then, we simply call some method on the connected clients as if we were inside a hub</p></li></ul><script src=https://gist.github.com/radu-matei/7a01ffe6982324ea703efeeac128bac3.js></script><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/signalr-mvc>find the MVC sample on GitHub</a></p></blockquote><ul><li>basically, whenever you need a hub context in ASP.NET Core outside of a hub, you can request an instance of the hub context from the dependency injection engine, and the framework will take care of it.</li></ul><p>So far we saw how to create a chat application with web and console clients, then how to send notifications from a controller. Let&rsquo;s now see how to stream data!</p><h2 id=streaming>Streaming</h2><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/streaming>find the streaming sample on GitHub</a></p></blockquote><blockquote><p>To get up to date with the observable pattern, you can <a href=https://docs.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern>read this article from the docs</a></p></blockquote><blockquote><p>We will not get into details on how the streaming actually works, you can <a href=https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#streaming>read the specification int the SignalR repo</a></p></blockquote><p>We will start again from a <code>dotnet new web</code> empty application and add SignalR as in the first example and add a <code>StreamingHub</code> class, and we will add a new streaming method in our hub. Let&rsquo;s see what&rsquo;s happening here:</p><ul><li>in order to stream from the method, we need it to return an <code>IObservable&lt;T></code> which will send a message every second</li><li>the <code>SendStreamInit</code> method is used to broadcast to all connected clients that the streaming started, and each client will handle the stream event in their specific way - we&rsquo;ll see more when implementing the clients</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> SendStreamInit()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    Clients.All.InvokeAsync(<span style=color:#e6db74>&#34;streamStarted&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> IObservable&lt;<span style=color:#66d9ef>string</span>&gt; StartStreaming()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> Observable.Create(
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>async</span> (IObserver&lt;<span style=color:#66d9ef>string</span>&gt; observer) =&gt;
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i = <span style=color:#ae81ff>0</span>; i &lt; <span style=color:#ae81ff>10</span>; i++)
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                observer.OnNext(<span style=color:#e6db74>$&#34;sending...{i}&#34;</span>);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>await</span> Task.Delay(<span style=color:#ae81ff>1000</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        });
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Now for the JavaScript client:</p><ul><li>we define what should happen on the next streaming invocation - <code>next</code>, on error - <code>err</code> and when the streaming finishes - <code>complete</code></li><li>we add an event listener for the button which invokes the hub method that starts the streaming on all clients</li><li>then, we define and implement the <code>onStreamReceived</code> method which just adds the message to an unordered list</li></ul><p>The thing to notice here is that when one client pushes the stream button, all connected clients will start the streaming - you can directly call the streaming when the button is pressed if you only want the caller to start the streaming.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>startStreaming</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>connection</span>.<span style=color:#a6e22e>stream</span>(<span style=color:#e6db74>&#34;StartStreaming&#34;</span>).<span style=color:#a6e22e>subscribe</span>({
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>next</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>onStreamReceived</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>err</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>function</span>(<span style=color:#a6e22e>err</span>){
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#a6e22e>err</span>);
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>complete</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>function</span>(){
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#34;finished streaming&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    });
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>connection</span>.<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#34;streamStarted&#34;</span>, <span style=color:#66d9ef>function</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>startStreaming</span>();
+</span></span><span style=display:flex><span>});
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>button</span>.<span style=color:#a6e22e>addEventListener</span>(<span style=color:#e6db74>&#34;click&#34;</span>, <span style=color:#a6e22e>event</span> =&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>connection</span>.<span style=color:#a6e22e>invoke</span>(<span style=color:#e6db74>&#34;sendStreamInit&#34;</span>);
+</span></span><span style=display:flex><span>});
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>onStreamReceived</span>(<span style=color:#a6e22e>data</span>){
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#34;received: &#34;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>data</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>liElement</span> <span style=color:#f92672>=</span> document.<span style=color:#a6e22e>createElement</span>(<span style=color:#e6db74>&#39;li&#39;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>liElement</span>.<span style=color:#a6e22e>innerHTML</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;&lt;strong&gt;&#39;</span> <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;received&#34;</span> <span style=color:#f92672>+</span> <span style=color:#e6db74>&#39;&lt;/strong&gt;:&amp;nbsp;&amp;nbsp;&#39;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>data</span>;
+</span></span><span style=display:flex><span>    document.<span style=color:#a6e22e>getElementById</span>(<span style=color:#e6db74>&#39;discussion&#39;</span>).<span style=color:#a6e22e>appendChild</span>(<span style=color:#a6e22e>liElement</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Now let&rsquo;s see a C# client handling the stream:</p><ul><li>here we see the most interesting part of the C# client, the part where we actually handle the streaming data - we start the streaming just like we did with the JavaScript client, then we try to read a <code>string</code> out of the channel - then, we simple print the message on the console.</li></ul><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/streaming>find the streaming sample on GitHub</a></p></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>async</span> <span style=color:#66d9ef>static</span> Task StartStreaming()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> channel = <span style=color:#66d9ef>await</span> _connection.StreamAsync&lt;<span style=color:#66d9ef>string</span>&gt;(<span style=color:#e6db74>&#34;StartStreaming&#34;</span>, CancellationToken.None);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> (<span style=color:#66d9ef>await</span> channel.WaitToReadAsync())
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> (channel.TryRead(<span style=color:#66d9ef>out</span> <span style=color:#66d9ef>string</span> message))
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            Console.WriteLine(<span style=color:#e6db74>$&#34;Message received: {message}&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Now let&rsquo;s take a look at both the web and the C# clients running:</p><p><img src=/img/article-photos/signalr/gif3.gif alt></p><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/streaming>find the streaming sample on GitHub</a></p></blockquote><h2 id=sending-binary-data>Sending binary data</h2><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/binary>find the sample for the binary protocol on GitHub</a></p></blockquote><p>So far we only saw how to use the JSON protocol to send data. One of the awesome features of the new SignalR version is the ability to send binary encoded data. We will explore how to set the clients to use the binary format protocols.</p><p>First, the C# client - when defining the connection, all we need to to is tell <code>HubConnectionBuilder</code> to use the message pack protocol - here&rsquo;s how the connection initialization looks like:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>async</span> Task StartConnectionAsync()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    _connection = <span style=color:#66d9ef>new</span> HubConnectionBuilder()
+</span></span><span style=display:flex><span>         .WithUrl(<span style=color:#e6db74>&#34;http://localhost:5000/chat&#34;</span>)
+</span></span><span style=display:flex><span>         .WithConsoleLogger()
+</span></span><span style=display:flex><span>         .WithMessagePackProtocol()
+</span></span><span style=display:flex><span>         .Build();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>await</span> _connection.StartAsync();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The only difference is <code>.WithMessagePackProtocol()</code> - from this point on, the C# client will use the message pack protocol.</p><p>Now let&rsquo;s see the JavaScript client - here we also need to include the script for message pack: <code>signalr-msgpackprotocol-1.0.0-alpha2-final.js</code> (that you can get by doing <code>npm install @aspnet/signalr-client</code>), then define the protocol as being: <code>var protocol = new signalRMsgPack.MessagePackHubProtocol();</code></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>protocol</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>signalRMsgPack</span>.<span style=color:#a6e22e>MessagePackHubProtocol</span>();
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>connection</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>signalR</span>.<span style=color:#a6e22e>HubConnection</span>(<span style=color:#e6db74>`http://</span><span style=color:#e6db74>${</span>document.<span style=color:#a6e22e>location</span>.<span style=color:#a6e22e>host</span><span style=color:#e6db74>}</span><span style=color:#e6db74>/chat`</span>, { <span style=color:#a6e22e>transport</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>transport</span>, <span style=color:#a6e22e>protocol</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>protocol</span> });
+</span></span></code></pre></div><p>And that&rsquo;s pretty much it - you can <a href=https://github.com/radu-matei/signalr-samples/tree/master/binary>find a full example for the chat app and console client that use the binary protocol on GitHub</a>.</p><p>If we run the binary samples, we can see that the protocol is set in both cases to <code>messsagepack</code>.</p><p><img src=/img/article-photos/signalr/gif4.gif alt></p><p>So far we saw how to create a simple chat, to inject the hub context into a controller, stream data for JavaScript and C# clients and set the protocol to binary. Now we&rsquo;ll take a look at another common use case - Redis scaleout.</p><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/binary>find the sample for the binary protocol on GitHub</a></p></blockquote><h2 id=redis-scaleout>Redis scaleout</h2><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout>find the Redis scaleout sample on GitHub</a></p></blockquote><p>For each connected client, SignalR will keep its connection ID in memory - this means that if we ever need to scale our app to multiple instances, sending a message to all connected clients will simply not work anymore, since each instance will hold only a portion of all connected clients.</p><p>For these situations, we will use a Redis cache and SignalR will automatically pass messages between instances. Essentially, we only need to add the reference to Redis, and the SignalR.Redis package: <code>Microsoft.AspNetCore.SignalR.Redis</code></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> ConfigureServices(IServiceCollection services)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    services.AddSignalR()
+</span></span><span style=display:flex><span>        .AddRedis(options =&gt; options.Factory = writer =&gt;
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> ConnectionMultiplexer.Connect(<span style=color:#e6db74>&#34;localhost&#34;</span>, writer);
+</span></span><span style=display:flex><span>        });
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Now all you need is a Redis instance and you&rsquo;re set - hint: you can start a Redis Docker container within a couple of seconds with <code>docker run -p 6379:6379 --name redis redis</code></p><p>Now if we start two instances of the same web application, simulating how we would normally scale the app (here we will have two different port, but normally you would have a load balancer in front of your application): <code>ASPNETCORE_URLS="http://*:5000" dotnet run</code> and <code>ASPNETCORE_URLS="http://*:5001" dotnet run</code>, then go to a browser:</p><p><img src=/img/article-photos/signalr/gif5.gif alt></p><blockquote><p>You can <a href=https://github.com/radu-matei/signalr-samples/tree/master/redis-scaleout>find the Redis scaleout sample on GitHub</a></p></blockquote><h2 id=conclusion>Conclusion</h2><p>In this example I tried to exemplify most common scenarios when using SignalR - if there is a scenario you would like to see in more detail, please let me know in the comments below!</p><h2 id=feedback>Feedback</h2><p>Thanks for reading, feedback si welcome as always - you can use the comments below, or send me an email!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/signalr>signalr</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aci-update/><span class=mr-1.5>←</span><span>Update Azure Container Instances with Docker Hub webhooks</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/k8s-appsvc/><span>Best of Both worlds: Azure App Service and Kubernetes</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

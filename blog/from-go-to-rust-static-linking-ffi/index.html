@@ -1,315 +1,11 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/">
-  
-  
-  
-  
-  <meta name="description" content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI" />
-<meta property="og:description" content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2020-01-12T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-01-12T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI">
-<meta itemprop="description" content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust."><meta itemprop="datePublished" content="2020-01-12T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2020-01-12T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1472">
-<meta itemprop="keywords" content="rust,golang," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI"/>
-<meta name="twitter:description" content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Sunday, January 12, 2020</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><p>Rust is quickly becoming a popular language for systems programming, and <a href="https://crates.io/">its public crate ecosystem</a> contains packages for common tasks, such as HTTP servers, building command line interfaces, or JSON handling. But if you are coming from a different ecosystem, there might be specialized packages that do not have an equivalent yet. So what happens if you need to use such a package in your Rust project?</p>
-<p>You have a couple of options:</p>
-<ul>
-<li>rewrite your package from scratch in Rust - if you have the resources, this might be the best option - however, this is obviously not always possible.</li>
-<li>building a <em>shared</em> library and linking it in your Rust project - this has the advantage of not increasing the size of the Rust binary, but assumes you have a way of distributing the shared object (that is appropriate for the platform) on the target machine.</li>
-<li>building a <em>static</em> library and linking it in your Rust project - this will increase the Rust binary, but once you compile it, you only need to distribute a single binary.</li>
-</ul>
-<p>In this article we will explore how to build and link Go libraries in Rust projects, by taking a real world example - a library from the container ecosystem that only has a Go reference implementation, which we will use in a Rust project.</p>
-<p>While CGO and FFI are not ideal (an absolute read before building projects with CGO is <a href="https://dave.cheney.net/2016/01/18/cgo-is-not-go">this article by Dave Cheney</a>), they could provide a quick and dirty (and <code>unsafe</code>!) solution that could potentially unblock a project going forward.</p>
-<p>You can <a href="https://github.com/radu-matei/experiments/tree/master/rust">find the complete examples on GitHub</a>.</p>
-<h3 id="the-go-library">The Go library</h3>
-<p>The library we are using as an example here is used to distribute WebAssembly modules with OCI registries, and it has a transitive dependency on <a href="https://github.com/containerd/containerd"><code>containerd</code></a>, the popular container runtime, which means rewriting it in Rust is a non-trivial task.
-We are not interested in specifically how this library is built in Go (it is built on top of <a href="https://github.com/deislabs/oras">ORAS</a>, and you can <a href="https://radu-matei.com/blog/wasm-to-oci/">read more about building it in this article</a>) - we are interested, however, in how this library is consumed in Go - it takes two <code>string</code> arguments, and returns a Go <code>error</code>.</p>
-<pre tabindex="0"><code>err := oci.Pull(&#34;some-registry-reference&#34;, &#34;output-file&#34;)
-</code></pre><p>Now it&rsquo;s time to build a custom API that we want to expose to the library we will use through FFI - the <a href="https://golang.org/cmd/cgo/">official Go documentation</a> offers a very good introduction to CGO, and discusses important scenarios you will encounter when exposing your library.</p>
-<pre tabindex="0"><code>package main
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/><meta name=description content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI"><meta property="og:description" content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2020-01-12T00:00:00+00:00"><meta property="article:modified_time" content="2020-01-12T00:00:00+00:00"><meta itemprop=name content="From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI"><meta itemprop=description content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust."><meta itemprop=datePublished content="2020-01-12T00:00:00+00:00"><meta itemprop=dateModified content="2020-01-12T00:00:00+00:00"><meta itemprop=wordCount content="1472"><meta itemprop=keywords content="rust,golang,"><meta name=twitter:card content="summary"><meta name=twitter:title content="From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI"><meta name=twitter:description content="In this article we will explore how to build shared and static libraries in Go, and import them in Rust."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</h1><div class="text-sm opacity-60"><time>Sunday, January 12, 2020</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>Rust is quickly becoming a popular language for systems programming, and <a href=https://crates.io/>its public crate ecosystem</a> contains packages for common tasks, such as HTTP servers, building command line interfaces, or JSON handling. But if you are coming from a different ecosystem, there might be specialized packages that do not have an equivalent yet. So what happens if you need to use such a package in your Rust project?</p><p>You have a couple of options:</p><ul><li>rewrite your package from scratch in Rust - if you have the resources, this might be the best option - however, this is obviously not always possible.</li><li>building a <em>shared</em> library and linking it in your Rust project - this has the advantage of not increasing the size of the Rust binary, but assumes you have a way of distributing the shared object (that is appropriate for the platform) on the target machine.</li><li>building a <em>static</em> library and linking it in your Rust project - this will increase the Rust binary, but once you compile it, you only need to distribute a single binary.</li></ul><p>In this article we will explore how to build and link Go libraries in Rust projects, by taking a real world example - a library from the container ecosystem that only has a Go reference implementation, which we will use in a Rust project.</p><p>While CGO and FFI are not ideal (an absolute read before building projects with CGO is <a href=https://dave.cheney.net/2016/01/18/cgo-is-not-go>this article by Dave Cheney</a>), they could provide a quick and dirty (and <code>unsafe</code>!) solution that could potentially unblock a project going forward.</p><p>You can <a href=https://github.com/radu-matei/experiments/tree/master/rust>find the complete examples on GitHub</a>.</p><h3 id=the-go-library>The Go library</h3><p>The library we are using as an example here is used to distribute WebAssembly modules with OCI registries, and it has a transitive dependency on <a href=https://github.com/containerd/containerd><code>containerd</code></a>, the popular container runtime, which means rewriting it in Rust is a non-trivial task.
+We are not interested in specifically how this library is built in Go (it is built on top of <a href=https://github.com/deislabs/oras>ORAS</a>, and you can <a href=https://radu-matei.com/blog/wasm-to-oci/>read more about building it in this article</a>) - we are interested, however, in how this library is consumed in Go - it takes two <code>string</code> arguments, and returns a Go <code>error</code>.</p><pre tabindex=0><code>err := oci.Pull(&#34;some-registry-reference&#34;, &#34;output-file&#34;)
+</code></pre><p>Now it&rsquo;s time to build a custom API that we want to expose to the library we will use through FFI - the <a href=https://golang.org/cmd/cgo/>official Go documentation</a> offers a very good introduction to CGO, and discusses important scenarios you will encounter when exposing your library.</p><pre tabindex=0><code>package main
 
 import (
     &#34;C&#34;
@@ -330,27 +26,14 @@ func Pull(ref, outFile string) int64 {
 }
 
 func main() {}
-</code></pre><p>A couple of notes:</p>
-<ul>
-<li>importing &ldquo;C&rdquo; ensures we will also get a C header file</li>
-<li>the <code>//export</code> comment is read by the compiler, and affects the name of the exported symbol for the function.</li>
-<li>if you return multiple values from an exported function, you will get an auto-generated C <code>struct</code> that contains the return values.</li>
-<li>you need to provide the dependencies used by your project in the same way as for any other Go project (either with a <code>vendor</code> directory, or with Go modules).</li>
-<li>you will use this API in a non-Go environment - so beware expecting or returning Go-specific objects (like channels, errors, or multiple return values) - unless you want potential consumers of the library to be left with void pointers defining Go objects:</li>
-</ul>
-<pre tabindex="0"><code>typedef void *GoMap;
+</code></pre><p>A couple of notes:</p><ul><li>importing &ldquo;C&rdquo; ensures we will also get a C header file</li><li>the <code>//export</code> comment is read by the compiler, and affects the name of the exported symbol for the function.</li><li>if you return multiple values from an exported function, you will get an auto-generated C <code>struct</code> that contains the return values.</li><li>you need to provide the dependencies used by your project in the same way as for any other Go project (either with a <code>vendor</code> directory, or with Go modules).</li><li>you will use this API in a non-Go environment - so beware expecting or returning Go-specific objects (like channels, errors, or multiple return values) - unless you want potential consumers of the library to be left with void pointers defining Go objects:</li></ul><pre tabindex=0><code>typedef void *GoMap;
 typedef void *GoChan;
 
 // this is how a Go error is exposed
 typedef struct { void *t; void *v; } GoInterface;
-</code></pre><p>This is the reason why the function returns an <code>int64</code>, a fundamental data type, as opposed to a Go <code>error</code> - you lose the context an value of a Go <code>error</code>, but return a basic data type that has a correspondent in all other languages. Additionally, you can choose to return a <code>GoString</code> or a <code>C.String</code> as opposed to printing out the error on standard output.</p>
-<h3 id="building-and-linking-a-shared-library-in-a-rust-program">Building and linking a shared library in a Rust program</h3>
-<p>Now we can build the shared library. The extension is, by convention, <code>.dylib</code> in macOS, <code>.so</code> in Linux and <code>.dll</code> in Windows, and this operation will generate two files - the shared library and the C header:</p>
-<pre tabindex="0"><code>$ CGO_ENABLED=1 go build -buildmode=c-shared -o shared/libwasm2oci.dylib shared/libwasm2oci.go
-</code></pre><p>Now we can use <a href="https://rust-lang.github.io/rust-bindgen/command-line-usage.html"><code>rust-bindgen</code></a> to automatically generate Rust bindings from the C header:</p>
-<pre tabindex="0"><code>$ bindgen shared/libwasm2oci.h -o src/ffi.rs
-</code></pre><p>This generates a Rust source code file that declares the Go types used in the library as Rust types, together with layout tests:</p>
-<pre tabindex="0"><code>pub type GoInt64 = ::std::os::raw::c_longlong;
+</code></pre><p>This is the reason why the function returns an <code>int64</code>, a fundamental data type, as opposed to a Go <code>error</code> - you lose the context an value of a Go <code>error</code>, but return a basic data type that has a correspondent in all other languages. Additionally, you can choose to return a <code>GoString</code> or a <code>C.String</code> as opposed to printing out the error on standard output.</p><h3 id=building-and-linking-a-shared-library-in-a-rust-program>Building and linking a shared library in a Rust program</h3><p>Now we can build the shared library. The extension is, by convention, <code>.dylib</code> in macOS, <code>.so</code> in Linux and <code>.dll</code> in Windows, and this operation will generate two files - the shared library and the C header:</p><pre tabindex=0><code>$ CGO_ENABLED=1 go build -buildmode=c-shared -o shared/libwasm2oci.dylib shared/libwasm2oci.go
+</code></pre><p>Now we can use <a href=https://rust-lang.github.io/rust-bindgen/command-line-usage.html><code>rust-bindgen</code></a> to automatically generate Rust bindings from the C header:</p><pre tabindex=0><code>$ bindgen shared/libwasm2oci.h -o src/ffi.rs
+</code></pre><p>This generates a Rust source code file that declares the Go types used in the library as Rust types, together with layout tests:</p><pre tabindex=0><code>pub type GoInt64 = ::std::os::raw::c_longlong;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -358,9 +41,7 @@ pub struct _GoString_ {
     pub p: *const ::std::os::raw::c_char,
     pub n: isize,
 }
-</code></pre><p>At this point, we can utilize a very nice crate, <a href="https://docs.rs/libloading/0.5.2/libloading/"><code>libloading</code></a>, a <em>memory-safer wrapper around system dynamic library loading primitives</em>.</p>
-<p>We can also use Rust&rsquo;s conditional compilation attribute <code>#[cfg(target_os)]</code> to select the appropriate shared library for the operating system where the crate is compiled (You might need to point this function to the absolute paths where the libraries can be found):</p>
-<pre tabindex="0"><code>extern crate libloading as lib;
+</code></pre><p>At this point, we can utilize a very nice crate, <a href=https://docs.rs/libloading/0.5.2/libloading/><code>libloading</code></a>, a <em>memory-safer wrapper around system dynamic library loading primitives</em>.</p><p>We can also use Rust&rsquo;s conditional compilation attribute <code>#[cfg(target_os)]</code> to select the appropriate shared library for the operating system where the crate is compiled (You might need to point this function to the absolute paths where the libraries can be found):</p><pre tabindex=0><code>extern crate libloading as lib;
 
 fn lib_file() -&gt; String {
     #[cfg(target_os = &#34;linux&#34;)]
@@ -376,8 +57,7 @@ fn lib_file() -&gt; String {
         String::from(&#34;shared/libwasm2oci.dll&#34;)
     }
 }
-</code></pre><p>Because the <code>Pull</code> function we exported accepted two Go <code>string</code> arguments, now we need to translate between a Rust <code>String</code> and a Go <code>string</code>. If you looked at <code>GoString</code>, it is made up of a list of characters and their length - which is how we transform each <code>String</code> argument our Rust function receives, then actually call the exported function from our shared library.</p>
-<pre tabindex="0"><code>pub fn pull_wasm(reference: String, file: String) -&gt; Result&lt;(), OCIError&gt; {
+</code></pre><p>Because the <code>Pull</code> function we exported accepted two Go <code>string</code> arguments, now we need to translate between a Rust <code>String</code> and a Go <code>string</code>. If you looked at <code>GoString</code>, it is made up of a list of characters and their length - which is how we transform each <code>String</code> argument our Rust function receives, then actually call the exported function from our shared library.</p><pre tabindex=0><code>pub fn pull_wasm(reference: String, file: String) -&gt; Result&lt;(), OCIError&gt; {
     let c_ref = CString::new(reference)?;
     let c_file = CString::new(file)?;
 
@@ -400,79 +80,20 @@ fn lib_file() -&gt; String {
         }
     }
 }
-</code></pre><p>We transform the input into <code>GoString</code>, then use <code>libloading</code> to load the symbol for the <code>Pull</code> function, then execute the function associated with the symbol.</p>
-<blockquote>
-<p><a href="https://docs.rs/libloading/0.5.2/libloading/"><code>libloading</code></a> has a lot more useful features for loading dynamic libraries - make sure you check the <a href="https://docs.rs/libloading/0.5.2/libloading/">crate documentation</a>.</p>
-</blockquote>
-<p>Importing the module above in your program and using the <code>pull_wasm</code> function will execute the <code>Pull</code> function exported from our Go shared library - as long as the shared library can be found in the correct directory relative to where we&rsquo;re executing the program from.</p>
-<p>If we want to not rely on the presence of a shared library in a specific directory on the target machine, we can make use of static linking.</p>
-<h3 id="building-statically-linked-libraries">Building statically linked libraries</h3>
-<p>Using the same Go source code above, we can change the <code>-buildmode</code> to <code>c-archive</code>, and build a static library with the <code>.a</code> extension:</p>
-<pre tabindex="0"><code>$ CGO_ENABLED=1 go build -buildmode=c-archive -o target/libwasm2oci.a lib/libwasm2oci.go
-</code></pre><p>This also generates the C header, which can be used with <a href="https://rust-lang.github.io/rust-bindgen/command-line-usage.html"><code>rust-bindgen</code></a> to generate Rust bindings - again, the important function to note here is the <code>extern &quot;C&quot;</code> function that defines the symbol for our exported function from the Go static library:</p>
-<pre tabindex="0"><code>extern &#34;C&#34; {
+</code></pre><p>We transform the input into <code>GoString</code>, then use <code>libloading</code> to load the symbol for the <code>Pull</code> function, then execute the function associated with the symbol.</p><blockquote><p><a href=https://docs.rs/libloading/0.5.2/libloading/><code>libloading</code></a> has a lot more useful features for loading dynamic libraries - make sure you check the <a href=https://docs.rs/libloading/0.5.2/libloading/>crate documentation</a>.</p></blockquote><p>Importing the module above in your program and using the <code>pull_wasm</code> function will execute the <code>Pull</code> function exported from our Go shared library - as long as the shared library can be found in the correct directory relative to where we&rsquo;re executing the program from.</p><p>If we want to not rely on the presence of a shared library in a specific directory on the target machine, we can make use of static linking.</p><h3 id=building-statically-linked-libraries>Building statically linked libraries</h3><p>Using the same Go source code above, we can change the <code>-buildmode</code> to <code>c-archive</code>, and build a static library with the <code>.a</code> extension:</p><pre tabindex=0><code>$ CGO_ENABLED=1 go build -buildmode=c-archive -o target/libwasm2oci.a lib/libwasm2oci.go
+</code></pre><p>This also generates the C header, which can be used with <a href=https://rust-lang.github.io/rust-bindgen/command-line-usage.html><code>rust-bindgen</code></a> to generate Rust bindings - again, the important function to note here is the <code>extern "C"</code> function that defines the symbol for our exported function from the Go static library:</p><pre tabindex=0><code>extern &#34;C&#34; {
     pub fn Pull(p0: GoString, p1: GoString) -&gt; GoInt64;
 }
-</code></pre><p>We can now call this function (provided we execute the same transformation from Rust strings to Go strings that we saw earlier) in an unsafe block:</p>
-<pre tabindex="0"><code>let result = unsafe { Pull(go_str_ref, go_str_file) };
-</code></pre><p>The only additional thing we need to do here is add a <code>build.rs</code> file that will instruct the Rust compiler to statically link the <code>.a</code> file we generated earlier:</p>
-<pre tabindex="0"><code>fn main() {
+</code></pre><p>We can now call this function (provided we execute the same transformation from Rust strings to Go strings that we saw earlier) in an unsafe block:</p><pre tabindex=0><code>let result = unsafe { Pull(go_str_ref, go_str_file) };
+</code></pre><p>The only additional thing we need to do here is add a <code>build.rs</code> file that will instruct the Rust compiler to statically link the <code>.a</code> file we generated earlier:</p><pre tabindex=0><code>fn main() {
     println!(&#34;cargo:rustc-link-search=native={}&#34;, &#34;./target&#34;);
     println!(&#34;cargo:rustc-link-lib=static={}&#34;, &#34;wasm2oci&#34;);
 }
-</code></pre><p>If you are trying to build a Darwin executable, and if your Go packages use any cryptography libraries, you might also have to link against the macOS core and security frameworks - add this conditional compilation expression to <code>build.rs</code> links them. (Depending on what your Go packages do, you might have to link other core libraries).</p>
-<pre tabindex="0"><code>#[cfg(target_os = &#34;macos&#34;)]
+</code></pre><p>If you are trying to build a Darwin executable, and if your Go packages use any cryptography libraries, you might also have to link against the macOS core and security frameworks - add this conditional compilation expression to <code>build.rs</code> links them. (Depending on what your Go packages do, you might have to link other core libraries).</p><pre tabindex=0><code>#[cfg(target_os = &#34;macos&#34;)]
 {
     println!(&#34;cargo:rustc-flags=-l framework=CoreFoundation -l framework=Security&#34;);
 }
-</code></pre><h3 id="conclusion">Conclusion</h3>
-<p>In this article we explored building Go shared and static libraries that can be imported in Rust programs using foreign function interfaces. While not ideal, this could provide a very useful way of reusing a Go package in Rust. You can <a href="https://github.com/radu-matei/experiments/tree/master/rust">find the complete examples on GitHub</a>.</p>
-<p>If you are interested in this type of interoperability between programming languages, you could be interested in how <a href="https://hacks.mozilla.org/2019/08/webassembly-interface-types/">WebAssembly Interface Types</a> might significantly simplify this type of scenario in a true cross-platform way once the specification is stabilized, and most compilers start offering support for interface types.</p>
-<p>But until then, this is how you can link libraries in other languages and use them through FFI.</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/rust">rust</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/golang">golang</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/practical-guide-to-wasm-memory/"><span class="mr-1.5">←</span><span>A practical guide to WebAssembly memory</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/introducing-fermyon-serverless-ai/"><span>Introducing Fermyon Serverless AI</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><h3 id=conclusion>Conclusion</h3><p>In this article we explored building Go shared and static libraries that can be imported in Rust programs using foreign function interfaces. While not ideal, this could provide a very useful way of reusing a Go package in Rust. You can <a href=https://github.com/radu-matei/experiments/tree/master/rust>find the complete examples on GitHub</a>.</p><p>If you are interested in this type of interoperability between programming languages, you could be interested in how <a href=https://hacks.mozilla.org/2019/08/webassembly-interface-types/>WebAssembly Interface Types</a> might significantly simplify this type of scenario in a true cross-platform way once the specification is stabilized, and most compilers start offering support for interface types.</p><p>But until then, this is how you can link libraries in other languages and use them through FFI.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/rust>rust</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/golang>golang</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/practical-guide-to-wasm-memory/><span class=mr-1.5>←</span><span>A practical guide to WebAssembly memory</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/introducing-fermyon-serverless-ai/><span>Introducing Fermyon Serverless AI</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

@@ -1,304 +1,9 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Running Kubernetes end-to-end tests with Kind and GitHub Actions - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/kubernetes-e2e-github-actions/">
-  
-  
-  
-  
-  <meta name="description" content="Using Kubernetes in Docker in GitHub Actions" />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions" />
-<meta property="og:description" content="Using Kubernetes in Docker in GitHub Actions" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/kubernetes-e2e-github-actions/" /><meta property="og:image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2019-08-21T00:00:00+00:00" />
-<meta property="article:modified_time" content="2019-08-21T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions">
-<meta itemprop="description" content="Using Kubernetes in Docker in GitHub Actions"><meta itemprop="datePublished" content="2019-08-21T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2019-08-21T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1039"><meta itemprop="image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png" />
-<meta itemprop="keywords" content="kubernetes,github," />
-  
-  <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png" /><meta name="twitter:title" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions"/>
-<meta name="twitter:description" content="Using Kubernetes in Docker in GitHub Actions"/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Running Kubernetes end-to-end tests with Kind and GitHub Actions</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Wednesday, August 21, 2019</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><h1 id="the-kind-github-actionkind"><a href="https://kind.sigs.k8s.io/">The Kind GitHub Action</a></h1>
-<p><a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action"><img src="/img/article-photos/building-github-actions/marketplace.PNG" alt=""></a></p>
-<p>To configure a Kubernetes cluster in your GitHub Actions in a single step, you can use the new <a href="https://github.com/marketplace/actions/kind-kubernetes-in-docker-action"><code>@engineerd/setup-kind</code></a> action:</p>
-<pre tabindex="0"><code>jobs:
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Running Kubernetes end-to-end tests with Kind and GitHub Actions - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/kubernetes-e2e-github-actions/><meta name=description content="Using Kubernetes in Docker in GitHub Actions"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Running Kubernetes end-to-end tests with Kind and GitHub Actions"><meta property="og:description" content="Using Kubernetes in Docker in GitHub Actions"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/kubernetes-e2e-github-actions/"><meta property="og:image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-08-21T00:00:00+00:00"><meta property="article:modified_time" content="2019-08-21T00:00:00+00:00"><meta itemprop=name content="Running Kubernetes end-to-end tests with Kind and GitHub Actions"><meta itemprop=description content="Using Kubernetes in Docker in GitHub Actions"><meta itemprop=datePublished content="2019-08-21T00:00:00+00:00"><meta itemprop=dateModified content="2019-08-21T00:00:00+00:00"><meta itemprop=wordCount content="1039"><meta itemprop=image content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png"><meta itemprop=keywords content="kubernetes,github,"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://radu-matei.com/img/article-photos/kubernetes-e2e-github-actions/kind-github.png"><meta name=twitter:title content="Running Kubernetes end-to-end tests with Kind and GitHub Actions"><meta name=twitter:description content="Using Kubernetes in Docker in GitHub Actions"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Running Kubernetes end-to-end tests with Kind and GitHub Actions</h1><div class="text-sm opacity-60"><time>Wednesday, August 21, 2019</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><h1 id=the-kind-github-actionkind><a href=https://kind.sigs.k8s.io/>The Kind GitHub Action</a></h1><p><a href=https://github.com/marketplace/actions/kind-kubernetes-in-docker-action><img src=/img/article-photos/building-github-actions/marketplace.PNG alt></a></p><p>To configure a Kubernetes cluster in your GitHub Actions in a single step, you can use the new <a href=https://github.com/marketplace/actions/kind-kubernetes-in-docker-action><code>@engineerd/setup-kind</code></a> action:</p><pre tabindex=0><code>jobs:
   kind:
     runs-on: ubuntu-latest
     steps:
@@ -308,8 +13,7 @@
       run: |
         export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
         kubectl cluster-info
-</code></pre><p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p>
-<pre tabindex="0"><code>Creating cluster &#34;kind&#34; ...
+</code></pre><p>Right now you can specify a Kind config file in your repository, select the Kind version you want to install, together with all flags you can pass to <code>kind create cluster</code>:</p><pre tabindex=0><code>Creating cluster &#34;kind&#34; ...
  ✓ Ensuring node image (kindest/node:v1.15.3) 🖼
  ✓ Preparing nodes 📦📦📦📦📦📦📦
  ✓ Configuring the external load balancer ⚖️
@@ -333,63 +37,30 @@ kind-control-plane3   Ready      master   65s     v1.15.3
 kind-worker           NotReady   &lt;none&gt;   28s     v1.15.3
 kind-worker2          NotReady   &lt;none&gt;   28s     v1.15.3
 kind-worker3          NotReady   &lt;none&gt;   28s     v1.15.3
-</code></pre><blockquote>
-<p>When creating multi-node clusters, make sure you wait for the nodes to become available - this is still a work in progress that will be fixed in future versions.</p>
-</blockquote>
-<blockquote>
-<p>EDIT: See <a href="https://radu-matei.com/blog/building-github-actions/">the article about building reusable GitHub Actions</a>.</p>
-</blockquote>
-<h3 id="introduction">Introduction</h3>
-<blockquote>
-<p><a href="https://kind.sigs.k8s.io/">Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p>
-</blockquote>
-<blockquote>
-<p>For a <a href="https://kind.sigs.k8s.io/docs/user/quick-start/">quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p>
-</blockquote>
-<p>A few weeks ago, I wrote an <a href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/">article about running Kind in a Kubernetes cluster</a>. But you don&rsquo;t need to have an existing Kubernetes cluster in order to use Kind - you can <a href="https://github.com/kind-ci/examples">configure your favorite CI</a> to start a cluster using Kind, and in this short article, we&rsquo;ll have a look at how to use the latest beta of GitHub Actions to do this.</p>
-<blockquote>
-<p>If you&rsquo;re not in the GitHub Actions beta already, <a href="https://github.com/features/actions/signup/">you can sign up here</a>.</p>
-</blockquote>
-<h1 id="tl-dr---it-just-works">TL; DR - It just works</h1>
-<p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let&rsquo;s see how the configuration looks like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">on</span>: [<span style="color:#ae81ff">push, pull_request]</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">jobs</span>:
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">steps</span>:
-</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@master</span>
-</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Kind</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        export GOBIN=$(go env GOPATH)/bin
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        export PATH=$PATH:$GOBIN
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        mkdir -p $GOBIN
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kind create cluster --wait 300s
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kubectl wait --for=condition=Ready pods --all --namespace kube-system
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kubectl cluster-info
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        kubectl get pods -n kube-system</span>        
-</span></span></code></pre></div><blockquote>
-<p>Note that you don&rsquo;t need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p>
-</blockquote>
-<p>Breaking down the the configuration file, we have:</p>
-<ul>
-<li>a workflow called <code>Kind</code></li>
-<li>it runs on all <code>push</code> or <code>pull_request</code> events</li>
-<li>with one job, <code>kind</code>, which runs on <code>ubuntu-latest</code> (Ubuntu 18.04)</li>
-<li>checkout the source code</li>
-<li>get the <code>kind</code> and <code>kubectl</code> binaries</li>
-<li><code>kind create cluster</code></li>
-<li>wait for the cluster to come up</li>
-</ul>
-<p>The only slightly interesting thing we&rsquo;re doing here is waiting for the cluster to be ready - <code>kind create cluster --wait</code> waits until the resources are ready, but just to be sure (and to show you how to wait for resources in a given namespace so you might use it later), we wait for all pods in <code>kube-system</code> to be in a <em>Ready</em> state using <code>kubectl</code>.</p>
-<pre tabindex="0"><code> ✓ Installing StorageClass 💾
+</code></pre><blockquote><p>When creating multi-node clusters, make sure you wait for the nodes to become available - this is still a work in progress that will be fixed in future versions.</p></blockquote><blockquote><p>EDIT: See <a href=https://radu-matei.com/blog/building-github-actions/>the article about building reusable GitHub Actions</a>.</p></blockquote><h3 id=introduction>Introduction</h3><blockquote><p><a href=https://kind.sigs.k8s.io/>Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p></blockquote><blockquote><p>For a <a href=https://kind.sigs.k8s.io/docs/user/quick-start/>quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p></blockquote><p>A few weeks ago, I wrote an <a href=https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/>article about running Kind in a Kubernetes cluster</a>. But you don&rsquo;t need to have an existing Kubernetes cluster in order to use Kind - you can <a href=https://github.com/kind-ci/examples>configure your favorite CI</a> to start a cluster using Kind, and in this short article, we&rsquo;ll have a look at how to use the latest beta of GitHub Actions to do this.</p><blockquote><p>If you&rsquo;re not in the GitHub Actions beta already, <a href=https://github.com/features/actions/signup/>you can sign up here</a>.</p></blockquote><h1 id=tl-dr---it-just-works>TL; DR - It just works</h1><p>Because GitHub Actions workers have a Docker daemon pre-configured, starting a Kubernetes cluster using Kind is straightforward - so let&rsquo;s see how the configuration looks like:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>name</span>: <span style=color:#ae81ff>Kind</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>on</span>: [<span style=color:#ae81ff>push, pull_request]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>jobs</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>kind</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>runs-on</span>: <span style=color:#ae81ff>ubuntu-latest</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>steps</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/checkout@master</span>
+</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Kind</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>run</span>: |<span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        export GOBIN=$(go env GOPATH)/bin
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        export PATH=$PATH:$GOBIN
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        mkdir -p $GOBIN
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        chmod +x kubectl &amp;&amp; mv kubectl $GOBIN
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 &amp;&amp; chmod +x kind-linux-amd64 &amp;&amp; mv kind-linux-amd64 $GOBIN/kind
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        kind create cluster --wait 300s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        export KUBECONFIG=&#34;$(kind get kubeconfig-path)&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        kubectl wait --for=condition=Ready pods --all --namespace kube-system
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        kubectl cluster-info
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        kubectl get pods -n kube-system</span>        
+</span></span></code></pre></div><blockquote><p>Note that you don&rsquo;t need to place the <code>kind</code> and <code>kubectl</code> binaries in any particular directory, just one that is in the <code>$PATH</code>.</p></blockquote><p>Breaking down the the configuration file, we have:</p><ul><li>a workflow called <code>Kind</code></li><li>it runs on all <code>push</code> or <code>pull_request</code> events</li><li>with one job, <code>kind</code>, which runs on <code>ubuntu-latest</code> (Ubuntu 18.04)</li><li>checkout the source code</li><li>get the <code>kind</code> and <code>kubectl</code> binaries</li><li><code>kind create cluster</code></li><li>wait for the cluster to come up</li></ul><p>The only slightly interesting thing we&rsquo;re doing here is waiting for the cluster to be ready - <code>kind create cluster --wait</code> waits until the resources are ready, but just to be sure (and to show you how to wait for resources in a given namespace so you might use it later), we wait for all pods in <code>kube-system</code> to be in a <em>Ready</em> state using <code>kubectl</code>.</p><pre tabindex=0><code> ✓ Installing StorageClass 💾
  ✓ Waiting ≤ 5m0s for control-plane = Ready ⏳
  ✓ Ready after 53s 💚
 
@@ -407,20 +78,11 @@ kube-system   coredns-5c98db65d4-658bm   1/1     Running   0          47s
 kube-system   coredns-5c98db65d4-bjcfh   1/1     Running   0          47s
 kube-system   kindnet-wdglm              1/1     Running   1          47s
 kube-system   kube-proxy-7gd45           1/1     Running   0          47s
-</code></pre><blockquote>
-<p>Note that depending on your cluster configuration you might have to wait for additional resources to be in a <em>Ready</em> state before using it.</p>
-</blockquote>
-<h3 id="using-helm-3">Using Helm 3</h3>
-<p>Now that the cluster is ready, you can start configuring your usual toolchain - let&rsquo;s see how we would use the latest Helm 3 pre-release (yay for <a href="https://helm.sh/blog/helm-3-preview-pt2/">no more Tiller</a>):</p>
-<pre tabindex="0"><code>export HELM_PLATFORM=linux-amd64 &amp;&amp; export HELM_VERSION=helm-v3.0.0-alpha.2
+</code></pre><blockquote><p>Note that depending on your cluster configuration you might have to wait for additional resources to be in a <em>Ready</em> state before using it.</p></blockquote><h3 id=using-helm-3>Using Helm 3</h3><p>Now that the cluster is ready, you can start configuring your usual toolchain - let&rsquo;s see how we would use the latest Helm 3 pre-release (yay for <a href=https://helm.sh/blog/helm-3-preview-pt2/>no more Tiller</a>):</p><pre tabindex=0><code>export HELM_PLATFORM=linux-amd64 &amp;&amp; export HELM_VERSION=helm-v3.0.0-alpha.2
 wget https://get.helm.sh/$HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; tar -xvzf $HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; rm -rf $HELM_VERSION-$HELM_PLATFORM.tar.gz &amp;&amp; mv $HELM_PLATFORM/helm $GOBIN/helm3 &amp;&amp; chmod +x $GOBIN/helm3
 helm3 init &amp;&amp; helm3 repo update &amp;&amp; helm3 install ni stable/nginx-ingress
 kubectl get pods
-</code></pre><blockquote>
-<p>Note that if you&rsquo;re using Helm 2, <a href="https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions">it already comes configured on the GitHub workers</a>.</p>
-</blockquote>
-<p>In this example, we just install a chart from the stable repository:</p>
-<pre tabindex="0"><code>$HELM_HOME has been configured at /home/runner/.helm.
+</code></pre><blockquote><p>Note that if you&rsquo;re using Helm 2, <a href=https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions>it already comes configured on the GitHub workers</a>.</p></blockquote><p>In this example, we just install a chart from the stable repository:</p><pre tabindex=0><code>$HELM_HOME has been configured at /home/runner/.helm.
 Happy Helming!
 Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the &#34;stable&#34; chart repository
@@ -451,54 +113,8 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 NAME                                                READY   STATUS              RESTARTS   AGE
 ni-nginx-ingress-controller-64845d9cd4-fzqjt        0/1     ContainerCreating   0          0s
 ni-nginx-ingress-default-backend-77f8c99775-smr4p   0/1     ContainerCreating   0          0s
-</code></pre><p>If your workload is using a persistent volume, the deployment will currently fail, <a href="https://github.com/kubernetes-sigs/kind/issues/118">since Kind does not have support for dynamic volume provisioning</a>, which is planned for the next version.</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>Running Kind in GitHub Actions is straightforward - get the right binaries, create a cluster, then configure your usual toolchain.
-Thanks for reading!</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/kubernetes">kubernetes</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/github">github</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/building-github-actions/"><span class="mr-1.5">←</span><span>Building Reusable GitHub Actions in TypeScript, using the official toolkit</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/"><span>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><p>If your workload is using a persistent volume, the deployment will currently fail, <a href=https://github.com/kubernetes-sigs/kind/issues/118>since Kind does not have support for dynamic volume provisioning</a>, which is planned for the next version.</p><h3 id=conclusion>Conclusion</h3><p>Running Kind in GitHub Actions is straightforward - get the right binaries, create a cluster, then configure your usual toolchain.
+Thanks for reading!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/kubernetes>kubernetes</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/github>github</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/building-github-actions/><span class=mr-1.5>←</span><span>Building Reusable GitHub Actions in TypeScript, using the official toolkit</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/><span>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

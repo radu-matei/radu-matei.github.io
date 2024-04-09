@@ -1,346 +1,17 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Building self-contained, single executable .NET Core 3 CLI tools - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/self-contained-dotnet-cli/">
-  
-  
-  
-  
-  <meta name="description" content="This is the .NET Core’s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications. But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Building self-contained, single executable .NET Core 3 CLI tools" />
-<meta property="og:description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/self-contained-dotnet-cli/" /><meta property="og:image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2019-09-02T00:00:00+00:00" />
-<meta property="article:modified_time" content="2019-09-02T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Building self-contained, single executable .NET Core 3 CLI tools">
-<meta itemprop="description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."><meta itemprop="datePublished" content="2019-09-02T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2019-09-02T00:00:00+00:00" />
-<meta itemprop="wordCount" content="2665"><meta itemprop="image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG" />
-<meta itemprop="keywords" content="dotnet-core," />
-  
-  <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG" /><meta name="twitter:title" content="Building self-contained, single executable .NET Core 3 CLI tools"/>
-<meta name="twitter:description" content=".NET Core 3 brings single executable packaging. In this article, we&#39;ll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Building self-contained, single executable .NET Core 3 CLI tools</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Monday, September 2, 2019</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><p><img src="/img/article-photos/self-contained-dotnet-cli/trm.PNG" alt=""></p>
-<blockquote>
-<p>You can <a href="https://github.com/radu-matei/emote">find the final application we built on GitHub</a>.</p>
-</blockquote>
-<blockquote>
-<p>TL; DR: This is the .NET Core&rsquo;s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications. But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files.</p>
-</blockquote>
-<p>I recently watched Carolyn Van Slyck&rsquo;s excellent GopherCon talk about building command-line tools that people love to use - and while the examples are tailored for the Go programming language, the learnings presented here are applicable to any language or framework you are using to build command-line interfaces (and you can find the <a href="https://carolynvs.com/cli">slides for the talk here</a>.) If you are working on, or thinking about building CLIs, drop what you&rsquo;re doing and watch Carolyn&rsquo;s talk!</p>
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/eMz0vni6PAw" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
-</div>
-
-<!-- raw HTML omitted -->
-<p>But why build a CLI with .NET Core and not Go, or Rust? If you&rsquo;re building your tool in a framework and language you&rsquo;re happy with, there&rsquo;s absolutely no reason to change it. But if you are already invested in the .NET ecosystem, you could take advantage of it and build your project with the toolchain and ecosystem you are familiar with.</p>
-<p>In the following sections, we&rsquo;ll explore different aspects of building a CLI, such as configuration, dependency injection, or packaging.
-The article is written for .NET Core 3 preview 8 - and while the actual package versions are specific to preview 8, in theory there should not be any major breaking changes until the final release.</p>
-<h3 id="configuration">Configuration</h3>
-<p>When you create a new console application with <code>dotnet new console</code>, it comes with no dependencies. So if you want to use configuration providers, you have to add the correct NuGet packages. The great part about building your CLI with .NET Core is that you can reuse any configuration provider available with ASP .NET Core (and there are quite a few) - you can <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/">explore all of them on the official documentation</a>.</p>
-<blockquote>
-<p>Configuration providers read configuration data into key-value pairs from a variety of configuration sources.</p>
-</blockquote>
-<p>There official packages to automatically read configuration from any of the following sources:</p>
-<ul>
-<li>JSON</li>
-<li>XML</li>
-<li>INI</li>
-<li>command line arguments</li>
-<li>environment variables</li>
-<li>Azure services (Key Vault, App Service Configuration)</li>
-</ul>
-<p>Additionally, you can find community packages for other configuration providers, such as reading from <a href="https://github.com/andrewlock/NetEscapades.Configuration">a YAML file</a>, or from a <a href="https://github.com/paiden/Nett">TOML file</a> (although keep in mind that the TOML configuration provider needs a new release to use it, as of the time of writing this article.)</p>
-<p>So how can we add the configuration providers to our application?
-First step is to add the desired NuGet packages to your application project - for example, for JSON and YAML, this is what packages you might use (keep in mind that the current versions of the packages might differ, as the article is written with .NET Core 3 preview 8):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Configuration&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Configuration.Json&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;NetEscapades.Configuration.Yaml&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.5.0&#34;</span> <span style="color:#f92672">/&gt;</span>
-</span></span></code></pre></div><p>Then, we add our configuration files - example for YAML (you can add similar files / configuration sources for all providers you want to use - keep in mind that configuration sources are read in order, and the first found will be the configuration source used):</p>
-<blockquote>
-<p>Note that I&rsquo;m totally ripping off Carolyn&rsquo;s example here.</p>
-</blockquote>
-<pre tabindex="0"><code>emoticons:
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Building self-contained, single executable .NET Core 3 CLI tools - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/self-contained-dotnet-cli/><meta name=description content="This is the .NET Core’s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications. But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Building self-contained, single executable .NET Core 3 CLI tools"><meta property="og:description" content=".NET Core 3 brings single executable packaging. In this article, we'll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/self-contained-dotnet-cli/"><meta property="og:image" content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-09-02T00:00:00+00:00"><meta property="article:modified_time" content="2019-09-02T00:00:00+00:00"><meta itemprop=name content="Building self-contained, single executable .NET Core 3 CLI tools"><meta itemprop=description content=".NET Core 3 brings single executable packaging. In this article, we'll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."><meta itemprop=datePublished content="2019-09-02T00:00:00+00:00"><meta itemprop=dateModified content="2019-09-02T00:00:00+00:00"><meta itemprop=wordCount content="2665"><meta itemprop=image content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG"><meta itemprop=keywords content="dotnet-core,"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://radu-matei.com/img/article-photos/self-contained-dotnet-cli/trm.PNG"><meta name=twitter:title content="Building self-contained, single executable .NET Core 3 CLI tools"><meta name=twitter:description content=".NET Core 3 brings single executable packaging. In this article, we'll explore how to build command line interfaces and distribute them as self-contained executables, and the tradeoffs between binary size and startup time."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Building self-contained, single executable .NET Core 3 CLI tools</h1><div class="text-sm opacity-60"><time>Monday, September 2, 2019</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><img src=/img/article-photos/self-contained-dotnet-cli/trm.PNG alt></p><blockquote><p>You can <a href=https://github.com/radu-matei/emote>find the final application we built on GitHub</a>.</p></blockquote><blockquote><p>TL; DR: This is the .NET Core&rsquo;s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications. But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files.</p></blockquote><p>I recently watched Carolyn Van Slyck&rsquo;s excellent GopherCon talk about building command-line tools that people love to use - and while the examples are tailored for the Go programming language, the learnings presented here are applicable to any language or framework you are using to build command-line interfaces (and you can find the <a href=https://carolynvs.com/cli>slides for the talk here</a>.) If you are working on, or thinking about building CLIs, drop what you&rsquo;re doing and watch Carolyn&rsquo;s talk!</p><div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden><iframe src=https://www.youtube.com/embed/eMz0vni6PAw style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe></div><p>But why build a CLI with .NET Core and not Go, or Rust? If you&rsquo;re building your tool in a framework and language you&rsquo;re happy with, there&rsquo;s absolutely no reason to change it. But if you are already invested in the .NET ecosystem, you could take advantage of it and build your project with the toolchain and ecosystem you are familiar with.</p><p>In the following sections, we&rsquo;ll explore different aspects of building a CLI, such as configuration, dependency injection, or packaging.
+The article is written for .NET Core 3 preview 8 - and while the actual package versions are specific to preview 8, in theory there should not be any major breaking changes until the final release.</p><h3 id=configuration>Configuration</h3><p>When you create a new console application with <code>dotnet new console</code>, it comes with no dependencies. So if you want to use configuration providers, you have to add the correct NuGet packages. The great part about building your CLI with .NET Core is that you can reuse any configuration provider available with ASP .NET Core (and there are quite a few) - you can <a href=https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/>explore all of them on the official documentation</a>.</p><blockquote><p>Configuration providers read configuration data into key-value pairs from a variety of configuration sources.</p></blockquote><p>There official packages to automatically read configuration from any of the following sources:</p><ul><li>JSON</li><li>XML</li><li>INI</li><li>command line arguments</li><li>environment variables</li><li>Azure services (Key Vault, App Service Configuration)</li></ul><p>Additionally, you can find community packages for other configuration providers, such as reading from <a href=https://github.com/andrewlock/NetEscapades.Configuration>a YAML file</a>, or from a <a href=https://github.com/paiden/Nett>TOML file</a> (although keep in mind that the TOML configuration provider needs a new release to use it, as of the time of writing this article.)</p><p>So how can we add the configuration providers to our application?
+First step is to add the desired NuGet packages to your application project - for example, for JSON and YAML, this is what packages you might use (keep in mind that the current versions of the packages might differ, as the article is written with .NET Core 3 preview 8):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;Microsoft.Extensions.Configuration&#34;</span> <span style=color:#a6e22e>Version=</span><span style=color:#e6db74>&#34;3.0.0-X&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;Microsoft.Extensions.Configuration.Json&#34;</span> <span style=color:#a6e22e>Version=</span><span style=color:#e6db74>&#34;3.0.0-X&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;NetEscapades.Configuration.Yaml&#34;</span> <span style=color:#a6e22e>Version=</span><span style=color:#e6db74>&#34;1.5.0&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span></code></pre></div><p>Then, we add our configuration files - example for YAML (you can add similar files / configuration sources for all providers you want to use - keep in mind that configuration sources are read in order, and the first found will be the configuration source used):</p><blockquote><p>Note that I&rsquo;m totally ripping off Carolyn&rsquo;s example here.</p></blockquote><pre tabindex=0><code>emoticons:
   shrug: &#39;¯\_(ツ)_/¯&#39;
   tableflip: &#34;(╯°□°）╯︵ ┻━┻&#34;
-</code></pre><p>So how would we consume this configuration?</p>
-<pre tabindex="0"><code>var config = new ConfigurationBuilder()
+</code></pre><p>So how would we consume this configuration?</p><pre tabindex=0><code>var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddYamlFile(&#34;appsettings.yaml&#34;, true, true)
     .AddJsonFile(&#34;appsettings.json&#34;, true, true)
@@ -349,14 +20,11 @@ First step is to add the desired NuGet packages to your application project - fo
 var emoticons = config.GetSection(&#34;emoticons&#34;)
     .GetChildren()
     .ToDictionary(x =&gt; x.Key, x =&gt; x.Value);
-</code></pre><p>Here we&rsquo;re passing the <code>emoticons</code> configuration into a <code>Dictionary&lt;string, string&gt;</code>. If you want to automatically bind your configuration to strongly-typed objects, you can use <code>Binder</code> package:</p>
-<pre tabindex="0"><code>&lt;PackageReference Include=&#34;Microsoft.Extensions.Configuration.Binder&#34; Version=&#34;3.0.0-X&#34; /&gt;
-</code></pre><p>Then, for this sample YAML configuration:</p>
-<pre tabindex="0"><code>person:
+</code></pre><p>Here we&rsquo;re passing the <code>emoticons</code> configuration into a <code>Dictionary&lt;string, string></code>. If you want to automatically bind your configuration to strongly-typed objects, you can use <code>Binder</code> package:</p><pre tabindex=0><code>&lt;PackageReference Include=&#34;Microsoft.Extensions.Configuration.Binder&#34; Version=&#34;3.0.0-X&#34; /&gt;
+</code></pre><p>Then, for this sample YAML configuration:</p><pre tabindex=0><code>person:
   name: Jane
   profession: scientist
-</code></pre><p>You can automatically bind it to a strongly-typed object:</p>
-<pre tabindex="0"><code>var p = new Person();
+</code></pre><p>You can automatically bind it to a strongly-typed object:</p><pre tabindex=0><code>var p = new Person();
 config.GetSection(&#34;person&#34;).Bind(p);
 
 class Person
@@ -364,23 +32,9 @@ class Person
     public string Name { get; set; }
     public string Profession { get; set; }
 }
-</code></pre><p>For custom keys, you can use the <code>[JsonObject(&quot;custom_object&quot;)]</code> and <code>[JsonProperty(&quot;custom_property&quot;)]</code> attributes for JSON, and for YAML:</p>
-<pre tabindex="0"><code>[YamlMember(Alias = &#34;custom_member&#34;, ApplyNamingConventions = false)]
-</code></pre><p>Generally, you could create a top level <code>YourAppConfiguration</code> class that holds all of your configuration and bind to that.</p>
-<h3 id="parsing-command-line-arguments-and-flags">Parsing command line arguments and flags</h3>
-<blockquote>
-<p>If you are not interested in how to use the <code>System.CommandLine</code> library to parse command line arguments, feel free to skip to the next section.</p>
-</blockquote>
-<p>There are multiple packages for parsing command line arguments:</p>
-<ul>
-<li><a href="https://github.com/commandlineparser/commandline">github.com/commandlineparser/commandline</a></li>
-<li><a href="https://github.com/natemcmaster/CommandLineUtils">github.com/natemcmaster/CommandLineUtils</a> - this is a fork of  <code>Microsoft.Extensions.CommandLineUtils</code>, which became unmaintained</li>
-<li><a href="https://github.com/dotnet/command-line-api">dotnet/command-line-api</a> - the &ldquo;new&rdquo; <code>System.CommandLine</code> - keep in mind the package is still experimental</li>
-</ul>
-<p>Regardless of the actual package you use to parse arguments, the core concepts are the same - you have a root command, subcommands, arguments, flags, and for the rest of this article we will use <code>System.CommandLine</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;System.CommandLine.Experimental&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;0.3.0-alpha.19405.1&#34;</span> <span style="color:#f92672">/&gt;</span>
-</span></span></code></pre></div><p>So let&rsquo;s add a command to show an emoticon from the configuration file:</p>
-<pre tabindex="0"><code>public class ShowCommandHandler
+</code></pre><p>For custom keys, you can use the <code>[JsonObject("custom_object")]</code> and <code>[JsonProperty("custom_property")]</code> attributes for JSON, and for YAML:</p><pre tabindex=0><code>[YamlMember(Alias = &#34;custom_member&#34;, ApplyNamingConventions = false)]
+</code></pre><p>Generally, you could create a top level <code>YourAppConfiguration</code> class that holds all of your configuration and bind to that.</p><h3 id=parsing-command-line-arguments-and-flags>Parsing command line arguments and flags</h3><blockquote><p>If you are not interested in how to use the <code>System.CommandLine</code> library to parse command line arguments, feel free to skip to the next section.</p></blockquote><p>There are multiple packages for parsing command line arguments:</p><ul><li><a href=https://github.com/commandlineparser/commandline>github.com/commandlineparser/commandline</a></li><li><a href=https://github.com/natemcmaster/CommandLineUtils>github.com/natemcmaster/CommandLineUtils</a> - this is a fork of <code>Microsoft.Extensions.CommandLineUtils</code>, which became unmaintained</li><li><a href=https://github.com/dotnet/command-line-api>dotnet/command-line-api</a> - the &ldquo;new&rdquo; <code>System.CommandLine</code> - keep in mind the package is still experimental</li></ul><p>Regardless of the actual package you use to parse arguments, the core concepts are the same - you have a root command, subcommands, arguments, flags, and for the rest of this article we will use <code>System.CommandLine</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;System.CommandLine.Experimental&#34;</span> <span style=color:#a6e22e>Version=</span><span style=color:#e6db74>&#34;0.3.0-alpha.19405.1&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span></code></pre></div><p>So let&rsquo;s add a command to show an emoticon from the configuration file:</p><pre tabindex=0><code>public class ShowCommandHandler
 {
     public Command Create()
     {
@@ -399,30 +53,21 @@ class Person
         return cmd;
     }
 }
-</code></pre><p>Parameters are matched using a naming convention that converts camel-cased parameters to kebab-cased options. For example, the option <code>--an-int</code> matches parameter <code>anInt</code> on the handler method. In our case, both the argument &ldquo;emoticon&rdquo; and the flag &ldquo;verbose&rdquo; are directly passed to the <code>emoticon</code> and <code>verbose</code> variables on the handler.</p>
-<p>Then, back in our main method, we create a new instance of <code>ShowCommandHandler</code> and add it as a subcommand:</p>
-<pre tabindex="0"><code>var cmd = new CommandLineBuilder()
+</code></pre><p>Parameters are matched using a naming convention that converts camel-cased parameters to kebab-cased options. For example, the option <code>--an-int</code> matches parameter <code>anInt</code> on the handler method. In our case, both the argument &ldquo;emoticon&rdquo; and the flag &ldquo;verbose&rdquo; are directly passed to the <code>emoticon</code> and <code>verbose</code> variables on the handler.</p><p>Then, back in our main method, we create a new instance of <code>ShowCommandHandler</code> and add it as a subcommand:</p><pre tabindex=0><code>var cmd = new CommandLineBuilder()
                 .AddCommand(new ShowCommandHandler().Create())
                 .UseDefaults()
                 .Build();
 
 return cmd.Invoke(args);
-</code></pre><p>Let&rsquo;s run our tool:</p>
-<pre tabindex="0"><code>$ dotnet run show shrug --verbose
+</code></pre><p>Let&rsquo;s run our tool:</p><pre tabindex=0><code>$ dotnet run show shrug --verbose
 shrug: ¯\_(ツ)_/¯
-</code></pre><blockquote>
-<p>You can <a href="https://github.com/radu-matei/emote">find the final application we built on GitHub</a>.</p>
-</blockquote>
-<h3 id="separating-the-implementation-from-the-cli-handlers">Separating the implementation from the CLI handlers</h3>
-<p>Ideally, we don&rsquo;t want to build our whole application logic in the CLI handlers - for our application to be testable, and potentially reusable in a package by other projects.
-In our case, the application logic consists of retrieving emoticons from <em>some</em> source. It might be .NET configuration, or any source that has a configuration provider, but it can also be a remote source - so our retriever would make some HTTP requests in order to get our emoticon. We don&rsquo;t know all the possible ways of extending our application yet - so let&rsquo;s start by creating a very simple interface:</p>
-<pre tabindex="0"><code>public interface IEmoticonRetriever
+</code></pre><blockquote><p>You can <a href=https://github.com/radu-matei/emote>find the final application we built on GitHub</a>.</p></blockquote><h3 id=separating-the-implementation-from-the-cli-handlers>Separating the implementation from the CLI handlers</h3><p>Ideally, we don&rsquo;t want to build our whole application logic in the CLI handlers - for our application to be testable, and potentially reusable in a package by other projects.
+In our case, the application logic consists of retrieving emoticons from <em>some</em> source. It might be .NET configuration, or any source that has a configuration provider, but it can also be a remote source - so our retriever would make some HTTP requests in order to get our emoticon. We don&rsquo;t know all the possible ways of extending our application yet - so let&rsquo;s start by creating a very simple interface:</p><pre tabindex=0><code>public interface IEmoticonRetriever
 {
     IEnumerable&lt;Emoticon&gt; List();
     Emoticon Get(string name);
 }
-</code></pre><p>Now, for any new source of emoticons, we can implement this interface - for example, continuing to use our configuration retriever:</p>
-<pre tabindex="0"><code>public class ConfigEmoticonRetriever : IEmoticonRetriever
+</code></pre><p>Now, for any new source of emoticons, we can implement this interface - for example, continuing to use our configuration retriever:</p><pre tabindex=0><code>public class ConfigEmoticonRetriever : IEmoticonRetriever
 {
     private List&lt;Emoticon&gt; _emoticons;
     public ConfigEmoticonRetriever(IConfigurationRoot cfg)
@@ -445,31 +90,13 @@ In our case, the application logic consists of retrieving emoticons from <em>som
     }
 }
 </code></pre><p>Now we can change our handlers to use an <code>IEmoticonRetriever</code>. At this point though, we also need to start instantiating things and pass concrete implementations around.
-Potentially, command handlers would need to instantiate a <code>ConfigEmoticonRetriever</code> object, and also pass an <code>IConfigurationRoot</code> object - and we don&rsquo;t want to do this - the main reason we wanted to split the emoticon retrieval logic <em>out</em> of the CLI handlers was to separate the concerns of the project - the CLI is only used to handle interactions from the user.</p>
-<p>We could add the emoticon retrieval object to the constructor:</p>
-<pre tabindex="0"><code>private IEmoticonRetriever _emoticons { get; set; }
+Potentially, command handlers would need to instantiate a <code>ConfigEmoticonRetriever</code> object, and also pass an <code>IConfigurationRoot</code> object - and we don&rsquo;t want to do this - the main reason we wanted to split the emoticon retrieval logic <em>out</em> of the CLI handlers was to separate the concerns of the project - the CLI is only used to handle interactions from the user.</p><p>We could add the emoticon retrieval object to the constructor:</p><pre tabindex=0><code>private IEmoticonRetriever _emoticons { get; set; }
 public ShowCommandHandler(IEmoticonRetriever emoticons)
 {
     _emoticons = emoticons;
 }
-</code></pre><p>This shifts the issue of creating the instance of the emoticon retrieval object up in the main method - here we have two options - actually create a new instance of it, and pass the configuration object we already have, or use <em>dependency injection</em>.</p>
-<h3 id="dependency-injection">Dependency injection</h3>
-<blockquote>
-<p>You can read about <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.0">dependency injection in ASP .NET Core 3 on the official documentation</a> - however, the documentation is tailored for web applications.</p>
-</blockquote>
-<p>Adding dependency injection to an application of this size is probably an overreaction. That being said, as the application grows, and the actual application logic grows, manually instantiating objects and keeping track of their lifetime across multiple namespaces can be difficult.</p>
-<p>Let&rsquo;s recap what objects we&rsquo;re trying to use here, how we are using them, and what is the relationship between them:</p>
-<ul>
-<li>the <code>Main</code> method</li>
-<li>a root command in the <code>Main</code> method</li>
-<li>the root command creates new CLI handlers</li>
-<li>CLI handlers contain an <code>IEmoticonRetrieval</code> object</li>
-<li>our current implementation of <code>IEmoticonRetrieval</code> contains an <code>IConfigurationRoot</code> object</li>
-</ul>
-<p>First step is to add the dependency injection package:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.DependencyInjection&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;3.0.0-X&#34;</span> <span style="color:#f92672">/&gt;</span>
-</span></span></code></pre></div><p>Now we can create a <em>service provider</em> - an object that provides concrete implementations for our services, based on the configured <em>service collection</em>:</p>
-<pre tabindex="0"><code>var serviceCollection = new ServiceCollection().AddTransient&lt;IEmoticonRetriever, ConfigEmoticonRetriever&gt;();
+</code></pre><p>This shifts the issue of creating the instance of the emoticon retrieval object up in the main method - here we have two options - actually create a new instance of it, and pass the configuration object we already have, or use <em>dependency injection</em>.</p><h3 id=dependency-injection>Dependency injection</h3><blockquote><p>You can read about <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.0">dependency injection in ASP .NET Core 3 on the official documentation</a> - however, the documentation is tailored for web applications.</p></blockquote><p>Adding dependency injection to an application of this size is probably an overreaction. That being said, as the application grows, and the actual application logic grows, manually instantiating objects and keeping track of their lifetime across multiple namespaces can be difficult.</p><p>Let&rsquo;s recap what objects we&rsquo;re trying to use here, how we are using them, and what is the relationship between them:</p><ul><li>the <code>Main</code> method</li><li>a root command in the <code>Main</code> method</li><li>the root command creates new CLI handlers</li><li>CLI handlers contain an <code>IEmoticonRetrieval</code> object</li><li>our current implementation of <code>IEmoticonRetrieval</code> contains an <code>IConfigurationRoot</code> object</li></ul><p>First step is to add the dependency injection package:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;Microsoft.Extensions.DependencyInjection&#34;</span> <span style=color:#a6e22e>Version=</span><span style=color:#e6db74>&#34;3.0.0-X&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span></code></pre></div><p>Now we can create a <em>service provider</em> - an object that provides concrete implementations for our services, based on the configured <em>service collection</em>:</p><pre tabindex=0><code>var serviceCollection = new ServiceCollection().AddTransient&lt;IEmoticonRetriever, ConfigEmoticonRetriever&gt;();
 serviceCollection.Add(new ServiceDescriptor(serviceType: typeof(IConfigurationRoot), instance: config));
 var serviceProvider = serviceCollection.BuildServiceProvider();
 var emoticons = serviceProvider.GetService&lt;IEmoticonRetriever&gt;();
@@ -479,33 +106,14 @@ var cmd = new CommandLineBuilder()
     .AddCommand(new ShowCommandHandler(emoticons).Create())
     .UseDefaults()
     .Build();
-</code></pre><p>Let&rsquo;s break this down line by line:</p>
-<ul>
-<li>first, we create a new service collection and add our <code>IEmoticonRetrieval</code> interface with the concrete implementation of <code>ConfigEmoticonRetriever</code> - in natural language, this line can be translated into: &ldquo;whenever someone asks in their constructor for an <code>IEmoticonRetrieval</code>, give them <em>a new instance</em> of <code>ConfigEmoticonRetriever</code>&rdquo;. You can play around with the actual lifetime of services (changing from transient to singleton, and I recommend you <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.0">read further about lifetimes in the documentation</a>).</li>
-<li>next, we add the configuration object to the service collection - in natural language, this line can be translated into: &ldquo;whenever someone asks in their constructor for an <code>IConfigurationRoot</code>, give them the object from the variable <code>config</code>&rdquo;.</li>
-<li>next we build the service provider based on the collection we configured so far, then we retrieve an instance of an <code>IEmoticonRetrieval</code> so we use it in our CLI handlers.</li>
-<li>now we&rsquo;re back to our CLI, wiring up the handlers - and passing the instance of the emoticon retrieval we got from the service provider.</li>
-</ul>
-<p>Now we have dependency injection.</p>
-<p>Splitting the application logic from the CLI handlers also allows us to easily add testing - and have absolutely no connection between what library we used for command line parsing and testing - at this point, you can apply your preferred testing patterns to this CLI project.</p>
-<p>Finally, if you want to include any UI element in your console application, you should really have a look at <a href="https://github.com/migueldeicaza/gui.cs"><code>gui.cs</code></a> - it&rsquo;s an incredible package that allows you to create menus, buttons, checkboxes, or progress bars, all within a terminal console.</p>
-<h3 id="publishing-as-single-binary">Publishing as single binary</h3>
-<p>According to the <a href="https://devblogs.microsoft.com/dotnet/announcing-net-core-3-0-preview-5/">release notes of .NET Core 3 Preview 5</a>, <em>this form of single EXE is effectively a self-extracting executable. It contains all dependencies, including native dependencies, as resources. At startup, it copies all dependencies to a temp directory, and loads them for there. It only needs to unpack dependencies once. After that, startup is fast, without any penalty.</em></p>
-<p>Because the binary will contain all native dependencies, it needs the runtime identifier - in my case <code>linux-x64</code> (you can find all <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifiers in the official documentation for .NET Core</a>). Additionally, we also add the property to trim the resulting binary, reducing the size by analyzing IL and removing unused assemblies.</p>
-<blockquote>
-<p>Note that you should always test the application after trimming, and using features such as reflection might not work with trimming.</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PropertyGroup&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;RuntimeIdentifier&gt;</span>linux-x64<span style="color:#f92672">&lt;/RuntimeIdentifier&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;PublishSingleFile&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;PublishTrimmed&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
-</span></span></code></pre></div><p>Let&rsquo;s publish our application in release configuration - <code>dotnet publish -c Release</code> - this will create our binary in <code>bin/Release/linux-x64/publish</code> - let&rsquo;s copy it in the same directory as our configuration files and explore it further:</p>
-<pre tabindex="0"><code>$ ls emote
+</code></pre><p>Let&rsquo;s break this down line by line:</p><ul><li>first, we create a new service collection and add our <code>IEmoticonRetrieval</code> interface with the concrete implementation of <code>ConfigEmoticonRetriever</code> - in natural language, this line can be translated into: &ldquo;whenever someone asks in their constructor for an <code>IEmoticonRetrieval</code>, give them <em>a new instance</em> of <code>ConfigEmoticonRetriever</code>&rdquo;. You can play around with the actual lifetime of services (changing from transient to singleton, and I recommend you <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.0">read further about lifetimes in the documentation</a>).</li><li>next, we add the configuration object to the service collection - in natural language, this line can be translated into: &ldquo;whenever someone asks in their constructor for an <code>IConfigurationRoot</code>, give them the object from the variable <code>config</code>&rdquo;.</li><li>next we build the service provider based on the collection we configured so far, then we retrieve an instance of an <code>IEmoticonRetrieval</code> so we use it in our CLI handlers.</li><li>now we&rsquo;re back to our CLI, wiring up the handlers - and passing the instance of the emoticon retrieval we got from the service provider.</li></ul><p>Now we have dependency injection.</p><p>Splitting the application logic from the CLI handlers also allows us to easily add testing - and have absolutely no connection between what library we used for command line parsing and testing - at this point, you can apply your preferred testing patterns to this CLI project.</p><p>Finally, if you want to include any UI element in your console application, you should really have a look at <a href=https://github.com/migueldeicaza/gui.cs><code>gui.cs</code></a> - it&rsquo;s an incredible package that allows you to create menus, buttons, checkboxes, or progress bars, all within a terminal console.</p><h3 id=publishing-as-single-binary>Publishing as single binary</h3><p>According to the <a href=https://devblogs.microsoft.com/dotnet/announcing-net-core-3-0-preview-5/>release notes of .NET Core 3 Preview 5</a>, <em>this form of single EXE is effectively a self-extracting executable. It contains all dependencies, including native dependencies, as resources. At startup, it copies all dependencies to a temp directory, and loads them for there. It only needs to unpack dependencies once. After that, startup is fast, without any penalty.</em></p><p>Because the binary will contain all native dependencies, it needs the runtime identifier - in my case <code>linux-x64</code> (you can find all <a href=https://docs.microsoft.com/en-us/dotnet/core/rid-catalog>runtime identifiers in the official documentation for .NET Core</a>). Additionally, we also add the property to trim the resulting binary, reducing the size by analyzing IL and removing unused assemblies.</p><blockquote><p>Note that you should always test the application after trimming, and using features such as reflection might not work with trimming.</p></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;PropertyGroup&gt;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&lt;RuntimeIdentifier&gt;</span>linux-x64<span style=color:#f92672>&lt;/RuntimeIdentifier&gt;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&lt;PublishSingleFile&gt;</span>true<span style=color:#f92672>&lt;/PublishSingleFile&gt;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&lt;PublishTrimmed&gt;</span>true<span style=color:#f92672>&lt;/PublishTrimmed&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/PropertyGroup&gt;</span>
+</span></span></code></pre></div><p>Let&rsquo;s publish our application in release configuration - <code>dotnet publish -c Release</code> - this will create our binary in <code>bin/Release/linux-x64/publish</code> - let&rsquo;s copy it in the same directory as our configuration files and explore it further:</p><pre tabindex=0><code>$ ls emote
 .rwxr--r-- 47M radu  2 Sep  8:32 emote
-</code></pre><p>Our resulting application is 47M - not a small application, for what we&rsquo;ve accomplished (and especially compared with a Go or Rust application, which would have been maybe 3 times smaller) - BUT - the binary contains the entire .NET Core runtime - and is self-contained. At least now you have the option to make the tradeoff between development ease, ecosystem, tooling, and resulting application size.</p>
-<p>Additionally, more work is expected to happen in the future to make the resulting binary even smaller.</p>
-<pre tabindex="0"><code>$ emote show --help
+</code></pre><p>Our resulting application is 47M - not a small application, for what we&rsquo;ve accomplished (and especially compared with a Go or Rust application, which would have been maybe 3 times smaller) - BUT - the binary contains the entire .NET Core runtime - and is self-contained. At least now you have the option to make the tradeoff between development ease, ecosystem, tooling, and resulting application size.</p><p>Additionally, more work is expected to happen in the future to make the resulting binary even smaller.</p><pre tabindex=0><code>$ emote show --help
 show:
   shows an emoticon from the configuration given its name
 
@@ -520,79 +128,19 @@ Options:
 
 $ emote show shrug
 ¯\_(ツ)_/¯
-</code></pre><blockquote>
-<p>Also note the auto-generated help text.</p>
-</blockquote>
-<h3 id="startup-time-and-aot-compilation">Startup time and AOT compilation</h3>
-<p>Let&rsquo;s check the execution time of our tool:</p>
-<pre tabindex="0"><code>$ time emote --version
+</code></pre><blockquote><p>Also note the auto-generated help text.</p></blockquote><h3 id=startup-time-and-aot-compilation>Startup time and AOT compilation</h3><p>Let&rsquo;s check the execution time of our tool:</p><pre tabindex=0><code>$ time emote --version
 1.0.0
 emote --version  0.26s user 0.01s
-</code></pre><p>On average, the execution time for this tool is just around 0.26 seconds (your timing might differ based on a wide number of factors) - let&rsquo;s compare that to the execution time of a Go based, much more complex program - Helm 3:</p>
-<pre tabindex="0"><code>$ time helm version
+</code></pre><p>On average, the execution time for this tool is just around 0.26 seconds (your timing might differ based on a wide number of factors) - let&rsquo;s compare that to the execution time of a Go based, much more complex program - Helm 3:</p><pre tabindex=0><code>$ time helm version
 version.BuildInfo{Version:&#34;v3.0.0-beta.2&#34;, GitCommit:&#34;26c7338408f8db593f93cd7c963ad56f67f662d4&#34;, GitTreeState:&#34;clean&#34;, GoVersion:&#34;go1.12.9&#34;}
 helm version  0.13s user 0.03s
 </code></pre><p>Our application is twice as slow as Helm, a Go-based tool, and all of the extra time is because of the slow startup.
-(Interestingly enough, because of the Kubernetes <code>client-go</code>, binaries that use it are around 40M as well, so from the size perspective, there isn&rsquo;t much difference).</p>
-<p>But .NET Core 3 comes with more option - according to the <a href="https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0">release notes</a>, <em>you can improve the startup time of your .NET Core application by compiling your application assemblies as ReadyToRun (R2R) format. R2R is a form of ahead-of-time (AOT) compilation. R2R binaries improve startup performance by reducing the amount of work the just-in-time (JIT) compiler needs to do as your application loads. The binaries contain similar native code compared to what the JIT would produce. However, R2R binaries are larger because they contain both intermediate language (IL) code, which is still needed for some scenarios, and the native version of the same code. R2R is only available when you publish a self-contained app that targets specific runtime environments (RID) such as Linux x64 or Windows x64.</em></p>
-<p>Adding the setting in our project file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;PublishReadyToRun&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
-</span></span></code></pre></div><p>And creating a new release, we see the size increase to 68M:</p>
-<pre tabindex="0"><code>$ ls emote-aot
+(Interestingly enough, because of the Kubernetes <code>client-go</code>, binaries that use it are around 40M as well, so from the size perspective, there isn&rsquo;t much difference).</p><p>But .NET Core 3 comes with more option - according to the <a href=https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0>release notes</a>, <em>you can improve the startup time of your .NET Core application by compiling your application assemblies as ReadyToRun (R2R) format. R2R is a form of ahead-of-time (AOT) compilation. R2R binaries improve startup performance by reducing the amount of work the just-in-time (JIT) compiler needs to do as your application loads. The binaries contain similar native code compared to what the JIT would produce. However, R2R binaries are larger because they contain both intermediate language (IL) code, which is still needed for some scenarios, and the native version of the same code. R2R is only available when you publish a self-contained app that targets specific runtime environments (RID) such as Linux x64 or Windows x64.</em></p><p>Adding the setting in our project file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;PublishReadyToRun&gt;</span>true<span style=color:#f92672>&lt;/PublishReadyToRun&gt;</span>
+</span></span></code></pre></div><p>And creating a new release, we see the size increase to 68M:</p><pre tabindex=0><code>$ ls emote-aot
  .rwxr--r-- 68M radu  2 Sep  8:31 emote-aot
-</code></pre><p>Let&rsquo;s see what improvement this gets is with the startup time:</p>
-<pre tabindex="0"><code>time emote-aot --version
+</code></pre><p>Let&rsquo;s see what improvement this gets is with the startup time:</p><pre tabindex=0><code>time emote-aot --version
 1.0.0
 emote-aot --version  0.13s user 0.03s
-</code></pre><p>The startup performance is drastically improved - however, at the cost of increasing the binary size.</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>In this article we explored how to use .NET Core 3 to build command line interfaces, and use familiar techniques from .NET Core, such as configuration providers, or dependency injection. We also explored how to parse command line arguments and structure such a project, and in the end investigated how .NET Core 3 publishes a single executable binary for our tool, size, performance, and tradeoffs between size and startup time.</p>
-<p>This is the .NET Core&rsquo;s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications (even when accepting the tradeoff for a slower startup time). But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files, and ultimately this gives us the opportunity to choose.</p>
-<p>Hopefully, future versions will have even smaller resulting binaries, with better startup time (and hopefully, more and more of the goodness in the CoreRT repository will be integrated into .NET Core).</p>
-<p>You can <a href="https://github.com/radu-matei/emote">find the final application we built on GitHub</a>.</p>
-<p>Thanks for reading :)</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/state-of-cnab-part-1/"><span class="mr-1.5">←</span><span>The state of CNAB: Part 1 - CNAB Core</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/dark-mode/"><span>Adding dark mode to a Hugo static website without learning CSS</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><p>The startup performance is drastically improved - however, at the cost of increasing the binary size.</p><h3 id=conclusion>Conclusion</h3><p>In this article we explored how to use .NET Core 3 to build command line interfaces, and use familiar techniques from .NET Core, such as configuration providers, or dependency injection. We also explored how to parse command line arguments and structure such a project, and in the end investigated how .NET Core 3 publishes a single executable binary for our tool, size, performance, and tradeoffs between size and startup time.</p><p>This is the .NET Core&rsquo;s first iteration at self-contained binaries. It is not ideal - the resulting size of ~40M is probably way too large for simple applications (even when accepting the tradeoff for a slower startup time). But the fact that now we can actually create a global tool with .NET and distribute it without requiring users to install .NET is extremely exciting! Not to mention the ease of packaging applications in containers, and not having to copy tens of files, and ultimately this gives us the opportunity to choose.</p><p>Hopefully, future versions will have even smaller resulting binaries, with better startup time (and hopefully, more and more of the goodness in the CoreRT repository will be integrated into .NET Core).</p><p>You can <a href=https://github.com/radu-matei/emote>find the final application we built on GitHub</a>.</p><p>Thanks for reading :)</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/state-of-cnab-part-1/><span class=mr-1.5>←</span><span>The state of CNAB: Part 1 - CNAB Core</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/dark-mode/><span>Adding dark mode to a Hugo static website without learning CSS</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

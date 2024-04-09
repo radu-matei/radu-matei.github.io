@@ -1,330 +1,31 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Rendering Helm templates in the browser, with WebAssembly - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/helm-wasm/">
-  
-  
-  
-  
-  <meta name="description" content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Rendering Helm templates in the browser, with WebAssembly" />
-<meta property="og:description" content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/helm-wasm/" /><meta property="og:image" content="https://radu-matei.com/img/article-photos/helm-wasm/helm-wasm.png" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2019-05-11T00:00:00+00:00" />
-<meta property="article:modified_time" content="2019-05-11T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Rendering Helm templates in the browser, with WebAssembly">
-<meta itemprop="description" content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."><meta itemprop="datePublished" content="2019-05-11T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2019-05-11T00:00:00+00:00" />
-<meta itemprop="wordCount" content="924"><meta itemprop="image" content="https://radu-matei.com/img/article-photos/helm-wasm/helm-wasm.png" />
-<meta itemprop="keywords" content="golang,wasm,helm," />
-  
-  <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://radu-matei.com/img/article-photos/helm-wasm/helm-wasm.png" /><meta name="twitter:title" content="Rendering Helm templates in the browser, with WebAssembly"/>
-<meta name="twitter:description" content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Rendering Helm templates in the browser, with WebAssembly</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Saturday, May 11, 2019</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><p>I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Rendering Helm templates in the browser, with WebAssembly - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/helm-wasm/><meta name=description content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Rendering Helm templates in the browser, with WebAssembly"><meta property="og:description" content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/helm-wasm/"><meta property="og:image" content="https://radu-matei.com/img/article-photos/helm-wasm/helm-wasm.png"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-05-11T00:00:00+00:00"><meta property="article:modified_time" content="2019-05-11T00:00:00+00:00"><meta itemprop=name content="Rendering Helm templates in the browser, with WebAssembly"><meta itemprop=description content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."><meta itemprop=datePublished content="2019-05-11T00:00:00+00:00"><meta itemprop=dateModified content="2019-05-11T00:00:00+00:00"><meta itemprop=wordCount content="924"><meta itemprop=image content="https://radu-matei.com/img/article-photos/helm-wasm/helm-wasm.png"><meta itemprop=keywords content="golang,wasm,helm,"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://radu-matei.com/img/article-photos/helm-wasm/helm-wasm.png"><meta name=twitter:title content="Rendering Helm templates in the browser, with WebAssembly"><meta name=twitter:description content="I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least a couple of months now - I had previously read the hello world examples for both Go and Rust, but never had the time to actually try things out. So I decided to take a piece of real world Go code, that is used today in Helm, and see if I can get it to execute in the browser - I chose to replicate a simpler version of helm template, where you input the template, values file, and metadata in the web page, and the rendered template gets printed out."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Rendering Helm templates in the browser, with WebAssembly</h1><div class="text-sm opacity-60"><time>Saturday, May 11, 2019</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>I&rsquo;ve been trying to find a weekend to play around with Web Assembly for at least
 a couple of months now - I had previously read the <em>hello world</em> examples for
 both Go and Rust, but never had the time to actually try things out. So I
 decided to take a piece of real world Go code, that is used today in Helm, and
 see if I can get it to execute in the browser - I chose to replicate a simpler
 version of <code>helm template</code>, where you input the template, values file, and
-metadata in the web page, and the rendered template gets printed out.</p>
-<p>This should <em>absolutely not</em> be used for any serious purpose, since you are
+metadata in the web page, and the rendered template gets printed out.</p><p>This should <em>absolutely not</em> be used for any serious purpose, since you are
 about to see some glued pieces of software that happen to work. Now that we have
-that out of the way, let see <em>how</em> this works.</p>
-<h3 id="interacting-with-the-dom-from-go">Interacting with the DOM from Go</h3>
-<p>The first thing you learn in JavaScript after the slight amusement of <code>alert</code> is
+that out of the way, let see <em>how</em> this works.</p><h3 id=interacting-with-the-dom-from-go>Interacting with the DOM from Go</h3><p>The first thing you learn in JavaScript after the slight amusement of <code>alert</code> is
 gone, is to manipulate the DOM - you are able select elements by their ID or
 class, then read and write their values. This can be done in Go with Web
 Assembly using the <code>sycall/js</code> package, and the syntax is really similar to
-JavaScript:</p>
-<pre tabindex="0"><code>someValue := document.Call(&#34;getElementById&#34;, &#34;someId&#34;).Get(&#34;value&#34;).String()
+JavaScript:</p><pre tabindex=0><code>someValue := document.Call(&#34;getElementById&#34;, &#34;someId&#34;).Get(&#34;value&#34;).String()
 </code></pre><p>This is equivalent to the following in JavaScript (and modifying the value of
-objects can be done in a similar way):</p>
-<pre tabindex="0"><code>var someValue = document.getElementById(&#34;someId&#34;).value
+objects can be done in a similar way):</p><pre tabindex=0><code>var someValue = document.getElementById(&#34;someId&#34;).value
 </code></pre><p>So in theory, we have the inputs and outputs for our simple application - we can
 read the chart metadata, templates, and values files from a bunch of HTML text
 areas, and we can write the output to another text area. (Luckily enough, the
 only other HTML element we are using is a button - ideal, since that&rsquo;s pretty
-much all I can do on the front-end.)</p>
-<p>Now we need to actually render the Helm templates, and this is the part I wasn&rsquo;t
+much all I can do on the front-end.)</p><p>Now we need to actually render the Helm templates, and this is the part I wasn&rsquo;t
 sure that was even going to compile with Web Assembly - we&rsquo;re directly importing
 packages from <code>k8s.io/helm</code> into our application, as well as the library for
-unmarshaling YAML, then calling the Helm render engine:</p>
-<pre tabindex="0"><code>func render(this js.Value, args []js.Value) interface{} {
+unmarshaling YAML, then calling the Helm render engine:</p><pre tabindex=0><code>func render(this js.Value, args []js.Value) interface{} {
 	document := js.Global().Get(&#34;document&#34;)
 	metadata := document.Call(&#34;getElementById&#34;, &#34;metadata&#34;).Get(&#34;value&#34;).String()
 	templates := document.Call(&#34;getElementById&#34;, &#34;templates&#34;).Get(&#34;value&#34;).String()
@@ -364,43 +65,21 @@ unmarshaling YAML, then calling the Helm render engine:</p>
 	return nil
 }
 </code></pre><p>The next important piece is registering a function written in Go so it can be
-used from JavaScript:</p>
-<pre tabindex="0"><code>js.Global().Set(&#34;render&#34;, js.FuncOf(render))
+used from JavaScript:</p><pre tabindex=0><code>js.Global().Set(&#34;render&#34;, js.FuncOf(render))
 </code></pre><p>The only thing to note here is the signature for <code>render</code>, which has to be
 <code>func render(this js.Value, args []js.Value) interface{}</code>, where <code>this</code> is the
 JavaScript context that calls the Go function, and <code>args</code> contains the arguments
-the function was called with.</p>
-<blockquote>
-<p>Complete documentation for the
-<a href="https://godoc.org/syscall/js"><code>syscall/js</code> package</a>.</p>
-</blockquote>
-<blockquote>
-<p>In this article we&rsquo;re not really using <code>this</code> or <code>args</code>, but we are directly
-reading the values of HTML elements from the DOM.</p>
-</blockquote>
-<blockquote>
-<p>You can
-<a href="https://github.com/radu-matei/helm-template-wasm">find the complete repository for this example on GitHub</a>.</p>
-</blockquote>
-<blockquote>
-<p>If you want to
-<a href="https://github.com/golang/go/wiki/WebAssembly">get started with Go and Web Assembly, the best resource is from the official Go repository</a>.</p>
-</blockquote>
-<h3 id="building-and-using-the-package">Building and using the package</h3>
-<p>In the same way we cross-compile our Go projects for various operating systems
+the function was called with.</p><blockquote><p>Complete documentation for the
+<a href=https://godoc.org/syscall/js><code>syscall/js</code> package</a>.</p></blockquote><blockquote><p>In this article we&rsquo;re not really using <code>this</code> or <code>args</code>, but we are directly
+reading the values of HTML elements from the DOM.</p></blockquote><blockquote><p>You can
+<a href=https://github.com/radu-matei/helm-template-wasm>find the complete repository for this example on GitHub</a>.</p></blockquote><blockquote><p>If you want to
+<a href=https://github.com/golang/go/wiki/WebAssembly>get started with Go and Web Assembly, the best resource is from the official Go repository</a>.</p></blockquote><h3 id=building-and-using-the-package>Building and using the package</h3><p>In the same way we cross-compile our Go projects for various operating systems
 and architectures, we need to compile our package for Web Assembly (in this
-example, <code>wasm/render.go</code> is the path to the Go file we have above):</p>
-<p><code>GOARCH=wasm GOOS=js go build -o lib.wasm wasm/render.go</code></p>
-<p>The output of the compilation is a <code>lib.wasm</code> file we will import in our web
-application.</p>
-<blockquote>
-<p><code>lib.wasm</code> needs to be imported in the web application, and the module needs
+example, <code>wasm/render.go</code> is the path to the Go file we have above):</p><p><code>GOARCH=wasm GOOS=js go build -o lib.wasm wasm/render.go</code></p><p>The output of the compilation is a <code>lib.wasm</code> file we will import in our web
+application.</p><blockquote><p><code>lib.wasm</code> needs to be imported in the web application, and the module needs
 to be instantiated - this can be found it <code>index.html</code> in the repository, and
 is mostly the standard way of importing and starting a Web Assembly module for
-Go.</p>
-</blockquote>
-<p>Next, we need the text areas and the button:</p>
-<pre tabindex="0"><code>Metadata:
+Go.</p></blockquote><p>Next, we need the text areas and the button:</p><pre tabindex=0><code>Metadata:
 &lt;textarea id=&#34;metadata&#34; cols=&#34;50&#34; rows=&#34;10&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
 Templates:
 &lt;textarea id=&#34;templates&#34; cols=&#34;50&#34; rows=&#34;20&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
@@ -413,68 +92,18 @@ Values:
 Result:
 &lt;textarea id=&#34;result&#34; cols=&#34;50&#34; rows=&#34;20&#34; charswidth=&#34;100&#34;&gt;&lt;/textarea&gt;
 </code></pre><p>The callback for the <code>renderButton</code>, <code>render()</code>, is precisely the Go function
-from above, and will be executed whenever the button is clicked.</p>
-<p>Provided we included the <code>wasm_exec.js</code> script and used it to fetch the
+from above, and will be executed whenever the button is clicked.</p><p>Provided we included the <code>wasm_exec.js</code> script and used it to fetch the
 <code>lib.wasm</code> library we just built, then we should be able to test this out - in
 the repo for this example there is a simply web server - <code>go run main.go</code> will
 start listening on port 8080, and accessing <code>localhost:8080</code> will serve
 <code>index.html</code>, which loads <code>lib.wasm</code> and registers the <code>render</code> function so that
 whenever the button is pressed, the Go function gets executed and renders the
-Helm templates:</p>
-<p><img src="/img/article-photos/helm-wasm/helm-wasm.gif" alt=""></p>
-<h3 id="conclusion">Conclusion</h3>
-<p>In around 40 lines of code I managed to get package from a fairly complex
+Helm templates:</p><p><img src=/img/article-photos/helm-wasm/helm-wasm.gif alt></p><h3 id=conclusion>Conclusion</h3><p>In around 40 lines of code I managed to get package from a fairly complex
 project written in Go, and execute it in the browser, with Web Assembly. Do I
 really understand how it works? Not yet, but this is incredibly exciting, both
 from the technical perspective, but just as important, because of all the
-possibilities it opens up.</p>
-<p>Thanks for reading!</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/golang">golang</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/helm">helm</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/"><span class="mr-1.5">←</span><span>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/kubernetes-controller-csharp/"><span>Writing controllers for Kubernetes CRDs with C#</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+possibilities it opens up.</p><p>Thanks for reading!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/golang>golang</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/helm>helm</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/><span class=mr-1.5>←</span><span>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/kubernetes-controller-csharp/><span>Writing controllers for Kubernetes CRDs with C#</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

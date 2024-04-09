@@ -1,314 +1,9 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>ASP.NET Core MVC and SignalR Core - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/">
-  
-  
-  
-  
-  <meta name="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="ASP.NET Core MVC and SignalR Core" />
-<meta property="og:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-mvc-signalr/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2016-09-09T00:00:00+00:00" />
-<meta property="article:modified_time" content="2016-09-09T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="ASP.NET Core MVC and SignalR Core">
-<meta itemprop="description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta itemprop="datePublished" content="2016-09-09T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2016-09-09T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1755">
-<meta itemprop="keywords" content="dotnet-core,azure,signalr," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="ASP.NET Core MVC and SignalR Core"/>
-<meta name="twitter:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">ASP.NET Core MVC and SignalR Core</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Friday, September 9, 2016</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><h2 id="notice">NOTICE</h2>
-<p><a href="https://radu-matei.com/blog/signalr-core"><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong> </a></p>
-<h2 id="introduction">Introduction</h2>
-<p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href="https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server"><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p>
-<blockquote>
-<p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p>
-</blockquote>
-<blockquote>
-<p>In order to get started with SignalR Core, <a href="https://radu-matei.github.io/blog/signalr-core/">take a look at this article</a>.</p>
-</blockquote>
-<p>We will build on <a href="https://radu-matei.github.io/blog/aspnet-core-api/">this application</a> and add real time functionality to it.</p>
-<p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p>
-<h2 id="configure-the-application">Configure the application</h2>
-<p>NuGet has the ability to get packages from more than one source, and we need it to download alpha packages that are only available on the MyGet server of the ASP.NET team, besides the ASP.NET Core packages available on NuGet. So in the root of the application add a file called <code>NuGet.Config</code> with the following content:</p>
-<pre tabindex="0"><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>ASP.NET Core MVC and SignalR Core - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aspnet-core-mvc-signalr/><meta name=description content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="ASP.NET Core MVC and SignalR Core"><meta property="og:description" content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-mvc-signalr/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-09-09T00:00:00+00:00"><meta property="article:modified_time" content="2016-09-09T00:00:00+00:00"><meta itemprop=name content="ASP.NET Core MVC and SignalR Core"><meta itemprop=description content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"><meta itemprop=datePublished content="2016-09-09T00:00:00+00:00"><meta itemprop=dateModified content="2016-09-09T00:00:00+00:00"><meta itemprop=wordCount content="1755"><meta itemprop=keywords content="dotnet-core,azure,signalr,"><meta name=twitter:card content="summary"><meta name=twitter:title content="ASP.NET Core MVC and SignalR Core"><meta name=twitter:description content="In this article we will explore how to get started with the Alpha 2 version of SignalR for ASP.NET Core 2.0 and understand streaming, sending binary data, using the Redis scaleout and, of course, chat!"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">ASP.NET Core MVC and SignalR Core</h1><div class="text-sm opacity-60"><time>Friday, September 9, 2016</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><h2 id=notice>NOTICE</h2><p><a href=https://radu-matei.com/blog/signalr-core><strong>This article is based on an old version of SignalR and is no longer functional / maintained - it is kept here only for historical purposes, you should visit this article that is current as of November / December 2017! All functionality of this article and much more can be found in the new article!</strong></a></p><h2 id=introduction>Introduction</h2><p>In this article we will take a look at how to integrate ASP.NET Core MVC with SignalR Core (at the moment of writing this article, the latest version of SignalR is <a href=https://dotnet.myget.org/feed/aspnetcore-ci-dev/package/nuget/Microsoft.AspNetCore.SignalR.Server><code>0.2.0-alpha1-22107</code></a>) and how to use the SignalR context outside hubs (and solve the current issues with the custom resolvers that will be detailed later) to update clients.</p><blockquote><p>This article assumes a basic understanding of ASP.NET Core MVC and will not try to explain all concepts here. <a href=https://radu-matei.github.io/blog/aspnet-core-api/>This article</a> does an introduction to ASP.NET Core MVC and has the basic application structure needed for this article.</p></blockquote><blockquote><p>In order to get started with SignalR Core, <a href=https://radu-matei.github.io/blog/signalr-core/>take a look at this article</a>.</p></blockquote><p>We will build on <a href=https://radu-matei.github.io/blog/aspnet-core-api/>this application</a> and add real time functionality to it.</p><p>It is a very simple application that will enable the creation of posts (much like messages) and it took us through adding the MVC services, creating models, controllers and consuming some data. Now, we want all connected users to see in real time when somebody adds posts in the page without refreshing it.</p><h2 id=configure-the-application>Configure the application</h2><p>NuGet has the ability to get packages from more than one source, and we need it to download alpha packages that are only available on the MyGet server of the ASP.NET team, besides the ASP.NET Core packages available on NuGet. So in the root of the application add a file called <code>NuGet.Config</code> with the following content:</p><pre tabindex=0><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
 &lt;configuration&gt;
    &lt;packageSources&gt;
        &lt;clear/&gt;
@@ -316,16 +11,12 @@
            &lt;add key=&#34;api.nuget.org&#34; value=&#34;https://api.nuget.org/v3/index.json&#34;/&gt;
    &lt;/packageSources&gt;
 &lt;/configuration&gt;
-</code></pre><h2 id="add-the-required-packages">Add the required packages</h2>
-<p>For this application, we will need the Kestrel web server (of course), the MVC packages so we can use controllers, static files so we can have HTML and JavaScript files served, SignalR and WebSockets:</p>
-<pre tabindex="0"><code>&#34;Microsoft.AspNetCore.Server.Kestrel&#34;: &#34;1.0.0&#34;,
+</code></pre><h2 id=add-the-required-packages>Add the required packages</h2><p>For this application, we will need the Kestrel web server (of course), the MVC packages so we can use controllers, static files so we can have HTML and JavaScript files served, SignalR and WebSockets:</p><pre tabindex=0><code>&#34;Microsoft.AspNetCore.Server.Kestrel&#34;: &#34;1.0.0&#34;,
 &#34;Microsoft.AspNetCore.Mvc&#34;: &#34;1.0.0&#34;,
 &#34;Microsoft.AspNetCore.StaticFiles&#34;: &#34;1.0.0&#34;,
 &#34;Microsoft.AspNetCore.SignalR.Server&#34;: &#34;0.2.0-*&#34;,
 &#34;Microsoft.AspNetCore.WebSockets&#34;: &#34;0.2.0-*&#34;
-</code></pre><h2 id="programcs"><code>Program.cs</code></h2>
-<p>Besides adding the <code>UseContentRoot</code> statement, the <code>Main</code> method is pretty much standard for an ASP.NET Core application.</p>
-<pre tabindex="0"><code> public static void Main(string[] args)
+</code></pre><h2 id=programcs><code>Program.cs</code></h2><p>Besides adding the <code>UseContentRoot</code> statement, the <code>Main</code> method is pretty much standard for an ASP.NET Core application.</p><pre tabindex=0><code> public static void Main(string[] args)
  {
      var host = new WebHostBuilder()
          .UseKestrel()
@@ -335,9 +26,7 @@
 
      host.Run();
  }
-</code></pre><h2 id="post-ipostrepository-and-postrepository"><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2>
-<p><a href="https://radu-matei.github.io/blog/aspnet-core-api/">This article</a> explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p>
-<pre tabindex="0"><code>public class Post
+</code></pre><h2 id=post-ipostrepository-and-postrepository><code>Post</code>, <code>IPostRepository</code> and <code>PostRepository</code></h2><p><a href=https://radu-matei.github.io/blog/aspnet-core-api/>This article</a> explains all these components thoroughly, but let&rsquo;s see briefly what each one does:</p><pre tabindex=0><code>public class Post
 {
     public int Id { get; set; }
     public string UserName { get; set; }
@@ -354,11 +43,7 @@
     {
     }
 }
-</code></pre><p><code>Post</code> will be the model that users add in the application. It is a straightforward C# class with three auto-implemented properties and two constructors.</p>
-<blockquote>
-<p>Each user that enters can publish a post containing his user name and a text, so our Post class only contains two properties for the UserName and Text of the post and an Id.</p>
-</blockquote>
-<pre tabindex="0"><code>using System.Collections.Generic;
+</code></pre><p><code>Post</code> will be the model that users add in the application. It is a straightforward C# class with three auto-implemented properties and two constructors.</p><blockquote><p>Each user that enters can publish a post containing his user name and a text, so our Post class only contains two properties for the UserName and Text of the post and an Id.</p></blockquote><pre tabindex=0><code>using System.Collections.Generic;
 
 public interface IPostRepository
 {
@@ -366,10 +51,7 @@ public interface IPostRepository
     Post GetPost(int id);
     void AddPost(Post post);
 }
-</code></pre><blockquote>
-<p>Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, IPostRepository, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p>
-</blockquote>
-<pre tabindex="0"><code>using System.Collections.Generic;
+</code></pre><blockquote><p>Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, IPostRepository, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p></blockquote><pre tabindex=0><code>using System.Collections.Generic;
 using System.Linq;
 
 public class PostRepository : IPostRepository
@@ -394,11 +76,7 @@ public class PostRepository : IPostRepository
         return _posts.FirstOrDefault(p =&gt; p.Id == id);
     }
 }
-</code></pre><blockquote>
-<p>We implemented the <code>IPostRepository</code> interface through an in-memory class called <code>PostRepository</code> that holds the data in a list. Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it is be private. Besides the list, we only need to implement the three methods from the interface.</p>
-</blockquote>
-<h2 id="the-postscontroller">The <code>PostsController</code></h2>
-<pre tabindex="0"><code>using System.Collections.Generic;
+</code></pre><blockquote><p>We implemented the <code>IPostRepository</code> interface through an in-memory class called <code>PostRepository</code> that holds the data in a list. Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it is be private. Besides the list, we only need to implement the three methods from the interface.</p></blockquote><h2 id=the-postscontroller>The <code>PostsController</code></h2><pre tabindex=0><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
 
@@ -429,34 +107,19 @@ public class PostsController : Controller
         _postRepository.AddPost(post);
     }
 }
-</code></pre><p>From this controller, we will update all clients when a post was added using SignalR by getting the context of the hub and calling client methods  using a <code>ConnectionManager</code>. We will see later how to achieve this.</p>
-<h2 id="add-a-hub">Add a hub</h2>
-<p>In this application, we will use the hub as a proxy: clients will not call hub methods directly. SignalR will be used to provide server updates - that is the server notifies all clients that something happened, so the clients must first connect to a hub.</p>
-<p>So the hub class will be incredibly simple:</p>
-<pre tabindex="0"><code>using Microsoft.AspNetCore.SignalR;
+</code></pre><p>From this controller, we will update all clients when a post was added using SignalR by getting the context of the hub and calling client methods using a <code>ConnectionManager</code>. We will see later how to achieve this.</p><h2 id=add-a-hub>Add a hub</h2><p>In this application, we will use the hub as a proxy: clients will not call hub methods directly. SignalR will be used to provide server updates - that is the server notifies all clients that something happened, so the clients must first connect to a hub.</p><p>So the hub class will be incredibly simple:</p><pre tabindex=0><code>using Microsoft.AspNetCore.SignalR;
 
 public class PostsHub : Hub
 {
 }
-</code></pre><p>We will see how to use the hub context outside of the hub a little later.</p>
-<h2 id="camel-case-issues-and-custom-contract-resolvers">Camel case issues and custom contract resolvers</h2>
-<p>At this moment, MVC uses camel case notation to pass JSON to clients. That means that even if on the server you write your class properties with Pascal case notation (as you should!), JavaScript clients would get Camel cased objects.</p>
-<p>This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse methods across the JavaScript client, thing we cannot tolerate.</p>
-<p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href="https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751">this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p>
-<h2 id="add-a-custom-contract-resolvers">Add a custom contract resolvers</h2>
-<p>A first try could be to change the default contract resolver to a <code>CamelCasePropertyNamesContractResolver()</code> inside the <code>ConfigureServices</code> method:</p>
-<pre tabindex="0"><code>var settings = new JsonSerializerSettings();
+</code></pre><p>We will see how to use the hub context outside of the hub a little later.</p><h2 id=camel-case-issues-and-custom-contract-resolvers>Camel case issues and custom contract resolvers</h2><p>At this moment, MVC uses camel case notation to pass JSON to clients. That means that even if on the server you write your class properties with Pascal case notation (as you should!), JavaScript clients would get Camel cased objects.</p><p>This behavior is new to ASP.NET Core and was not present in the older versions when SignalR was used and built, so SignalR and its clients all expect Pascal case objects, while the objects passed between MVC and its clients are camel cased. This means we cannot reuse methods across the JavaScript client, thing we cannot tolerate.</p><p>So we are going to make SignalR pass objects in camel case. Basically, we are going to &ldquo;recycle&rdquo; <a href=https://github.com/SignalR/SignalR/issues/500#issuecomment-7453751>this old SignalR GitHub issue</a> and adapt it to our versions of ASP.NET and SignalR.</p><h2 id=add-a-custom-contract-resolvers>Add a custom contract resolvers</h2><p>A first try could be to change the default contract resolver to a <code>CamelCasePropertyNamesContractResolver()</code> inside the <code>ConfigureServices</code> method:</p><pre tabindex=0><code>var settings = new JsonSerializerSettings();
 settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
 var serializer = JsonSerializer.Create(settings);
 services.Add(new ServiceDescriptor(typeof(JsonSerializer),
              provider =&gt; serializer,
              ServiceLifetime.Transient));
-</code></pre><p>While this is not far from what we are going to do, at this moment we simply cannot force all components to pass camel case objects because it would break current conventions in place.</p>
-<p>Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is transformed to camel case.</p>
-<p>We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified.</p>
-<p>We will write a custom contract resolver that looks at the assembly of the object type and if it is not an internal SignalR object (if it is not from the same assembly as <code>Connection</code>, a class from SignalR), then it modifies it to be camel case:</p>
-<pre tabindex="0"><code>using System;
+</code></pre><p>While this is not far from what we are going to do, at this moment we simply cannot force all components to pass camel case objects because it would break current conventions in place.</p><p>Simply put, if you try this the JavaScript client will no longer connect, because all connection and internal communication is transformed to camel case.</p><p>We are at the point where we need all of the application objects to be passed camel cased, and all connection and SignalR internal objects to be unmodified.</p><p>We will write a custom contract resolver that looks at the assembly of the object type and if it is not an internal SignalR object (if it is not from the same assembly as <code>Connection</code>, a class from SignalR), then it modifies it to be camel case:</p><pre tabindex=0><code>using System;
 using System.Reflection;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
 using Newtonsoft.Json.Serialization;
@@ -484,20 +147,14 @@ using Newtonsoft.Json.Serialization;
         }
 
     }
-</code></pre><p>So in <code>ConfigureServices</code> we register our contract resolver very similarly to what we had earlier:</p>
-<pre tabindex="0"><code>var settings = new JsonSerializerSettings();
+</code></pre><p>So in <code>ConfigureServices</code> we register our contract resolver very similarly to what we had earlier:</p><pre tabindex=0><code>var settings = new JsonSerializerSettings();
 settings.ContractResolver = new SignalRContractResolver();
 
 var serializer = JsonSerializer.Create(settings);
 services.Add(new ServiceDescriptor(typeof(JsonSerializer),
              provider =&gt; serializer,
              ServiceLifetime.Transient));
-</code></pre><blockquote>
-<p>Note that most likely, this will be done more elegantly in future releases.</p>
-</blockquote>
-<h2 id="the-configure-method">The <code>Configure</code> method</h2>
-<p>Again, the <code>Configure</code> method is pretty straightforward: we add static files support, configure MVC and add WebSockets and SignalR.</p>
-<pre tabindex="0"><code>    public void Configure(IApplicationBuilder app)
+</code></pre><blockquote><p>Note that most likely, this will be done more elegantly in future releases.</p></blockquote><h2 id=the-configure-method>The <code>Configure</code> method</h2><p>Again, the <code>Configure</code> method is pretty straightforward: we add static files support, configure MVC and add WebSockets and SignalR.</p><pre tabindex=0><code>    public void Configure(IApplicationBuilder app)
     {
         app.UseStaticFiles();
 
@@ -512,12 +169,7 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
         app.UseWebSockets();
         app.UseSignalR();
     }
-</code></pre><h2 id="calling-client-methods-outside-hubs">Calling client methods outside hubs</h2>
-<p>In the previous versions of SignalR, in order to call client methods and manage groups outside a hub you would need to make use of the <code>GlobalHost</code>, which is no longer available in the new version.</p>
-<p>So we will use an instance of <code>ConnectionManager</code>, specifically the <code>GetHubContext&lt;&gt;()</code> method. We need to register this service so we can use it in the controller:</p>
-<p><code>_connectionManager.GetHubContext&lt;PostsHub&gt;().someClientMethod(parameters)</code></p>
-<h2 id="the-configureservices-method">The <code>ConfigureServices</code> method</h2>
-<pre tabindex="0"><code>    public void ConfigureServices(IServiceCollection services)
+</code></pre><h2 id=calling-client-methods-outside-hubs>Calling client methods outside hubs</h2><p>In the previous versions of SignalR, in order to call client methods and manage groups outside a hub you would need to make use of the <code>GlobalHost</code>, which is no longer available in the new version.</p><p>So we will use an instance of <code>ConnectionManager</code>, specifically the <code>GetHubContext&lt;>()</code> method. We need to register this service so we can use it in the controller:</p><p><code>_connectionManager.GetHubContext&lt;PostsHub>().someClientMethod(parameters)</code></p><h2 id=the-configureservices-method>The <code>ConfigureServices</code> method</h2><pre tabindex=0><code>    public void ConfigureServices(IServiceCollection services)
     {
         var settings = new JsonSerializerSettings();
         settings.ContractResolver = new SignalRContractResolver();
@@ -537,9 +189,7 @@ services.Add(new ServiceDescriptor(typeof(JsonSerializer),
 
         services.AddMvc();
     }
-</code></pre><p>We added the new contract resolver, we added the <code>PostRepository</code> and we added SignalR. Now we need to use it in the controller:</p>
-<h2 id="the-updated-controller">The updated controller</h2>
-<pre tabindex="0"><code>using System.Collections.Generic;
+</code></pre><p>We added the new contract resolver, we added the <code>PostRepository</code> and we added SignalR. Now we need to use it in the controller:</p><h2 id=the-updated-controller>The updated controller</h2><pre tabindex=0><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
 
@@ -573,10 +223,7 @@ public class PostsController : Controller
         _connectionManager.GetHubContext&lt;PostsHub&gt;().Clients.All.publishPost(post);
     }
 }
-</code></pre><p>Every time someone adds a new post, all connected users will be notified and will call the <code>publishPost</code> method.</p>
-<h2 id="the-client">The client</h2>
-<p>The client will be exactly the same as in SignalR 2.2.x:</p>
-<pre tabindex="0"><code>&lt;!DOCTYPE html&gt;
+</code></pre><p>Every time someone adds a new post, all connected users will be notified and will call the <code>publishPost</code> method.</p><h2 id=the-client>The client</h2><p>The client will be exactly the same as in SignalR 2.2.x:</p><pre tabindex=0><code>&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;&lt;/title&gt;
@@ -638,56 +285,8 @@ public class PostsController : Controller
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-</code></pre><p>Now if you open two browser tabs and start adding messages, you can see all pages updating in real time.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>In this article we saw how to use MVC Core and SignalR for providing real time data to users.</p>
-<p>Since SignalR is still in alpha, at this moment there are some issues to be addressed and many breaking changes to come and I will try to keep this example up-to-date.</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/azure">azure</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/signalr">signalr</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/rpi-sensehat-telemetry/"><span class="mr-1.5">←</span><span>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/aspnet-core-json-dependency-injection/"><span>Inject ASP.NET Core Dependencies from JSON files</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><p>Now if you open two browser tabs and start adding messages, you can see all pages updating in real time.</p><h2 id=conclusion>Conclusion</h2><p>In this article we saw how to use MVC Core and SignalR for providing real time data to users.</p><p>Since SignalR is still in alpha, at this moment there are some issues to be addressed and many breaking changes to come and I will try to keep this example up-to-date.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/azure>azure</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/signalr>signalr</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/rpi-sensehat-telemetry/><span class=mr-1.5>←</span><span>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-json-dependency-injection/><span>Inject ASP.NET Core Dependencies from JSON files</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

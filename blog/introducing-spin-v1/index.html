@@ -1,319 +1,15 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Spin 1.0 — The Developer Tool for Serverless WebAssembly - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://www.fermyon.com/blog/introducing-spin-v1">
-  
-  
-  
-  
-  <meta name="description" content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Spin 1.0 — The Developer Tool for Serverless WebAssembly" />
-<meta property="og:description" content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/introducing-spin-v1/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2023-03-22T16:00:00+00:00" />
-<meta property="article:modified_time" content="2023-03-22T16:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Spin 1.0 — The Developer Tool for Serverless WebAssembly">
-<meta itemprop="description" content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."><meta itemprop="datePublished" content="2023-03-22T16:00:00+00:00" />
-<meta itemprop="dateModified" content="2023-03-22T16:00:00+00:00" />
-<meta itemprop="wordCount" content="2553">
-<meta itemprop="keywords" content="spin,wasm," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Spin 1.0 — The Developer Tool for Serverless WebAssembly"/>
-<meta name="twitter:description" content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Spin 1.0 — The Developer Tool for Serverless WebAssembly</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Wednesday, March 22, 2023</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><p><em><a href="https://www.fermyon.com/blog/introducing-spin-v1">This post originally appeared on the Fermyon Blog</a>.</em></p>
-<p>We are delighted to introduce <a href="https://github.com/fermyon/spin/releases/tag/v1.0.0">Spin 1.0</a>, the first stable release of the open source developer tool for building serverless applications with WebAssembly (Wasm)! Since we first <a href="https://www.fermyon.com/blog/introducing-spin">introduced Spin last year</a>, we have been hard at work together with the community on building a frictionless developer experience for building and running serverless applications with Wasm.</p>
-<p>For this release, we focused on building support for new programming languages (such as JavaScript, TypeScript, Python, or C#, in addition to Rust and Go), connecting to databases, distributing applications using popular registry services, a built-in key/value store for persisting state, running your applications on Kubernetes, or integrating with HashiCorp Vault for managing runtime configuration.</p>
-<!-- raw HTML omitted -->
-<h2 id="serverless-and-webassembly">Serverless and WebAssembly</h2>
-<p>When serverless made its way into mainstream computing, there was an amazing user story that it promised to deliver: <em>as a developer, I can focus on writing the business logic of my application, not worry about where my application is running, and only execute my code when it is actually needed</em>.
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Spin 1.0 — The Developer Tool for Serverless WebAssembly - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://www.fermyon.com/blog/introducing-spin-v1><meta name=description content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Spin 1.0 — The Developer Tool for Serverless WebAssembly"><meta property="og:description" content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/introducing-spin-v1/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2023-03-22T16:00:00+00:00"><meta property="article:modified_time" content="2023-03-22T16:00:00+00:00"><meta itemprop=name content="Spin 1.0 — The Developer Tool for Serverless WebAssembly"><meta itemprop=description content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."><meta itemprop=datePublished content="2023-03-22T16:00:00+00:00"><meta itemprop=dateModified content="2023-03-22T16:00:00+00:00"><meta itemprop=wordCount content="2553"><meta itemprop=keywords content="spin,wasm,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Spin 1.0 — The Developer Tool for Serverless WebAssembly"><meta name=twitter:description content="Introducing the first stable release for Spin, the open source developer tool for building, distributing, and running serverless applications built with WebAssembly."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Spin 1.0 — The Developer Tool for Serverless WebAssembly</h1><div class="text-sm opacity-60"><time>Wednesday, March 22, 2023</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><em><a href=https://www.fermyon.com/blog/introducing-spin-v1>This post originally appeared on the Fermyon Blog</a>.</em></p><p>We are delighted to introduce <a href=https://github.com/fermyon/spin/releases/tag/v1.0.0>Spin 1.0</a>, the first stable release of the open source developer tool for building serverless applications with WebAssembly (Wasm)! Since we first <a href=https://www.fermyon.com/blog/introducing-spin>introduced Spin last year</a>, we have been hard at work together with the community on building a frictionless developer experience for building and running serverless applications with Wasm.</p><p>For this release, we focused on building support for new programming languages (such as JavaScript, TypeScript, Python, or C#, in addition to Rust and Go), connecting to databases, distributing applications using popular registry services, a built-in key/value store for persisting state, running your applications on Kubernetes, or integrating with HashiCorp Vault for managing runtime configuration.</p><h2 id=serverless-and-webassembly>Serverless and WebAssembly</h2><p>When serverless made its way into mainstream computing, there was an amazing user story that it promised to deliver: <em>as a developer, I can focus on writing the business logic of my application, not worry about where my application is running, and only execute my code when it is actually needed</em>.
 The increasing popularity of modern serverless computing offerings suggests that developers resonate with this approach.
-However, developers still perceive some fundamental limitations when using serverless today, such as vendor lock-in, portability, or <a href="https://mikhail.io/serverless/coldstarts/big3/">cold starts</a>.</p>
-<p>Launched in 2017, <a href="https://webassembly.org">WebAssembly (Wasm)</a> is a fast and efficient bytecode format originally designed to run non-JavaScript code in the browser. Its <a href="https://00f.net/2023/01/04/webassembly-benchmark-2023">near-native speed</a>, <a href="https://fermyon.github.io/spin-benchmarks/criterion/reports/spin-executor_sleep-1ms/concurrency-1/index.html">fast startup time</a>, true portability, and <a href="https://webassembly.org/docs/security">sandboxed execution</a>, coupled with <a href="https://www.fermyon.com/wasm-languages/webassembly-language-support">the abundance of programming languages with emerging support for compiling to Wasm</a>, make it a compelling packaging and execution format for running code outside the browser.</p>
-<p>We believe today, Wasm has the runtime characteristics that can address the limitations of serverless, and with Spin, we want to build the best developer experience for serverless Wasm.</p>
-<h2 id="hello-spin">Hello, Spin!</h2>
-<p>Spin is an open source developer tool and framework that helps the user through creating, building, distributing, and running serverless applications with Wasm. We can use <code>spin new</code> to create a new application based on starter templates, <code>spin build</code> to compile our application to Wasm, and <code>spin up</code> to run the application locally.</p>
-<p><img src="https://www.fermyon.com/static/image/spin-steps.png" alt="spin steps"></p>
-<p>Below is an example of using the <code>spin</code> CLI to create a new Spin Python application, then adding a JavaScript component:</p>
-<pre tabindex="0"><code># Create a new Spin application based on the Python language template.
+However, developers still perceive some fundamental limitations when using serverless today, such as vendor lock-in, portability, or <a href=https://mikhail.io/serverless/coldstarts/big3/>cold starts</a>.</p><p>Launched in 2017, <a href=https://webassembly.org>WebAssembly (Wasm)</a> is a fast and efficient bytecode format originally designed to run non-JavaScript code in the browser. Its <a href=https://00f.net/2023/01/04/webassembly-benchmark-2023>near-native speed</a>, <a href=https://fermyon.github.io/spin-benchmarks/criterion/reports/spin-executor_sleep-1ms/concurrency-1/index.html>fast startup time</a>, true portability, and <a href=https://webassembly.org/docs/security>sandboxed execution</a>, coupled with <a href=https://www.fermyon.com/wasm-languages/webassembly-language-support>the abundance of programming languages with emerging support for compiling to Wasm</a>, make it a compelling packaging and execution format for running code outside the browser.</p><p>We believe today, Wasm has the runtime characteristics that can address the limitations of serverless, and with Spin, we want to build the best developer experience for serverless Wasm.</p><h2 id=hello-spin>Hello, Spin!</h2><p>Spin is an open source developer tool and framework that helps the user through creating, building, distributing, and running serverless applications with Wasm. We can use <code>spin new</code> to create a new application based on starter templates, <code>spin build</code> to compile our application to Wasm, and <code>spin up</code> to run the application locally.</p><p><img src=https://www.fermyon.com/static/image/spin-steps.png alt="spin steps"></p><p>Below is an example of using the <code>spin</code> CLI to create a new Spin Python application, then adding a JavaScript component:</p><pre tabindex=0><code># Create a new Spin application based on the Python language template.
 $ spin new http-py hello-python
 # Add a new JavaScript component based on the language template.
 $ spin add http-js goodbye-javascript
-</code></pre><p>Running the <code>spin add</code> command will generate the proper configuration for our component and add it to the <a href="https://developer.fermyon.com/spin/manifest-reference"><code>spin.toml</code> manifest file</a>. For example, here is the <code>spin.toml</code> section for our Python component:</p>
-<pre tabindex="0"><code>[[component]]
+</code></pre><p>Running the <code>spin add</code> command will generate the proper configuration for our component and add it to the <a href=https://developer.fermyon.com/spin/manifest-reference><code>spin.toml</code> manifest file</a>. For example, here is the <code>spin.toml</code> section for our Python component:</p><pre tabindex=0><code>[[component]]
 # The ID of the component.
 id = &#34;hello-python&#34;
 # The Wasm module to instantiate and execute when receiving a request.
@@ -326,8 +22,7 @@ route = &#34;/hello&#34;
 command = &#34;spin py2wasm app -o app.wasm&#34;
 # The working directory for the component.
 workdir = &#34;hello-python&#34;
-</code></pre><p>We can now build our application with <code>spin build</code>, then run it locally with <code>spin up</code>:</p>
-<pre tabindex="0"><code># Compile all components to Wasm by executing their `build` commands.
+</code></pre><p>We can now build our application with <code>spin build</code>, then run it locally with <code>spin up</code>:</p><pre tabindex=0><code># Compile all components to Wasm by executing their `build` commands.
 $ spin build
 Executing the build command for component hello-python: spin py2wasm app -o app.wasm
 Executing the build command for component goodbye-javascript: npm run build
@@ -341,20 +36,13 @@ Serving http://127.0.0.1:3000
 Available Routes:
   hello-python: http://127.0.0.1:3000/hello
   goodbye-javascript: http://127.0.0.1:3000/goodbye
-</code></pre><p>Once the application is running, we can start testing it by sending requests to its components:</p>
-<pre tabindex="0"><code># Send a request to the Python component.
+</code></pre><p>Once the application is running, we can start testing it by sending requests to its components:</p><pre tabindex=0><code># Send a request to the Python component.
 $ curl localhost:3000/hello
 Hello, Python!
 # Send a request to the JavaScript component.
 $ curl localhost:3000/goodbye
 Goodbye, JavaScript!
-</code></pre><p>When handling a request, Spin will create a new isolated Wasm instance corresponding to the Wasm module for the matching component, execute the handler function, then terminate the instance. Each new request will get a fresh Wasm instance, and we can do this because of the incredibly fast startup time for Wasm instances.</p>
-<p>Let&rsquo;s look at some of the features that come with Spin 1.0!</p>
-<h3 id="language-support">Language Support</h3>
-<p><img src="https://www.fermyon.com/static/image/spin-some-languages.png" alt="spin steps"></p>
-<p>A Spin application is composed of one or more <em>components</em> — in the case of web applications, their entry points are handler functions that take an HTTP request as an argument and return a formed HTTP response.  We can write Spin components using any language with a Spin SDK (such as <a href="https://developer.fermyon.com/spin/language-support-overview">Rust, TypeScript and JavaScript, Python, Go, or C#</a>), or using <a href="https://developer.fermyon.com/spin/other-languages">any other language that compiles to WASI</a>.</p>
-<p>First, let&rsquo;s look at the Python component from the previous example, which returned &ldquo;Hello, Python!&rdquo; — it is a Python function that takes the HTTP request as an argument, then returns a response:</p>
-<pre tabindex="0"><code># Import the Response object from the Spin SDK.
+</code></pre><p>When handling a request, Spin will create a new isolated Wasm instance corresponding to the Wasm module for the matching component, execute the handler function, then terminate the instance. Each new request will get a fresh Wasm instance, and we can do this because of the incredibly fast startup time for Wasm instances.</p><p>Let&rsquo;s look at some of the features that come with Spin 1.0!</p><h3 id=language-support>Language Support</h3><p><img src=https://www.fermyon.com/static/image/spin-some-languages.png alt="spin steps"></p><p>A Spin application is composed of one or more <em>components</em> — in the case of web applications, their entry points are handler functions that take an HTTP request as an argument and return a formed HTTP response. We can write Spin components using any language with a Spin SDK (such as <a href=https://developer.fermyon.com/spin/language-support-overview>Rust, TypeScript and JavaScript, Python, Go, or C#</a>), or using <a href=https://developer.fermyon.com/spin/other-languages>any other language that compiles to WASI</a>.</p><p>First, let&rsquo;s look at the Python component from the previous example, which returned &ldquo;Hello, Python!&rdquo; — it is a Python function that takes the HTTP request as an argument, then returns a response:</p><pre tabindex=0><code># Import the Response object from the Spin SDK.
 from spin_http import Response
 
 # The handler function that returns the response.
@@ -363,8 +51,7 @@ def handle_request(request):
     return Response(200,
                     [(&#34;content-type&#34;, &#34;text/plain&#34;)],
                     bytes(f&#34;Hello, Python!&#34;, &#34;utf-8&#34;))
-</code></pre><p>In JavaScript, we can write an application by following a popular pattern for HTTP handlers, using a router:</p>
-<pre tabindex="0"><code>// Handle the /api/hello route.
+</code></pre><p>In JavaScript, we can write an application by following a popular pattern for HTTP handlers, using a router:</p><pre tabindex=0><code>// Handle the /api/hello route.
 router.get(&#34;/api/hello&#34;, async (req) =&gt; {
   return {
     status: 200,
@@ -379,12 +66,7 @@ router.get(&#34;/api/products/:id&#34;, async (req) =&gt; {
     body: `Handling product ID: ${req.params.id}`
   }
 });
-</code></pre><p>The handler functions can perform operations such as <a href="https://developer.fermyon.com/spin/http-outbound">fetching data from external APIs</a>, <a href="https://github.com/fermyon/spin-fileserver">serving files</a>, connecting to databases (such as <a href="https://developer.fermyon.com/spin/rdbms-storage">relational databases</a>, or <a href="https://developer.fermyon.com/spin/redis-outbound">Redis</a>), or <a href="https://developer.fermyon.com/spin/kv-store">persisting state using Spin&rsquo;s built-in key/value storage</a>.</p>
-<p>We are continuing the work to improve <a href="https://developer.fermyon.com/spin/language-support-overview">the Spin language SDKs</a>, and we are thankful for the community&rsquo;s continued effort to help and improve our language SDKs.</p>
-<h3 id="persisting-state-from-spin-applications">Persisting State from Spin Applications</h3>
-<p>As we have learned in previous sections, Spin will create a new Wasm instance for every request — which makes it best suited for stateless, request/response types of workloads. To address managing state there is a built-in API for <a href="https://developer.fermyon.com/spin/kv-store">persisting and retrieving non-relational data from a key/value store</a>, and Spin 1.0 comes with a default, built-in store available to every Spin application with minimal configuration.</p>
-<p>Let&rsquo;s see an example of using this API from a Rust component:</p>
-<pre tabindex="0"><code>// key for the application state
+</code></pre><p>The handler functions can perform operations such as <a href=https://developer.fermyon.com/spin/http-outbound>fetching data from external APIs</a>, <a href=https://github.com/fermyon/spin-fileserver>serving files</a>, connecting to databases (such as <a href=https://developer.fermyon.com/spin/rdbms-storage>relational databases</a>, or <a href=https://developer.fermyon.com/spin/redis-outbound>Redis</a>), or <a href=https://developer.fermyon.com/spin/kv-store>persisting state using Spin&rsquo;s built-in key/value storage</a>.</p><p>We are continuing the work to improve <a href=https://developer.fermyon.com/spin/language-support-overview>the Spin language SDKs</a>, and we are thankful for the community&rsquo;s continued effort to help and improve our language SDKs.</p><h3 id=persisting-state-from-spin-applications>Persisting State from Spin Applications</h3><p>As we have learned in previous sections, Spin will create a new Wasm instance for every request — which makes it best suited for stateless, request/response types of workloads. To address managing state there is a built-in API for <a href=https://developer.fermyon.com/spin/kv-store>persisting and retrieving non-relational data from a key/value store</a>, and Spin 1.0 comes with a default, built-in store available to every Spin application with minimal configuration.</p><p>Let&rsquo;s see an example of using this API from a Rust component:</p><pre tabindex=0><code>// key for the application state
 const DATA_KEY: &amp;str = &#34;app-data&#34;;
 
 // application state
@@ -412,8 +94,7 @@ fn hello_kv(req: Request) -&gt; Result&lt;Response&gt; {
     kv.set(DATA_KEY, serde_json::to_vec(&amp;data)?)?;
     ...
 }
-</code></pre><p>Besides the built-in key/value store, Spin applications can also connect to external databases (such as <a href="https://developer.fermyon.com/spin/rdbms-storage">relational databases</a>, or <a href="https://developer.fermyon.com/spin/redis-outbound">Redis</a>), or connect to the new class of serverless databases that expose their connections over HTTP. Let&rsquo;s see an example of <a href="https://github.com/fermyon/spin-js-sdk/tree/main/examples/typescript/planetscale">using a PlanetScale database from TypeScript</a>:</p>
-<pre tabindex="0"><code>// Full example at https://github.com/radu-matei/spin-planetscale-f1
+</code></pre><p>Besides the built-in key/value store, Spin applications can also connect to external databases (such as <a href=https://developer.fermyon.com/spin/rdbms-storage>relational databases</a>, or <a href=https://developer.fermyon.com/spin/redis-outbound>Redis</a>), or connect to the new class of serverless databases that expose their connections over HTTP. Let&rsquo;s see an example of <a href=https://github.com/fermyon/spin-js-sdk/tree/main/examples/typescript/planetscale>using a PlanetScale database from TypeScript</a>:</p><pre tabindex=0><code>// Full example at https://github.com/radu-matei/spin-planetscale-f1
 import { HandleRequest, HttpRequest, HttpResponse } from &#34;@fermyon/spin-sdk&#34;;
 // Use the official PlanetScale client.
 import { connect } from &#34;@planetscale/database&#34;;
@@ -438,161 +119,83 @@ export async function handler(_req, res) {
   // Return the response.
   res.status(200).header(&#34;content-type&#34;, &#34;application/json&#34;).body(JSON.stringify(data));
 };
-</code></pre><p>As WASI matures, we are excited about the <a href="https://github.com/bytecodealliance/preview2-prototyping/blob/4adcbb222fe4a66d496e2ccbf77deaed3b94e1e1/wit/deps/sockets/tcp.wit#L40-L55">upcoming work in WASI Preview 2 that will bring networking support to WASI</a>, which will enable the use of popular database drivers and ORMs from Wasm and Spin applications.</p>
-<h3 id="distributing-spin-applications-using-registry-services">Distributing Spin Applications Using Registry Services</h3>
-<p>Registry services such as <a href="https://ghcr.io">GitHub Container Registry</a>, <a href="https://hub.docker.com/">Docker Hub</a>, or, <a href="https://aws.amazon.com/ecr/">AWS ECR</a> are ubiquitous, and many people are already using them as part of their workflow deploying cloud native applications.</p>
-<p>Spin 1.0 <a href="https://developer.fermyon.com/spin/distributing-apps">supports distributing applications using such registry services</a> — we can push an application using the <code>spin registry push</code> command:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ spin registry push ghcr.io/radu-matei/hello-spin:v2
-</span></span><span style="display:flex;"><span>Pushed with digest sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c
-</span></span></code></pre></div><p>After pushing the application, we can run it using the registry reference by running <code>spin up -f &lt;reference&gt;</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ spin up -f ghcr.io/radu-matei/hello-spin:v2
-</span></span><span style="display:flex;"><span>Serving http://0.0.0.0:3000
-</span></span><span style="display:flex;"><span>Available Routes:
-</span></span><span style="display:flex;"><span>  hello-python: http://0.0.0.0:3000/hello
-</span></span><span style="display:flex;"><span>  goodbye-javascript: http://0.0.0.0:3000/goodbye
-</span></span></code></pre></div><h3 id="signing-and-verifying-applications-using-sigstore">Signing and Verifying Applications Using Sigstore</h3>
-<p>Since we can distribute Spin applications using popular registry services, we can also take advantage of ecosystem tools such as <a href="https://sigstore.dev">Sigstore</a> and <a href="https://github.com/sigstore/cosign">Cosign</a>, which address the software supply chain issue by signing and verifying applications using Sigstore&rsquo;s new <a href="https://docs.sigstore.dev/cosign/keyless/">keyless signatures</a> (using OIDC identity tokens from providers such as GitHub).</p>
-<p>We can sign Spin applications using a GitHub identity, and guarantee the identity of the actor who pushed the application to the registry, as well as the integrity of the content pushed:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Sign the application using the GitHub identity signed in your browser.</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># If running in automation such as GitHub Actions, this can use the OIDC token</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># GitHub makes available for workflows.</span>
-</span></span><span style="display:flex;"><span>$ cosign sign ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c
-</span></span><span style="display:flex;"><span>Generating ephemeral keys...
-</span></span><span style="display:flex;"><span>Retrieving signed certificate...
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Successfully verified SCT...
-</span></span><span style="display:flex;"><span>tlog entry created with index: <span style="color:#ae81ff">15825036</span>
-</span></span><span style="display:flex;"><span>Pushing signature to: ghcr.io/radu-matei/hello-spin
-</span></span></code></pre></div><p>Now we can verify the integrity of the application by running <code>cosign verify</code> and passing the expected issuer and identity of who pushed the application:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Verify the content of the artifact at the given digest, as well as the fact</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># that the signature has been created by a GitHub actor with the given email.</span>
-</span></span><span style="display:flex;"><span>$ cosign verify ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --certificate-oidc-issuer https://github.com/login/oauth <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --certificate-identity radu@fermyon.com
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Verification <span style="color:#66d9ef">for</span> ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c --
-</span></span><span style="display:flex;"><span>The following checks were performed on each of these signatures:
-</span></span><span style="display:flex;"><span>  - The cosign claims were validated
-</span></span><span style="display:flex;"><span>  - Existence of the claims in the transparency log was verified offline
-</span></span><span style="display:flex;"><span>  - The code-signing certificate was verified using trusted certificate authority certificates
-</span></span></code></pre></div><p>After verifying the signature and validating the integrity of the application, we can run the application by digest instead of using its tag:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ spin up -f ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c
-</span></span></code></pre></div><p>You can integrate this workflow into the process of distributing and running your Spin applications.</p>
-<h3 id="deploying-spin-applications-to-fermyon-cloud">Deploying Spin Applications to Fermyon Cloud</h3>
-<p><a href="https://fermyon.com/cloud">Fermyon Cloud</a> is Fermyon&rsquo;s cloud platform for running serverless Wasm. You can deploy your Spin application and have a running application within seconds. All it takes to sign up for a free account is running <code>spin login &amp;&amp; spin deploy</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Log in to your account or sign up for a new one using `spin login`.</span>
-</span></span><span style="display:flex;"><span>$ spin login
-</span></span><span style="display:flex;"><span>Copy your one-time code: xxxx and open the authorization page in your browser: 
-</span></span><span style="display:flex;"><span>https://cloud.fermyon.com/device-authorization
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Device authorized!
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Deploy your application to Fermyon Cloud using `spin deploy`.</span>
-</span></span><span style="display:flex;"><span>$ spin deploy
-</span></span><span style="display:flex;"><span>Uploading hello-spin version 0.1.0+r4a828e1a
-</span></span><span style="display:flex;"><span>Deploying...
-</span></span><span style="display:flex;"><span>Waiting <span style="color:#66d9ef">for</span> application to become ready........... ready
-</span></span><span style="display:flex;"><span>Available Routes:
-</span></span><span style="display:flex;"><span>  hello-python: https://hello-spin-feiccjxm.fermyon.app/hello
-</span></span><span style="display:flex;"><span>  goodbye-javascript: https://hello-spin-feiccjxm.fermyon.app/goodbye
-</span></span></code></pre></div><p>We <a href="https://www.fermyon.com/blog/introducing-fermyon-cloud">launched Fermyon Cloud in open beta at the end of last year</a>, and we are incredibly happy to see the positive response from the community! As the Spin project and the community evolve, we are excited to build the best place to run your serverless applications with Wasm!</p>
-<h3 id="deploying-spin-applications-to-kubernetes">Deploying Spin Applications to Kubernetes</h3>
-<p>Besides deploying the application locally and deploying to Fermyon Cloud, you can also deploy your Spin application to Kubernetes using <a href="https://github.com/deislabs/containerd-wasm-shims/blob/main/containerd-shim-spin-v1/quickstart.md">the new Containerd integration for Spin</a>.</p>
-<p>You can deploy this on your own cluster (or alternatively, using <a href="https://kwasm.sh/">KWasm</a>), or you can use the <a href="https://learn.microsoft.com/en-us/azure/aks/use-wasi-node-pools">Azure Kubernetes Service</a>, which can run Spin (and <a href="https://github.com/deislabs/spiderlightning#spiderlightning-or-slight">slight</a>) applications.</p>
-<p>To get started, first configure a new runtime class based on the Containerd integration:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">node.k8s.io/v1</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create a new runtime class based on the containerd Wasm integration</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># that can run Spin applications.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RuntimeClass</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;wasmtime-spin-v1&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">handler</span>: <span style="color:#e6db74">&#34;spin&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">scheduling</span>:
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nodeSelector</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;kubernetes.azure.com/wasmtime-spin-v1&#34;: </span><span style="color:#e6db74">&#34;true&#34;</span>
-</span></span></code></pre></div><p>Then, create a deployment that uses the new runtime class:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create a new Kubernetes deployment.</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">wasm-spin</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">wasm-spin</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">wasm-spin</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Specify the runtime class for this deployment.</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">runtimeClassName</span>: <span style="color:#ae81ff">wasmtime-spin</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
-</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">hello-spin</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">image</span>: <span style="color:#ae81ff">ghcr.io/radu-matei/hello-spin-kubernetes</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">command</span>: [<span style="color:#e6db74">&#34;/&#34;</span>]
-</span></span></code></pre></div><p>To access the application, you will also need to create a Kubernetes service and potentially an ingress. To simplify this operation, we are working on a Spin plugin for Kubernetes that will automatically scaffold and deploy the required Kubernetes objects — check out <a href="https://github.com/chrismatteson/spin-plugin-k8s"><code>spin k8s</code></a> We are looking forward to the community&rsquo;s feedback on how to improve deploying Spin applications to Kubernetes! If you are interested in this feature, make sure to <a href="https://discord.gg/AAFNfS7NGf">reach out on Discord</a> or <a href="https://twitter.com/fermyontech">on Twitter</a>.</p>
-<h3 id="extending-spin-with-external-triggers-and-plugins">Extending Spin With External Triggers and Plugins</h3>
-<p><a href="https://developer.fermyon.com/spin/managing-plugins">Spin plugins</a> are executables that can extend the functionality of Spin without modifying the Spin codebase. In the previous examples, we have used two such plugins, when building Python and JavaScript applications: <code>spin py2wasm</code> and <code>spin js2wasm</code>, as well as the <code>spin k8s</code> plugin.
-Anyone can <a href="https://developer.fermyon.com/spin/plugin-authoring">write a Spin plugin</a> to build support for new language SDKs (like the Python and JavaScript plugins), or to build new Spin triggers.</p>
-<p>We are particularly excited about upcoming work to build external queue triggers, such as <a href="https://github.com/fermyon/spin-trigger-sqs">the experimental AWS SQS trigger</a>. Once stabilized, with the plugin installed, <code>spin up</code> will be able to start an application that is triggered on new messages with specific attributes on a given queue.</p>
-<h3 id="beyond-spin-10">Beyond Spin 1.0</h3>
-<p>The main focus for Spin 1.0 has been stabilizing core parts of the <code>spin new</code> -&gt; <code>spin build</code> -&gt; <code>spin up</code> workflow. As a result, there are several features we are looking forward to adding in upcoming minor versions of Spin, such as more triggers, a <a href="https://github.com/fermyon/spin/pull/1237"><code>spin watch</code> command to further improve the inner development loop</a>, feature parity for language SDKs, and new services for persistence (including in Spin key/value and relational database APIs).</p>
-<p>But perhaps the most exciting is going to be the transition to using <a href="https://github.com/bytecodealliance/preview2-prototyping">WASI Preview 2</a> and <a href="https://www.fermyon.com/blog/webassembly-component-model">the Wasm component model</a>, which will bring a host of improvements and new features! We are hoping to make significant progress here over the next few months, so stay tuned!</p>
-<p>If you have ideas or requests for features or improvements we can make to Spin, make sure to <a href="https://discord.gg/AAFNfS7NGf">reach out on Discord</a> or <a href="https://twitter.com/fermyontech">on Twitter</a>!</p>
-<h2 id="building-on-open-source-and-with-the-community">Building on Open Source and With the Community</h2>
-<p>Spin is built using <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a>, a popular Wasm runtime built by the <a href="https://bytecodealliance.org/">Bytecode Alliance</a>, and the <a href="https://www.fermyon.com/blog/webassembly-component-model">Wasm component model proposal</a>, and Spin would not be possible without the amazing effort of the maintainers of those projects.</p>
-<p>We are excited to contribute back to Wasmtime and the component model, as well as to new projects and proposals emerging in this space (such as new Wasm proposals, like <a href="https://github.com/bytecodealliance/preview2-prototyping">WASI Preview 2</a>, <a href="https://github.com/WebAssembly/wasi-keyvalue"><code>wasi-keyvalue</code></a>, <a href="https://github.com/WebAssembly/wasi-sql"><code>wasi-sql</code></a> or <a href="https://github.com/WebAssembly/WASI/issues/520"><code>wasi-cloud</code></a>).</p>
-<p>Spin would also not be possible without the more than <a href="https://github.com/fermyon/spin/graphs/contributors">50 contributors</a> who are dedicating their time to write code and documentation, and without everyone using the project.</p>
-<h2 id="give-it-a-spin">Give It a Spin!</h2>
-<p>We hope this post got you excited about the possibilities of the Spin project! <a href="https://developer.fermyon.com/spin/quickstart">Head over to the Spin documentation</a> and build your first Spin application in your favorite programming language today!</p>
-<p>We can&rsquo;t wait to see what you build using Spin 1.0!</p>
-<p>If you are interested in Spin, <a href="https://cloud.fermyon.com">Fermyon Cloud</a>, or other Fermyon projects, join the chat in the <a href="https://discord.gg/AAFNfS7NGf">Fermyon Discord server</a> and follow us on Twitter <a href="https://twitter.com/fermyontech/">@fermyontech</a> and <a href="https://twitter.com/spinframework">@spinframework</a>!</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/spin">spin</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/introducing-fermyon-serverless-ai/"><span class="mr-1.5">←</span><span>Introducing Fermyon Serverless AI</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/six-ways-optimize-webassembly/"><span>The Six Ways of Optimizing WebAssembly</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><p>As WASI matures, we are excited about the <a href=https://github.com/bytecodealliance/preview2-prototyping/blob/4adcbb222fe4a66d496e2ccbf77deaed3b94e1e1/wit/deps/sockets/tcp.wit#L40-L55>upcoming work in WASI Preview 2 that will bring networking support to WASI</a>, which will enable the use of popular database drivers and ORMs from Wasm and Spin applications.</p><h3 id=distributing-spin-applications-using-registry-services>Distributing Spin Applications Using Registry Services</h3><p>Registry services such as <a href=https://ghcr.io>GitHub Container Registry</a>, <a href=https://hub.docker.com/>Docker Hub</a>, or, <a href=https://aws.amazon.com/ecr/>AWS ECR</a> are ubiquitous, and many people are already using them as part of their workflow deploying cloud native applications.</p><p>Spin 1.0 <a href=https://developer.fermyon.com/spin/distributing-apps>supports distributing applications using such registry services</a> — we can push an application using the <code>spin registry push</code> command:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ spin registry push ghcr.io/radu-matei/hello-spin:v2
+</span></span><span style=display:flex><span>Pushed with digest sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c
+</span></span></code></pre></div><p>After pushing the application, we can run it using the registry reference by running <code>spin up -f &lt;reference></code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ spin up -f ghcr.io/radu-matei/hello-spin:v2
+</span></span><span style=display:flex><span>Serving http://0.0.0.0:3000
+</span></span><span style=display:flex><span>Available Routes:
+</span></span><span style=display:flex><span>  hello-python: http://0.0.0.0:3000/hello
+</span></span><span style=display:flex><span>  goodbye-javascript: http://0.0.0.0:3000/goodbye
+</span></span></code></pre></div><h3 id=signing-and-verifying-applications-using-sigstore>Signing and Verifying Applications Using Sigstore</h3><p>Since we can distribute Spin applications using popular registry services, we can also take advantage of ecosystem tools such as <a href=https://sigstore.dev>Sigstore</a> and <a href=https://github.com/sigstore/cosign>Cosign</a>, which address the software supply chain issue by signing and verifying applications using Sigstore&rsquo;s new <a href=https://docs.sigstore.dev/cosign/keyless/>keyless signatures</a> (using OIDC identity tokens from providers such as GitHub).</p><p>We can sign Spin applications using a GitHub identity, and guarantee the identity of the actor who pushed the application to the registry, as well as the integrity of the content pushed:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Sign the application using the GitHub identity signed in your browser.</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># If running in automation such as GitHub Actions, this can use the OIDC token</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># GitHub makes available for workflows.</span>
+</span></span><span style=display:flex><span>$ cosign sign ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c
+</span></span><span style=display:flex><span>Generating ephemeral keys...
+</span></span><span style=display:flex><span>Retrieving signed certificate...
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Successfully verified SCT...
+</span></span><span style=display:flex><span>tlog entry created with index: <span style=color:#ae81ff>15825036</span>
+</span></span><span style=display:flex><span>Pushing signature to: ghcr.io/radu-matei/hello-spin
+</span></span></code></pre></div><p>Now we can verify the integrity of the application by running <code>cosign verify</code> and passing the expected issuer and identity of who pushed the application:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Verify the content of the artifact at the given digest, as well as the fact</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># that the signature has been created by a GitHub actor with the given email.</span>
+</span></span><span style=display:flex><span>$ cosign verify ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --certificate-oidc-issuer https://github.com/login/oauth <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --certificate-identity radu@fermyon.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Verification <span style=color:#66d9ef>for</span> ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c --
+</span></span><span style=display:flex><span>The following checks were performed on each of these signatures:
+</span></span><span style=display:flex><span>  - The cosign claims were validated
+</span></span><span style=display:flex><span>  - Existence of the claims in the transparency log was verified offline
+</span></span><span style=display:flex><span>  - The code-signing certificate was verified using trusted certificate authority certificates
+</span></span></code></pre></div><p>After verifying the signature and validating the integrity of the application, we can run the application by digest instead of using its tag:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ spin up -f ghcr.io/radu-matei/hello-spin@sha256:6f886e428152a32ada6303e825975e1a9798de86977e532991a352d02c98f62c
+</span></span></code></pre></div><p>You can integrate this workflow into the process of distributing and running your Spin applications.</p><h3 id=deploying-spin-applications-to-fermyon-cloud>Deploying Spin Applications to Fermyon Cloud</h3><p><a href=https://fermyon.com/cloud>Fermyon Cloud</a> is Fermyon&rsquo;s cloud platform for running serverless Wasm. You can deploy your Spin application and have a running application within seconds. All it takes to sign up for a free account is running <code>spin login && spin deploy</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Log in to your account or sign up for a new one using `spin login`.</span>
+</span></span><span style=display:flex><span>$ spin login
+</span></span><span style=display:flex><span>Copy your one-time code: xxxx and open the authorization page in your browser: 
+</span></span><span style=display:flex><span>https://cloud.fermyon.com/device-authorization
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Device authorized!
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Deploy your application to Fermyon Cloud using `spin deploy`.</span>
+</span></span><span style=display:flex><span>$ spin deploy
+</span></span><span style=display:flex><span>Uploading hello-spin version 0.1.0+r4a828e1a
+</span></span><span style=display:flex><span>Deploying...
+</span></span><span style=display:flex><span>Waiting <span style=color:#66d9ef>for</span> application to become ready........... ready
+</span></span><span style=display:flex><span>Available Routes:
+</span></span><span style=display:flex><span>  hello-python: https://hello-spin-feiccjxm.fermyon.app/hello
+</span></span><span style=display:flex><span>  goodbye-javascript: https://hello-spin-feiccjxm.fermyon.app/goodbye
+</span></span></code></pre></div><p>We <a href=https://www.fermyon.com/blog/introducing-fermyon-cloud>launched Fermyon Cloud in open beta at the end of last year</a>, and we are incredibly happy to see the positive response from the community! As the Spin project and the community evolve, we are excited to build the best place to run your serverless applications with Wasm!</p><h3 id=deploying-spin-applications-to-kubernetes>Deploying Spin Applications to Kubernetes</h3><p>Besides deploying the application locally and deploying to Fermyon Cloud, you can also deploy your Spin application to Kubernetes using <a href=https://github.com/deislabs/containerd-wasm-shims/blob/main/containerd-shim-spin-v1/quickstart.md>the new Containerd integration for Spin</a>.</p><p>You can deploy this on your own cluster (or alternatively, using <a href=https://kwasm.sh/>KWasm</a>), or you can use the <a href=https://learn.microsoft.com/en-us/azure/aks/use-wasi-node-pools>Azure Kubernetes Service</a>, which can run Spin (and <a href=https://github.com/deislabs/spiderlightning#spiderlightning-or-slight>slight</a>) applications.</p><p>To get started, first configure a new runtime class based on the Containerd integration:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>node.k8s.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Create a new runtime class based on the containerd Wasm integration</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># that can run Spin applications.</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>RuntimeClass</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#e6db74>&#34;wasmtime-spin-v1&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>handler</span>: <span style=color:#e6db74>&#34;spin&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>scheduling</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>nodeSelector</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;kubernetes.azure.com/wasmtime-spin-v1&#34;: </span><span style=color:#e6db74>&#34;true&#34;</span>
+</span></span></code></pre></div><p>Then, create a deployment that uses the new runtime class:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>apps/v1</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Create a new Kubernetes deployment.</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>Deployment</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>wasm-spin</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>replicas</span>: <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>selector</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>matchLabels</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>app</span>: <span style=color:#ae81ff>wasm-spin</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>app</span>: <span style=color:#ae81ff>wasm-spin</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#75715e># Specify the runtime class for this deployment.</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>runtimeClassName</span>: <span style=color:#ae81ff>wasmtime-spin</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>containers</span>:
+</span></span><span style=display:flex><span>        - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>hello-spin</span>
+</span></span><span style=display:flex><span>          <span style=color:#f92672>image</span>: <span style=color:#ae81ff>ghcr.io/radu-matei/hello-spin-kubernetes</span>
+</span></span><span style=display:flex><span>          <span style=color:#f92672>command</span>: [<span style=color:#e6db74>&#34;/&#34;</span>]
+</span></span></code></pre></div><p>To access the application, you will also need to create a Kubernetes service and potentially an ingress. To simplify this operation, we are working on a Spin plugin for Kubernetes that will automatically scaffold and deploy the required Kubernetes objects — check out <a href=https://github.com/chrismatteson/spin-plugin-k8s><code>spin k8s</code></a> We are looking forward to the community&rsquo;s feedback on how to improve deploying Spin applications to Kubernetes! If you are interested in this feature, make sure to <a href=https://discord.gg/AAFNfS7NGf>reach out on Discord</a> or <a href=https://twitter.com/fermyontech>on Twitter</a>.</p><h3 id=extending-spin-with-external-triggers-and-plugins>Extending Spin With External Triggers and Plugins</h3><p><a href=https://developer.fermyon.com/spin/managing-plugins>Spin plugins</a> are executables that can extend the functionality of Spin without modifying the Spin codebase. In the previous examples, we have used two such plugins, when building Python and JavaScript applications: <code>spin py2wasm</code> and <code>spin js2wasm</code>, as well as the <code>spin k8s</code> plugin.
+Anyone can <a href=https://developer.fermyon.com/spin/plugin-authoring>write a Spin plugin</a> to build support for new language SDKs (like the Python and JavaScript plugins), or to build new Spin triggers.</p><p>We are particularly excited about upcoming work to build external queue triggers, such as <a href=https://github.com/fermyon/spin-trigger-sqs>the experimental AWS SQS trigger</a>. Once stabilized, with the plugin installed, <code>spin up</code> will be able to start an application that is triggered on new messages with specific attributes on a given queue.</p><h3 id=beyond-spin-10>Beyond Spin 1.0</h3><p>The main focus for Spin 1.0 has been stabilizing core parts of the <code>spin new</code> -> <code>spin build</code> -> <code>spin up</code> workflow. As a result, there are several features we are looking forward to adding in upcoming minor versions of Spin, such as more triggers, a <a href=https://github.com/fermyon/spin/pull/1237><code>spin watch</code> command to further improve the inner development loop</a>, feature parity for language SDKs, and new services for persistence (including in Spin key/value and relational database APIs).</p><p>But perhaps the most exciting is going to be the transition to using <a href=https://github.com/bytecodealliance/preview2-prototyping>WASI Preview 2</a> and <a href=https://www.fermyon.com/blog/webassembly-component-model>the Wasm component model</a>, which will bring a host of improvements and new features! We are hoping to make significant progress here over the next few months, so stay tuned!</p><p>If you have ideas or requests for features or improvements we can make to Spin, make sure to <a href=https://discord.gg/AAFNfS7NGf>reach out on Discord</a> or <a href=https://twitter.com/fermyontech>on Twitter</a>!</p><h2 id=building-on-open-source-and-with-the-community>Building on Open Source and With the Community</h2><p>Spin is built using <a href=https://github.com/bytecodealliance/wasmtime>Wasmtime</a>, a popular Wasm runtime built by the <a href=https://bytecodealliance.org/>Bytecode Alliance</a>, and the <a href=https://www.fermyon.com/blog/webassembly-component-model>Wasm component model proposal</a>, and Spin would not be possible without the amazing effort of the maintainers of those projects.</p><p>We are excited to contribute back to Wasmtime and the component model, as well as to new projects and proposals emerging in this space (such as new Wasm proposals, like <a href=https://github.com/bytecodealliance/preview2-prototyping>WASI Preview 2</a>, <a href=https://github.com/WebAssembly/wasi-keyvalue><code>wasi-keyvalue</code></a>, <a href=https://github.com/WebAssembly/wasi-sql><code>wasi-sql</code></a> or <a href=https://github.com/WebAssembly/WASI/issues/520><code>wasi-cloud</code></a>).</p><p>Spin would also not be possible without the more than <a href=https://github.com/fermyon/spin/graphs/contributors>50 contributors</a> who are dedicating their time to write code and documentation, and without everyone using the project.</p><h2 id=give-it-a-spin>Give It a Spin!</h2><p>We hope this post got you excited about the possibilities of the Spin project! <a href=https://developer.fermyon.com/spin/quickstart>Head over to the Spin documentation</a> and build your first Spin application in your favorite programming language today!</p><p>We can&rsquo;t wait to see what you build using Spin 1.0!</p><p>If you are interested in Spin, <a href=https://cloud.fermyon.com>Fermyon Cloud</a>, or other Fermyon projects, join the chat in the <a href=https://discord.gg/AAFNfS7NGf>Fermyon Discord server</a> and follow us on Twitter <a href=https://twitter.com/fermyontech/>@fermyontech</a> and <a href=https://twitter.com/spinframework>@spinframework</a>!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/spin>spin</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/introducing-fermyon-serverless-ai/><span class=mr-1.5>←</span><span>Introducing Fermyon Serverless AI</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/six-ways-optimize-webassembly/><span>The Six Ways of Optimizing WebAssembly</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

@@ -1,371 +1,55 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>A practical guide to WebAssembly memory - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/practical-guide-to-wasm-memory/">
-  
-  
-  
-  
-  <meta name="description" content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="A practical guide to WebAssembly memory" />
-<meta property="og:description" content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/practical-guide-to-wasm-memory/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2021-01-11T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-01-11T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="A practical guide to WebAssembly memory">
-<meta itemprop="description" content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime."><meta itemprop="datePublished" content="2021-01-11T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2021-01-11T00:00:00+00:00" />
-<meta itemprop="wordCount" content="4763">
-<meta itemprop="keywords" content="wasm,rust," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="A practical guide to WebAssembly memory"/>
-<meta name="twitter:description" content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">A practical guide to WebAssembly memory</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Monday, January 11, 2021</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><ul>
-<li><a href="#webassembly-memory">WebAssembly memory</a></li>
-<li><a href="#passing-arrays-to-rust-webassembly-modules">Passing arrays to Rust WebAssembly modules</a></li>
-<li><a href="#dealloc-or-free-and-a-basic-way-of-checking-for-memory-leaks"><code>dealloc</code> or <code>free</code>, and a basic way of checking for memory leaks</a></li>
-<li><a href="#passing-arrays-to-assemblyscript-modules">Passing arrays to AssemblyScript modules</a></li>
-<li><a href="#passing-arrays-to-modules-using-wasmtime">Passing arrays to modules using Wasmtime</a></li>
-<li><a href="#exchanging-strings-between-modules-and-runtimes">Exchanging strings between modules and runtimes</a></li>
-</ul>
-<p>Memory in WebAssembly is one of the topics that creates confusion for newcomers,
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>A practical guide to WebAssembly memory - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/practical-guide-to-wasm-memory/><meta name=description content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="A practical guide to WebAssembly memory"><meta property="og:description" content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/practical-guide-to-wasm-memory/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2021-01-11T00:00:00+00:00"><meta property="article:modified_time" content="2021-01-11T00:00:00+00:00"><meta itemprop=name content="A practical guide to WebAssembly memory"><meta itemprop=description content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime."><meta itemprop=datePublished content="2021-01-11T00:00:00+00:00"><meta itemprop=dateModified content="2021-01-11T00:00:00+00:00"><meta itemprop=wordCount content="4763"><meta itemprop=keywords content="wasm,rust,"><meta name=twitter:card content="summary"><meta name=twitter:title content="A practical guide to WebAssembly memory"><meta name=twitter:description content="Memory in WebAssembly is one of the topics that creates confusion for newcomers, particularly for those with experience in languages with memory management features like garbage collection, such as JavaScript, Go, or Java. In this article we explore using memory in WebAssembly in various scenarios - passing JavaScript arrays to Rust and AssemblyScript modules, checking for some basic memory leaks using Valgrind, or exchanging strings between runtimes and modules using Wasmtime."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">A practical guide to WebAssembly memory</h1><div class="text-sm opacity-60"><time>Monday, January 11, 2021</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><ul><li><a href=#webassembly-memory>WebAssembly memory</a></li><li><a href=#passing-arrays-to-rust-webassembly-modules>Passing arrays to Rust WebAssembly modules</a></li><li><a href=#dealloc-or-free-and-a-basic-way-of-checking-for-memory-leaks><code>dealloc</code> or <code>free</code>, and a basic way of checking for memory leaks</a></li><li><a href=#passing-arrays-to-assemblyscript-modules>Passing arrays to AssemblyScript modules</a></li><li><a href=#passing-arrays-to-modules-using-wasmtime>Passing arrays to modules using Wasmtime</a></li><li><a href=#exchanging-strings-between-modules-and-runtimes>Exchanging strings between modules and runtimes</a></li></ul><p>Memory in WebAssembly is one of the topics that creates confusion for newcomers,
 particularly for those with experience in languages with memory management
-features like <a href="https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)">garbage collection</a>, such as JavaScript, Go,
+features like <a href=https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)>garbage collection</a>, such as JavaScript, Go,
 or Java. In this article we explore using memory in WebAssembly in various
 scenarios - passing JavaScript arrays to Rust and AssemblyScript modules,
 checking for some basic memory leaks using Valgrind, or exchanging strings
-between runtimes and modules using Wasmtime.</p>
-<p>When instantiating a WebAssembly module, by default it does not have access to
+between runtimes and modules using Wasmtime.</p><p>When instantiating a WebAssembly module, by default it does not have access to
 anything outside its sandbox runtime. It can declare and use its own memory
 buffers, but otherwise, it cannot access anything outside its environment,
 unless explicitly allowed by the host through module imports. This includes
 browser APIs, system files, libraries, or devices, which leaves two main ways of
-communicating between an instantiated module and the underlying host runtime:</p>
-<ul>
-<li>arguments and return values from invoking imported and exported functions -
+communicating between an instantiated module and the underlying host runtime:</p><ul><li>arguments and return values from invoking imported and exported functions -
 while this is the simplest way of passing information between a module
 instance and a host runtime, it is limited to exchanging fundamental
-WebAssembly data types (<a href="https://webassembly.github.io/spec/core/syntax/types.html"><code>i32 | i64 | f32 | f64</code></a>; as the <a href="https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md#integers">interface
-types</a> and <a href="https://hacks.mozilla.org/2019/11/multi-value-all-the-wasm/">multi-value Wasm</a> proposals get
+WebAssembly data types (<a href=https://webassembly.github.io/spec/core/syntax/types.html><code>i32 | i64 | f32 | f64</code></a>; as the <a href=https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md#integers>interface
+types</a> and <a href=https://hacks.mozilla.org/2019/11/multi-value-all-the-wasm/>multi-value Wasm</a> proposals get
 implemented, runtimes would also be able to exchange additional types, for
-example strings, and return more than one such value).</li>
-<li>using WebAssembly memory - until the interface types proposal gets
+example strings, and return more than one such value).</li><li>using WebAssembly memory - until the interface types proposal gets
 implemented, raw WebAssembly memory can be used to pass non-fundamental data
-types between runtimes and instances - for example arrays, strings, <a href="https://radu-matei.com/blog/towards-sockets-networking-wasi/">network
-socket streams</a>, <a href="https://radu-matei.com/blog/tensorflow-inferencing-wasi/">deep learning models</a>, or
-serialized data (such as JSON or protocol buffers).</li>
-</ul>
-<p>In practice, a combination of the two is mostly used: passing pointers as
+types between runtimes and instances - for example arrays, strings, <a href=https://radu-matei.com/blog/towards-sockets-networking-wasi/>network
+socket streams</a>, <a href=https://radu-matei.com/blog/tensorflow-inferencing-wasi/>deep learning models</a>, or
+serialized data (such as JSON or protocol buffers).</li></ul><p>In practice, a combination of the two is mostly used: passing pointers as
 arguments and return values, and using memory to copy the data to and from those
-pointers, which is what this article explores in the next sections.</p>
-<h3 id="webassembly-memory">WebAssembly memory</h3>
-<p><a href="https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances">Memory in WebAssembly</a> is represented as a contiguous,
+pointers, which is what this article explores in the next sections.</p><h3 id=webassembly-memory>WebAssembly memory</h3><p><a href=https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances>Memory in WebAssembly</a> is represented as a contiguous,
 mutable array of uninterpreted bytes. It can dynamically grow (in units of the
 <em>page size</em>, which is equal to 64Ki), and the bytes can be mutated by the
-module, through <a href="https://webassembly.github.io/spec/core/syntax/instructions.html#syntax-instr-memory">memory instructions</a>, or by the host
+module, through <a href=https://webassembly.github.io/spec/core/syntax/instructions.html#syntax-instr-memory>memory instructions</a>, or by the host
 runtime, if the particular memory instance has been exported by the module. The
 indexes of a linear memory array can be considered memory addresses, and
 instructions that need to access a memory location are given an offset relative
 to the start of the memory. This ensures a few important things related to
-memory safety in WebAssembly (assuming the runtime implementation is bug-free):</p>
-<ul>
-<li>a potentially malicious module cannot use an arbitrary memory address and
-access data outside of its linear memories.</li>
-<li>because the size of a memory is always known, the runtime can check whether a
+memory safety in WebAssembly (assuming the runtime implementation is bug-free):</p><ul><li>a potentially malicious module cannot use an arbitrary memory address and
+access data outside of its linear memories.</li><li>because the size of a memory is always known, the runtime can check whether a
 memory offset that a module is trying to access is still within the boundaries
-of its allocated memory.</li>
-<li>as a result of the previous points, a module cannot access the memory of
+of its allocated memory.</li><li>as a result of the previous points, a module cannot access the memory of
 another module, the memory of the runtime, or the memory of the underlying
-operating system of the runtime, unless explicitly given access to.</li>
-</ul>
-<blockquote>
-<p>While WebAssembly runtimes do an excellent job of isolating the memory
+operating system of the runtime, unless explicitly given access to.</li></ul><blockquote><p>While WebAssembly runtimes do an excellent job of isolating the memory
 instances of different instances, within their own linear memories,
 WebAssembly modules are not safe from memory vulnerabilities, such as buffer
-overflow, or use-after-free. The <a href="https://cseweb.ucsd.edu/~dstefan/pubs/disselkoen:2019:ms-wasm.pdf"><em>Progressive Memory Safety for
+overflow, or use-after-free. The <a href=https://cseweb.ucsd.edu/~dstefan/pubs/disselkoen:2019:ms-wasm.pdf><em>Progressive Memory Safety for
 WebAssembly</em></a> paper proposes an extension to WebAssembly that would
 add a new safe memory segment, which could be accessed exclusively through
 <em>handles</em> (strongly-typed objects that <em>encapsulate bounds-checked,
 memory-safe pointers to the segment memory</em>). The security-performance
 trade-offs proposed by the paper could prevent entire classes of memory safety
 issues within WebAssembly programs, together with proposed hardware security
-implementations.</p>
-</blockquote>
-<p>WebAssembly modules can be written in various programming languages, each with
+implementations.</p></blockquote><p>WebAssembly modules can be written in various programming languages, each with
 its own memory management model, and when attempting to write or read a module&rsquo;s
 memory from the host runtime, one should be aware of how the module handles
 allocations and deallocations. Conceptually, there is a choice between copying
@@ -374,14 +58,9 @@ responsible for managing its lifetime, and depending on the use case, both
 approaches are valid. In either case, the module must export functionality to
 allocate memory, and the host must understand how to read and write to and from
 it. In most cases, when using code generation libraries such as
-<a href="https://github.com/rustwasm/wasm-bindgen"><code>wasm-bindgen</code></a>, memory allocation and deallocation are handled
+<a href=https://github.com/rustwasm/wasm-bindgen><code>wasm-bindgen</code></a>, memory allocation and deallocation are handled
 by the library - however, it is worth writing a simple version of an allocator
-for arrays to better understand the mechanics.</p>
-<blockquote>
-<p>The complete code from this article <a href="https://github.com/radu-matei/wasm-memory">can be found on GitHub</a>.</p>
-</blockquote>
-<h3 id="passing-arrays-to-rust-webassembly-modules">Passing arrays to Rust WebAssembly modules</h3>
-<p>Let&rsquo;s assume we are attempting to write a WebAssembly module with a function
+for arrays to better understand the mechanics.</p><blockquote><p>The complete code from this article <a href=https://github.com/radu-matei/wasm-memory>can be found on GitHub</a>.</p></blockquote><h3 id=passing-arrays-to-rust-webassembly-modules>Passing arrays to Rust WebAssembly modules</h3><p>Let&rsquo;s assume we are attempting to write a WebAssembly module with a function
 that takes an array as input, and returns the sum of all the elements of the
 array, then invoke this function from a host runtime (such as the Node.js WASI
 runtime, a browser runtime, or Wasmtime). Because arrays are not fundamental
@@ -389,204 +68,182 @@ data types in WebAssembly, we have to allocate a number of bytes (depending on
 the data type of the elements) in the module&rsquo;s linear memory, pass the data from
 the runtime into the memory, then invoke the entrypoint with a pointer to the
 start of the array and its length. First, we need to write a very simple
-allocator. A Rust implementation for this <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.with_capacity">allocates a new <code>Vec&lt;u8&gt;</code> given a
+allocator. A Rust implementation for this <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html#method.with_capacity>allocates a new <code>Vec&lt;u8></code> given a
 capacity <code>len</code></a>, and returns a mutable pointer to the start of
 the allocated memory block. Before returning, it is extremely important to make
 sure the memory that was just allocated does not go out of scope at the end of
-the function - this is ensured using <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget(buf)</code></a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Allocate memory into the module&#39;s linear memory
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// and return the offset to the start of the block.
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">alloc</span>(len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a new mutable buffer with capacity `len`
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> Vec::with_capacity(len);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// take a mutable pointer to the buffer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> buf.as_mut_ptr();
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// take ownership of the memory block and
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// ensure that its destructor is not
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// called when the object goes out of scope
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// at the end of the function
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    std::mem::forget(buf);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// return the pointer so the runtime
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// can write data at this offset
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> ptr;
-</span></span><span style="display:flex;"><span>}
+the function - this is ensured using <a href=https://doc.rust-lang.org/std/mem/fn.forget.html><code>std::mem::forget(buf)</code></a>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#e6db74>/// Allocate memory into the module&#39;s linear memory
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// and return the offset to the start of the block.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#75715e>#[no_mangle]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>alloc</span>(len: <span style=color:#66d9ef>usize</span>) -&gt; <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// create a new mutable buffer with capacity `len`
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> buf <span style=color:#f92672>=</span> Vec::with_capacity(len);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// take a mutable pointer to the buffer
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> ptr <span style=color:#f92672>=</span> buf.as_mut_ptr();
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// take ownership of the memory block and
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// ensure that its destructor is not
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// called when the object goes out of scope
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// at the end of the function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    std::mem::forget(buf);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// return the pointer so the runtime
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// can write data at this offset
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> ptr;
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Assuming the host runtime called <code>alloc</code> and filled the linear memory with the
 desired data, it can now invoke a function that performs the actual computation,
 by passing the pointer returned by <code>alloc</code>, together with the length of the
-array. These arguments are used with Rust&rsquo;s <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts"><code>Vec::from_raw_parts</code></a>
-to create a <code>Vec&lt;u8&gt;</code> with the respective length and capacity, compute the
+array. These arguments are used with Rust&rsquo;s <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts><code>Vec::from_raw_parts</code></a>
+to create a <code>Vec&lt;u8></code> with the respective length and capacity, compute the
 element-wise sum, then return it. Notice the function <em>is</em> unsafe, because
 <code>Vec::from_raw_parts</code> assumes memory has been correctly allocated previously
-(which, if the runtime called <code>alloc</code> properly, should be satisfied):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Given a pointer to the start of a byte array and
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// its length, return the sum of its elements.
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">array_sum</span>(ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>, len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#66d9ef">u8</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a Vec&lt;u8&gt; from the pointer to the
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// linear memory and the length
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> data <span style="color:#f92672">=</span> Vec::from_raw_parts(ptr, len, len);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// actually compute the sum and return it
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    data.iter().sum()
-</span></span><span style="display:flex;"><span>}
+(which, if the runtime called <code>alloc</code> properly, should be satisfied):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#e6db74>/// Given a pointer to the start of a byte array and
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// its length, return the sum of its elements.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#75715e>#[no_mangle]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>unsafe</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>array_sum</span>(ptr: <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span>, len: <span style=color:#66d9ef>usize</span>) -&gt; <span style=color:#66d9ef>u8</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// create a Vec&lt;u8&gt; from the pointer to the
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// linear memory and the length
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> data <span style=color:#f92672>=</span> Vec::from_raw_parts(ptr, len, len);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// actually compute the sum and return it
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    data.iter().sum()
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Compiling this Rust program to a WebAssembly target
 (<code>cargo build --target wasm32-unknown-unknown</code>, or <code>--target wasm32-wasi</code>), the
 output is a <code>.wasm</code> module that can be instantiated in a compatible JavaScript
-runtime - for example, the <a href="https://radu-matei.com/blog/nodejs-wasi/">WASI runtime which was recently added to
-Node.js</a>, or from a modern browser.</p>
-<p>The WebAssembly module exports two functions: one for allocating a byte array,
+runtime - for example, the <a href=https://radu-matei.com/blog/nodejs-wasi/>WASI runtime which was recently added to
+Node.js</a>, or from a modern browser.</p><p>The WebAssembly module exports two functions: one for allocating a byte array,
 the other for performing a computation using a byte array present at the
 allocated memory. In order to copy an array into the module&rsquo;s linear memory from
 the JavaScript runtime, the <code>alloc</code> exported function must be called using the
 array&rsquo;s length as parameter. This function returns an offset into the module&rsquo;s
 linear memory, which can be used to fill a new JavaScript <code>ArrayBuffer</code> (using
-the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"><code>TypedArray.prototype.set()</code></a> function):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#75715e">// Copy `data` into the `instance` exported memory buffer.</span>
-</span></span><span style="display:flex;"><span>function copyMemory(data, instance) {
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// the `alloc` function returns an offset in</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// the module&#39;s memory to the start of the block</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> ptr = instance.exports.alloc(data.length);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// create a typed `ArrayBuffer` at `ptr` of proper size</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> mem = <span style="color:#66d9ef">new</span> Uint8Array(instance.exports.memory.buffer, ptr, data.length);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// copy the content of `data` into the memory buffer</span>
-</span></span><span style="display:flex;"><span>  mem.<span style="color:#66d9ef">set</span>(<span style="color:#66d9ef">new</span> Uint8Array(data));
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// return the pointer</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> ptr;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Instead of <code>set</code>, any <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray">other function available on <code>TypedArray</code></a> can
+the <a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript><code>TypedArray.prototype.set()</code></a> function):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#75715e>// Copy `data` into the `instance` exported memory buffer.</span>
+</span></span><span style=display:flex><span>function copyMemory(data, instance) {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// the `alloc` function returns an offset in</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// the module&#39;s memory to the start of the block</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> ptr = instance.exports.alloc(data.length);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// create a typed `ArrayBuffer` at `ptr` of proper size</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> mem = <span style=color:#66d9ef>new</span> Uint8Array(instance.exports.memory.buffer, ptr, data.length);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// copy the content of `data` into the memory buffer</span>
+</span></span><span style=display:flex><span>  mem.<span style=color:#66d9ef>set</span>(<span style=color:#66d9ef>new</span> Uint8Array(data));
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// return the pointer</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> ptr;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Instead of <code>set</code>, any <a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray>other function available on <code>TypedArray</code></a> can
 be used to fill the <code>ArrayBuffer</code> that points to the module&rsquo;s memory, and if the
 module will write anything to its memory and return an offset, that information
 will be available to the JavaScript runtime in the <code>mem</code> variable - it is not
-the case in this example, as the function directly returns a value.</p>
-<p>Finally, we use the <code>copyMemory</code> function above to copy the array and get the
+the case in this example, as the function directly returns a value.</p><p>Finally, we use the <code>copyMemory</code> function above to copy the array and get the
 offset, then invoke the function that performs the actual computation,
-<code>array_sum</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#75715e">// Invoke the `array_sum` exported method and</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// log the result to the console</span>
-</span></span><span style="display:flex;"><span>function arraySum(array, instance) {
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// copy the contents of `array` into the</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// module&#39;s memory and get the offset</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> ptr = copyMemory(array, instance);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// invoke the module&#39;s `array_sum` exported function</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// and log the result</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> res = instance.exports.array_sum(ptr, array.length);
-</span></span><span style="display:flex;"><span>  console.log(<span style="color:#e6db74">&#34;Result: &#34;</span> + res);
-</span></span><span style="display:flex;"><span>}
+<code>array_sum</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#75715e>// Invoke the `array_sum` exported method and</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// log the result to the console</span>
+</span></span><span style=display:flex><span>function arraySum(array, instance) {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// copy the contents of `array` into the</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// module&#39;s memory and get the offset</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> ptr = copyMemory(array, instance);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// invoke the module&#39;s `array_sum` exported function</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// and log the result</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> res = instance.exports.array_sum(ptr, array.length);
+</span></span><span style=display:flex><span>  console.log(<span style=color:#e6db74>&#34;Result: &#34;</span> + res);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Fetching the module bytes (depending on whether this is running in a browser or
 Node.js, this can be done either through the <code>fetch</code> API, or through the Node.js
 <code>fs.readFile/Sync</code> API) and instantiating the module, we can now invoke the
 <code>arraySum</code> function and pass a plain JavaScript array as argument - of course,
-this will print <code>Result: 15</code> to the console:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>(<span style="color:#66d9ef">async</span> () =&gt; {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> mod = <span style="color:#66d9ef">new</span> WebAssembly.Module(module_bytes);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// instantiate the module</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> instance = <span style="color:#66d9ef">await</span> WebAssembly.instantiate(mod, {});
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// execute the `arraySum` function and pass a</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// plain JavaScript array as data</span>
-</span></span><span style="display:flex;"><span>  arraySum([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>], instance);
-</span></span><span style="display:flex;"><span>})();
-</span></span></code></pre></div><h3 id="dealloc-or-free-and-a-basic-way-of-checking-for-memory-leaks"><code>dealloc</code> or <code>free</code>, and a basic way of checking for memory leaks</h3>
-<p>Earlier in the article, it was explicitly mentioned that, besides <em>allocating</em>
+this will print <code>Result: 15</code> to the console:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>(<span style=color:#66d9ef>async</span> () =&gt; {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> mod = <span style=color:#66d9ef>new</span> WebAssembly.Module(module_bytes);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// instantiate the module</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> instance = <span style=color:#66d9ef>await</span> WebAssembly.instantiate(mod, {});
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// execute the `arraySum` function and pass a</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// plain JavaScript array as data</span>
+</span></span><span style=display:flex><span>  arraySum([<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>], instance);
+</span></span><span style=display:flex><span>})();
+</span></span></code></pre></div><h3 id=dealloc-or-free-and-a-basic-way-of-checking-for-memory-leaks><code>dealloc</code> or <code>free</code>, and a basic way of checking for memory leaks</h3><p>Earlier in the article, it was explicitly mentioned that, besides <em>allocating</em>
 bytes in its own linear memory, the module should also allow functionality for
 <em>deallocating</em>, or <em>freeing</em> memory. So why didn&rsquo;t the example above include any
-deallocations? This is where Rust ownership becomes useful.</p>
-<p>Recall that in the <code>alloc</code> function we used <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget(buf)</code></a> to
+deallocations? This is where Rust ownership becomes useful.</p><p>Recall that in the <code>alloc</code> function we used <a href=https://doc.rust-lang.org/std/mem/fn.forget.html><code>std::mem::forget(buf)</code></a> to
 ensure the allocated memory block does not go out of scope at the end of the
 function, since it is actually needed later (i.e. in a different function).
-Then, in the <code>array_sum</code> function, a Rust <code>Vec&lt;u8&gt;</code> is recreated from the
-pointer and length using <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts"><code>Vec::from_raw_parts</code></a>. Reading the
-documentation for <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts"><code>Vec::from_raw_parts</code></a>, the new <code>Vec&lt;u8&gt;</code> takes
-ownership of the memory block represented by <code>ptr</code>:</p>
-<blockquote>
-<p>The ownership of <code>ptr</code> is effectively transferred to the <code>Vec&lt;T&gt;</code> which may
+Then, in the <code>array_sum</code> function, a Rust <code>Vec&lt;u8></code> is recreated from the
+pointer and length using <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts><code>Vec::from_raw_parts</code></a>. Reading the
+documentation for <a href=https://doc.rust-lang.org/std/vec/struct.Vec.html#method.from_raw_parts><code>Vec::from_raw_parts</code></a>, the new <code>Vec&lt;u8></code> takes
+ownership of the memory block represented by <code>ptr</code>:</p><blockquote><p>The ownership of <code>ptr</code> is effectively transferred to the <code>Vec&lt;T></code> which may
 then deallocate, reallocate or change the contents of memory pointed to by the
 pointer at will. Ensure that nothing else uses the pointer after calling this
-function.</p>
-</blockquote>
-<p>This means that when the new <code>Vec&lt;u8&gt;</code> goes out of scope, at the end of the
-<code>array_sum</code> function, the memory pointed by <code>ptr</code> should be deallocated.</p>
-<p>Is there a way to convince ourselves of that? Let&rsquo;s explore how the Rust API we
+function.</p></blockquote><p>This means that when the new <code>Vec&lt;u8></code> goes out of scope, at the end of the
+<code>array_sum</code> function, the memory pointed by <code>ptr</code> should be deallocated.</p><p>Is there a way to convince ourselves of that? Let&rsquo;s explore how the Rust API we
 built for WebAssembly would be directly used from Rust, without using a
-WebAssembly runtime:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a `Vec&lt;u8&gt;` as input
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> input <span style="color:#f92672">=</span> vec![<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>];
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call the `alloc` function
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> alloc(input.len());
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> res: <span style="color:#66d9ef">u8</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsafe</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// copy the contents of `input`into the buffer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// returned by `alloc`
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std::ptr::copy(input.as_ptr(), ptr, input.len());
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// call the `array_sum` function with the pointer
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// and the length of the array
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        res <span style="color:#f92672">=</span> array_sum(ptr, input.len());
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// print the result
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    println!(<span style="color:#e6db74">&#34;Result: </span><span style="color:#e6db74">{:#?}</span><span style="color:#e6db74">&#34;</span>, res);
-</span></span><span style="display:flex;"><span>}
+WebAssembly runtime:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// create a `Vec&lt;u8&gt;` as input
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> input <span style=color:#f92672>=</span> vec![<span style=color:#ae81ff>1</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u8</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>];
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// call the `alloc` function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> ptr <span style=color:#f92672>=</span> alloc(input.len());
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> res: <span style=color:#66d9ef>u8</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsafe</span> {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// copy the contents of `input`into the buffer
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#75715e>// returned by `alloc`
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        std::ptr::copy(input.as_ptr(), ptr, input.len());
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// call the `array_sum` function with the pointer
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#75715e>// and the length of the array
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        res <span style=color:#f92672>=</span> array_sum(ptr, input.len());
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// print the result
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    println!(<span style=color:#e6db74>&#34;Result: </span><span style=color:#e6db74>{:#?}</span><span style=color:#e6db74>&#34;</span>, res);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>This is is <em>not</em> using a WebAssembly runtime yet, but using plain Rust to
 compile a program that can be profiled for memory leaks. We can directly use the
-Rust compiler, <code>rustc</code>, to create an executable:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ rustc src/lib.rs -o mem
-</span></span><span style="display:flex;"><span>$ ./mem
-</span></span><span style="display:flex;"><span>Result: 15
+Rust compiler, <code>rustc</code>, to create an executable:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plaintext data-lang=plaintext><span style=display:flex><span>$ rustc src/lib.rs -o mem
+</span></span><span style=display:flex><span>$ ./mem
+</span></span><span style=display:flex><span>Result: 15
 </span></span></code></pre></div><p>The part we <em>can</em> check for memory leaks is the Rust implementation -
 particularly, we need to make sure the <code>array_sum</code> function, which takes
 ownership of a pointer where <em>something</em> wrote data, is properly deallocating
-before returning:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$  valgrind --tool=memcheck ./mem
-</span></span><span style="display:flex;"><span> Memcheck, a memory error detector
-</span></span><span style="display:flex;"><span> Copyright (C) 2002-2017, and GNU GPL&#39;d, by Julian Seward et al.
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span> LEAK SUMMARY:
-</span></span><span style="display:flex;"><span>    definitely lost: 0 bytes in 0 blocks
-</span></span><span style="display:flex;"><span>    indirectly lost: 0 bytes in 0 blocks
-</span></span><span style="display:flex;"><span>      possibly lost: 0 bytes in 0 blocks
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span> ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 4 from 4)
-</span></span></code></pre></div><p>According to <a href="https://www.valgrind.org/">Valgrind</a>, there are no memory leaks in this part of the
+before returning:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plaintext data-lang=plaintext><span style=display:flex><span>$  valgrind --tool=memcheck ./mem
+</span></span><span style=display:flex><span> Memcheck, a memory error detector
+</span></span><span style=display:flex><span> Copyright (C) 2002-2017, and GNU GPL&#39;d, by Julian Seward et al.
+</span></span><span style=display:flex><span>...
+</span></span><span style=display:flex><span> LEAK SUMMARY:
+</span></span><span style=display:flex><span>    definitely lost: 0 bytes in 0 blocks
+</span></span><span style=display:flex><span>    indirectly lost: 0 bytes in 0 blocks
+</span></span><span style=display:flex><span>      possibly lost: 0 bytes in 0 blocks
+</span></span><span style=display:flex><span>...
+</span></span><span style=display:flex><span> ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 4 from 4)
+</span></span></code></pre></div><p>According to <a href=https://www.valgrind.org/>Valgrind</a>, there are no memory leaks in this part of the
 implementation. This is obviously <em>not</em> a comprehensive way of testing for
 memory leaks in a WebAssembly environment, but it should be enough to convince
-us that there are no memory leaks in these two functions.</p>
-<p>But what if we didn&rsquo;t read the <code>Vec::from_raw_parts</code> documentation and called a
+us that there are no memory leaks in these two functions.</p><p>But what if we didn&rsquo;t read the <code>Vec::from_raw_parts</code> documentation and called a
 deallocation function anyway? (This definitely <em>didn&rsquo;t</em> happen to me!). We can
 write a simple deallocator function for a memory block by calling
-<a href="https://doc.rust-lang.org/std/mem/fn.drop.html"><code>std::mem::drop</code></a> using the desired value, which effectively takes
-ownership of <code>data</code> and goes out of scope:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[no_mangle]</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">dealloc</span>(ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>, size: <span style="color:#66d9ef">usize</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> data <span style="color:#f92672">=</span> Vec::from_raw_parts(ptr, size, size);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    std::mem::drop(data);
-</span></span><span style="display:flex;"><span>}
+<a href=https://doc.rust-lang.org/std/mem/fn.drop.html><code>std::mem::drop</code></a> using the desired value, which effectively takes
+ownership of <code>data</code> and goes out of scope:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>unsafe</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>dealloc</span>(ptr: <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span>, size: <span style=color:#66d9ef>usize</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> data <span style=color:#f92672>=</span> Vec::from_raw_parts(ptr, size, size);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    std::mem::drop(data);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>We can update the Rust program above to call <code>dealloc</code> after getting the
-computation result:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> input <span style="color:#f92672">=</span> vec![<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>];
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> alloc(input.len());
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> res: <span style="color:#66d9ef">u8</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsafe</span> {
-</span></span><span style="display:flex;"><span>        std::ptr::copy(input.as_ptr(), ptr, input.len());
-</span></span><span style="display:flex;"><span>        res <span style="color:#f92672">=</span> array_sum(ptr, input.len());
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// this is the only difference compared to
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// the previous example - `dealloc` is called
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// after calling `array_sum`
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        dealloc(ptr, input.len());
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Result: </span><span style="color:#e6db74">{:#?}</span><span style="color:#e6db74">&#34;</span>, res);
-</span></span><span style="display:flex;"><span>}
+computation result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> input <span style=color:#f92672>=</span> vec![<span style=color:#ae81ff>1</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u8</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>];
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> ptr <span style=color:#f92672>=</span> alloc(input.len());
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> res: <span style=color:#66d9ef>u8</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsafe</span> {
+</span></span><span style=display:flex><span>        std::ptr::copy(input.as_ptr(), ptr, input.len());
+</span></span><span style=display:flex><span>        res <span style=color:#f92672>=</span> array_sum(ptr, input.len());
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// this is the only difference compared to
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#75715e>// the previous example - `dealloc` is called
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#75715e>// after calling `array_sum`
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        dealloc(ptr, input.len());
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;Result: </span><span style=color:#e6db74>{:#?}</span><span style=color:#e6db74>&#34;</span>, res);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Trying to execute the program now, it fails because it is trying to deallocate
-an already freed memory block:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>$ rustc src/lib.rs -o mem
-</span></span><span style="display:flex;"><span>$ ./mem
-</span></span><span style="display:flex;"><span>mem(5207,0x10b997dc0) malloc: *** error for object 0x7fb2a8c01c00:
-</span></span><span style="display:flex;"><span>        pointer being freed was not allocated
-</span></span><span style="display:flex;"><span>mem(5207,0x10b997dc0) malloc: *** set a breakpoint in
-</span></span><span style="display:flex;"><span>        malloc_error_break to debug
+an already freed memory block:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plaintext data-lang=plaintext><span style=display:flex><span>$ rustc src/lib.rs -o mem
+</span></span><span style=display:flex><span>$ ./mem
+</span></span><span style=display:flex><span>mem(5207,0x10b997dc0) malloc: *** error for object 0x7fb2a8c01c00:
+</span></span><span style=display:flex><span>        pointer being freed was not allocated
+</span></span><span style=display:flex><span>mem(5207,0x10b997dc0) malloc: *** set a breakpoint in
+</span></span><span style=display:flex><span>        malloc_error_break to debug
 </span></span></code></pre></div><p>Running Valgrind again highlights the error as taking place in the <code>dealloc</code>
-function:</p>
-<pre tabindex="0"><code class="language-plaintext;" data-lang="plaintext;">Invalid free() / delete / delete[] / realloc()
+function:</p><pre tabindex=0><code class=language-plaintext; data-lang=plaintext;>Invalid free() / delete / delete[] / realloc()
 at 0x100167A0D: free (in /vgpreload_memcheck-amd64-darwin.so)
 by 0x1000027C1: alloc::alloc::dealloc (in ./mem)
 by 0x100002921: &lt;alloc::alloc::Global as
@@ -599,369 +256,301 @@ by 0x100001D58: core::mem::drop (in ./mem)
 ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 4 from 4)
 </code></pre><p>Whenever passing ownership for some data from JavaScript (or another host
 runtime) to Rust, the Rust implementation is responsible for deallocating its
-own memory (and <a href="https://github.com/rustwasm/wasm-bindgen/issues/1515#issuecomment-489442651">this comment</a> does a great job of explaining
+own memory (and <a href=https://github.com/rustwasm/wasm-bindgen/issues/1515#issuecomment-489442651>this comment</a> does a great job of explaining
 how and when <code>free</code> or <code>dealloc</code> calls should be made depending on who owns the
 data). Similarly, whenever passing ownership from Rust to JavaScript (or another
 host runtime), the runtime is responsible for ensuring the deallocation of data
-it received.</p>
-<p>A final note around allocating and deallocating - <a href="https://github.com/rustwasm/wasm-bindgen/blob/7465a4f84f8047f4acc8e7a2f6ea6977ebea4e58/src/lib.rs#L973-L1026"><code>wasm-bindgen</code>&rsquo;s
+it received.</p><p>A final note around allocating and deallocating - <a href=https://github.com/rustwasm/wasm-bindgen/blob/7465a4f84f8047f4acc8e7a2f6ea6977ebea4e58/src/lib.rs#L973-L1026><code>wasm-bindgen</code>&rsquo;s
 implementation for <code>malloc</code> and <code>free</code></a> is a more general-purpose
 solution compared to always using vectors - the following implementations are
 adapted from <code>wasm-bindgen</code>, with updated names to avoid clashing with the
 global <code>malloc</code> and <code>free</code> symbols. Essentially, they rely on a globally
 configured allocator to perform the actual operations - this can be the standard
-library allocator, or another one, such as <a href="https://github.com/rustwasm/wee_alloc"><code>wee_alloc</code></a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::alloc::{alloc, dealloc, Layout};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#[no_mangle]</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">my_alloc</span>(len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> align <span style="color:#f92672">=</span> std::mem::align_of::<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">usize</span><span style="color:#f92672">&gt;</span>();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> layout <span style="color:#f92672">=</span> Layout::from_size_align_unchecked(size, align);
-</span></span><span style="display:flex;"><span>    alloc(layout)
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#[no_mangle]</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">my_dealloc</span>(ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>, size: <span style="color:#66d9ef">usize</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> align <span style="color:#f92672">=</span> std::mem::align_of::<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">usize</span><span style="color:#f92672">&gt;</span>();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> layout <span style="color:#f92672">=</span> Layout::from_size_align_unchecked(size, align);
-</span></span><span style="display:flex;"><span>    dealloc(ptr, layout);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h3 id="passing-arrays-to-assemblyscript-modules">Passing arrays to AssemblyScript modules</h3>
-<p>So far we have seen how to write a Rust module that doesn&rsquo;t use a code generator
+library allocator, or another one, such as <a href=https://github.com/rustwasm/wee_alloc><code>wee_alloc</code></a>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>use</span> std::alloc::{alloc, dealloc, Layout};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>unsafe</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>my_alloc</span>(len: <span style=color:#66d9ef>usize</span>) -&gt; <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> align <span style=color:#f92672>=</span> std::mem::align_of::<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>usize</span><span style=color:#f92672>&gt;</span>();
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> layout <span style=color:#f92672>=</span> Layout::from_size_align_unchecked(size, align);
+</span></span><span style=display:flex><span>    alloc(layout)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>unsafe</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>my_dealloc</span>(ptr: <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span>, size: <span style=color:#66d9ef>usize</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> align <span style=color:#f92672>=</span> std::mem::align_of::<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>usize</span><span style=color:#f92672>&gt;</span>();
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> layout <span style=color:#f92672>=</span> Layout::from_size_align_unchecked(size, align);
+</span></span><span style=display:flex><span>    dealloc(ptr, layout);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=passing-arrays-to-assemblyscript-modules>Passing arrays to AssemblyScript modules</h3><p>So far we have seen how to write a Rust module that doesn&rsquo;t use a code generator
 or special loader in order to pass arrays to allocate memory for an array.
-<a href="https://www.assemblyscript.org/">AssemblyScript</a> is a relatively new programming language, with a syntax
+<a href=https://www.assemblyscript.org/>AssemblyScript</a> is a relatively new programming language, with a syntax
 similar to TypeScript, which compiles natively to WebAssembly. For people new to
-the language, the <a href="https://www.assemblyscript.org/examples/arrays.html#arrays-example">arrays example</a> is definitely the best way to
+the language, the <a href=https://www.assemblyscript.org/examples/arrays.html#arrays-example>arrays example</a> is definitely the best way to
 understand how to write arrays into memory from JavaScript - however, it is
 worth exploring how to achieve the same functionality as the Rust module from
 above, without using any specialized loaders: write a function that allocates
 memory for a byte array, then another one that performs some computation on
-arrays passed from a JavaScript runtime.</p>
-<p>Allocating is done similarly to Rust:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#75715e">// Allocate memory for a new byte array of</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// size `len` and return the offset into</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// the module&#39;s linear memory to the start</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// of the block.</span>
-</span></span><span style="display:flex;"><span>export function alloc(len: i32): usize {
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// create a new AssemblyScript byte array</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> buf = <span style="color:#66d9ef">new</span> Array&lt;u8&gt;(len);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> buf_ptr = memory.data(<span style="color:#ae81ff">8</span>);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// create a pointer to the byte array and</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// return it</span>
-</span></span><span style="display:flex;"><span>  store&lt;Array&lt;u8&gt;&gt;(buf_ptr, buf);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> buf_ptr;
-</span></span><span style="display:flex;"><span>}
+arrays passed from a JavaScript runtime.</p><p>Allocating is done similarly to Rust:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#75715e>// Allocate memory for a new byte array of</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// size `len` and return the offset into</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// the module&#39;s linear memory to the start</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// of the block.</span>
+</span></span><span style=display:flex><span>export function alloc(len: i32): usize {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// create a new AssemblyScript byte array</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>let</span> buf = <span style=color:#66d9ef>new</span> Array&lt;u8&gt;(len);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>let</span> buf_ptr = memory.data(<span style=color:#ae81ff>8</span>);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// create a pointer to the byte array and</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// return it</span>
+</span></span><span style=display:flex><span>  store&lt;Array&lt;u8&gt;&gt;(buf_ptr, buf);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> buf_ptr;
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Loading the array from memory, however, is done slightly differently here
 (<code>changetype</code> didn&rsquo;t seem to work here, for some reason) - read the values found
 at <code>buf_ptr</code>, until reaching <code>buf_ptr + len</code> (the size of a <code>u8</code> is 1 byte), and
-compute the sum of all elements:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>export function array_sum(buf_ptr: usize, len: i32): u8 {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result: u8 = <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> i = <span style="color:#ae81ff">0</span>; i &lt; len; i++) {
-</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// for each new item in the array,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// load a byte from the memory and add</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// it to the result</span>
-</span></span><span style="display:flex;"><span>      result += load&lt;u8&gt;(buf_ptr + i) <span style="color:#66d9ef">as</span> u8;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result <span style="color:#66d9ef">as</span> u8;
-</span></span><span style="display:flex;"><span>}
+compute the sum of all elements:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>export function array_sum(buf_ptr: usize, len: i32): u8 {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> result: u8 = <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>let</span> i = <span style=color:#ae81ff>0</span>; i &lt; len; i++) {
+</span></span><span style=display:flex><span>      <span style=color:#75715e>// for each new item in the array,</span>
+</span></span><span style=display:flex><span>      <span style=color:#75715e>// load a byte from the memory and add</span>
+</span></span><span style=display:flex><span>      <span style=color:#75715e>// it to the result</span>
+</span></span><span style=display:flex><span>      result += load&lt;u8&gt;(buf_ptr + i) <span style=color:#66d9ef>as</span> u8;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> result <span style=color:#66d9ef>as</span> u8;
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>At this point, declare an <code>abort</code> function so we don&rsquo;t have to define any module
 imports, build the module (<code>asc index.ts --use abort=index/abort</code>), and we can
-use this module as a drop-in replacement for the Rust module we built above:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>export function abort(
-</span></span><span style="display:flex;"><span>  message: <span style="color:#66d9ef">string</span> | <span style="color:#66d9ef">null</span>,
-</span></span><span style="display:flex;"><span>  fileName: <span style="color:#66d9ef">string</span> | <span style="color:#66d9ef">null</span>,
-</span></span><span style="display:flex;"><span>  lineNumber: u32,
-</span></span><span style="display:flex;"><span>  columnNumber: u32
-</span></span><span style="display:flex;"><span>): <span style="color:#66d9ef">void</span> {}
-</span></span></code></pre></div><p>A call from JavaScript to <a href="https://github.com/AssemblyScript/assemblyscript/blob/caa58015062dbccba7de9133c3d09138eec93e85/std/assembly/rt/pure.ts#L301-L305">the module&rsquo;s <code>__release</code> function</a>
+use this module as a drop-in replacement for the Rust module we built above:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>export function abort(
+</span></span><span style=display:flex><span>  message: <span style=color:#66d9ef>string</span> | <span style=color:#66d9ef>null</span>,
+</span></span><span style=display:flex><span>  fileName: <span style=color:#66d9ef>string</span> | <span style=color:#66d9ef>null</span>,
+</span></span><span style=display:flex><span>  lineNumber: u32,
+</span></span><span style=display:flex><span>  columnNumber: u32
+</span></span><span style=display:flex><span>): <span style=color:#66d9ef>void</span> {}
+</span></span></code></pre></div><p>A call from JavaScript to <a href=https://github.com/AssemblyScript/assemblyscript/blob/caa58015062dbccba7de9133c3d09138eec93e85/std/assembly/rt/pure.ts#L301-L305>the module&rsquo;s <code>__release</code> function</a>
 should be included once a memory block is no longer needed, particularly for
 long-running modules - this instructs AssemblyScript&rsquo;s reference counter to
 collect objects that are no longer referenced:
-<code>instance.exports.__release(ptr);</code></p>
-<p>It should be pointed out again that <a href="https://github.com/AssemblyScript/assemblyscript/tree/caa58015062dbccba7de9133c3d09138eec93e85/lib/loader">AssemblyScript&rsquo;s own loader</a> is
+<code>instance.exports.__release(ptr);</code></p><p>It should be pointed out again that <a href=https://github.com/AssemblyScript/assemblyscript/tree/caa58015062dbccba7de9133c3d09138eec93e85/lib/loader>AssemblyScript&rsquo;s own loader</a> is
 better suited for allocating memory for arrays or strings, as it actually
-contains checks related to alignment and carry.</p>
-<h3 id="passing-arrays-to-modules-using-wasmtime">Passing arrays to modules using Wasmtime</h3>
-<p>While <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> is implemented in Rust, which is a fundamentally
+contains checks related to alignment and carry.</p><h3 id=passing-arrays-to-modules-using-wasmtime>Passing arrays to modules using Wasmtime</h3><p>While <a href=https://github.com/bytecodealliance/wasmtime>Wasmtime</a> is implemented in Rust, which is a fundamentally
 different language compared to JavaScript, we have to implement surprisingly
 similar steps in order to execute the WebAssembly modules we built: copy a byte
 array into the module&rsquo;s linear memory,then invoke the <code>array_sum</code> function and
-get the result.</p>
-<p>Let&rsquo;s start with the function that copies the memory. Using <a href="https://docs.rs/wasmtime/0.20.0/wasmtime/">Wasmtime&rsquo;s
+get the result.</p><p>Let&rsquo;s start with the function that copies the memory. Using <a href=https://docs.rs/wasmtime/0.20.0/wasmtime/>Wasmtime&rsquo;s
 API</a>, get the module&rsquo;s exported memory, call the module&rsquo;s <code>alloc</code>
 function with the array size, then copy the contents of the input at the offset
 returned by <code>alloc</code>, relative to the start of the memory. Conceptually, it is
-the same thing that the <code>copyMemory</code> JavaScript function implements:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Copy a byte array into an instance&#39;s linear memory
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// and return the offset relative to the module&#39;s memory.
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">copy_memory</span>(
-</span></span><span style="display:flex;"><span>    bytes: <span style="color:#66d9ef">&amp;</span>Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
-</span></span><span style="display:flex;"><span>    instance: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Instance</span>
-</span></span><span style="display:flex;"><span>) -&gt; Result<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">isize</span>, anyhow::Error<span style="color:#f92672">&gt;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get the &#34;memory&#34; export of the module.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// If the module does not export it, just panic,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// since we are not going to be able to copy the data.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> memory <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_memory(<span style="color:#66d9ef">MEMORY</span>)
-</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected memory not found&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The module is not using any bindgen libraries,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// so it should export its own alloc function.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Get the guest&#39;s exported alloc function, and call it with the
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// length of the byte array we are trying to copy.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// The result is an offset relative to the module&#39;s linear memory,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// which is used to copy the bytes into the module&#39;s memory.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Then, return the offset.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> alloc <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ALLOC_FN</span>)
-</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected alloc function not found&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> alloc_result <span style="color:#f92672">=</span> alloc.call(<span style="color:#f92672">&amp;</span>vec![Val::from(bytes.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)])<span style="color:#f92672">?</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> guest_ptr_offset <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> alloc_result
-</span></span><span style="display:flex;"><span>        .get(<span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected the result of the allocation to have one value&#34;</span>)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        Val::I32(val) <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">*</span>val <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">isize</span>,
-</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(Error::msg(<span style="color:#e6db74">&#34;guest pointer must be Val::I32&#34;</span>)),
-</span></span><span style="display:flex;"><span>    };
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsafe</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> raw <span style="color:#f92672">=</span> memory.data_ptr().offset(guest_ptr_offset);
-</span></span><span style="display:flex;"><span>        raw.copy_from(bytes.as_ptr(), bytes.len());
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Ok(guest_ptr_offset);
-</span></span><span style="display:flex;"><span>}
+the same thing that the <code>copyMemory</code> JavaScript function implements:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#e6db74>/// Copy a byte array into an instance&#39;s linear memory
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// and return the offset relative to the module&#39;s memory.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>copy_memory</span>(
+</span></span><span style=display:flex><span>    bytes: <span style=color:#66d9ef>&amp;</span>Vec<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>u8</span><span style=color:#f92672>&gt;</span>,
+</span></span><span style=display:flex><span>    instance: <span style=color:#66d9ef>&amp;</span><span style=color:#a6e22e>Instance</span>
+</span></span><span style=display:flex><span>) -&gt; Result<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>isize</span>, anyhow::Error<span style=color:#f92672>&gt;</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Get the &#34;memory&#34; export of the module.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// If the module does not export it, just panic,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// since we are not going to be able to copy the data.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> memory <span style=color:#f92672>=</span> instance
+</span></span><span style=display:flex><span>        .get_memory(<span style=color:#66d9ef>MEMORY</span>)
+</span></span><span style=display:flex><span>        .expect(<span style=color:#e6db74>&#34;expected memory not found&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// The module is not using any bindgen libraries,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// so it should export its own alloc function.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>//
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// Get the guest&#39;s exported alloc function, and call it with the
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// length of the byte array we are trying to copy.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// The result is an offset relative to the module&#39;s linear memory,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// which is used to copy the bytes into the module&#39;s memory.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// Then, return the offset.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> alloc <span style=color:#f92672>=</span> instance
+</span></span><span style=display:flex><span>        .get_func(<span style=color:#66d9ef>ALLOC_FN</span>)
+</span></span><span style=display:flex><span>        .expect(<span style=color:#e6db74>&#34;expected alloc function not found&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> alloc_result <span style=color:#f92672>=</span> alloc.call(<span style=color:#f92672>&amp;</span>vec![Val::from(bytes.len() <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>i32</span>)])<span style=color:#f92672>?</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> guest_ptr_offset <span style=color:#f92672>=</span> <span style=color:#66d9ef>match</span> alloc_result
+</span></span><span style=display:flex><span>        .get(<span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>        .expect(<span style=color:#e6db74>&#34;expected the result of the allocation to have one value&#34;</span>)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        Val::I32(val) <span style=color:#f92672>=&gt;</span> <span style=color:#f92672>*</span>val <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>isize</span>,
+</span></span><span style=display:flex><span>        _ <span style=color:#f92672>=&gt;</span> <span style=color:#66d9ef>return</span> Err(Error::msg(<span style=color:#e6db74>&#34;guest pointer must be Val::I32&#34;</span>)),
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsafe</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>let</span> raw <span style=color:#f92672>=</span> memory.data_ptr().offset(guest_ptr_offset);
+</span></span><span style=display:flex><span>        raw.copy_from(bytes.as_ptr(), bytes.len());
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> Ok(guest_ptr_offset);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Next, we implement a function that creates a new WebAssembly instance (this is
 not explicitly shown, as Wasmtime&rsquo;s API makes this extremely easy), copies the
 input into its memory, then invokes the module&rsquo;s exported <code>array_sum</code> function
-and prints the result on the console:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Invoke the module&#39;s `array_sum` exported method
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// and print the result to the console.
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">array_sum</span>(input: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>) -&gt; Result<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">i32</span>, anyhow::Error<span style="color:#f92672">&gt;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a new Wasmtime instance
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> create_instance(<span style="color:#66d9ef">WASM</span>.to_string())<span style="color:#f92672">?</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// write the input array to the module&#39;s linear memory
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> copy_memory(<span style="color:#f92672">&amp;</span>input, <span style="color:#f92672">&amp;</span>instance)<span style="color:#f92672">?</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// get the module&#39;s exported `array_sum` function
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> array_sum <span style="color:#f92672">=</span> instance
-</span></span><span style="display:flex;"><span>        .get_func(<span style="color:#66d9ef">ARRAY_SUM_FN</span>)
-</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected array_sum function not found&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call the `array_sum` function with the pointer to the
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// array and length
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> results <span style="color:#f92672">=</span> array_sum.call(<span style="color:#f92672">&amp;</span>vec![
-</span></span><span style="display:flex;"><span>            Val::from(ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>),
-</span></span><span style="display:flex;"><span>            Val::from(input.len() <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span>)])<span style="color:#f92672">?</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// return the result
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">match</span> results
-</span></span><span style="display:flex;"><span>        .get(<span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;expected the result of array_sum to have one value&#34;</span>)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        Val::I32(val) <span style="color:#f92672">=&gt;</span> Ok(<span style="color:#f92672">*</span>val),
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        _ <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(Error::msg(<span style="color:#e6db74">&#34;cannot get result&#34;</span>)),
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
+and prints the result on the console:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#e6db74>/// Invoke the module&#39;s `array_sum` exported method
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// and print the result to the console.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>array_sum</span>(input: Vec<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>u8</span><span style=color:#f92672>&gt;</span>) -&gt; Result<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>i32</span>, anyhow::Error<span style=color:#f92672>&gt;</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// create a new Wasmtime instance
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> instance <span style=color:#f92672>=</span> create_instance(<span style=color:#66d9ef>WASM</span>.to_string())<span style=color:#f92672>?</span>;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// write the input array to the module&#39;s linear memory
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> ptr <span style=color:#f92672>=</span> copy_memory(<span style=color:#f92672>&amp;</span>input, <span style=color:#f92672>&amp;</span>instance)<span style=color:#f92672>?</span>;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// get the module&#39;s exported `array_sum` function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> array_sum <span style=color:#f92672>=</span> instance
+</span></span><span style=display:flex><span>        .get_func(<span style=color:#66d9ef>ARRAY_SUM_FN</span>)
+</span></span><span style=display:flex><span>        .expect(<span style=color:#e6db74>&#34;expected array_sum function not found&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// call the `array_sum` function with the pointer to the
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// array and length
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> results <span style=color:#f92672>=</span> array_sum.call(<span style=color:#f92672>&amp;</span>vec![
+</span></span><span style=display:flex><span>            Val::from(ptr <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>i32</span>),
+</span></span><span style=display:flex><span>            Val::from(input.len() <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>i32</span>)])<span style=color:#f92672>?</span>;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// return the result
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>match</span> results
+</span></span><span style=display:flex><span>        .get(<span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>        .expect(<span style=color:#e6db74>&#34;expected the result of array_sum to have one value&#34;</span>)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        Val::I32(val) <span style=color:#f92672>=&gt;</span> Ok(<span style=color:#f92672>*</span>val),
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        _ <span style=color:#f92672>=&gt;</span> <span style=color:#66d9ef>return</span> Err(Error::msg(<span style=color:#e6db74>&#34;cannot get result&#34;</span>)),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Finally, we can create an entrypoint to this program. Running it, we replicated
-the functionality in a completely different WebAssembly runtime:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> input <span style="color:#f92672">=</span> vec![<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u8</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>];
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> array_sum(input).unwrap();
-</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Result from running </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">: </span><span style="color:#e6db74">{:#?}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">WASM</span>, res);
-</span></span><span style="display:flex;"><span>}
+the functionality in a completely different WebAssembly runtime:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> input <span style=color:#f92672>=</span> vec![<span style=color:#ae81ff>1</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u8</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>];
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> res <span style=color:#f92672>=</span> array_sum(input).unwrap();
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;Result from running </span><span style=color:#e6db74>{}</span><span style=color:#e6db74>: </span><span style=color:#e6db74>{:#?}</span><span style=color:#e6db74>&#34;</span>, <span style=color:#66d9ef>WASM</span>, res);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>So far, we have exclusively passed byte arrays <em>from</em> the runtime <em>to</em> the
 module. While this is enough for passing any sort of binary data to modules, it
 is not the only scenario - modules can also return complex data back to the
 runtime by writing in their linear memory and returning the pointer to the start
 of the data, and we will explore this scenario in the next section by exchanging
-strings.</p>
-<h3 id="exchanging-strings-between-modules-and-runtimes">Exchanging strings between modules and runtimes</h3>
-<p>Theoretically, passing strings from a runtime to a module can be done using
+strings.</p><h3 id=exchanging-strings-between-modules-and-runtimes>Exchanging strings between modules and runtimes</h3><p>Theoretically, passing strings from a runtime to a module can be done using
 almost exactly the same implementation we saw so far - encoding strings as UTF
 byte arrays, we can just reuse the <code>alloc</code> function from the previous examples.
 However, unlike previously, where the computation function returned a value (the
 element-wise sum of the array), we now want the runtime to get back a string (or
 a byte array). Similarly, we can return a pointer into the module&rsquo;s linear
 memory where the string is located, and have the runtime get a <em>view</em> into the
-module&rsquo;s memory at that offset and read it.</p>
-<p>The important thing to note here is the need to use <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a>
+module&rsquo;s memory at that offset and read it.</p><p>The important thing to note here is the need to use <a href=https://doc.rust-lang.org/std/mem/fn.forget.html><code>std::mem::forget</code></a>
 for the string we are returning to the runtime across the WebAssembly boundary.
 Because its content will have to be read externally to this function, we need to
 make sure it does not go out of scope when the function returns, so the
 WebAssembly runtime can read its content. This also means the runtime is now
 effectively owning this data, and should ensure it is freed when no longer
-needed.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Given a pointer to the start of a byte array and
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// its length, read a string, create its uppercase
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// representation, then return the pointer to it
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[no_mangle]</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">upper</span>(ptr: <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span>, len: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> <span style="color:#66d9ef">u8</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a `Vec&lt;u8&gt;` from the pointer and length
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// here we could also use Rust&#39;s excellent FFI
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// libraries to read a string, but for simplicity,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// we are using the same method as for plain byte arrays
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> data <span style="color:#f92672">=</span> Vec::from_raw_parts(ptr, len, len);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// read a Rust `String` from the byte array,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> input_str <span style="color:#f92672">=</span> String::from_utf8(data).unwrap();
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// transform the string to uppercase, then turn it into owned bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> upper <span style="color:#f92672">=</span> input_str.to_ascii_uppercase().as_bytes().to_owned();
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> ptr <span style="color:#f92672">=</span> upper.as_mut_ptr();
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// take ownership of the memory block where the result string
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// is written and ensure its destructor is not
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// called whe the object goes out of scope
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// at the end of the function
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    std::mem::forget(upper);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// return the pointer to the uppercase string
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// so the runtime can read data from this offset
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    ptr
-</span></span><span style="display:flex;"><span>}
+needed.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#e6db74>/// Given a pointer to the start of a byte array and
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// its length, read a string, create its uppercase
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// representation, then return the pointer to it
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#75715e>#[no_mangle]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>unsafe</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>upper</span>(ptr: <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span>, len: <span style=color:#66d9ef>usize</span>) -&gt; <span style=color:#f92672>*</span><span style=color:#66d9ef>mut</span> <span style=color:#66d9ef>u8</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// create a `Vec&lt;u8&gt;` from the pointer and length
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// here we could also use Rust&#39;s excellent FFI
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// libraries to read a string, but for simplicity,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// we are using the same method as for plain byte arrays
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> data <span style=color:#f92672>=</span> Vec::from_raw_parts(ptr, len, len);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// read a Rust `String` from the byte array,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> input_str <span style=color:#f92672>=</span> String::from_utf8(data).unwrap();
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// transform the string to uppercase, then turn it into owned bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> upper <span style=color:#f92672>=</span> input_str.to_ascii_uppercase().as_bytes().to_owned();
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> ptr <span style=color:#f92672>=</span> upper.as_mut_ptr();
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// take ownership of the memory block where the result string
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// is written and ensure its destructor is not
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// called whe the object goes out of scope
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// at the end of the function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    std::mem::forget(upper);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// return the pointer to the uppercase string
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// so the runtime can read data from this offset
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    ptr
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>From JavaScript, we can reuse the <code>copyMemory</code> function implemented earlier,
 provided we first transfer the JavaScript input string to UTF-8, then invoke the
 module&rsquo;s <code>upper</code> function, which returns the offset into the linear memory where
-the result string was written.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#75715e">// Invoke the `upper` function from the module</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// and log the result to the console.</span>
-</span></span><span style="display:flex;"><span>function upper(input, instance) {
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// transform the input string into its UTF-8</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// representation</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> bytes = <span style="color:#66d9ef">new</span> TextEncoder(<span style="color:#e6db74">&#34;utf-8&#34;</span>).encode(input);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// copy the contents of the string into</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// the module&#39;s memory</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> ptr = copyMemory(bytes, instance);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// call the module&#39;s `upper` function and</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// get the offset into the memory where the</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// module wrote the result string</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> res_ptr = instance.exports.upper(ptr, bytes.length);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// read the string from the module&#39;s memory,</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// store it, and log it to the console</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> result = readString(res_ptr, bytes.length, instance);
-</span></span><span style="display:flex;"><span>  console.log(result);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// the JavaScript runtime took ownership of the</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// data returned by the module, which did not</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// deallocate it - so we need to clean it up</span>
-</span></span><span style="display:flex;"><span>  deallocGuestMemory(res_ptr, bytes.length, instance);
-</span></span><span style="display:flex;"><span>}
+the result string was written.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#75715e>// Invoke the `upper` function from the module</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// and log the result to the console.</span>
+</span></span><span style=display:flex><span>function upper(input, instance) {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// transform the input string into its UTF-8</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// representation</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> bytes = <span style=color:#66d9ef>new</span> TextEncoder(<span style=color:#e6db74>&#34;utf-8&#34;</span>).encode(input);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// copy the contents of the string into</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// the module&#39;s memory</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> ptr = copyMemory(bytes, instance);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// call the module&#39;s `upper` function and</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// get the offset into the memory where the</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// module wrote the result string</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> res_ptr = instance.exports.upper(ptr, bytes.length);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// read the string from the module&#39;s memory,</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// store it, and log it to the console</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> result = readString(res_ptr, bytes.length, instance);
+</span></span><span style=display:flex><span>  console.log(result);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// the JavaScript runtime took ownership of the</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// data returned by the module, which did not</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// deallocate it - so we need to clean it up</span>
+</span></span><span style=display:flex><span>  deallocGuestMemory(res_ptr, bytes.length, instance);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Reading from an instance&rsquo;s memory can be done using a slice of size <code>len</code> (which
 in this case is equal to the input&rsquo;s size) into the typed array used to
-represent the memory:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#75715e">// Read a string from the instance&#39;s memory.</span>
-</span></span><span style="display:flex;"><span>function readString(ptr, len, instance) {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> m = <span style="color:#66d9ef">new</span> Uint8Array(instance.exports.memory.buffer, ptr, len);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">var</span> decoder = <span style="color:#66d9ef">new</span> TextDecoder(<span style="color:#e6db74">&#34;utf-8&#34;</span>);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// return a slice of size `len` from the module&#39;s</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// memory, starting at offset `ptr`</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> decoder.decode(m.slice(<span style="color:#ae81ff">0</span>, len));
-</span></span><span style="display:flex;"><span>}
+represent the memory:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#75715e>// Read a string from the instance&#39;s memory.</span>
+</span></span><span style=display:flex><span>function readString(ptr, len, instance) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> m = <span style=color:#66d9ef>new</span> Uint8Array(instance.exports.memory.buffer, ptr, len);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>var</span> decoder = <span style=color:#66d9ef>new</span> TextDecoder(<span style=color:#e6db74>&#34;utf-8&#34;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// return a slice of size `len` from the module&#39;s</span>
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// memory, starting at offset `ptr`</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> decoder.decode(m.slice(<span style=color:#ae81ff>0</span>, len));
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Finally, as hinted to earlier, because the WebAssembly module prevented the
 memory block that contains the string result to go out of scope, we need to
 manually deallocate that memory when it is no longer needed. This can be done by
 calling the module&rsquo;s exported <code>dealloc</code> function using the result string&rsquo;s
 pointer (calling <code>dealloc</code> using the input string would try to deallocate
 already freed memory, and would result in a
-<code>pointer being freed was not allocated</code> error):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>function deallocGuestMemory(ptr, len, instance) {
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// call the module&#39;s `dealloc` function</span>
-</span></span><span style="display:flex;"><span>  instance.exports.dealloc(ptr, len);
-</span></span><span style="display:flex;"><span>}
+<code>pointer being freed was not allocated</code> error):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>function deallocGuestMemory(ptr, len, instance) {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// call the module&#39;s `dealloc` function</span>
+</span></span><span style=display:flex><span>  instance.exports.dealloc(ptr, len);
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>We can now use the <code>upper</code> function with a native JavaScript string, execute the
 WebAssembly function we implemented to get an uppercase string, and log it to
-the console:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>(<span style="color:#66d9ef">async</span> () =&gt; {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> mod = <span style="color:#66d9ef">new</span> WebAssembly.Module(module_bytes);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> instance = <span style="color:#66d9ef">await</span> WebAssembly.instantiate(mod, {});
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  upper(<span style="color:#e6db74">&#34;this should be uppercase&#34;</span>, instance);
-</span></span><span style="display:flex;"><span>})();
+the console:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>(<span style=color:#66d9ef>async</span> () =&gt; {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> mod = <span style=color:#66d9ef>new</span> WebAssembly.Module(module_bytes);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> instance = <span style=color:#66d9ef>await</span> WebAssembly.instantiate(mod, {});
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  upper(<span style=color:#e6db74>&#34;this should be uppercase&#34;</span>, instance);
+</span></span><span style=display:flex><span>})();
 </span></span></code></pre></div><p>Running the script with Node.js would print the uppercase representation of the
-input to the console.</p>
-<p>For brevity, most of the Wasmtime implementation for passing strings will be
+input to the console.</p><p>For brevity, most of the Wasmtime implementation for passing strings will be
 omitted here, since it is similar to the <code>array_sum</code> function - however, of
 interest is reading a chunk of data from the instance&rsquo;s memory, using the result
 pointer from the module. We can use the <code>data_unchecked</code> function to get a Rust
 slice into the module&rsquo;s linear memory, read <code>len</code> bytes, then try to read a Rust
-<code>String</code> from those bytes and return it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Read a Rust `String` from a module&#39;s memory
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// given an offset and length.
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">unsafe</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">read_string</span>(
-</span></span><span style="display:flex;"><span>    memory: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Memory</span>,
-</span></span><span style="display:flex;"><span>    data_ptr: <span style="color:#66d9ef">u32</span>,
-</span></span><span style="display:flex;"><span>    len: <span style="color:#66d9ef">u32</span>,
-</span></span><span style="display:flex;"><span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, anyhow::Error<span style="color:#f92672">&gt;</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// get a raw byte array from the module&#39;s linear memory
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// at offset `data_ptr` and length `len`.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> data <span style="color:#f92672">=</span> memory
-</span></span><span style="display:flex;"><span>        .data_unchecked()
-</span></span><span style="display:flex;"><span>        .get(data_ptr <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u32</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span><span style="color:#f92672">..</span>)
-</span></span><span style="display:flex;"><span>        .and_then(<span style="color:#f92672">|</span>arr<span style="color:#f92672">|</span> arr.get(<span style="color:#f92672">..</span>len <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u32</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>));
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// attempt to read a UTF-8 string from the memory
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">str</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> data {
-</span></span><span style="display:flex;"><span>        Some(data) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">match</span> std::<span style="color:#66d9ef">str</span>::from_utf8(data) {
-</span></span><span style="display:flex;"><span>            Ok(s) <span style="color:#f92672">=&gt;</span> s,
-</span></span><span style="display:flex;"><span>            Err(_) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(Error::msg(<span style="color:#e6db74">&#34;invalid utf-8&#34;</span>)),
-</span></span><span style="display:flex;"><span>        },
-</span></span><span style="display:flex;"><span>        None <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">return</span> Err(Error::msg(<span style="color:#e6db74">&#34;pointer/length out of bounds&#34;</span>)),
-</span></span><span style="display:flex;"><span>    };
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    Ok(String::from(<span style="color:#66d9ef">str</span>))
-</span></span><span style="display:flex;"><span>}
+<code>String</code> from those bytes and return it:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#e6db74>/// Read a Rust `String` from a module&#39;s memory
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>/// given an offset and length.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>unsafe</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>read_string</span>(
+</span></span><span style=display:flex><span>    memory: <span style=color:#66d9ef>&amp;</span><span style=color:#a6e22e>Memory</span>,
+</span></span><span style=display:flex><span>    data_ptr: <span style=color:#66d9ef>u32</span>,
+</span></span><span style=display:flex><span>    len: <span style=color:#66d9ef>u32</span>,
+</span></span><span style=display:flex><span>) -&gt; Result<span style=color:#f92672>&lt;</span>String, anyhow::Error<span style=color:#f92672>&gt;</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// get a raw byte array from the module&#39;s linear memory
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// at offset `data_ptr` and length `len`.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> data <span style=color:#f92672>=</span> memory
+</span></span><span style=display:flex><span>        .data_unchecked()
+</span></span><span style=display:flex><span>        .get(data_ptr <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u32</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>usize</span><span style=color:#f92672>..</span>)
+</span></span><span style=display:flex><span>        .and_then(<span style=color:#f92672>|</span>arr<span style=color:#f92672>|</span> arr.get(<span style=color:#f92672>..</span>len <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>u32</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>usize</span>));
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// attempt to read a UTF-8 string from the memory
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>str</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>match</span> data {
+</span></span><span style=display:flex><span>        Some(data) <span style=color:#f92672>=&gt;</span> <span style=color:#66d9ef>match</span> std::<span style=color:#66d9ef>str</span>::from_utf8(data) {
+</span></span><span style=display:flex><span>            Ok(s) <span style=color:#f92672>=&gt;</span> s,
+</span></span><span style=display:flex><span>            Err(_) <span style=color:#f92672>=&gt;</span> <span style=color:#66d9ef>return</span> Err(Error::msg(<span style=color:#e6db74>&#34;invalid utf-8&#34;</span>)),
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        None <span style=color:#f92672>=&gt;</span> <span style=color:#66d9ef>return</span> Err(Error::msg(<span style=color:#e6db74>&#34;pointer/length out of bounds&#34;</span>)),
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    Ok(String::from(<span style=color:#66d9ef>str</span>))
+</span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>It is worth mentioning that in most cases when a module is writing an array in
 memory and returning the pointer, the length of the array should also be
 returned somehow - usually done by passing a pointer as argument where the
 module can write the length of the array (this is a side effect of not having
 multiple return values yet). We didn&rsquo;t have to do this because the length of the
-result in our example was always going to be the same length as the input.</p>
-<p>We can apply the exact same principles and exchange any array between modules
+result in our example was always going to be the same length as the input.</p><p>We can apply the exact same principles and exchange any array between modules
 and runtimes. As long as both the module and runtime agree on the data they are
 exchanging, they can share number arrays, byte arrays, strings, JSON, protocol
-buffers, or any other serialization format.</p>
-<p>Memory in WebAssembly can be a confusing topic, particularly for those getting
-started, and while using <a href="https://github.com/rustwasm/wasm-bindgen"><code>wasm-bindgen</code></a> and the <a href="https://github.com/AssemblyScript/assemblyscript/tree/caa58015062dbccba7de9133c3d09138eec93e85/lib/loader">AssemblyScript
+buffers, or any other serialization format.</p><p>Memory in WebAssembly can be a confusing topic, particularly for those getting
+started, and while using <a href=https://github.com/rustwasm/wasm-bindgen><code>wasm-bindgen</code></a> and the <a href=https://github.com/AssemblyScript/assemblyscript/tree/caa58015062dbccba7de9133c3d09138eec93e85/lib/loader>AssemblyScript
 loader</a> can significantly simplify exchanging complex data types, it
 is worth understanding the internals of memory management in WebAssembly, and
 hopefully this article helps someone build their awesome WebAssembly
-application.</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/rust">rust</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/"><span>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+application.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/rust>rust</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/><span>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

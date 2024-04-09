@@ -1,348 +1,26 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Inject ASP.NET Core Dependencies from JSON files - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/aspnet-core-json-dependency-injection/">
-  
-  
-  
-  
-  <meta name="description" content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Inject ASP.NET Core Dependencies from JSON files" />
-<meta property="og:description" content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-json-dependency-injection/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2016-08-18T00:00:00+00:00" />
-<meta property="article:modified_time" content="2016-08-18T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Inject ASP.NET Core Dependencies from JSON files">
-<meta itemprop="description" content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code."><meta itemprop="datePublished" content="2016-08-18T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2016-08-18T00:00:00+00:00" />
-<meta itemprop="wordCount" content="995">
-<meta itemprop="keywords" content="dotnet-core," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Inject ASP.NET Core Dependencies from JSON files"/>
-<meta name="twitter:description" content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Inject ASP.NET Core Dependencies from JSON files</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Thursday, August 18, 2016</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<p>&ldquo;Back in the days&rdquo; of ASP.NET 4.x, each of the framework components (MVC, WebAPI, OWIN, SignalR) had its own dependency resolver and its own way of integrating with the framework.</p>
-<p>For example, if you had an application that used MVC/WebAPI, OWIN and SignalR and you wanted to use <a href="http://autofac.readthedocs.io/en/latest/index.html">Autofac</a>, you would have needed individual integrations, with different method names (see <a href="http://autofac.readthedocs.io/en/latest/integration/mvc.html#register-controllers"><code>RegisterControllers</code></a> for MVC and <a href="http://autofac.readthedocs.io/en/latest/integration/webapi.html#register-controllers"><code>RegisterApiControllers</code></a> for WebAPI), different NuGet packages (see <a href="https://www.nuget.org/packages/Autofac.WebApi2/">the package for WebAPI</a> and <a href="https://www.nuget.org/packages/Autofac.Mvc5/">the package for MVC</a>) and different dependency resolvers and you even needed to take care at the order in which you replaced the dependency resolvers for these components.</p>
-<p>ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework &ldquo;and most consumer applications built on it&rdquo; (<a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html#replacing-the-default-services-container">as the documentation states</a>).</p>
-<p>Of course, you can replace the default DI engine that comes with the framework and use <a href="http://autofac.readthedocs.io/en/latest/integration/aspnetcore.html">Autofac</a>, <a href="https://www.nuget.org/packages/DryIoc.Microsoft.DependencyInjection">Dryloc</a>, <a href="https://www.nuget.org/packages/Grace.DependencyInjection.Extensions">Grace</a>, <a href="https://github.com/seesharper/LightInject.Microsoft.DependencyInjection">LightInject</a> or <a href="https://github.com/structuremap/StructureMap.Microsoft.DependencyInjection">StructureMap</a> and in a future article, we will probably explore a couple of them.</p>
-<blockquote>
-<p>In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code.</p>
-</blockquote>
-<blockquote>
-<p>This is a feature in Autofac for ASP.NET and you can <a href="http://docs.autofac.org/en/latest/configuration/xml.html">find it documented here</a>, but we will implement a very basic way of adding services using only the built-in mechanism.</p>
-</blockquote>
-<blockquote>
-<p>Also, it will not use the <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">JSON configuration provider</a>.</p>
-</blockquote>
-<h3 id="the-need-for-registering-services-through-a-json-file">The need for registering services through a JSON file</h3>
-<p>A very simple reason to think about using a JSON file when registering DI services is because you might not know (or cannot choose) the concrete implementation at compile-time.</p>
-<p>Another reason could be for switching implementations for testing purposes.</p>
-<blockquote>
-<p>You can also <a href="https://docs.asp.net/en/latest/fundamentals/environments.html">work with multiple environments</a> and have <code>Startup{EnvironmentName}</code> class for each environment - dev, testing, production and set the environment variable before running the application.</p>
-</blockquote>
-<p>But for this article, I thought it would be cool to inject the required dependencies based on a JSON file without using any DI engine other than the built-in one from ASP.NET Core.</p>
-<p>Since this is going to be a web app, we need the Kestrel web server package. As I said earlier, we are not going to use the JSON Configuration provider (at this point), so we will only need a library to deserialize (part of) JSON, and we will use Newtonsoft.Json.</p>
-<h3 id="creating-a-dummy-service">Creating a dummy service</h3>
-<p>We are going to need a very simple service to inject in our application:</p>
-<pre tabindex="0"><code>public interface ITest
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Inject ASP.NET Core Dependencies from JSON files - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aspnet-core-json-dependency-injection/><meta name=description content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Inject ASP.NET Core Dependencies from JSON files"><meta property="og:description" content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-json-dependency-injection/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-08-18T00:00:00+00:00"><meta property="article:modified_time" content="2016-08-18T00:00:00+00:00"><meta itemprop=name content="Inject ASP.NET Core Dependencies from JSON files"><meta itemprop=description content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code."><meta itemprop=datePublished content="2016-08-18T00:00:00+00:00"><meta itemprop=dateModified content="2016-08-18T00:00:00+00:00"><meta itemprop=wordCount content="995"><meta itemprop=keywords content="dotnet-core,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Inject ASP.NET Core Dependencies from JSON files"><meta name=twitter:description content="Back in the days of ASP.NET 4.x, each of the framework components - MVC, WebAPI, OWIN, SignalR - had its own dependency resolver and its own way of integrating with the framework. ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework and most consumer applications built on it. In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Inject ASP.NET Core Dependencies from JSON files</h1><div class="text-sm opacity-60"><time>Thursday, August 18, 2016</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>&ldquo;Back in the days&rdquo; of ASP.NET 4.x, each of the framework components (MVC, WebAPI, OWIN, SignalR) had its own dependency resolver and its own way of integrating with the framework.</p><p>For example, if you had an application that used MVC/WebAPI, OWIN and SignalR and you wanted to use <a href=http://autofac.readthedocs.io/en/latest/index.html>Autofac</a>, you would have needed individual integrations, with different method names (see <a href=http://autofac.readthedocs.io/en/latest/integration/mvc.html#register-controllers><code>RegisterControllers</code></a> for MVC and <a href=http://autofac.readthedocs.io/en/latest/integration/webapi.html#register-controllers><code>RegisterApiControllers</code></a> for WebAPI), different NuGet packages (see <a href=https://www.nuget.org/packages/Autofac.WebApi2/>the package for WebAPI</a> and <a href=https://www.nuget.org/packages/Autofac.Mvc5/>the package for MVC</a>) and different dependency resolvers and you even needed to take care at the order in which you replaced the dependency resolvers for these components.</p><p>ASP.NET Core brings a consistent dependency injection mechanism with a unified meaning for lifetime or service registration,that is designed to server the needs of the framework &ldquo;and most consumer applications built on it&rdquo; (<a href=https://docs.asp.net/en/latest/fundamentals/dependency-injection.html#replacing-the-default-services-container>as the documentation states</a>).</p><p>Of course, you can replace the default DI engine that comes with the framework and use <a href=http://autofac.readthedocs.io/en/latest/integration/aspnetcore.html>Autofac</a>, <a href=https://www.nuget.org/packages/DryIoc.Microsoft.DependencyInjection>Dryloc</a>, <a href=https://www.nuget.org/packages/Grace.DependencyInjection.Extensions>Grace</a>, <a href=https://github.com/seesharper/LightInject.Microsoft.DependencyInjection>LightInject</a> or <a href=https://github.com/structuremap/StructureMap.Microsoft.DependencyInjection>StructureMap</a> and in a future article, we will probably explore a couple of them.</p><blockquote><p>In this article, we will see a way of defining the service types and the implementation types we want to use based on a JSON file and switch between implementations without changing the code.</p></blockquote><blockquote><p>This is a feature in Autofac for ASP.NET and you can <a href=http://docs.autofac.org/en/latest/configuration/xml.html>find it documented here</a>, but we will implement a very basic way of adding services using only the built-in mechanism.</p></blockquote><blockquote><p>Also, it will not use the <a href=https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/>JSON configuration provider</a>.</p></blockquote><h3 id=the-need-for-registering-services-through-a-json-file>The need for registering services through a JSON file</h3><p>A very simple reason to think about using a JSON file when registering DI services is because you might not know (or cannot choose) the concrete implementation at compile-time.</p><p>Another reason could be for switching implementations for testing purposes.</p><blockquote><p>You can also <a href=https://docs.asp.net/en/latest/fundamentals/environments.html>work with multiple environments</a> and have <code>Startup{EnvironmentName}</code> class for each environment - dev, testing, production and set the environment variable before running the application.</p></blockquote><p>But for this article, I thought it would be cool to inject the required dependencies based on a JSON file without using any DI engine other than the built-in one from ASP.NET Core.</p><p>Since this is going to be a web app, we need the Kestrel web server package. As I said earlier, we are not going to use the JSON Configuration provider (at this point), so we will only need a library to deserialize (part of) JSON, and we will use Newtonsoft.Json.</p><h3 id=creating-a-dummy-service>Creating a dummy service</h3><p>We are going to need a very simple service to inject in our application:</p><pre tabindex=0><code>public interface ITest
 {
     string DoSomething(string parameter);
 }
-</code></pre><p>And an even simpler implementation:</p>
-<pre tabindex="0"><code>public class Test : ITest
+</code></pre><p>And an even simpler implementation:</p><pre tabindex=0><code>public class Test : ITest
 {
     public string DoSomething(string parameter)
     {
         return $&#34;Message from Test with { parameter }&#34;;
     }
 }
-</code></pre><h3 id="how-to-inject-an-itest-service">How to inject an <code>ITest</code> service</h3>
-<p>In order to inject a service of type <code>ITest</code>, you need to add a function in <code>Startup</code> called <code>ConfigureServices</code> that has a parameter of type <code>IServiceCollection</code> and add the service in this collection.</p>
-<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
+</code></pre><h3 id=how-to-inject-an-itest-service>How to inject an <code>ITest</code> service</h3><p>In order to inject a service of type <code>ITest</code>, you need to add a function in <code>Startup</code> called <code>ConfigureServices</code> that has a parameter of type <code>IServiceCollection</code> and add the service in this collection.</p><pre tabindex=0><code>public void ConfigureServices(IServiceCollection services)
 {
     services.Add(new ServiceDescriptor(serviceType: typeof(ITest),
                                        implementationType: typeof(Test),
                                        lifetime: ServiceLifetime.Transient));
 }
-</code></pre><p>Now, every time a component will request an instance of <code>ITest</code>, the framework will provide <em>another</em> instance of <code>Test</code>, since the lifetime is passed as <em>Transient</em>. (<a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html">Transient objects are always different; a new instance is provided to every controller and every service.</a>_</p>
-<h3 id="the-json-file">The JSON File</h3>
-<p>Since we will use a JSON file, it might as well be the one we use for other configurations (or a completely different one). Regardless of what you choose, you can extract only the relevant part of the JSON file using a section name.</p>
-<pre tabindex="0"><code>{
+</code></pre><p>Now, every time a component will request an instance of <code>ITest</code>, the framework will provide <em>another</em> instance of <code>Test</code>, since the lifetime is passed as <em>Transient</em>. (<a href=https://docs.asp.net/en/latest/fundamentals/dependency-injection.html>Transient objects are always different; a new instance is provided to every controller and every service.</a>_</p><h3 id=the-json-file>The JSON File</h3><p>Since we will use a JSON file, it might as well be the one we use for other configurations (or a completely different one). Regardless of what you choose, you can extract only the relevant part of the JSON file using a section name.</p><pre tabindex=0><code>{
     &#34;services&#34;: [
         {
             &#34;serviceType&#34;: &#34;ITest&#34;,
@@ -356,11 +34,7 @@
         &#34;otherKey&#34;: &#34;otherValue&#34;
     }
 }
-</code></pre><p>In this case, the JSON section we are interested in is <code>services</code>. At this key, we have an array of JSON objects with 3 properties: <code>serviceType</code>, <code>implementationType</code> and <code>lifetime</code>, which correspond to the parameters passed to the <code>ServiceDescriptor</code> when adding the service.</p>
-<h3 id="the-service-class">The <code>Service</code> class</h3>
-<p>These 3 properties are mapped into a class called <code>Service</code>. For simplicity, the <code>ServiceType</code> and <code>ImplementationType</code> properties are of type <code>string</code>, but you can always implement a <code>JsonConverter</code> that maps them to the type <code>Type</code> (There is no immediate conversion from <code>string</code> to <code>Type</code>).</p>
-<p>Since <code>Newtonsoft</code> has implemented the conversion from <code>string</code> to <code>enum</code>, we used it here to convert to <code>ServiceLifetime</code> enum from <code>Microsoft.Extensions.DependencyInjection</code>.</p>
-<pre tabindex="0"><code>using Microsoft.Extensions.DependencyInjection;
+</code></pre><p>In this case, the JSON section we are interested in is <code>services</code>. At this key, we have an array of JSON objects with 3 properties: <code>serviceType</code>, <code>implementationType</code> and <code>lifetime</code>, which correspond to the parameters passed to the <code>ServiceDescriptor</code> when adding the service.</p><h3 id=the-service-class>The <code>Service</code> class</h3><p>These 3 properties are mapped into a class called <code>Service</code>. For simplicity, the <code>ServiceType</code> and <code>ImplementationType</code> properties are of type <code>string</code>, but you can always implement a <code>JsonConverter</code> that maps them to the type <code>Type</code> (There is no immediate conversion from <code>string</code> to <code>Type</code>).</p><p>Since <code>Newtonsoft</code> has implemented the conversion from <code>string</code> to <code>enum</code>, we used it here to convert to <code>ServiceLifetime</code> enum from <code>Microsoft.Extensions.DependencyInjection</code>.</p><pre tabindex=0><code>using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -373,9 +47,7 @@ public class Service
     [JsonConverter(typeof(StringEnumConverter))]
     public ServiceLifetime Lifetime { get; set; }
 }
-</code></pre><h3 id="adding-the-services">Adding the services</h3>
-<p>Next, in the <code>Startup</code> class we will simply deserialize the JSON section into a <code>List&lt;Service&gt;</code>, iterate through it and add the services:</p>
-<pre tabindex="0"><code>private void ConfigureJsonServices(IServiceCollection services)
+</code></pre><h3 id=adding-the-services>Adding the services</h3><p>Next, in the <code>Startup</code> class we will simply deserialize the JSON section into a <code>List&lt;Service></code>, iterate through it and add the services:</p><pre tabindex=0><code>private void ConfigureJsonServices(IServiceCollection services)
 {
     var jsonServices = JObject.Parse(File.ReadAllText(&#34;appSettings.json&#34;))[&#34;services&#34;];
     var requiredServices = JsonConvert.DeserializeObject&lt;List&lt;Service&gt;&gt;(jsonServices.ToString());
@@ -387,13 +59,7 @@ public class Service
                                             lifetime: service.Lifetime));
     }
 }
-</code></pre><p>Then, in the <code>ConfigureServices</code> method, call this method with the <code>services</code> argument.</p>
-<h3 id="testing-the-application">Testing the application</h3>
-<p>The first thing we can do is to add a breakpoint after executing the <code>ConfigureJsonServices</code> method.</p>
-<p><img src="/img/article-photos/aspnet-core-json-dependency-injection/services-breakpoint.JPG" alt=""></p>
-<p>We can see that our <code>ITest</code> service was added and now we can inject it anywhere in our application.</p>
-<p>At this point, we can also inject an instance of the service in the <code>Configure</code> method and have a message returned from the service:</p>
-<pre tabindex="0"><code>public void Configure(IApplicationBuilder app, ITest test)
+</code></pre><p>Then, in the <code>ConfigureServices</code> method, call this method with the <code>services</code> argument.</p><h3 id=testing-the-application>Testing the application</h3><p>The first thing we can do is to add a breakpoint after executing the <code>ConfigureJsonServices</code> method.</p><p><img src=/img/article-photos/aspnet-core-json-dependency-injection/services-breakpoint.JPG alt></p><p>We can see that our <code>ITest</code> service was added and now we can inject it anywhere in our application.</p><p>At this point, we can also inject an instance of the service in the <code>Configure</code> method and have a message returned from the service:</p><pre tabindex=0><code>public void Configure(IApplicationBuilder app, ITest test)
 {
     app.Run(context =&gt;
     {
@@ -401,52 +67,6 @@ public class Service
         return context.Response.WriteAsync(response);
     });
 }
-</code></pre><p>Every time you need to provide another implementation for a service, you don&rsquo;t have to recompile the entire application, simply modify the JSON file and start the application again.</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>This is a very basic and rudimentary way of injecting dependencies in the application. It is by no means production ready, it doesn&rsquo;t deal with exceptions, services that don&rsquo;t exist or incorrect lifetimes.</p>
-<p>It is only a simple alternative to registering each service manually, in code, recompiling the entire application every time you needed to swap some services.</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/dotnet-core">dotnet-core</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/aspnet-core-mvc-signalr/"><span class="mr-1.5">←</span><span>ASP.NET Core MVC and SignalR Core</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/aspnet-core-api/"><span>Introduction to ASP .NET Core MVC API</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><p>Every time you need to provide another implementation for a service, you don&rsquo;t have to recompile the entire application, simply modify the JSON file and start the application again.</p><h3 id=conclusion>Conclusion</h3><p>This is a very basic and rudimentary way of injecting dependencies in the application. It is by no means production ready, it doesn&rsquo;t deal with exceptions, services that don&rsquo;t exist or incorrect lifetimes.</p><p>It is only a simple alternative to registering each service manually, in code, recompiling the entire application every time you needed to swap some services.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-mvc-signalr/><span class=mr-1.5>←</span><span>ASP.NET Core MVC and SignalR Core</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-api/><span>Introduction to ASP .NET Core MVC API</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

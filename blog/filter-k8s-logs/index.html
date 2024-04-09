@@ -1,373 +1,53 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Filter secrets from Kubernetes logs - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/filter-k8s-logs/">
-  
-  
-  
-  
-  <meta name="description" content="Running any non-trivial application on Kubernetes will most likely require authorized access to other components - databases, storage buckets, APIs - all of which require a connection string or some sort of access key. Storing these values in Kubernetes is done through Secrets, and while there are plenty of ways to make sure the secrets are safe while at rest, as well as how to configure an external KMS provider, once the secret is injected into your application container, its value will be plain text." />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Filter secrets from Kubernetes logs" />
-<meta property="og:description" content="How to remove secrets from the logs of Kubernetes applications?" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/filter-k8s-logs/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2018-08-20T00:00:00+00:00" />
-<meta property="article:modified_time" content="2018-08-20T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Filter secrets from Kubernetes logs">
-<meta itemprop="description" content="How to remove secrets from the logs of Kubernetes applications?"><meta itemprop="datePublished" content="2018-08-20T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2018-08-20T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1583">
-<meta itemprop="keywords" content="kubernetes," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Filter secrets from Kubernetes logs"/>
-<meta name="twitter:description" content="How to remove secrets from the logs of Kubernetes applications?"/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Filter secrets from Kubernetes logs</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Monday, August 20, 2018</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<p>Running any non-trivial application on Kubernetes will most likely require
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Filter secrets from Kubernetes logs - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/filter-k8s-logs/><meta name=description content="Running any non-trivial application on Kubernetes will most likely require authorized access to other components - databases, storage buckets, APIs - all of which require a connection string or some sort of access key. Storing these values in Kubernetes is done through Secrets, and while there are plenty of ways to make sure the secrets are safe while at rest, as well as how to configure an external KMS provider, once the secret is injected into your application container, its value will be plain text."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Filter secrets from Kubernetes logs"><meta property="og:description" content="How to remove secrets from the logs of Kubernetes applications?"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/filter-k8s-logs/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2018-08-20T00:00:00+00:00"><meta property="article:modified_time" content="2018-08-20T00:00:00+00:00"><meta itemprop=name content="Filter secrets from Kubernetes logs"><meta itemprop=description content="How to remove secrets from the logs of Kubernetes applications?"><meta itemprop=datePublished content="2018-08-20T00:00:00+00:00"><meta itemprop=dateModified content="2018-08-20T00:00:00+00:00"><meta itemprop=wordCount content="1583"><meta itemprop=keywords content="kubernetes,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Filter secrets from Kubernetes logs"><meta name=twitter:description content="How to remove secrets from the logs of Kubernetes applications?"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Filter secrets from Kubernetes logs</h1><div class="text-sm opacity-60"><time>Monday, August 20, 2018</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>Running any non-trivial application on Kubernetes will most likely require
 authorized access to other components - databases, storage buckets, APIs - all
 of which require a connection string or some sort of access key. Storing these
-values in Kubernetes is done through <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secrets</a>, and while there are
-plenty of ways to make sure the secrets are <a href="https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/">safe while at
-rest</a>, as well as how to <a href="https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/">configure an external KMS
+values in Kubernetes is done through <a href=https://kubernetes.io/docs/concepts/configuration/secret/>Secrets</a>, and while there are
+plenty of ways to make sure the secrets are <a href=https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/>safe while at
+rest</a>, as well as how to <a href=https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/>configure an external KMS
 provider</a>, once the secret is injected into your application
-container, its value will be plain text.</p>
-<p>In this article we wil explore how to filter any Kubernetes secrets that end up
-in application logs - <a href="https://github.com/radu-matei/filter-k8s-logs">the entire project for this article can be found on
-GitHub</a>, together with a sample application.</p>
-<h3 id="how-to-filter-the-logs-of-a-kubernetes-pod">How to filter the logs of a Kubernetes pod</h3>
-<p>One approach could be to run a privileged <code>DaemonSet</code> that mounts the logs
+container, its value will be plain text.</p><p>In this article we wil explore how to filter any Kubernetes secrets that end up
+in application logs - <a href=https://github.com/radu-matei/filter-k8s-logs>the entire project for this article can be found on
+GitHub</a>, together with a sample application.</p><h3 id=how-to-filter-the-logs-of-a-kubernetes-pod>How to filter the logs of a Kubernetes pod</h3><p>One approach could be to run a privileged <code>DaemonSet</code> that mounts the logs
 directory and runs a filtering process on the logs. This presents the immediate
 advantage of not having to modify your applications at all - however, filtering
 the logs of <em>all</em> pods deployed on the cluster will be a highly intensive task,
 and mounting part of the node filesystem inside a pod (that is privileged or
 not) can prove to be disruptive. That is why, while this approach is mentioned
-for completeness, is not recommended.</p>
-<p>So, is there a way to filter the logs of a single application, in a
+for completeness, is not recommended.</p><p>So, is there a way to filter the logs of a single application, in a
 non-privileged way? We can easily achieve this by making use of the sidecar
-pattern.</p>
-<blockquote>
-<p>The sidecar pattern is a single node pattern made up of two containers. The
+pattern.</p><blockquote><p>The sidecar pattern is a single node pattern made up of two containers. The
 first is the application container. It contains the core logic for the
 application. Without this container, the application would not exist. In
 addition to the application container, there is a sidecar container. The role
 of the sidecar is to augment and improve the application container, often
 without the application container’s knowledge. In its simplest form, a sidecar
 container can be used to add functionality to a container that might otherwise
-be difficult to improve.</p>
-</blockquote>
-<blockquote>
-<p>Excerpt from the second chapter of the book <a href="https://www.amazon.com/Designing-Distributed-Systems-Patterns-Paradigms/dp/1491983647">Designing Distributed Systems, by
-Brendan Burns</a>.</p>
-</blockquote>
-<p>In a nutshell, this is our approach:</p>
-<ul>
-<li>forward the <code>stdout</code> of the main application container to a file</li>
-<li>run a sidecar container and share the file where the main application
-container writes the logs</li>
-<li>run a filtering process in the sidecar that continuously reads the main
-application log file and writes the filtered logs to the sidecar <code>stdout</code></li>
-<li>collect the sidecar <code>stdout</code> as the application logs</li>
-</ul>
-<blockquote>
-<p>Note that if you have an alpha cluster with <a href="https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/">shared PID
+be difficult to improve.</p></blockquote><blockquote><p>Excerpt from the second chapter of the book <a href=https://www.amazon.com/Designing-Distributed-Systems-Patterns-Paradigms/dp/1491983647>Designing Distributed Systems, by
+Brendan Burns</a>.</p></blockquote><p>In a nutshell, this is our approach:</p><ul><li>forward the <code>stdout</code> of the main application container to a file</li><li>run a sidecar container and share the file where the main application
+container writes the logs</li><li>run a filtering process in the sidecar that continuously reads the main
+application log file and writes the filtered logs to the sidecar <code>stdout</code></li><li>collect the sidecar <code>stdout</code> as the application logs</li></ul><blockquote><p>Note that if you have an alpha cluster with <a href=https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/>shared PID
 namespaces</a> - that is a cluster created with
 <code>--feature-gates=PodShareProcessNamespace=true</code>, then you can access the main
 process&rsquo; <code>stdout</code> directly, without sharing a volume between the main
-container and the sidecar.</p>
-</blockquote>
-<blockquote>
-<p>While this is still an alpha feature (thus not recommended for testing in
+container and the sidecar.</p></blockquote><blockquote><p>While this is still an alpha feature (thus not recommended for testing in
 production clusters), and we will continue to explore how to achieve this
 through volume mounts, this guide is still helpful, with the only difference
 that the logs file will be accessed in the sidecar as
-<code>/proc/&lt;main-application-pid&gt;/fd/1</code>, which is the file descriptor of <code>stdout</code>.</p>
-</blockquote>
-<p>The main advantage of this approach is that we don&rsquo;t need to mount parts of the
+<code>/proc/&lt;main-application-pid>/fd/1</code>, which is the file descriptor of <code>stdout</code>.</p></blockquote><p>The main advantage of this approach is that we don&rsquo;t need to mount parts of the
 node filesystem in a pod, and we can enable the filter for individual
 applications, filtering the secrets from a specific namespace. The only mention
 here is that we should be able to redirect the logs of the main application to a
 specific file. If that is not possible, explore running the sidecar by sharing
-the PID namespace and accessing <code>stdout</code> directly.</p>
-<h3 id="the-filtering-process">The filtering process</h3>
-<p>The filtering application is a simple Go application that tails the file where
+the PID namespace and accessing <code>stdout</code> directly.</p><h3 id=the-filtering-process>The filtering process</h3><p>The filtering application is a simple Go application that tails the file where
 the main application writes the logs, iterates through all Kubernetes secrets in
 the provided namespace, and checks if any value is present in the logs. If
 found, it will remove it, then write the redacted log to <code>stdout</code>. This
-container&rsquo;s logs become the application logs:</p>
-<pre tabindex="0"><code>func filter(line string, secrets []v1.Secret) string {
+container&rsquo;s logs become the application logs:</p><pre tabindex=0><code>func filter(line string, secrets []v1.Secret) string {
 	for _, s := range secrets {
 		for _, v := range s.Data {
 			// if the log line contains a secret value redact it
@@ -382,53 +62,39 @@ container&rsquo;s logs become the application logs:</p>
 the log line for every Kubernetes secret value in the namespace &ndash; this means
 that the more secrets in the namespace, the more CPU cycles it will take to
 filter a log &ndash; so be mindful of this when running in a namespace with lots of
-secrets.</p>
-<p>Note that the filtering function above is a simple example on how to process
+secrets.</p><p>Note that the filtering function above is a simple example on how to process
 your logs &ndash; for any production-purpose filtering, you should fork the
 repository and replace the function with your own, and an immediate alternative
 would be to use regex instead of the loop with <code>strings.Contains</code> &ndash; but you are
-free to come up with virtually any filtering algorithm.</p>
-<p>A Kubernetes cache is used in order to avoid getting all secrets from the API on
+free to come up with virtually any filtering algorithm.</p><p>A Kubernetes cache is used in order to avoid getting all secrets from the API on
 every filtering request. The resync period for the cache is set to 30 seconds.
 If a new secret is added, then the application tries to print it before the
 cache resynced, that log <strong>will</strong> contain the secret value. If your use case
 demands it, reduce the resync period - but keep in mind the impact this will
-have on networking and on the API server.</p>
-<p>Because of the simplicity of the filtering loop, any processing done to a secret
+have on networking and on the API server.</p><p>Because of the simplicity of the filtering loop, any processing done to a secret
 value (such as a <code>base64</code> encoding), followed by printing it in the logs, <strong>will
 not</strong> be caught by the current implementation &ndash; however, the filter can be
-easily modified to accommodate additional transformations of values.</p>
-<p>The filtering loop currently runs for for each new line. For a real world
+easily modified to accommodate additional transformations of values.</p><p>The filtering loop currently runs for for each new line. For a real world
 scenario, filtering the logs in chunks of lines seems a reasonable approach &ndash;
-this can be modified in the <a href="https://github.com/radu-matei/filter-k8s-logs/blob/master/main.go"><code>main</code> function of the filter</a>.</p>
-<p>Important note: <strong>This method only prevents accidental printing of logs from an
+this can be modified in the <a href=https://github.com/radu-matei/filter-k8s-logs/blob/master/main.go><code>main</code> function of the filter</a>.</p><p>Important note: <strong>This method only prevents accidental printing of logs from an
 application output. It is not designed to prevent a potentially malicious
 attempt of gaining access to Kubernetes secrets &ndash; and it should be used
-accordingly.</strong></p>
-<h3 id="the-sample-application">The sample application</h3>
-<p>Now that we saw how the filtering process works, let&rsquo;s see an example of this in
-action.</p>
-<p>The sample, which is <a href="https://github.com/radu-matei/filter-k8s-logs">included in the GitHub repository</a>, is a
+accordingly.</strong></p><h3 id=the-sample-application>The sample application</h3><p>Now that we saw how the filtering process works, let&rsquo;s see an example of this in
+action.</p><p>The sample, which is <a href=https://github.com/radu-matei/filter-k8s-logs>included in the GitHub repository</a>, is a
 simple NodeJS application that just logs the query parameters of every request.
 The following section redirects the application <code>stdout</code> to a logs file whose
-name is provided as an environment variable:</p>
-<pre tabindex="0"><code>var logsFile = process.env.LOGS_FILE;
+name is provided as an environment variable:</p><pre tabindex=0><code>var logsFile = process.env.LOGS_FILE;
 
 // redirect stdout and stderr to file
 var access = fs.createWriteStream(logsFile);
 process.stdout.write = process.stderr.write = access.write.bind(access);
 </code></pre><p>This ensures all <code>console.log</code> calls from within the application will be
 redirected to our desired logs file, which will be shared with the filtering
-container through a volume mount.</p>
-<blockquote>
-<p>Of course, the main application can be written in any language, and
+container through a volume mount.</p><blockquote><p>Of course, the main application can be written in any language, and
 redirecting the logs to a file should be a fairly straightforward task in any
-modern framework.</p>
-</blockquote>
-<p>Now we simply build a container image out of our application and push it to a
+modern framework.</p></blockquote><p>Now we simply build a container image out of our application and push it to a
 container registry. Then, we need to create a Kubernetes manifest with the main
-application and the sidecar:</p>
-<pre tabindex="0"><code>apiVersion: v1
+application and the sidecar:</p><pre tabindex=0><code>apiVersion: v1
 kind: Pod
 metadata:
   name: filter-logs
@@ -462,29 +128,19 @@ spec:
 </code></pre><p>This is a simple Kubernetes manifest for a pod with two containers: the main
 application container and the sidecar filter; we pass the logs file as
 environment variables to both containers, while also mounting a volume that
-contains the log file to both containers.</p>
-<blockquote>
-<p>Please note that in the repo there is also a <a href="https://github.com/radu-matei/filter-k8s-logs/blob/master/sample/filter-role.yaml">Kubernetes manifest that must be
+contains the log file to both containers.</p><blockquote><p>Please note that in the repo there is also a <a href=https://github.com/radu-matei/filter-k8s-logs/blob/master/sample/filter-role.yaml>Kubernetes manifest that must be
 used on RBAC-enabled clusters</a> &ndash; that is not shown here for
-brevity.</p>
-</blockquote>
-<p>For simplicity, let&rsquo;s create a new namespace:</p>
-<pre tabindex="0"><code>$ kubectl create namespace filter-logs
-</code></pre><p>Now in this namespace, <a href="https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret-using-kubectl-create-secret">create a new secret, according to the instructions in
+brevity.</p></blockquote><p>For simplicity, let&rsquo;s create a new namespace:</p><pre tabindex=0><code>$ kubectl create namespace filter-logs
+</code></pre><p>Now in this namespace, <a href=https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret-using-kubectl-create-secret>create a new secret, according to the instructions in
 the Kubernetes documentation.</a> The values I used are:
 <code>super-secret-admin-username</code> for the user name and
-<code>super-secret-admin-password</code> for the password.</p>
-<p>Now deploy the pod (and if needed, also the <a href="https://github.com/radu-matei/filter-k8s-logs/blob/master/sample/filter-role.yaml"><code>filter-role.yaml</code> file containing
+<code>super-secret-admin-password</code> for the password.</p><p>Now deploy the pod (and if needed, also the <a href=https://github.com/radu-matei/filter-k8s-logs/blob/master/sample/filter-role.yaml><code>filter-role.yaml</code> file containing
 the RBAC objects</a>). We expect that if the web application would
 ever try to write <code>super-secret-admin-username</code> or <code>super-secret-admin-password</code>
 (or the value of any secret in the namespace) in the logs, our filtering sidecar
-would redact that.</p>
-<p>Let&rsquo;s see if that actually happens:</p>
-<p><img src="/img/article-photos/filter-k8s-logs/filter.gif" alt=""></p>
-<p>Clearly, the sidecar container redacts all secret values from the application
+would redact that.</p><p>Let&rsquo;s see if that actually happens:</p><p><img src=/img/article-photos/filter-k8s-logs/filter.gif alt></p><p>Clearly, the sidecar container redacts all secret values from the application
 logs, so we avoid accidentally outputting secret values in the logs of our
-applications. Executing <code>kubectl logs</code> also works as expected:</p>
-<pre tabindex="0"><code>$ kubectl logs filter-logs -c filter
+applications. Executing <code>kubectl logs</code> also works as expected:</p><pre tabindex=0><code>$ kubectl logs filter-logs -c filter
 { user: &#39;radu&#39;,
   password: &#39;abcdef&#39; }
 
@@ -496,56 +152,11 @@ applications. Executing <code>kubectl logs</code> also works as expected:</p>
 
 { user: &#39;[ redacted ]2&#39;,
   password: &#39;[ redacted ]abc&#39; }
-</code></pre><h3 id="conclusion">Conclusion</h3>
-<p>In this article we saw how to filter Kubernetes secrets from the logs of our
+</code></pre><h3 id=conclusion>Conclusion</h3><p>In this article we saw how to filter Kubernetes secrets from the logs of our
 applications by running a sidecar container that continuously redacts the secret
 values from the logs. As mentioned, you are free to write your own filtering
 algorithm based on the needs of your application, as well as implement filtering
-in chunks of multiple log lines.</p>
-<p>Thanks for reading, let me know your thoughts in the comments, and have fun
-filtering your application logs!</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/kubernetes">kubernetes</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/brigade-scaling-vk/"><span class="mr-1.5">←</span><span>Instant Scaling on Demand: Serverless Kubernetes with Brigade</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/"><span>The state of debugging microservices on Kubernetes</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+in chunks of multiple log lines.</p><p>Thanks for reading, let me know your thoughts in the comments, and have fun
+filtering your application logs!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/kubernetes>kubernetes</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/brigade-scaling-vk/><span class=mr-1.5>←</span><span>Instant Scaling on Demand: Serverless Kubernetes with Brigade</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/state-of-debugging-microservices-on-k8s/><span>The state of debugging microservices on Kubernetes</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

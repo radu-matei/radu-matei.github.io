@@ -1,309 +1,17 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>A beginner&#39;s guide to adding a new WASI syscall in Wasmtime - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://radu-matei.com/blog/adding-wasi-syscall/">
-  
-  
-  
-  
-  <meta name="description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime" />
-  <meta name="author" content="Radu Matei" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime" />
-<meta property="og:description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/adding-wasi-syscall/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2020-03-31T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-03-31T00:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime">
-<meta itemprop="description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"><meta itemprop="datePublished" content="2020-03-31T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2020-03-31T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1119">
-<meta itemprop="keywords" content="wasm,rust," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="A beginner&#39;s guide to adding a new WASI syscall in Wasmtime"/>
-<meta name="twitter:description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">A beginner&#39;s guide to adding a new WASI syscall in Wasmtime</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Tuesday, March 31, 2020</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>Radu Matei</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><p><a href="https://webassembly.org">WebAssembly (WASM)</a> <em>is a binary instruction format for a stack-based
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>A beginner's guide to adding a new WASI syscall in Wasmtime - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/adding-wasi-syscall/><meta name=description content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="A beginner's guide to adding a new WASI syscall in Wasmtime"><meta property="og:description" content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/adding-wasi-syscall/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2020-03-31T00:00:00+00:00"><meta property="article:modified_time" content="2020-03-31T00:00:00+00:00"><meta itemprop=name content="A beginner's guide to adding a new WASI syscall in Wasmtime"><meta itemprop=description content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"><meta itemprop=datePublished content="2020-03-31T00:00:00+00:00"><meta itemprop=dateModified content="2020-03-31T00:00:00+00:00"><meta itemprop=wordCount content="1119"><meta itemprop=keywords content="wasm,rust,"><meta name=twitter:card content="summary"><meta name=twitter:title content="A beginner's guide to adding a new WASI syscall in Wasmtime"><meta name=twitter:description content="In this article, we explore how to add a new system call to WASI, the WebAssembly System Interface, and implement it in Wasmtime"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">A beginner's guide to adding a new WASI syscall in Wasmtime</h1><div class="text-sm opacity-60"><time>Tuesday, March 31, 2020</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><a href=https://webassembly.org>WebAssembly (WASM)</a> <em>is a binary instruction format for a stack-based
 virtual machine.</em> In familiar terms, WASM is used as a compilation target for
 various programming languages (C, C++, or Rust, for example), generating a
 compact binary with a known format. Despite the name, WebAssembly is not a
 technology that can be used only on the web. While most initial use cases for it
-came from browsers, <a href="https://webassembly.github.io/spec/core/index.html">the core specification</a> does not assume a browser
+came from browsers, <a href=https://webassembly.github.io/spec/core/index.html>the core specification</a> does not assume a browser
 runtime, but rather describes the binary and text formats for modules, types,
 values, and instruction types. And as a result, there are multiple runtimes
-implemented for various scenarios, both in and outside of browser environments.</p>
-<p><a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-overview.md">WASI, the WebAssembly System Interface</a>, is a
+implemented for various scenarios, both in and outside of browser environments.</p><p><a href=https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-overview.md>WASI, the WebAssembly System Interface</a>, is a
 capability-oriented set of APIs designed to standardize the sandboxed execution
 of WebAssembly modules outside of browsers. Specifically, WASI aims to be the
 common layer that WebAssembly modules can use to interface with host runtimes,
@@ -311,55 +19,41 @@ and get granular access to OS specific objects such as files, environment
 variables, or networking sockets. Because of the apparent resemblance to OS
 system calls, the API functions exposed by WASI are often referred to as
 <code>syscalls</code>, term used by this article as well. For an introduction to the goals
-and architecture of WASI, head over to the Mozilla blog and read <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">Lin Clark&rsquo;s
-announcement post</a>.</p>
-<p>In this article we will explore how to add such a function interface to WASI,
-and how to implement it in <a href="https://wasmtime.dev/">Wasmtime</a>, one WebAssembly runtimes
+and architecture of WASI, head over to the Mozilla blog and read <a href=https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/>Lin Clark&rsquo;s
+announcement post</a>.</p><p>In this article we will explore how to add such a function interface to WASI,
+and how to implement it in <a href=https://wasmtime.dev/>Wasmtime</a>, one WebAssembly runtimes
 that implements the WASI specification. This article is not intended to be a
-tutorial on <em>using</em> WASI as a compilation target for your applications (see <a href="https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-tutorial.md">the
+tutorial on <em>using</em> WASI as a compilation target for your applications (see <a href=https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-tutorial.md>the
 official tutorial</a>), but document my experience in learning how
 to add such a system call to WASI and a very simple implementation to Wasmtime.
-The article is based on the talk <a href="https://twitter.com/josh_triplett">Josh Triplett</a> gave in December at the
-<a href="https://www.meetup.com/wasmsf/events/265881345/">WebAssembly San Francisco meetup</a>, and updated to the significant API
+The article is based on the talk <a href=https://twitter.com/josh_triplett>Josh Triplett</a> gave in December at the
+<a href=https://www.meetup.com/wasmsf/events/265881345/>WebAssembly San Francisco meetup</a>, and updated to the significant API
 changes that happened to the WASI and Wasmtime projects since December, with the
-very prompt help of <a href="https://twitter.com/kubkon">Jakub Konka</a>.</p>
-<p><a href="https://bytecodealliance.github.io/wasmtime/contributing.html">To get started</a>, first clone the Wasmtime repository:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>$ git clone --recursive https://github.com/bytecodealliance/wasmtime
-</span></span></code></pre></div><blockquote>
-<p>If you want to avoid any changes made to the Wasmtime repository since writing
-this article, you can checkout <a href="https://github.com/bytecodealliance/wasmtime/tree/ac7cd4c46abdc9d4f3ef3230386afd52177e5f7c">this revision</a> of the
-repository.</p>
-</blockquote>
-<h3 id="how-is-the-wasi-api-defined">How is the WASI API defined?</h3>
-<p>The WASI API is declared using <a href="https://github.com/WebAssembly/WASI/blob/master/docs/witx.md"><code>witx</code></a>, an experimental file format based
-on the <a href="https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0">WebAssembly Text Format</a>, with added support for <a href="https://github.com/WebAssembly/module-types/blob/master/proposals/module-types/Overview.md">module
-types</a> and <a href="https://github.com/WebAssembly/annotations/">annotations</a>. WASI also uses a
+very prompt help of <a href=https://twitter.com/kubkon>Jakub Konka</a>.</p><p><a href=https://bytecodealliance.github.io/wasmtime/contributing.html>To get started</a>, first clone the Wasmtime repository:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>$ git clone --recursive https://github.com/bytecodealliance/wasmtime
+</span></span></code></pre></div><blockquote><p>If you want to avoid any changes made to the Wasmtime repository since writing
+this article, you can checkout <a href=https://github.com/bytecodealliance/wasmtime/tree/ac7cd4c46abdc9d4f3ef3230386afd52177e5f7c>this revision</a> of the
+repository.</p></blockquote><h3 id=how-is-the-wasi-api-defined>How is the WASI API defined?</h3><p>The WASI API is declared using <a href=https://github.com/WebAssembly/WASI/blob/master/docs/witx.md><code>witx</code></a>, an experimental file format based
+on the <a href=https://webassembly.github.io/spec/core/bikeshed/index.html#text-format%E2%91%A0>WebAssembly Text Format</a>, with added support for <a href=https://github.com/WebAssembly/module-types/blob/master/proposals/module-types/Overview.md>module
+types</a> and <a href=https://github.com/WebAssembly/annotations/>annotations</a>. WASI also uses a
 three-phase process for making changes to the API, with
-<a href="https://github.com/WebAssembly/WASI/tree/master/phases/ephemeral"><code>ephemeral</code></a>, <a href="https://github.com/WebAssembly/WASI/tree/master/phases/snapshot"><code>snapshot</code></a>, and <a href="https://github.com/WebAssembly/WASI/tree/master/phases/old"><code>old</code></a> phases that
-define the stability for a given API. <a href="https://github.com/WebAssembly/WASI/tree/master/phases">This document</a> describes how
-the phases are used in which development cycle.</p>
-<p>If you cloned the Wasmtime repository recursively, you should have the WASI
-repository pulled as a submodule in <code>crates/wasi-common/WASI</code>.</p>
-<p>As mentioned, the <code>.witx</code> file format should be familiar if you have worked with
+<a href=https://github.com/WebAssembly/WASI/tree/master/phases/ephemeral><code>ephemeral</code></a>, <a href=https://github.com/WebAssembly/WASI/tree/master/phases/snapshot><code>snapshot</code></a>, and <a href=https://github.com/WebAssembly/WASI/tree/master/phases/old><code>old</code></a> phases that
+define the stability for a given API. <a href=https://github.com/WebAssembly/WASI/tree/master/phases>This document</a> describes how
+the phases are used in which development cycle.</p><p>If you cloned the Wasmtime repository recursively, you should have the WASI
+repository pulled as a submodule in <code>crates/wasi-common/WASI</code>.</p><p>As mentioned, the <code>.witx</code> file format should be familiar if you have worked with
 <code>.wat</code> files - for example, this is how the <code>args_sizes_get</code> function is
-declared in the <code>snapshot</code> phase:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>;;; Return command-line argument data sizes.
-</span></span><span style="display:flex;"><span>(@interface func (export &#34;args_sizes_get&#34;)
-</span></span><span style="display:flex;"><span>  (result $error $errno)
-</span></span><span style="display:flex;"><span>  ;;; The number of arguments.
-</span></span><span style="display:flex;"><span>  (result $argc $size)
-</span></span><span style="display:flex;"><span>  ;;; The size of the argument string data.
-</span></span><span style="display:flex;"><span>  (result $argv_buf_size $size)
-</span></span><span style="display:flex;"><span>)
+declared in the <code>snapshot</code> phase:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>;;; Return command-line argument data sizes.
+</span></span><span style=display:flex><span>(@interface func (export &#34;args_sizes_get&#34;)
+</span></span><span style=display:flex><span>  (result $error $errno)
+</span></span><span style=display:flex><span>  ;;; The number of arguments.
+</span></span><span style=display:flex><span>  (result $argc $size)
+</span></span><span style=display:flex><span>  ;;; The size of the argument string data.
+</span></span><span style=display:flex><span>  (result $argv_buf_size $size)
+</span></span><span style=display:flex><span>)
 </span></span></code></pre></div><p>We note that this is exports a function called <code>args_sizes_get</code>, which does not
 accept any parameters, and which returns any error and its error code, together
-with the number of arguments, and the size of the argument string data.</p>
-<p>So let&rsquo;s declare a new WASI API function. We add it to the <code>snapshot</code> phase -
-and the right <code>.witx</code> file can be found in:</p>
-<p><code>crates/wasi-common/WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx</code>.</p>
-<p>We add a very simple function, <code>print_greeting</code>, which does not take any
-arguments, and returns potential errors:</p>
-<pre tabindex="0"><code>diff --git a/phases/snapshot/witx/wasi_snapshot_preview1.witx b/phases/snapshot/witx/wasi_snapshot_preview1.witx
+with the number of arguments, and the size of the argument string data.</p><p>So let&rsquo;s declare a new WASI API function. We add it to the <code>snapshot</code> phase -
+and the right <code>.witx</code> file can be found in:</p><p><code>crates/wasi-common/WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx</code>.</p><p>We add a very simple function, <code>print_greeting</code>, which does not take any
+arguments, and returns potential errors:</p><pre tabindex=0><code>diff --git a/phases/snapshot/witx/wasi_snapshot_preview1.witx b/phases/snapshot/witx/wasi_snapshot_preview1.witx
 index 98cd947..9c74dae 100644
 --- a/phases/snapshot/witx/wasi_snapshot_preview1.witx
 +++ b/phases/snapshot/witx/wasi_snapshot_preview1.witx
@@ -373,17 +67,11 @@ index 98cd947..9c74dae 100644
 +    (result $error $errno)
 +  )
  )
-</code></pre><blockquote>
-<p>Tip: you can get basic syntax highlighting for <code>.witx</code> files using this <a href="https://marketplace.visualstudio.com/items?itemName=dtsvet.vscode-wasm">VS
+</code></pre><blockquote><p>Tip: you can get basic syntax highlighting for <code>.witx</code> files using this <a href="https://marketplace.visualstudio.com/items?itemName=dtsvet.vscode-wasm">VS
 Code extension for WebAssembly</a> and set the file type as
-WebAssembly Text Format.</p>
-</blockquote>
-<p>By <em>declaring</em> our <code>print_greeting</code> API we achieved half of our goal. Now we
-must also provide an actual implementation for it.</p>
-<h3 id="how-does-wasmtime-implement-the-wasi-api">How does Wasmtime implement the WASI API?</h3>
-<p>At this point, if you try to build the main Wasmtime repository with the updated
-<code>.witx</code> file, you will see the following error:</p>
-<pre tabindex="0"><code>error[E0046]: not all trait items implemented, missing: `print_greeting`
+WebAssembly Text Format.</p></blockquote><p>By <em>declaring</em> our <code>print_greeting</code> API we achieved half of our goal. Now we
+must also provide an actual implementation for it.</p><h3 id=how-does-wasmtime-implement-the-wasi-api>How does Wasmtime implement the WASI API?</h3><p>At this point, if you try to build the main Wasmtime repository with the updated
+<code>.witx</code> file, you will see the following error:</p><pre tabindex=0><code>error[E0046]: not all trait items implemented, missing: `print_greeting`
   --&gt; crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs:13:1
    |
 13 |   impl&lt;&#39;a&gt; WasiSnapshotPreview1 for WasiCtx {
@@ -397,10 +85,9 @@ must also provide an actual implementation for it.</p>
 9  | | });
    | |___- `print_greeting` from trait
 </code></pre><p>This means there is a component that automatically generates Rust traits based
-on the snapshot <code>.witx</code> files - <a href="https://github.com/bytecodealliance/wasmtime/tree/master/crates/wiggle">the <code>wiggle</code> crate</a>, used by
+on the snapshot <code>.witx</code> files - <a href=https://github.com/bytecodealliance/wasmtime/tree/master/crates/wiggle>the <code>wiggle</code> crate</a>, used by
 <code>wasi-common</code> to generate the <code>WasiSnapshotPreview1</code> trait that needs to be
-implemented in <code>wasi_snapshot_preview1.rs</code>:</p>
-<pre tabindex="0"><code>diff --git a/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs b/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
+implemented in <code>wasi_snapshot_preview1.rs</code>:</p><pre tabindex=0><code>diff --git a/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs b/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
 index e4e4a604f..0fc1fa22f 100644
 --- a/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
 +++ b/crates/wasi-common/src/snapshots/wasi_snapshot_preview1.rs
@@ -417,13 +104,9 @@ index e4e4a604f..0fc1fa22f 100644
 </code></pre><p>So we add a very simple implementation for our <code>print_greeting</code> function which
 prints to the console. Ultimately, we want this function to get executed by the
 runtime when a WebAssembly module imports the <code>print_greeting</code> function from
-WASI.</p>
-<p>If we now build the main repository, we should have a version of Wasmtime that
-contains the <code>print_greet</code> function in the <code>wasi_snapshot_preview1</code> module.</p>
-<h3 id="using-the-print_greeting-function-from-a-webassembly-module">Using the <code>print_greeting</code> function from a WebAssembly module</h3>
-<p>At this point, we can write a WebAssembly module that imports the
-<code>print_greeting</code> function and calls it:</p>
-<pre tabindex="0"><code>(module
+WASI.</p><p>If we now build the main repository, we should have a version of Wasmtime that
+contains the <code>print_greet</code> function in the <code>wasi_snapshot_preview1</code> module.</p><h3 id=using-the-print_greeting-function-from-a-webassembly-module>Using the <code>print_greeting</code> function from a WebAssembly module</h3><p>At this point, we can write a WebAssembly module that imports the
+<code>print_greeting</code> function and calls it:</p><pre tabindex=0><code>(module
     (import &#34;wasi_snapshot_preview1&#34; &#34;print_greeting&#34; (func $print_greeting (result i32)))
 
     (memory 1)
@@ -435,68 +118,22 @@ contains the <code>print_greet</code> function in the <code>wasi_snapshot_previe
     )
 )
 </code></pre><p>If we use our newly built Wasmtime binary and filter the logs, we can see the
-runtime executing our <code>print_greeting</code> function:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-console" data-lang="console"><span style="display:flex;"><span>RUST_LOG=wasi_common=trace ./target/debug/wasmtime examples/greeting.wat
-</span></span><span style="display:flex;"><span>TRACE wasi_common::wasi::wasi_snapshot_preview1
-</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>&gt; print_greeting<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>Hello World from the new print_greeting syscall in WASI
-</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
-</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>TRACE wasi_common::wasi::wasi_snapshot_preview1
-</span></span><span style="display:flex;"><span>&gt; errno<span style="color:#f92672">=</span>No error occurred. System call completed successfully. <span style="color:#f92672">(</span>Errno::Success<span style="color:#f92672">(</span>0<span style="color:#f92672">))</span>
+runtime executing our <code>print_greeting</code> function:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>RUST_LOG=wasi_common=trace ./target/debug/wasmtime examples/greeting.wat
+</span></span><span style=display:flex><span>TRACE wasi_common::wasi::wasi_snapshot_preview1
+</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>
+</span></span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010></span>&gt; print_greeting<span style=color:#f92672>()</span>
+</span></span><span style=display:flex><span>Hello World from the new print_greeting syscall in WASI
+</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>
+</span></span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010></span>TRACE wasi_common::wasi::wasi_snapshot_preview1
+</span></span><span style=display:flex><span>&gt; errno<span style=color:#f92672>=</span>No error occurred. System call completed successfully. <span style=color:#f92672>(</span>Errno::Success<span style=color:#f92672>(</span>0<span style=color:#f92672>))</span>
 </span></span></code></pre></div><p>This isn&rsquo;t terribly useful, as our syscall does not take any arguments, and just
 prints a static message - but it shows how to potentially add an implementation
 for very common operations that you might have in your runtime context, or
-extend existing runtimes.</p>
-<p>As next steps, one could try adding more complicated logic for the system call,
+extend existing runtimes.</p><p>As next steps, one could try adding more complicated logic for the system call,
 parameters and other return values, and potentially building modules that use
 the newly added function from programming languages that compile to WASI (such
 as Rust, or C++). Hopefully, this article gives you a starting point for getting
-started with WASI and Wasmtime.</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/rust">rust</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/wasm-api-witx/"><span class="mr-1.5">←</span><span>Writing a simple WASM API layer using interface types and Wasmtime</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/random-wsl-tips/"><span>Random WSL tips &amp; tricks</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+started with WASI and Wasmtime.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/rust>rust</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/wasm-api-witx/><span class=mr-1.5>←</span><span>Writing a simple WASM API layer using interface types and Wasmtime</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/random-wsl-tips/><span>Random WSL tips & tricks</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>

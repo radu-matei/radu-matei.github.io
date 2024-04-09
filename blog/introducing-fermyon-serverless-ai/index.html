@@ -1,335 +1,9 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html
-  class="not-ready text-sm lg:text-base"
-  style="--bg: #faf6f1"
-  lang="en-us"
->
-  <head>
-  <link rel="preload" as="font" href="/fonts/spin-quasi-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" href="/fonts/spin-mono-regular-subset.woff2" type="font/woff2" crossorigin="anonymous">
-  <style>
-    @font-face {
-      font-family: 'Spin Quasi';
-      src: url('/fonts/spin-quasi-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Spin Mono';
-      src: url('/fonts/spin-mono-regular-subset.woff2') format('woff2');
-      font-display: swap;
-    }
-
-    html {
-      font-family: "Spin Quasi", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    code,
-    kbd,
-    samp,
-    pre {
-      font-family: "Spin Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-  </style>
-
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-  
-  <title>Introducing Fermyon Serverless AI - radu&#39;s blog</title>
-
-  
-  <meta name="theme-color" />
-
-  
-  <link rel="canonical" href="https://www.fermyon.com/blog/introducing-fermyon-serverless-ai">
-  
-  
-  
-  
-  <meta name="description" content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience." />
-  <meta name="author" content="@matei_radu" />
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="preload stylesheet" as="style" href="https://radu-matei.com/main.min.css" />
-
-  
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"
-    onload="hljs.highlightAll();"></script>
-  
-
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css"
-    media="screen" />
-  <link disabled id="hljs-dark" rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css"
-    media="screen" />
-
-  
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/theme.svg" />
-
-  
-  
-  
-  
-  
-  
-
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/twitter.svg" />
-  
-  <link rel="preload" as="image" href="https://radu-matei.com/github.svg" />
-  
-  
-
-  
-  
-
-  
-  <link rel="icon" href="https://radu-matei.com/favicon.ico" />
-  <link rel="apple-touch-icon" href="https://radu-matei.com/apple-touch-icon.png" />
-
-  
-  <meta name="generator" content="Hugo 0.124.1">
-
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:title" content="Introducing Fermyon Serverless AI" />
-<meta property="og:description" content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://radu-matei.com/blog/introducing-fermyon-serverless-ai/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2023-09-05T16:00:00+00:00" />
-<meta property="article:modified_time" content="2023-09-05T16:00:00+00:00" />
-
-  
-  <meta itemprop="name" content="Introducing Fermyon Serverless AI">
-<meta itemprop="description" content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience."><meta itemprop="datePublished" content="2023-09-05T16:00:00+00:00" />
-<meta itemprop="dateModified" content="2023-09-05T16:00:00+00:00" />
-<meta itemprop="wordCount" content="1531">
-<meta itemprop="keywords" content="spin,wasm,ai,ml," />
-  
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Introducing Fermyon Serverless AI"/>
-<meta name="twitter:description" content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience."/>
-
-  
-  
-
-</head>
-
-  <body class="text-black duration-200 ease-out dark:text-white">
-    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
-  <div class="relative z-50 mr-auto flex items-center">
-    <a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href="https://radu-matei.com/">radu&#39;s blog</a>
-    <div
-      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
-      role="button" aria-label="Dark"></div>
-  </div>
-
-  <div
-    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
-    role="button" aria-label="Menu"></div>
-
-  
-  <script>
-    
-    const htmlClass = document.documentElement.classList;
-    setTimeout(() => {
-      htmlClass.remove('not-ready');
-    }, 10);
-    const hljsDark = document.getElementById("hljs-dark");
-
-    
-    const btnMenu = document.querySelector('.btn-menu');
-    btnMenu.addEventListener('click', () => {
-      htmlClass.toggle('open');
-    });
-
-    
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const lightBg = '#faf6f1'.replace(/"/g, '');
-    const setDark = (isDark) => {
-      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
-      htmlClass[isDark ? 'add' : 'remove']('dark');
-      localStorage.setItem('dark', isDark);
-      isDark ? hljsDark.disabled = false : hljsDark.disabled = true;
-    };
-
-    
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (htmlClass.contains('dark')) {
-      setDark(true);
-    } else {
-      const darkVal = localStorage.getItem('dark');
-      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
-    }
-
-    
-    darkScheme.addEventListener('change', (event) => {
-      setDark(event.matches);
-    });
-
-    
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
-    });
-  </script>
-
-  <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
-    
-    
-    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/tags/notes/">Notes</a>
-      
-      <a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href="/about/">About</a>
-      
-    </nav>
-    
-
-    
-    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6">
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./twitter.svg)"
-        href="https://twitter.com/matei_radu"
-        target="_blank" rel="me">
-        twitter
-      </a>
-      
-      <a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
-        style="--url: url(./github.svg)"
-        href="https://github.com/radu-matei"
-        target="_blank" rel="me">
-        github
-      </a>
-      
-    </nav>
-    
-  </div>
-</header>
-
-
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"
-    >
-      
-
-<article>
-  <header class="mb-20">
-    <h1 class="!my-0 pb-2.5">Introducing Fermyon Serverless AI</h1>
-
-    
-    <div class="text-sm opacity-60">
-      
-      <time>Tuesday, September 5, 2023</time>
-      
-      
-      
-      
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>@matei_radu</span></a>
-      
-    </div>
-    
-  </header>
-
-  <section><p><em><a href="https://www.fermyon.com/blog/introducing-fermyon-serverless-ai">This post originally appeared on the Fermyon blog</a></em>.</p>
-<p>Since we started Fermyon, we have been focused on building a computing platform to serve as the foundation for a new generation of serverless, and in the process we built <a href="https://github.com/fermyon/spin">Spin</a> and <a href="https://fermyon.com/cloud">Fermyon Cloud</a> — the open source developer tool and the cloud platform for serverless WebAssembly.</p>
-<p>Over the last few months, Artificial Intelligence (AI) has become one of the most popular workloads in computing. However, to inject AI capabilities into their applications, developers must use new tools, consider expensive hardware and cold starts, target specific platforms and architectures, or be locked into proprietary platforms.</p>
-<p>Today we are introducing a new service in our cloud offering — <a href="https://fermyon.com/serverless-ai">Fermyon Serverless AI</a>. This new set of features, now in private beta, extend what you can build with Fermyon Cloud and give you the building blocks to integrate AI capabilities in your serverless applications without worrying about assigning expensive GPUs to your applications, or about their frequent minute-long cold starts.</p>
-<!-- raw HTML omitted -->
-<p>Using Fermyon Serverless AI, developers will be able to:</p>
-<ul>
-<li>execute inferencing on Large Language Models (LLMs) for <a href="https://ai.meta.com/llama/">Llama2</a> and <a href="https://about.fb.com/news/2023/08/code-llama-ai-for-coding/">CodeLlama</a> models on state-of-the-art GPUs with no extra setup</li>
-<li>generate sentence embeddings for their data, then store, search, and retrieve it using a vector-ready database</li>
-<li>cache inferencing responses in a built-in key/value storage</li>
-<li>run entire full-stack serverless applications that can use configuration and secrets, custom domains, relational and non-relational data stores, or built-in observability.</li>
-</ul>
-<p>Using WebAssembly to run workloads, we can assign a fraction of a GPU to a user application <em>just in time</em> to execute an AI operation. When the operation is complete, we assign that fraction of the GPU to another application from the queue. And because the startup time in Fermyon Cloud is <em>milliseconds</em>, that&rsquo;s how fast we can switch between user applications that are assigned to a GPU. If all GPU fractions are busy crunching data, we queue the incoming application until the next one is available.</p>
-<p>This has two big implications:</p>
-<ul>
-<li>users don&rsquo;t have to wait for a virtual machine or container to start and for a GPU to be attached to it</li>
-<li>we can achieve significantly higher resource utilization and efficiency for our infrastructure</li>
-</ul>
-<p>Efficiency and sustainability played a big factor in how we chose the infrastructure provider for Fermyon Serverless AI — we are delighted to work with <a href="https://www.civo.com/">Civo</a> and use their new <a href="https://www.civo.com/navigate">carbon-neutral GPU Compute Service just announced at Civo Navigate</a>.</p>
-<p><img src="https://www.fermyon.com/static/image/serverless-ai-diagram.png" alt="Fermyon Serverless AI diagram"></p>
-<p><a href="https://developer.fermyon.com/cloud/serverless-ai">Sign up for the private beta</a> and you can access the new Fermyon Serverless AI features on the Starter Plan of Fermyon Cloud!</p>
-<p>If you are interested in running AI workloads locally, we are also making these capabilities available in the Spin open source project! If you have a powerful workstation, you can generate embeddings and run inferencing on similar language models on your machine, simplifying the developer loop and giving you the ability to <a href="https://developer.fermyon.com/spin/kubernetes">run your application anywhere Spin runs</a>. We are looking forward to writing more about how this is implemented in Spin over the coming weeks. Stay tuned!</p>
-<h2 id="fermyon-serverless-ai-in-action">Fermyon Serverless AI In Action</h2>
-<p>Let’s take the example of building a simple sentiment analysis bot that takes as input the text to be analyzed and returns one of the following sentiments: positive, neutral, or negative. We will create a small JavaScript endpoint that performs the analysis that we will build and run locally, then deploy to Fermyon Cloud.</p>
-<blockquote>
-<blockquote>
-<p>Check out the complete example in the <a href="https://developer.fermyon.com/hub">Spin Up Hub</a>, and make sure you are <a href="https://developer.fermyon.com/spin/serverless-ai-api-guide.md">following the instructions on how to set up your development environment</a>.</p>
-</blockquote>
-</blockquote>
-<p>Here is a breakdown of how to build this using Spin:</p>
-<ul>
-<li>we use the Llama2 chat model to perform the sentiment analysis, so we <a href="https://developer.fermyon.com">prepare the prompt in the format the model expects</a></li>
-<li>use the new <code>Llm.infer</code> function to execute the inferencing</li>
-<li>log then return the response</li>
-</ul>
-<pre tabindex="0"><code>export async function handler(req, res) {
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Introducing Fermyon Serverless AI - radu's blog</title>
+<meta name=theme-color><link rel=canonical href=https://www.fermyon.com/blog/introducing-fermyon-serverless-ai><meta name=description content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience."><meta name=author content="@matei_radu"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Introducing Fermyon Serverless AI"><meta property="og:description" content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/introducing-fermyon-serverless-ai/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2023-09-05T16:00:00+00:00"><meta property="article:modified_time" content="2023-09-05T16:00:00+00:00"><meta itemprop=name content="Introducing Fermyon Serverless AI"><meta itemprop=description content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience."><meta itemprop=datePublished content="2023-09-05T16:00:00+00:00"><meta itemprop=dateModified content="2023-09-05T16:00:00+00:00"><meta itemprop=wordCount content="1531"><meta itemprop=keywords content="spin,wasm,ai,ml,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Introducing Fermyon Serverless AI"><meta name=twitter:description content="Fermyon Serverless AI gives you the building blocks for integrating Artificial Intelligence into your serverless applications, with AI inferencing for Large Language Models (LLMs) for Llama2 and CodeLlama, support for generating sentence embeddings and storing them in a vector-ready database, built-in key-value storage, and a seamless developer experience."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
+</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Introducing Fermyon Serverless AI</h1><div class="text-sm opacity-60"><time>Tuesday, September 5, 2023</time>
+<span class=mx-1>&#183;</span>
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>@matei_radu</span></a></div></header><section><p><em><a href=https://www.fermyon.com/blog/introducing-fermyon-serverless-ai>This post originally appeared on the Fermyon blog</a></em>.</p><p>Since we started Fermyon, we have been focused on building a computing platform to serve as the foundation for a new generation of serverless, and in the process we built <a href=https://github.com/fermyon/spin>Spin</a> and <a href=https://fermyon.com/cloud>Fermyon Cloud</a> — the open source developer tool and the cloud platform for serverless WebAssembly.</p><p>Over the last few months, Artificial Intelligence (AI) has become one of the most popular workloads in computing. However, to inject AI capabilities into their applications, developers must use new tools, consider expensive hardware and cold starts, target specific platforms and architectures, or be locked into proprietary platforms.</p><p>Today we are introducing a new service in our cloud offering — <a href=https://fermyon.com/serverless-ai>Fermyon Serverless AI</a>. This new set of features, now in private beta, extend what you can build with Fermyon Cloud and give you the building blocks to integrate AI capabilities in your serverless applications without worrying about assigning expensive GPUs to your applications, or about their frequent minute-long cold starts.</p><p>Using Fermyon Serverless AI, developers will be able to:</p><ul><li>execute inferencing on Large Language Models (LLMs) for <a href=https://ai.meta.com/llama/>Llama2</a> and <a href=https://about.fb.com/news/2023/08/code-llama-ai-for-coding/>CodeLlama</a> models on state-of-the-art GPUs with no extra setup</li><li>generate sentence embeddings for their data, then store, search, and retrieve it using a vector-ready database</li><li>cache inferencing responses in a built-in key/value storage</li><li>run entire full-stack serverless applications that can use configuration and secrets, custom domains, relational and non-relational data stores, or built-in observability.</li></ul><p>Using WebAssembly to run workloads, we can assign a fraction of a GPU to a user application <em>just in time</em> to execute an AI operation. When the operation is complete, we assign that fraction of the GPU to another application from the queue. And because the startup time in Fermyon Cloud is <em>milliseconds</em>, that&rsquo;s how fast we can switch between user applications that are assigned to a GPU. If all GPU fractions are busy crunching data, we queue the incoming application until the next one is available.</p><p>This has two big implications:</p><ul><li>users don&rsquo;t have to wait for a virtual machine or container to start and for a GPU to be attached to it</li><li>we can achieve significantly higher resource utilization and efficiency for our infrastructure</li></ul><p>Efficiency and sustainability played a big factor in how we chose the infrastructure provider for Fermyon Serverless AI — we are delighted to work with <a href=https://www.civo.com/>Civo</a> and use their new <a href=https://www.civo.com/navigate>carbon-neutral GPU Compute Service just announced at Civo Navigate</a>.</p><p><img src=https://www.fermyon.com/static/image/serverless-ai-diagram.png alt="Fermyon Serverless AI diagram"></p><p><a href=https://developer.fermyon.com/cloud/serverless-ai>Sign up for the private beta</a> and you can access the new Fermyon Serverless AI features on the Starter Plan of Fermyon Cloud!</p><p>If you are interested in running AI workloads locally, we are also making these capabilities available in the Spin open source project! If you have a powerful workstation, you can generate embeddings and run inferencing on similar language models on your machine, simplifying the developer loop and giving you the ability to <a href=https://developer.fermyon.com/spin/kubernetes>run your application anywhere Spin runs</a>. We are looking forward to writing more about how this is implemented in Spin over the coming weeks. Stay tuned!</p><h2 id=fermyon-serverless-ai-in-action>Fermyon Serverless AI In Action</h2><p>Let’s take the example of building a simple sentiment analysis bot that takes as input the text to be analyzed and returns one of the following sentiments: positive, neutral, or negative. We will create a small JavaScript endpoint that performs the analysis that we will build and run locally, then deploy to Fermyon Cloud.</p><blockquote><blockquote><p>Check out the complete example in the <a href=https://developer.fermyon.com/hub>Spin Up Hub</a>, and make sure you are <a href=https://developer.fermyon.com/spin/serverless-ai-api-guide.md>following the instructions on how to set up your development environment</a>.</p></blockquote></blockquote><p>Here is a breakdown of how to build this using Spin:</p><ul><li>we use the Llama2 chat model to perform the sentiment analysis, so we <a href=https://developer.fermyon.com>prepare the prompt in the format the model expects</a></li><li>use the new <code>Llm.infer</code> function to execute the inferencing</li><li>log then return the response</li></ul><pre tabindex=0><code>export async function handler(req, res) {
   // Take the request body and prepare the Llama2 prompt.
   let input = decoder.decode(req.body);
   let prompt = `&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;
@@ -348,8 +22,7 @@ ${input} [/INST]
   // This is a full web application, send the HTTP response.
   res.status(200).body(inferenceResponse.text);
 }
-</code></pre><p>This is a simple, yet complete application! As with any capability in Spin, we need to declare in the manifest that this component should be allowed to execute the model. Here is the component in <code>spin.toml</code>:</p>
-<pre tabindex="0"><code>[[component]]
+</code></pre><p>This is a simple, yet complete application! As with any capability in Spin, we need to declare in the manifest that this component should be allowed to execute the model. Here is the component in <code>spin.toml</code>:</p><pre tabindex=0><code>[[component]]
 id = &#34;sentiment-analysis&#34;
 # this is a WebAssembly component.
 source = &#34;component.wasm&#34;
@@ -361,8 +34,7 @@ allowed_http_hosts = []
 ai_models = [&#34;llama2-chat&#34;]
 [component.build]
 command = &#34;npm run build&#34;
-</code></pre><p>Now let’s build the application and run it locally:</p>
-<pre tabindex="0"><code>$ spin build
+</code></pre><p>Now let’s build the application and run it locally:</p><pre tabindex=0><code>$ spin build
 Finished building sentiment-analysis component.
 # run the application locally
 $ spin up
@@ -372,111 +44,32 @@ Storing default key-value data to &#34;.spin/sqlite_key_value.db&#34;
 Serving http://127.0.0.1:3000
 Available Routes:
   sentiment-analysis: http://127.0.0.1:3000/api (wildcard)
-</code></pre><p>We can start sending requests to our sentiment analysis endpoint locally:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl -X POST -d <span style="color:#e6db74">&#34;This is amazing&#34;</span> http://localhost:3000/api
-</span></span><span style="display:flex;"><span>Positive
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Executed inference with input This is amazing Result:
-</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;text&#34;</span>: <span style="color:#e6db74">&#34;Positive&#34;</span>,
-</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;usage&#34;</span>: <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;numPromptTokens&#34;</span>: 55,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;numGeneratedTokens&#34;</span>: <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>time: 25.328s total
-</span></span></code></pre></div><p>When the request is received, Spin loads the Llama2 language model locally and executes the inferencing operation using the supplied prompt and parameters. We also get access to usage metrics such as the number of input and generated tokens.</p>
-<p>It is <em>really</em> slow when running on my Apple M1 laptop. Each request is taking around ~20-30 seconds, since running large language models locally is heavily resource intensive — but we can run entirely offline and perform AI inferencing operations from Spin!</p>
-<blockquote>
-<blockquote>
-<p>When developing locally, Spin takes advantage of an inference optimization technique called quantization, which lets you execute the inferencing operation on a model with lower precision, which can speed up the inferencing operation, but can also degrade your results. Even so, the operation is extremely slow.</p>
-</blockquote>
-</blockquote>
-<p>Now that we validated that our application runs correctly, it&rsquo;s time to deploy it to production and compare the performance. Without rebuilding or changing <em>anything</em> about our application, we can deploy to Fermyon Cloud using <code>spin cloud deploy</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ spin cloud deploy
-</span></span><span style="display:flex;"><span>Uploading sentiment-analysis version 0.1.0-r62f7e860 to Fermyon Cloud...
-</span></span><span style="display:flex;"><span>Deploying...
-</span></span><span style="display:flex;"><span>Waiting <span style="color:#66d9ef">for</span> application to become ready....... ready
-</span></span><span style="display:flex;"><span>Available Routes:
-</span></span><span style="display:flex;"><span>  sentiment-analysis: https://sentiment-analysis.fermyon.app/api <span style="color:#f92672">(</span>wildcard<span style="color:#f92672">)</span>
-</span></span></code></pre></div><p>A few seconds later and we get the URL for our application, and we can now execute the same request, this time with the application running in Fermyon Cloud:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl -X POST -d <span style="color:#e6db74">&#34;This is amazing&#34;</span> https://sentiment-analysis.fermyon.app/api
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Positive
-</span></span><span style="display:flex;"><span>time: 0.758s total
-</span></span></code></pre></div><p>This time, our entire request took around 750 milliseconds! In that time, Fermyon Cloud started my serverless web endpoint <em>and</em> executed an AI inferencing operation on the Llama2 chat model on a high performance GPU!</p>
-<!-- raw HTML omitted -->
-<h2 id="what-can-you-build-using-fermyon-serverless-ai-today">What Can You Build Using Fermyon Serverless AI Today?</h2>
-<p>Fermyon Serverless AI gives you the building blocks to add AI to your applications. You can find samples for <a href="https://developer.fermyon.com/hub">storing inferencing responses in the Fermyon Cloud key value store</a>, <a href="https://developer.fermyon.com/hub">performing semantic searches on embeddings to find relevant context to send to the language model</a>. Putting these capabilities together, a few examples of what you can build include:</p>
-<ul>
-<li>text processing engines (summarization, rewriting text)</li>
-<li>specialized chatbots (documentation bots)</li>
-<li>natural language to code generation using CodeLlama</li>
-</ul>
-<p>You can find (and contribute!) samples, tutorials, templates, and examples using the new AI capabilities on the <a href="https://developer.fermyon.com/hub">Spin Up Hub</a>. We are excited to learn about your use cases and to understand how to improve the service in the future. If you are interested in this feature, make sure to <a href="https://fermyon.com/discord">join our Discord server</a>!</p>
-<blockquote>
-<blockquote>
-<p>Even though they might appear so at first glance, language models are not magic. They have <a href="https://arxiv.org/pdf/2305.13862.pdf">intrinsic biases</a> and can <a href="https://arxiv.org/pdf/2305.14552.pdf">start hallucinating inputs and predict erroneous outputs</a>. While the service is in private beta, we recommend avoiding scenarios where the language model would generate a large corpus of text unrestrained, and we encourage following the <a href="https://ai.meta.com/llama/responsible-use-guide/">models’ responsible use guide.</a>.</p>
-</blockquote>
-</blockquote>
-<h2 id="limits-limitations-and-looking-forward">Limits, Limitations, and Looking Forward</h2>
-<p>While the service is in private beta, we are applying some rate limiting and queueing for AI requests to ensure a great experience for our users.  You can learn more about the <a href="https://developer.fermyon.com/cloud/faq">usage limits for the private beta here</a>. As we understand the usage patterns for AI workloads, we gradually work to raise them.</p>
-<p>Currently, we have the following AI models available in Fermyon Cloud:</p>
-<ul>
-<li>for inferencing: <a href="https://ai.meta.com/resources/models-and-libraries/llama/">Llama2 Chat</a> and <a href="https://ai.meta.com/blog/code-llama-large-language-model-coding/">CodeLlama Instruct</a>, both in the 13B parameter variants</li>
-<li>for embedding: <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2"><code>sentence-transformers/all-MiniLM-L6-v2</code></a></li>
-</ul>
-<p>As we learn about how these models are used, we are really excited to experiment with models of various sizes (both smaller, specialized models as well as 70B parameter models), and allowing users to upload fine-tuned weights (using <a href="https://arxiv.org/pdf/2106.09685.pdf">LoRa weights</a>).</p>
-<p><a href="https://developer.fermyon.com/cloud/serverless-ai">Sign up for the private beta</a>, we can&rsquo;t wait to see what you are going to build with our new Fermyon Serverless AI service!</p>
-</section>
-
-  
-  
-  <footer class="mt-12 flex flex-wrap">
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/spin">spin</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/wasm">wasm</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/ai">ai</a>
-     
-    <a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href="https://radu-matei.com/tags/ml">ml</a>
-    
-  </footer>
-  
-
-  
-  
-  
-  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
-    
-    <a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/"><span class="mr-1.5">←</span><span>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</span></a>
-    
-    
-    <a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://radu-matei.com/blog/introducing-spin-v1/"><span>Spin 1.0 — The Developer Tool for Serverless WebAssembly</span><span class="ml-1.5">→</span></a>
-    
-  </nav>
-  
-
-  
-  
-
-  
-  
-</article>
-
-
-    </main>
-
-    <footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60">
-  <div class="mr-auto">
-    &copy; 2024
-    <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank">Radu Matei</a>
-  </div>
-</footer>
-
-  </body>
-</html>
+</code></pre><p>We can start sending requests to our sentiment analysis endpoint locally:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl -X POST -d <span style=color:#e6db74>&#34;This is amazing&#34;</span> http://localhost:3000/api
+</span></span><span style=display:flex><span>Positive
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Executed inference with input This is amazing Result:
+</span></span><span style=display:flex><span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#34;text&#34;</span>: <span style=color:#e6db74>&#34;Positive&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#34;usage&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;numPromptTokens&#34;</span>: 55,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;numGeneratedTokens&#34;</span>: <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>time: 25.328s total
+</span></span></code></pre></div><p>When the request is received, Spin loads the Llama2 language model locally and executes the inferencing operation using the supplied prompt and parameters. We also get access to usage metrics such as the number of input and generated tokens.</p><p>It is <em>really</em> slow when running on my Apple M1 laptop. Each request is taking around ~20-30 seconds, since running large language models locally is heavily resource intensive — but we can run entirely offline and perform AI inferencing operations from Spin!</p><blockquote><blockquote><p>When developing locally, Spin takes advantage of an inference optimization technique called quantization, which lets you execute the inferencing operation on a model with lower precision, which can speed up the inferencing operation, but can also degrade your results. Even so, the operation is extremely slow.</p></blockquote></blockquote><p>Now that we validated that our application runs correctly, it&rsquo;s time to deploy it to production and compare the performance. Without rebuilding or changing <em>anything</em> about our application, we can deploy to Fermyon Cloud using <code>spin cloud deploy</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ spin cloud deploy
+</span></span><span style=display:flex><span>Uploading sentiment-analysis version 0.1.0-r62f7e860 to Fermyon Cloud...
+</span></span><span style=display:flex><span>Deploying...
+</span></span><span style=display:flex><span>Waiting <span style=color:#66d9ef>for</span> application to become ready....... ready
+</span></span><span style=display:flex><span>Available Routes:
+</span></span><span style=display:flex><span>  sentiment-analysis: https://sentiment-analysis.fermyon.app/api <span style=color:#f92672>(</span>wildcard<span style=color:#f92672>)</span>
+</span></span></code></pre></div><p>A few seconds later and we get the URL for our application, and we can now execute the same request, this time with the application running in Fermyon Cloud:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl -X POST -d <span style=color:#e6db74>&#34;This is amazing&#34;</span> https://sentiment-analysis.fermyon.app/api
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Positive
+</span></span><span style=display:flex><span>time: 0.758s total
+</span></span></code></pre></div><p>This time, our entire request took around 750 milliseconds! In that time, Fermyon Cloud started my serverless web endpoint <em>and</em> executed an AI inferencing operation on the Llama2 chat model on a high performance GPU!</p><h2 id=what-can-you-build-using-fermyon-serverless-ai-today>What Can You Build Using Fermyon Serverless AI Today?</h2><p>Fermyon Serverless AI gives you the building blocks to add AI to your applications. You can find samples for <a href=https://developer.fermyon.com/hub>storing inferencing responses in the Fermyon Cloud key value store</a>, <a href=https://developer.fermyon.com/hub>performing semantic searches on embeddings to find relevant context to send to the language model</a>. Putting these capabilities together, a few examples of what you can build include:</p><ul><li>text processing engines (summarization, rewriting text)</li><li>specialized chatbots (documentation bots)</li><li>natural language to code generation using CodeLlama</li></ul><p>You can find (and contribute!) samples, tutorials, templates, and examples using the new AI capabilities on the <a href=https://developer.fermyon.com/hub>Spin Up Hub</a>. We are excited to learn about your use cases and to understand how to improve the service in the future. If you are interested in this feature, make sure to <a href=https://fermyon.com/discord>join our Discord server</a>!</p><blockquote><blockquote><p>Even though they might appear so at first glance, language models are not magic. They have <a href=https://arxiv.org/pdf/2305.13862.pdf>intrinsic biases</a> and can <a href=https://arxiv.org/pdf/2305.14552.pdf>start hallucinating inputs and predict erroneous outputs</a>. While the service is in private beta, we recommend avoiding scenarios where the language model would generate a large corpus of text unrestrained, and we encourage following the <a href=https://ai.meta.com/llama/responsible-use-guide/>models’ responsible use guide.</a>.</p></blockquote></blockquote><h2 id=limits-limitations-and-looking-forward>Limits, Limitations, and Looking Forward</h2><p>While the service is in private beta, we are applying some rate limiting and queueing for AI requests to ensure a great experience for our users. You can learn more about the <a href=https://developer.fermyon.com/cloud/faq>usage limits for the private beta here</a>. As we understand the usage patterns for AI workloads, we gradually work to raise them.</p><p>Currently, we have the following AI models available in Fermyon Cloud:</p><ul><li>for inferencing: <a href=https://ai.meta.com/resources/models-and-libraries/llama/>Llama2 Chat</a> and <a href=https://ai.meta.com/blog/code-llama-large-language-model-coding/>CodeLlama Instruct</a>, both in the 13B parameter variants</li><li>for embedding: <a href=https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2><code>sentence-transformers/all-MiniLM-L6-v2</code></a></li></ul><p>As we learn about how these models are used, we are really excited to experiment with models of various sizes (both smaller, specialized models as well as 70B parameter models), and allowing users to upload fine-tuned weights (using <a href=https://arxiv.org/pdf/2106.09685.pdf>LoRa weights</a>).</p><p><a href=https://developer.fermyon.com/cloud/serverless-ai>Sign up for the private beta</a>, we can&rsquo;t wait to see what you are going to build with our new Fermyon Serverless AI service!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/spin>spin</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/ai>ai</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/ml>ml</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/><span class=mr-1.5>←</span><span>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/introducing-spin-v1/><span>Spin 1.0 — The Developer Tool for Serverless WebAssembly</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
+<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
