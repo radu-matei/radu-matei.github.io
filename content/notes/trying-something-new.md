@@ -3,7 +3,6 @@ title: "Trying something new"
 author: "Radu Matei"
 date: 2024-04-07
 tags: ["notes"]
-weight: "1"
 ---
 
 I've been writing on this blog since 2016.
