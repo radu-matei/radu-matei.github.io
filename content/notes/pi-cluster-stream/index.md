@@ -3,7 +3,6 @@ title: "Raspberry Pi SpinKube livestream"
 author: "Radu Matei"
 date: 2024-04-09
 tags: ["notes"]
-images: ["/img/main/pi-cover.jpeg"]
 ---
 
 I recently built a 5-node Raspberry Pi cluster running Wasm workloads using the
