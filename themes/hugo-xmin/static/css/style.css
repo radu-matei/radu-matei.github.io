@@ -1,0 +1,253 @@
+:root {
+  --fg: #111111;
+  --bg: #ffffff;
+  --accent: #0070f3;
+  --gray-100: #f9f9f9;
+  --gray-200: #eaeaea;
+  --gray-300: #999999;
+  --gray-600: #666666;
+  --gray-800: #333333;
+  --border-color: #eaeaea;
+  --code-bg: #f1f1f1;
+  --code-fg: #333333;
+  --radius: 6px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.dark {
+  --fg: #ffffff;
+  --bg: #111111;
+  --gray-100: #222222;
+  --gray-200: #333333;
+  --gray-300: #666666;
+  --gray-600: #888888;
+  --gray-800: #eaeaea;
+  --border-color: #333333;
+  --code-bg: #1a1a1a;
+  --code-fg: #cccccc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+body {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: var(--font-sans);
+  color: var(--fg);
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* header and navigation */
+nav {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3rem;
+}
+
+.menu {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.menu li {
+  margin-right: 1.5rem;
+}
+
+.menu a {
+  color: var(--gray-600);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.menu a:hover {
+  color: var(--accent);
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  margin: 0.75rem 0 0.5rem;
+}
+
+/* article metadata */
+.article-meta {
+  margin-bottom: 2.5rem;
+}
+
+.article-meta .title {
+  font-size: 2.25rem;
+  line-height: 1.3;
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.article-meta .author, .article-meta .date {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  font-weight: 400;
+}
+
+/* content styling */
+main {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+main p {
+  margin-bottom: 1.5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.1rem; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* code */
+pre {
+  border-radius: var(--radius);
+  background: var(--code-bg);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--code-fg);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+/* misc elements */
+img, iframe, video { 
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0 0 0 1rem;
+  color: var(--gray-600);
+  border-left: 3px solid var(--gray-200);
+}
+
+/* lists */
+ul, ol {
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+li {
+  margin: 0.5rem 0;
+}
+
+/* tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  display: block;
+}
+
+table thead th {
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+th, td {
+  padding: 0.5rem;
+}
+
+tr:nth-child(even) {
+  background-color: var(--gray-100);
+}
+
+/* footer */
+footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}
+
+footer a {
+  color: var(--gray-600);
+}
+
+/* responsive */
+@media (max-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .menu {
+    flex-wrap: wrap;
+  }
+  
+  .menu li {
+    margin: 0 1rem 0.5rem 0;
+  }
+  
+  .article-meta .title {
+    font-size: 1.75rem;
+  }
+  
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.4rem; }
+  h3 { font-size: 1.2rem; }
+}
