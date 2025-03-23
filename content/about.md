@@ -1,6 +1,6 @@
 +++
 title = "Hi, I'm Radu"
-date = "2017-09-05"
+# date = "2017-09-05"
 +++
 
 I'm the CTO and co-founder of [Fermyon](https://fermyon.com), where

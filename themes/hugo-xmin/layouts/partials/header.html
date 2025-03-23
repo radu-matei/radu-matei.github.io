@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ .Title }} | {{ .Site.Title }}</title>
+  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
   <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Summary }}{{ end }}">
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/fonts.css" />
@@ -12,14 +12,7 @@
 </head>
 
 <body>
-  <nav>
-    <div class="nav-content">
-      <a href="/" class="site-name">{{ .Site.Params.name }}</a>
-      <ul class="menu">
-        {{ range .Site.Menus.main }}
-        <li><a href="{{ .URL | relURL }}">{{ .Name }}</a></li>
-        {{ end }}
-      </ul>
-    </div>
-    <hr />
-  </nav>
+  <header>
+
+  </header>
+</body>

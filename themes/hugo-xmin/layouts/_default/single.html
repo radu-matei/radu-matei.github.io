@@ -1,10 +1,14 @@
 {{ partial "header.html" . }}
 <article>
     <header class="article-meta">
-        <h1 class="title">{{ .Title | markdownify }}</h1>
-        <div class="metadata">
-            {{ if (gt .Params.date 0) }}<time class="date">{{ .Date.Format "January 2, 2006" }}</time>{{ end }}
-        </div>
+        <h2>{{ .Title | markdownify }}</h2>
+        <a href="/">
+            <div class="metadata">
+                <!--Add a link to the author here pointing to /-->
+                <time class="date">{{.Params.author}}</time>
+                {{ if (gt .Params.date 0) }} • <time class="date">{{ .Date.Format "January 2, 2006" }}</time>{{ end }}
+            </div>
+        </a>
     </header>
 
     <main>
