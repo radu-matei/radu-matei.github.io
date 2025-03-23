@@ -23,10 +23,24 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-        });
+    // Custom script to ensure HTML is properly escaped in code blocks
+    document.addEventListener('DOMContentLoaded', function () {
+        // Wait for highlight.js to do its work
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                // Replace any unescaped HTML with escaped versions
+                const content = block.innerHTML;
+                // Create a new text node to ensure proper escaping
+                const newContent = document.createTextNode(block.textContent);
+                // Clear the block and append properly escaped content
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                // Re-apply highlighting
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
     });
 </script>
 
