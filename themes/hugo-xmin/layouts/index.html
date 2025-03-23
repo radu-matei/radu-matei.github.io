@@ -2,7 +2,6 @@
 
 <div class="container">
     <div class="hero">
-        <!-- <h1>Hey, I'm {{ .Site.Params.name }} 👋</h1> -->
         <p class="bio">{{ .Site.Params.bio }}</p>
         <div class="social-links">
             {{ with .Site.Params.twitter }}
@@ -15,11 +14,11 @@
     </div>
 
     <div class="recent-posts">
-        <h2>Recent Posts</h2>
+        <h2>Writing</h2>
         <ul>
             {{ range first 5 (where .Site.RegularPages "Section" "blog") }}
             <li>
-                <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
+                <!-- <span class="date">{{ .Date.Format "January 2, 2006" }} </span> -->
                 <a href="{{ .RelPermalink }}">{{ .Title }}</a>
             </li>
             {{ end }}

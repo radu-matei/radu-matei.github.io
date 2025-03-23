@@ -1,9 +1,15 @@
-  <footer>
+<footer>
   {{ partial "foot_custom.html" . }}
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
   {{ with .Site.Params.footer }}
-  <hr/>
+  <hr />
   {{ replace . "{Year}" now.Year | markdownify }}
   {{ end }}
-  </footer>
-  </body>
+</footer>
+</body>
+
 </html>
