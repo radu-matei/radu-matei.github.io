@@ -1,12 +1,16 @@
 {{ partial "header.html" . }}
-<div class="article-meta">
-<h1><span class="title">{{ .Title | markdownify }}</span></h1>
-{{ with .Params.author }}<h2 class="author">{{ . }}</h2>{{ end }}
-{{ if (gt .Params.date 0) }}<h2 class="date">{{ .Date.Format "2006/01/02" }}</h2>{{ end }}
-</div>
+<article>
+    <header class="article-meta">
+        <h1 class="title">{{ .Title | markdownify }}</h1>
+        <div class="metadata">
+            {{ with .Params.author }}<span class="author">{{ . }}</span>{{ end }}
+            {{ if (gt .Params.date 0) }}<time class="date">{{ .Date.Format "January 2, 2006" }}</time>{{ end }}
+        </div>
+    </header>
 
-<main>
-{{ .Content }}
-</main>
+    <main>
+        {{ .Content }}
+    </main>
+</article>
 
 {{ partial "footer.html" . }}
