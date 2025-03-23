@@ -58,16 +58,32 @@ nav {
   margin-bottom: 3rem;
 }
 
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.site-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--fg);
+  text-decoration: none;
+  margin-right: auto;
+}
+
 .menu {
   padding: 0;
   margin: 0;
   display: flex;
   list-style: none;
   font-size: 0.9rem;
+  gap: 2rem;
 }
 
 .menu li {
-  margin-right: 1.5rem;
+  margin: 0;
 }
 
 .menu a {
@@ -228,19 +244,24 @@ footer {
 footer a {
   color: var(--gray-600);
 }
-
 /* responsive */
 @media (max-width: 640px) {
   body {
     padding: 1rem;
   }
   
+  .nav-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
   .menu {
-    flex-wrap: wrap;
+    gap: 1rem;
   }
   
   .menu li {
-    margin: 0 1rem 0.5rem 0;
+    margin: 0;
   }
   
   .article-meta .title {

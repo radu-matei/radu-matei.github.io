@@ -1,0 +1,31 @@
+{{ partial "header.html" . }}
+
+<div class="container">
+    <div class="hero">
+        <h1>Hey, I'm {{ .Site.Params.name }} 👋</h1>
+        <p class="bio">{{ .Site.Params.bio }}</p>
+        <div class="social-links">
+            {{ with .Site.Params.twitter }}
+            <a href="https://twitter.com/{{ . }}" target="_blank" rel="noopener noreferrer">Twitter</a>
+            {{ end }}
+            {{ with .Site.Params.github }}
+            <a href="https://github.com/{{ . }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            {{ range first 5 (where .Site.RegularPages "Section" "blog") }}
+            <li>
+                <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
+                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            </li>
+            {{ end }}
+        </ul>
+        <a href="/blog" class="view-all">View all posts →</a>
+    </div>
+</div>
+
+{{ partial "footer.html" . }}

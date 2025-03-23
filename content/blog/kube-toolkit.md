@@ -56,7 +56,7 @@ Now for the actual implementation and how you can get started, and the first iss
 
 Since this tool was built from the ground-up, the first step was to put together the correct versions of the dependencies to `k8s.io/client-go`, `github.com/kubernetes/helm`, `k8s.io/api`, `k8s.io/apimachinery` and a bunch more. A trivial step you might say, but in the times of Kubernetes 1.8, this was incredibly frustrating...
 
-{{< tweet user="matei_radu" id="924321387128508419" >}}
+<!-- {{< tweet user="matei_radu" id="924321387128508419" >}} -->
 
 Essentially, during a 4 hour period (is was probably much more than that...), I was in the process of swapping git commit hashes and plugging them into `dep`, then trying to compile the project... Word of advice - check various release branches when working with vendored dependencies of Kubernetes!
 
