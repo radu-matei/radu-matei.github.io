@@ -8,13 +8,6 @@
     <div class="text-sm opacity-60">
       {{ if .Date }}
       <time>{{ .Date | time.Format ":date_full" }}</time>
-      {{ end }}<!---->
-      {{ $single_author := or .Params.Author site.Author.name }}
-      <!---->
-      {{ if $single_author }}
-      <span class="mx-1">&middot;</span>
-      <a class="link" href="https://twitter.com/matei_radu" rel="noreferrer" target="_blank"
-        style="text-decoration: none"><span>{{ $single_author }}</span></a>
       {{ end }}
     </div>
     {{ end }}
@@ -50,13 +43,6 @@
   <!-- Disqus -->
   {{ if and site.DisqusShortname (not (eq .Params.comments false)) }}
   <div class="mt-24" id="disqus_thread"></div>
-  <script>
-    const disqusShortname = '{{ site.DisqusShortname }}';
-    const script = document.createElement('script');
-    script.src = 'https://' + disqusShortname + '.disqus.com/embed.js';
-    script.setAttribute('data-timestamp', +new Date());
-    document.head.appendChild(script);
-  </script>
   {{ end }}
 
   <!-- GraphComment -->
