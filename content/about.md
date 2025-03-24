@@ -1,10 +1,10 @@
 +++
-title = "Hi, I'm Radu"
+title = "Hi!"
 # date = "2017-09-05"
 +++
 
 I'm the CTO and co-founder of [Fermyon](https://fermyon.com), where
-I created [the Spin project](https://github.com/fermyon/spin) and I'm working on
+I created [the Spin project](https://github.com/fermyon/spin) and I work on
 building a new generation of computing platforms using Wasm.
 
 In the past I worked at Microsoft in the
@@ -21,8 +21,8 @@ about personal projects and experiments.
 
 If you need to, you can find me on the Internet:
 
-- [twitter.com/matei_radu](https://twitter.com/matei_radu)
-- [github.com/radu-matei](https://github.com/radu-matei)
+- [BlueSky](https://bsky.app/profile/radu-matei.com)
+- [GitHub](https://github.com/radu-matei)
 - [radu@matei.ai](mailto:radu@matei.ai)
 
 Obviously, _the views and opinions presented here are my own and are not

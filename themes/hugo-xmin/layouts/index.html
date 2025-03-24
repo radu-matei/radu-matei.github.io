@@ -4,20 +4,14 @@
 </a> <br>
 <div class="container">
     <div class="hero">
-        <p class="bio">{{ .Site.Params.bio }}</p>
-        <div class="social-links">
-            {{ with .Site.Params.twitter }}
-            <a href="https://twitter.com/{{ . }}" target="_blank" rel="noopener noreferrer">Twitter</a>
-            {{ end }}
-            {{ with .Site.Params.github }}
-            <a href="https://github.com/{{ . }}" target="_blank" rel="noopener noreferrer">GitHub</a>
-            {{ end }}
-        </div>
+        <!-- <p class="bio">{{ .Site.Params.bio }}</p> -->
+        <p class="bio">I'm an engineer, founder, and CTO of <a href="https://fermyon.com">Fermyon</a>.</p>
+
     </div>
 
 
     <div class="recent-posts">
-        <h2>Writing</h2>
+        <h3>Writing</h3>
         <ul>
             {{ range first 5 (where .Site.RegularPages "Section" "blog") }}
             <li>
@@ -30,21 +24,21 @@
     </div>
 
     <div class="projects">
-        <h2>Projects</h2>
+        <h3>Projects</h3>
         <ul>
             <li>
-                <a href="https://github.com/deislabs/ratify" target="_blank" rel="noopener noreferrer">Ratify</a>
-                <p>A framework for cloud-native artifact security.</p>
+                <a href="https://github.com/spinframework/spin" target="_blank"
+                    rel="noopener noreferrer">@spinframework/spin</a>
+                <p>The CNCF framework for serverless functions with WebAssembly.</p>
             </li>
             <li>
-                <a href="https://github.com/deislabs/containerd-wasm-shims" target="_blank"
-                    rel="noopener noreferrer">containerd-wasm-shims</a>
-                <p>WebAssembly shims for containerd.</p>
+                <a href="https://fermyon.com" target="_blank" rel="noopener noreferrer">fermyon.com</a>
+                <p>Tools and platforms for running Wasm-powered functions at scale.</p>
             </li>
             <li>
-                <a href="https://github.com/deislabs/spiderlightning" target="_blank"
-                    rel="noopener noreferrer">Spiderlightning</a>
-                <p>A WebAssembly runtime for cloud-native workloads.</p>
+                <a href="https://github.com/engineerd/setup-kind" target="_blank"
+                    rel="noopener noreferrer">@engineerd/setup-kind</a>
+                <p>A GitHub Action to setup a Kubernetes cluster using Kind.</p>
             </li>
         </ul>
     </div>
