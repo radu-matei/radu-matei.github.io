@@ -8,6 +8,14 @@
   <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Summary }}{{ end }}">
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/fonts.css" />
+  <script>
+    // Immediately invoked function to set dark mode
+    (function () {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
   {{ partial "head_custom.html" . }}
 </head>
 
