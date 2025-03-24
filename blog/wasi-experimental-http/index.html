@@ -1,91 +1,245 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>An experimental outbound HTTP library for the WebAssembly System Interface - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://deislabs.io/posts/wasi-experimental-http/><meta name=description content="Send HTTP requests from Rust and AssemblyScript Wasm modules running in Wasmtime"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="An experimental outbound HTTP library for the WebAssembly System Interface"><meta property="og:description" content="Send HTTP requests from Rust and AssemblyScript Wasm modules running in Wasmtime"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/wasi-experimental-http/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2021-03-08T00:00:00+00:00"><meta property="article:modified_time" content="2021-03-08T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="An experimental outbound HTTP library for the WebAssembly System Interface"><meta name=twitter:description content="Send HTTP requests from Rust and AssemblyScript Wasm modules running in Wasmtime"><meta itemprop=name content="An experimental outbound HTTP library for the WebAssembly System Interface"><meta itemprop=description content="Send HTTP requests from Rust and AssemblyScript Wasm modules running in Wasmtime"><meta itemprop=datePublished content="2021-03-08T00:00:00+00:00"><meta itemprop=dateModified content="2021-03-08T00:00:00+00:00"><meta itemprop=wordCount content="770"><meta itemprop=keywords content="wasm,rust,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">An experimental outbound HTTP library for the WebAssembly System Interface</h1><div class="text-sm opacity-60"><time>Monday, March 8, 2021</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><a href=https://deislabs.io/posts/wasi-experimental-http/><em>This article originally appeared on the DeisLabs blog</em></a></p><p>Over the last year, our team has been experimenting with executing WebAssembly
-workloads on the server using the <a href=https://wasi.dev/>WebAssembly System Interface</a> and
-<a href=https://github.com/bytecodealliance/wasmtime>Wasmtime</a>. While more and more <a href=https://github.com/webassembly/proposals>proposals</a> get
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>An experimental outbound HTTP library for the WebAssembly System Interface | radu&#39;s blog</title>
+  <meta name="description" content="Send HTTP requests from Rust and AssemblyScript Wasm modules running in Wasmtime">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>An experimental outbound HTTP library for the WebAssembly System Interface</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">March 8, 2021</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p><a href="https://deislabs.io/posts/wasi-experimental-http/"><em>This article originally appeared on the DeisLabs blog</em></a></p>
+<p>Over the last year, our team has been experimenting with executing WebAssembly
+workloads on the server using the <a href="https://wasi.dev/">WebAssembly System Interface</a> and
+<a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a>. While more and more <a href="https://github.com/webassembly/proposals">proposals</a> get
 implemented, networking is one scenario that doesn&rsquo;t have a stable API yet. This
 limits current applications compiled to WASI, and restricts the types of
-workloads that can be executed in WASI runtimes.</p><p>Today <a href=https://github.com/deislabs/wasi-experimental-http>we are releasing a library</a> which adds support for outgoing HTTP
+workloads that can be executed in WASI runtimes.</p>
+<p>Today <a href="https://github.com/deislabs/wasi-experimental-http">we are releasing a library</a> which adds support for outgoing HTTP
 requests for WASI modules running in Wasmtime. This is an experiment intended to
 provide a <em>temporary</em> workaround until the WASI networking API is stable, and is
-compatible with <a href=https://github.com/bytecodealliance/wasmtime/releases/tag/v0.24.0>Wasmtime v0.24</a> by using <a href=https://crates.io/crates/wasi-experimental-http-wasmtime>the
+compatible with <a href="https://github.com/bytecodealliance/wasmtime/releases/tag/v0.24.0">Wasmtime v0.24</a> by using <a href="https://crates.io/crates/wasi-experimental-http-wasmtime">the
 <code>wasi_experiemental_http_wasmtime</code> crate</a>. We expect that once
-<a href=https://github.com/WebAssembly/WASI/pull/312>the WASI sockets proposal</a> gets adopted and implemented in
-language toolchains, the need for this library will vanish.</p><h3 id=using-the-new-http-library>Using the new HTTP library</h3><p>There are two main components to this project - libraries to help building Wasm
+<a href="https://github.com/WebAssembly/WASI/pull/312">the WASI sockets proposal</a> gets adopted and implemented in
+language toolchains, the need for this library will vanish.</p>
+<h3 id="using-the-new-http-library">Using the new HTTP library</h3>
+<p>There are two main components to this project - libraries to help building Wasm
 modules, and a library that adds runtime support for instantiating those modules
 in Wasmtime. Let&rsquo;s first see how to build a module that sends an HTTP request in
-Rust:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>use</span> bytes::Bytes;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> http;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> wasi_experimental_http;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>extern</span> <span style=color:#e6db74>&#34;C&#34;</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>_start</span>() {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://&lt;some-domain&gt;/post&#34;</span>.to_string();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> req <span style=color:#f92672>=</span> http::request::Builder::new()
-</span></span><span style=display:flex><span>        .method(http::Method::<span style=color:#66d9ef>POST</span>)
-</span></span><span style=display:flex><span>        .uri(<span style=color:#f92672>&amp;</span>url)
-</span></span><span style=display:flex><span>        .header(<span style=color:#e6db74>&#34;Content-Type&#34;</span>, <span style=color:#e6db74>&#34;text/plain&#34;</span>)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> b <span style=color:#f92672>=</span> Bytes::from(<span style=color:#e6db74>&#34;sending a body in a POST request&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> req <span style=color:#f92672>=</span> req.body(Some(b)).unwrap();
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> res <span style=color:#f92672>=</span> wasi_experimental_http::request(req)
-</span></span><span style=display:flex><span>        .expect(<span style=color:#e6db74>&#34;cannot make request&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>str</span> <span style=color:#f92672>=</span> std::<span style=color:#66d9ef>str</span>::from_utf8(<span style=color:#f92672>&amp;</span>res.body())
-</span></span><span style=display:flex><span>        .unwrap()
-</span></span><span style=display:flex><span>        .to_string();
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// do something with the body
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
-</span></span></code></pre></div><p>Because we are reusing the Rust <code>Request</code> and <code>Response</code> structures from <a href=https://crates.io/crates/http>the
+Rust:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> bytes::Bytes;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> http;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> wasi_experimental_http;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[no_mangle]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">_start</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://&lt;some-domain&gt;/post&#34;</span>.to_string();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> http::request::Builder::new()
+</span></span><span style="display:flex;"><span>        .method(http::Method::<span style="color:#66d9ef">POST</span>)
+</span></span><span style="display:flex;"><span>        .uri(<span style="color:#f92672">&amp;</span>url)
+</span></span><span style="display:flex;"><span>        .header(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;text/plain&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> b <span style="color:#f92672">=</span> Bytes::from(<span style="color:#e6db74">&#34;sending a body in a POST request&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> req.body(Some(b)).unwrap();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> wasi_experimental_http::request(req)
+</span></span><span style="display:flex;"><span>        .expect(<span style="color:#e6db74">&#34;cannot make request&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">str</span> <span style="color:#f92672">=</span> std::<span style="color:#66d9ef">str</span>::from_utf8(<span style="color:#f92672">&amp;</span>res.body())
+</span></span><span style="display:flex;"><span>        .unwrap()
+</span></span><span style="display:flex;"><span>        .to_string();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// do something with the body
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>Because we are reusing the Rust <code>Request</code> and <code>Response</code> structures from <a href="https://crates.io/crates/http">the
 <code>http</code> crate</a> (with <code>Bytes</code> request and response bodies), this way of
 building an HTTP request should feel familiar to Rust developers. Then, the
-request can be sent using the <code>request</code> function from <a href=https://crates.io/crates/wasi-experimental-http>the
+request can be sent using the <code>request</code> function from <a href="https://crates.io/crates/wasi-experimental-http">the
 <code>wasi_experimental_http</code> crate</a>, which returns a response that can
 be read appropriately, depending on the content type of the response body. This
-simple program can now be compiled to the <code>wasm32-wasi</code> target.</p><p>AssemblyScript is another popular language that natively compiles to
-WebAssembly, and the library we are releasing also includes an <a href=https://www.npmjs.com/package/@deislabs/wasi-experimental-http>AssemblyScript
-NPM package</a> (with examples for how it can be used on <a href=https://github.com/deislabs/wasi-experimental-http>GitHub</a>).</p><p>To run the module in a WebAssembly runtime, we have to satisfy the new
+simple program can now be compiled to the <code>wasm32-wasi</code> target.</p>
+<p>AssemblyScript is another popular language that natively compiles to
+WebAssembly, and the library we are releasing also includes an <a href="https://www.npmjs.com/package/@deislabs/wasi-experimental-http">AssemblyScript
+NPM package</a> (with examples for how it can be used on <a href="https://github.com/deislabs/wasi-experimental-http">GitHub</a>).</p>
+<p>To run the module in a WebAssembly runtime, we have to satisfy the new
 functionality, and we can do this in Wasmtime using the
-<code>wasi_experimental_http_wasmtime</code> crate:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>use</span> wasi_experimental_http_wasmtime;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> wasmtime::<span style=color:#f92672>*</span>;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> wasmtime_wasi::Wasi;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span> store <span style=color:#f92672>=</span> Store::default();
-</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> linker <span style=color:#f92672>=</span> Linker::new(<span style=color:#f92672>&amp;</span>store);
-</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span> wasi <span style=color:#f92672>=</span> Wasi::new(<span style=color:#f92672>&amp;</span>store, ctx);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// link the WASI core functions
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>wasi.add_to_linker(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> linker)<span style=color:#f92672>?</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// link the experimental HTTP support
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>wasi_experimental_http_wasmtime::link_http(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> linker, None)<span style=color:#f92672>?</span>;
+<code>wasi_experimental_http_wasmtime</code> crate:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> wasi_experimental_http_wasmtime;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> wasmtime::<span style="color:#f92672">*</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> wasmtime_wasi::Wasi;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> store <span style="color:#f92672">=</span> Store::default();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> linker <span style="color:#f92672">=</span> Linker::new(<span style="color:#f92672">&amp;</span>store);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> wasi <span style="color:#f92672">=</span> Wasi::new(<span style="color:#f92672">&amp;</span>store, ctx);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// link the WASI core functions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>wasi.add_to_linker(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> linker)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// link the experimental HTTP support
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>wasi_experimental_http_wasmtime::link_http(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> linker, None)<span style="color:#f92672">?</span>;
 </span></span></code></pre></div><p>The Wasmtime implementation also enables passing a list of allowed hosts - an
 optional and configurable list of domains or hosts that guest modules are
 allowed to send requests to. If a guest module attempts to send a request to a
 domain not explicitly allowed when the runtime was configured, it receives an
-error:</p><pre tabindex=0><code>&#39;cannot make request:
+error:</p>
+<pre tabindex="0"><code>&#39;cannot make request:
   URL not allowed because domain or subdomain not in allowed list
 </code></pre><p>Finally, this library works in a similar way to WASI, or to libraries built on
 top of WASI: it adds a new Wasm import module, <code>wasi_experimental_http</code>, with a
 single import function, <code>req</code>, which receives the buffer sources for the request
 data, performs the request on the host, then writes the response data back to
-the guest module&rsquo;s memory, which can then be used by the guest module.</p><h3 id=support-for-this-library>Support for this library</h3><p>We are in the process of adding support for this library and outgoing HTTP
-requests in <a href=https://github.com/deislabs/krustlet>Krustlet</a> and <a href=https://github.com/deislabs/wagi>WAGI</a>, so keep an eye out in the
-respective pull request queues.</p><p>We are also happy to help those who want to add support for this library in
-their projects.</p><h3 id=known-limitations-and-contributing>Known limitations and contributing</h3><p>While this library can currently be used to send and receive HTTP data, there
+the guest module&rsquo;s memory, which can then be used by the guest module.</p>
+<h3 id="support-for-this-library">Support for this library</h3>
+<p>We are in the process of adding support for this library and outgoing HTTP
+requests in <a href="https://github.com/deislabs/krustlet">Krustlet</a> and <a href="https://github.com/deislabs/wagi">WAGI</a>, so keep an eye out in the
+respective pull request queues.</p>
+<p>We are also happy to help those who want to add support for this library in
+their projects.</p>
+<h3 id="known-limitations-and-contributing">Known limitations and contributing</h3>
+<p>While this library can currently be used to send and receive HTTP data, there
 are currently some limitations (for an updated list, please check the issue
-queue in the <a href=https://github.com/deislabs/wasi-experimental-http>repository</a>):</p><ul><li>there is no support for streaming HTTP responses, which this means guest
+queue in the <a href="https://github.com/deislabs/wasi-experimental-http">repository</a>):</p>
+<ul>
+<li>there is no support for streaming HTTP responses, which this means guest
 modules have to wait until the entire body has been written by the runtime
-before reading it.</li><li>there are no WITX definitions, which means we have to manually keep the host
+before reading it.</li>
+<li>there are no WITX definitions, which means we have to manually keep the host
 call and guest implementations in sync. Adding WITX definitions could also
 simplify adding support for other WASI runtimes (the only WebAssembly runtime
-currently supported by this library is Wasmtime).</li><li>this library does not aim to add support for running HTTP servers in
-WebAssembly.</li></ul><p>We welcome all contributions that adhere to the <a href=https://opensource.microsoft.com/codeofconduct/>Microsoft Open Source Code of
+currently supported by this library is Wasmtime).</li>
+<li>this library does not aim to add support for running HTTP servers in
+WebAssembly.</li>
+</ul>
+<p>We welcome all contributions that adhere to the <a href="https://opensource.microsoft.com/codeofconduct/">Microsoft Open Source Code of
 Conduct</a>. Feel free to create pull requests or open issues with any feature
-suggestion, and we are happy to chat about the project in the <a href=https://discordapp.com/invite/nEFErF8>WebAssembly
-Discord server</a>, or in the <a href=https://bytecodealliance.zulipchat.com/>ByteCodeAlliance Zulip chat</a>.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/rust>rust</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/wagi-updates/><span class=mr-1.5>←</span><span>Updates on WAGI, the WebAssembly Gateway Interface</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/a-simple-wasm-linker-js/><span>A simple WebAssembly linker in JavaScript</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+suggestion, and we are happy to chat about the project in the <a href="https://discordapp.com/invite/nEFErF8">WebAssembly
+Discord server</a>, or in the <a href="https://bytecodealliance.zulipchat.com/">ByteCodeAlliance Zulip chat</a>.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

@@ -1,34 +1,139 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Writing controllers for Kubernetes CRDs with C# - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/kubernetes-controller-csharp/><meta name=description content="The goal of this article is to show you how to use the Kubernetes C# client to write extremely simple controllers for your Kubernetes custom resources, and start watching resources in a few lines of C#"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Writing controllers for Kubernetes CRDs with C#"><meta property="og:description" content="Lightweight controllers for your custom resource definitions, in C#"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/kubernetes-controller-csharp/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-05-06T00:00:00+00:00"><meta property="article:modified_time" content="2019-05-06T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Writing controllers for Kubernetes CRDs with C#"><meta name=twitter:description content="Lightweight controllers for your custom resource definitions, in C#"><meta itemprop=name content="Writing controllers for Kubernetes CRDs with C#"><meta itemprop=description content="Lightweight controllers for your custom resource definitions, in C#"><meta itemprop=datePublished content="2019-05-06T00:00:00+00:00"><meta itemprop=dateModified content="2019-05-06T00:00:00+00:00"><meta itemprop=wordCount content="1261"><meta itemprop=keywords content="kubernetes,dotnet-core,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Writing controllers for Kubernetes CRDs with C#</h1><div class="text-sm opacity-60"><time>Monday, May 6, 2019</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>If you want to interact with the Kubernetes cluster API, the most obvious choice
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Writing controllers for Kubernetes CRDs with C# | radu&#39;s blog</title>
+  <meta name="description" content="The goal of this article is to show you how to use the Kubernetes C# client to write extremely simple controllers for your Kubernetes custom resources, and start watching resources in a few lines of C#">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Writing controllers for Kubernetes CRDs with C#</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">May 6, 2019</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p>If you want to interact with the Kubernetes cluster API, the most obvious choice
 for the programming language is Go. Since Kubernetes itself is written in Go, it
 naturally became the <em>de facto</em> language for interacting with the API, and
-writing controllers is no exception.</p><p>You even have multiple choices for writing a Go controller - you can directly
-use the <a href=https://github.com/kubernetes/client-go>Go client</a>, and follow the implementation of this
-<a href=https://github.com/kubernetes/sample-controller>controller sample</a>, or you can use
-<a href=https://kubernetes.io/blog/2018/08/10/introducing-kubebuilder-an-sdk-for-building-kubernetes-apis-using-crds/>Kubebuilder</a>, <a href=https://metacontroller.app/>Metacontroller</a>, or the awesome
-<a href=https://github.com/operator-framework/operator-sdk><code>operator-sdk</code></a>, all of which give you a starting point for
-creating controllers that interact with custom resources.</p><p>Additionally, <a href=https://github.com/operator-framework/operator-sdk><code>operator-sdk</code></a> also gives you an entire tool for
+writing controllers is no exception.</p>
+<p>You even have multiple choices for writing a Go controller - you can directly
+use the <a href="https://github.com/kubernetes/client-go">Go client</a>, and follow the implementation of this
+<a href="https://github.com/kubernetes/sample-controller">controller sample</a>, or you can use
+<a href="https://kubernetes.io/blog/2018/08/10/introducing-kubebuilder-an-sdk-for-building-kubernetes-apis-using-crds/">Kubebuilder</a>, <a href="https://metacontroller.app/">Metacontroller</a>, or the awesome
+<a href="https://github.com/operator-framework/operator-sdk"><code>operator-sdk</code></a>, all of which give you a starting point for
+creating controllers that interact with custom resources.</p>
+<p>Additionally, <a href="https://github.com/operator-framework/operator-sdk"><code>operator-sdk</code></a> also gives you an entire tool for
 generating CRDs from your Go structures, and integrated commands to compile,
 test, and run your controllers as you are developing them, making the experience
 of building such a component a much leaner experience. And although at times it
 can feel like there&rsquo;s <em>too</em> much magic happening behind the scenes with
-<code>operator-sdk</code>, it is <em>by far</em> the best experience to writing an operator in Go.</p><p>That being said, not everything is perfect in the world of <code>client-go</code>. Go
+<code>operator-sdk</code>, it is <em>by far</em> the best experience to writing an operator in Go.</p>
+<p>That being said, not everything is perfect in the world of <code>client-go</code>. Go
 dependency management is sometimes challenging, with <code>client-go</code> you have to
 understand <em>a lot</em> of packages to perform the easiest of tasks, and sometimes
-it&rsquo;s just not possible to use Go to build your controller.</p><p>A few days ago, Matt Butcher shared a <a href=https://github.com/clux/operator-rs>Rust library that simplifies writing a
-controller</a>, which got me wondering:</p><blockquote class=twitter-tweet><p lang=en dir=ltr>"Kubernetes operators in Rust" <a href=https://t.co/ulNQMfD9G3>https://t.co/ulNQMfD9G3</a> &lt;-- Super timely. I just started exploring doing this myself! I think I'll give this library a try</p>&mdash; Matt Butcher @FermyonTech (@technosophos) <a href="https://twitter.com/technosophos/status/1124403345135939585?ref_src=twsrc%5Etfw">May 3, 2019</a></blockquote><script async src=https://platform.twitter.com/widgets.js></script><p>How difficult is it today to build controllers for CRDs in other programming
+it&rsquo;s just not possible to use Go to build your controller.</p>
+<p>A few days ago, Matt Butcher shared a <a href="https://github.com/clux/operator-rs">Rust library that simplifies writing a
+controller</a>, which got me wondering:</p>
+<!-- raw HTML omitted -->
+<p>How difficult is it today to build controllers for CRDs in other programming
 languages? As it turns out, the Rust library makes it really easy to get
-started, with a really nice API.</p><p>And since I haven&rsquo;t written C# in quite some time, I decided this would be a
+started, with a really nice API.</p>
+<p>And since I haven&rsquo;t written C# in quite some time, I decided this would be a
 nice experiment for my Research Friday (although it did continue a bit through
-the weekend).</p><h3 id=using-the-c-client-to-build-a-controller>Using the C# client to build a controller</h3><p>There is a <a href=https://github.com/kubernetes-client/csharp>C# client for Kubernetes</a>, which has great
+the weekend).</p>
+<h3 id="using-the-c-client-to-build-a-controller">Using the C# client to build a controller</h3>
+<p>There is a <a href="https://github.com/kubernetes-client/csharp">C# client for Kubernetes</a>, which has great
 examples, and we are going to use it in building our controller. Besides the
 usual CRUD operations that you can do with the client, you can also <em>watch</em> for
 various resources - we listen on a given resource, and then we handle the events
-that take place:</p><pre tabindex=0><code>var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
+that take place:</p>
+<pre tabindex="0"><code>var result = await _client.ListNamespacedCustomObjectWithHttpMessagesAsync(
                 group: &#34;api group&#34;,
                 version: &#34;version,
                 namespaceParameter: &#34;namespace&#34;,
@@ -37,9 +142,10 @@ that take place:</p><pre tabindex=0><code>var result = await _client.ListNamespa
 
 result.Watch&lt;T&gt;((type, item) =&gt; _handle(type, item));
 </code></pre><p>This is pretty much the building block for our entire controller - but notice
-the generic type <code>T</code> on <code>Watch&lt;T></code> method - it is supposed to handle custom
+the generic type <code>T</code> on <code>Watch&lt;T&gt;</code> method - it is supposed to handle custom
 resources of type <code>T</code> - but how does a custom resource look like? Here&rsquo;s an
-example:</p><pre tabindex=0><code>apiVersion: engineerd.dev/v1alpha1
+example:</p>
+<pre tabindex="0"><code>apiVersion: engineerd.dev/v1alpha1
 kind: Example
 metadata:
   creationTimestamp: &#34;2019-05-05T21:10:44Z&#34;
@@ -53,38 +159,69 @@ spec:
   &lt;fields for your custom resource specification&gt;
 status:
   &lt;fields for the status of your custom resource&gt;
-</code></pre><p>All Kubernetes custom resources have:</p><ul><li><code>apiVersion</code> - this describes the version for your object, and <a href=https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html>this
+</code></pre><p>All Kubernetes custom resources have:</p>
+<ul>
+<li><code>apiVersion</code> - this describes the version for your object, and <a href="https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html">this
 article</a> describes what each API version means, and which one
-you should use</li><li><code>kind</code> - this is the type of your custom resources, and it is defined when
-creating the custom resource definition</li><li><code>metadata</code> (depending on type, this can be an object, or a list metadata)</li></ul><p>Then, you have:</p><ul><li><code>spec</code></li><li><code>status</code></li></ul><p>These fields can be used to encapsulate your own business logic in the custom
-resource, and describe the desired and current state of the resource.</p><p>And because we want to cast the resources we watch to some C# types, we need to
+you should use</li>
+<li><code>kind</code> - this is the type of your custom resources, and it is defined when
+creating the custom resource definition</li>
+<li><code>metadata</code> (depending on type, this can be an object, or a list metadata)</li>
+</ul>
+<p>Then, you have:</p>
+<ul>
+<li><code>spec</code></li>
+<li><code>status</code></li>
+</ul>
+<p>These fields can be used to encapsulate your own business logic in the custom
+resource, and describe the desired and current state of the resource.</p>
+<p>And because we want to cast the resources we watch to some C# types, we need to
 have a class structure for the CRD. Luckily, the C# client comes in extremely
 handy, and provides us with an object that contains the <code>apiVersion</code> and <code>kind</code>,
-in the <a href=https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/IKubernetesObject.cs><code>KubernetesObject</code></a>, and an object that encapsulates
-the metadata, in <a href=https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/generated/Models/V1ObjectMeta.cs><code>V1ObjectMeta</code></a>.</p><p>This means that we have to add the <code>spec</code> and (optionally) <code>status</code> for our CRD,
+in the <a href="https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/IKubernetesObject.cs"><code>KubernetesObject</code></a>, and an object that encapsulates
+the metadata, in <a href="https://github.com/kubernetes-client/csharp/blob/master/src/KubernetesClient/generated/Models/V1ObjectMeta.cs"><code>V1ObjectMeta</code></a>.</p>
+<p>This means that we have to add the <code>spec</code> and (optionally) <code>status</code> for our CRD,
 and this is (on a high level) what the <code>CustomResource</code> class in the project
-looks like:</p><pre tabindex=0><code>  public abstract class CustomResource&lt;TSpec, TStatus&gt;
+looks like:</p>
+<pre tabindex="0"><code>  public abstract class CustomResource&lt;TSpec, TStatus&gt;
   {
       public V1ObjectMeta Metadata { get; set; }
       public TSpec Spec { get; set; }
       public TStatus Status { get; set; }
   }
-</code></pre><blockquote><p>In reality, there is a base, non-generic, <a href=https://github.com/engineerd/kubecontroller-csharp/blob/article/KubeController/CustomResource.cs><code>CustomResource</code></a>
+</code></pre><blockquote>
+<p>In reality, there is a base, non-generic, <a href="https://github.com/engineerd/kubecontroller-csharp/blob/article/KubeController/CustomResource.cs"><code>CustomResource</code></a>
 class, that contains the metadata, and the class above inherits it. This is
 merely syntactic sugar to avoid having to meddle with too many generics in the
 actual controller, and for the purpose of this article, the <code>CustomResource</code>
-class can be considered the one above.</p></blockquote><p>Creating the type for your CRD comes down to building a C# class that mirrors
-your custom resource.</p><blockquote><p>There is certainly room for improvement here - we could:</p><ul><li>generate the YAML for the CRD from the C# classes, or</li><li>generate the C# classes from the CRD</li></ul></blockquote><blockquote><p>While nice to have, both of them fall outside the scope of the article (and
+class can be considered the one above.</p>
+</blockquote>
+<p>Creating the type for your CRD comes down to building a C# class that mirrors
+your custom resource.</p>
+<blockquote>
+<p>There is certainly room for improvement here - we could:</p>
+<ul>
+<li>generate the YAML for the CRD from the C# classes, or</li>
+<li>generate the C# classes from the CRD</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>While nice to have, both of them fall outside the scope of the article (and
 like all snarky University professors do, we&rsquo;ll just leave this as homework
 for the reader, but do let me know if generating these for C# or other
-languages is of interest to you.).</p></blockquote><h3 id=wrapping-everything-in-a-controller-class>Wrapping everything in a <code>Controller</code> class</h3><p>Now that we have the building blocks, we can create a library that contains the
+languages is of interest to you.).</p>
+</blockquote>
+<h3 id="wrapping-everything-in-a-controller-class">Wrapping everything in a <code>Controller</code> class</h3>
+<p>Now that we have the building blocks, we can create a library that contains the
 custom resource class we see above (and another class that contains some
-metadata about your CRD, such as group and namespace) and build a <a href=https://github.com/engineerd/kubecontroller-csharp/blob/article/KubeController/Controller.cs>class for our
-controller</a>.</p><p>We include a cancellation token, an instance of the Kubernetes client, and some
+metadata about your CRD, such as group and namespace) and build a <a href="https://github.com/engineerd/kubecontroller-csharp/blob/article/KubeController/Controller.cs">class for our
+controller</a>.</p>
+<p>We include a cancellation token, an instance of the Kubernetes client, and some
 metadata for the CRD, then pass a handler method to execute for changes in our
 custom resources, and we end up with a library that can be consumed from a C#
-console library as follows (for a CRD that <a href=https://github.com/engineerd/kubecontroller-csharp/tree/article/KubeController.Sample/deploy>can be found in the
-repository</a>):</p><pre tabindex=0><code>var crd = new CustomResourceDefinition()
+console library as follows (for a CRD that <a href="https://github.com/engineerd/kubecontroller-csharp/tree/article/KubeController.Sample/deploy">can be found in the
+repository</a>):</p>
+<pre tabindex="0"><code>var crd = new CustomResourceDefinition()
 {
     ApiVersion = &#34;engineerd.dev/v1alpha1&#34;,
     PluralName = &#34;examples&#34;,
@@ -102,19 +239,65 @@ var cts = new CancellationTokenSource();
 await controller.StartAsync(cts.Token);
 </code></pre><p>And so we end up with a really, really simple controller, where for every
 change, we write the event type and name of the resource to the console. Did I
-say this is a very simple controller?</p><p>Can this be improved? Sure, it&rsquo;s a rather naive approach to building one, but
+say this is a very simple controller?</p>
+<p>Can this be improved? Sure, it&rsquo;s a rather naive approach to building one, but
 you can see the building blocks for handling changes for your custom resources.
-You can find <a href=https://github.com/engineerd/kubecontroller-csharp/tree/article>the current state of this controller library (as of writing this
-article) in this branch of the GitHub repository</a>.</p><h3 id=conclusion>Conclusion</h3><p>In this article, we used the C# client for Kubernetes to build a very simple
-controller that watches a custom resource for changes.</p><p>As it turns out, this was much easier than I anticipated before starting, and
+You can find <a href="https://github.com/engineerd/kubecontroller-csharp/tree/article">the current state of this controller library (as of writing this
+article) in this branch of the GitHub repository</a>.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>In this article, we used the C# client for Kubernetes to build a very simple
+controller that watches a custom resource for changes.</p>
+<p>As it turns out, this was much easier than I anticipated before starting, and
 the end result is arguably a lot simpler than its Go counterpart. Sure, all the
 Go libraries, together with the community resources, give you much more to work
-with, and I&rsquo;m not arguing that anyone should stop using Go to write controllers.</p><p>But if the Rust and C# clients tell us anything about Kubernetes controllers, is
+with, and I&rsquo;m not arguing that anyone should stop using Go to write controllers.</p>
+<p>But if the Rust and C# clients tell us anything about Kubernetes controllers, is
 that for the simplest use cases, implementing them in other languages might
 actually allow us to get started much easier (without having a <code>hack</code> directory
-in our repository and depending on executing Bash scripts to generate APIs).</p><p>What other things would you need in a C# controller library for Kubernetes?
-Would you like to see this as a NuGet package? Feel free to <a href=https://github.com/engineerd/kubecontroller-csharp/issues>open an issue on
-the repository</a>, and feel free to send feedback.</p><p>Thanks for reading!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/kubernetes>kubernetes</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/helm-wasm/><span class=mr-1.5>←</span><span>Rendering Helm templates in the browser, with WebAssembly</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/brigade-scaling-vk/><span>Instant Scaling on Demand: Serverless Kubernetes with Brigade</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+in our repository and depending on executing Bash scripts to generate APIs).</p>
+<p>What other things would you need in a C# controller library for Kubernetes?
+Would you like to see this as a NuGet package? Feel free to <a href="https://github.com/engineerd/kubecontroller-csharp/issues">open an issue on
+the repository</a>, and feel free to send feedback.</p>
+<p>Thanks for reading!</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

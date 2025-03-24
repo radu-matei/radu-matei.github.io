@@ -1,18 +1,226 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Kubernetes 1.8 on Azure - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/k8s18-azure/><meta name=description content="In this post you&rsquo;ll see how to deploy Kubernetes 1.8 and later on Azure using ACS Engine, an open-source tool that creates the entire configuration for your orchestration cluster and deploys it on Azure Container Service."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Kubernetes 1.8 on Azure"><meta property="og:description" content="Deploy Kubernetes 1.8 on Azure using acs-engine"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/k8s18-azure/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2017-10-06T00:00:00+00:00"><meta property="article:modified_time" content="2017-10-06T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Kubernetes 1.8 on Azure"><meta name=twitter:description content="Deploy Kubernetes 1.8 on Azure using acs-engine"><meta itemprop=name content="Kubernetes 1.8 on Azure"><meta itemprop=description content="Deploy Kubernetes 1.8 on Azure using acs-engine"><meta itemprop=datePublished content="2017-10-06T00:00:00+00:00"><meta itemprop=dateModified content="2017-10-06T00:00:00+00:00"><meta itemprop=wordCount content="1144"><meta itemprop=keywords content="kubernetes,azure,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Kubernetes 1.8 on Azure</h1><div class="text-sm opacity-60"><time>Friday, October 6, 2017</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">create a free account and get $200 for 12 months</a>.</p><p>This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.</p><blockquote><p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p></blockquote><blockquote><p>Cost estimation created using the <a href=https://azure.microsoft.com/en-us/pricing/calculator/>Azure Pricing Calculator</a></p></blockquote><p><img src=/img/article-photos/k8s18-azure/pricing.png alt></p><h3 id=introduction>Introduction</h3><p>On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. <a href=http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html>You can read the full blog post that announces the release here</a> and you can see <a href=https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0>the release on GitHub</a> and the <a href=https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180>associated changelog with all new features</a>.</p><p>In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.</p><p>If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can <a href=#getting-the-acs-engine-binary>skip the following section and go directly to where the action actually starts.</a></p><h3 id=deploying-orchestrator-clusters-in-azure>Deploying orchestrator clusters in Azure</h3><p>There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to <a href=https://radu-matei.com/blog/kubernetes-jenkins-azure/>deploy a Kubernetes cluster</a>). <a href=https://azure.microsoft.com/en-us/services/container-service/>Azure Container Service</a> allows you to easily <a href=https://docs.microsoft.com/en-us/azure/container-service/>deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the <code>az</code> command line</a>. This is the way to go if you don&rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.</p><p>Then there is a tool called <a href=https://github.com/azure/acs-engine><code>acs-engine</code></a>. This is basically the &ldquo;engine&rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.</p><p><code>acs-engine</code> takes a <a href=https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md>cluster definition file</a> where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates <a href=https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates>ARM (Azure Resource Manager) templates</a> that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).</p><p>Kubernetes 1.8 has just been released, and together with it came <a href=https://github.com/Azure/acs-engine/releases>v0.8.0 of <code>acs-engine</code></a> with support for Kubernetes 1.8.</p><p>You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).</p><h3 id=getting-the-acs-engine-binary>Getting the <code>acs-engine</code> binary</h3><p>In this step all you need to do is download the the binary associated with v0.8.0 of <code>acs-engine</code> for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.</p><p>First you need to download the GitHub release archive for Linux:</p><pre tabindex=0><code>wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz
-</code></pre><p>Then, you need to unarchive it:</p><pre tabindex=0><code>tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz
-</code></pre><p>This will create a folder called <code>acs-engine-v0.8.0-linux-amd64</code>, and inside it you will find (among the license and the readme) the <code>acs-engine</code> binary.</p><p><img src=/img/article-photos/k8s18-azure/acs-engine-shell.png alt></p><p>Now you only need to put it in your path (or move it to a directory that is in your path) and you have the <code>acs-engine</code> binary accessible from anywhere.</p><p>We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.</p><h3 id=deploy-the-cluster>Deploy the cluster</h3><p>This is how a typical cluster definition file looks for Kubernetes. Compared to <a href=https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json>the example offered in the repo</a>, this only adds the <code>orchestratorRelease</code> property and sets it to <code>1.8</code>.</p><script src=https://gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js></script><p>The great thing about this version of <code>acs-engine</code> is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using <code>acs-engine</code> and deploy them with the <code>az</code> command line):</p><ul><li>an Azure subscription id (you can find it using <code>az account show</code>)</li><li>a DNS prefix for your cluster</li><li>the location of your cluster</li><li>the cluster definition file from above</li></ul><pre tabindex=0><code>acs-engine deploy
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kubernetes 1.8 on Azure | radu&#39;s blog</title>
+  <meta name="description" content="In this post you&rsquo;ll see how to deploy Kubernetes 1.8 and later on Azure using ACS Engine, an open-source tool that creates the entire configuration for your orchestration cluster and deploys it on Azure Container Service.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Kubernetes 1.8 on Azure</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">October 6, 2017</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>This tutorial uses Azure to provision the infrastructure required to run a Kubernetes cluster. If you don&rsquo;t have an Azure subscription you can <a href="https://azure.microsoft.com/en-us/free/?v=17.39a">create a free account and get $200 for 12 months</a>.</p>
+<p>This tutorial deploys 4 D2_V2 VMs (1 master + 3 agents) with Linux that will cost approximately $13 - $14 / day, but you can change the type of the VM to be D1_V2, and the cost will go down to $6 / day.</p>
+<blockquote>
+<p>Note that the pricing will vary slightly based on the location where you deploy the VMs.</p>
+</blockquote>
+<blockquote>
+<p>Cost estimation created using the <a href="https://azure.microsoft.com/en-us/pricing/calculator/">Azure Pricing Calculator</a></p>
+</blockquote>
+<p><img src="/img/article-photos/k8s18-azure/pricing.png" alt=""></p>
+<h3 id="introduction">Introduction</h3>
+<p>On September 28th, Kubernetes hit version 1.8 with improved support for Role Based Access Control (RBAC), TLS certificate rotation and other cool features. <a href="http://blog.kubernetes.io/2017/09/kubernetes-18-security-workloads-and.html">You can read the full blog post that announces the release here</a> and you can see <a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.8.0">the release on GitHub</a> and the <a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v180">associated changelog with all new features</a>.</p>
+<p>In this article we will explore how to deploy a Kubernetes cluster with version 1.8 on Azure.</p>
+<p>If you are familiar with deploying orchestrators in Azure, or you only want to see how to deploy Kubernetes 1.8, you can <a href="#getting-the-acs-engine-binary">skip the following section and go directly to where the action actually starts.</a></p>
+<h3 id="deploying-orchestrator-clusters-in-azure">Deploying orchestrator clusters in Azure</h3>
+<p>There are a couple of ways to deploy an orchestrator cluster in Azure. First, there is Azure Container Service (that we used in the past to <a href="https://radu-matei.com/blog/kubernetes-jenkins-azure/">deploy a Kubernetes cluster</a>). <a href="https://azure.microsoft.com/en-us/services/container-service/">Azure Container Service</a> allows you to easily <a href="https://docs.microsoft.com/en-us/azure/container-service/">deploy Kubernetes, Docker Swarm or DC/OS clusters from the Azure Portal or using the <code>az</code> command line</a>. This is the way to go if you don&rsquo;t want to customize your cluster and you are ok with the default values that Azure provides for you.</p>
+<p>Then there is a tool called <a href="https://github.com/azure/acs-engine"><code>acs-engine</code></a>. This is basically the &ldquo;engine&rdquo; that Azure Container Service uses to deploy your clusters, and we will use it to deploy a custom version of our Kubernetes cluster, in this case the new 1.8 version.</p>
+<p><code>acs-engine</code> takes a <a href="https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md">cluster definition file</a> where you can specify options for your cluster (like orchestrator to use - Kubernetes, Docker Swarm Mode, DC/OS and their specific versions, networking policies, master and agent profiles and others) and generates <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates">ARM (Azure Resource Manager) templates</a> that Azure uses to deploy all resources for your cluster (VMs for masters and agents with your orchestrator configured, load balancers, networking, storage adn other resources).</p>
+<p>Kubernetes 1.8 has just been released, and together with it came <a href="https://github.com/Azure/acs-engine/releases">v0.8.0 of <code>acs-engine</code></a> with support for Kubernetes 1.8.</p>
+<p>You can follow this article on your local machine, inside a Docker container or using the Azure Cloud Shell, and all of these versions being very similar (basically you only change the OS version of the acs-engine binary).</p>
+<h3 id="getting-the-acs-engine-binary">Getting the <code>acs-engine</code> binary</h3>
+<p>In this step all you need to do is download the the binary associated with v0.8.0 of <code>acs-engine</code> for your operating system. I will use the Azure Cloud Shell (which is Linux), but you can do the same thing for macOS (by getting the Darwin specific binaries) or for Windows.</p>
+<p>First you need to download the GitHub release archive for Linux:</p>
+<pre tabindex="0"><code>wget https://github.com/Azure/acs-engine/releases/download/v0.8.0/acs-engine-v0.8.0-linux-amd64.tar.gz
+</code></pre><p>Then, you need to unarchive it:</p>
+<pre tabindex="0"><code>tar -xvzf acs-engine-v0.8.0-linux-amd64.tar.gz
+</code></pre><p>This will create a folder called <code>acs-engine-v0.8.0-linux-amd64</code>, and inside it you will find (among the license and the readme) the <code>acs-engine</code> binary.</p>
+<p><img src="/img/article-photos/k8s18-azure/acs-engine-shell.png" alt=""></p>
+<p>Now you only need to put it in your path (or move it to a directory that is in your path) and you have the <code>acs-engine</code> binary accessible from anywhere.</p>
+<p>We will now use this binary inside the Azure Cloud Shell to deploy a Kubernetes 1.8 cluster to Azure, using a cluster definition template file.</p>
+<h3 id="deploy-the-cluster">Deploy the cluster</h3>
+<p>This is how a typical cluster definition file looks for Kubernetes. Compared to <a href="https://github.com/Azure/acs-engine/blob/master/examples/kubernetes.json">the example offered in the repo</a>, this only adds the <code>orchestratorRelease</code> property and sets it to <code>1.8</code>.</p>
+<script src="https://gist.github.com/radu-matei/7ba751e0074621313b997c12ccf28dbe.js"></script>
+
+<p>The great thing about this version of <code>acs-engine</code> is that you will only need one command to deploy this, and you pass a few parameters (in older versions you would generate ARM templates using <code>acs-engine</code> and deploy them with the <code>az</code> command line):</p>
+<ul>
+<li>an Azure subscription id (you can find it using <code>az account show</code>)</li>
+<li>a DNS prefix for your cluster</li>
+<li>the location of your cluster</li>
+<li>the cluster definition file from above</li>
+</ul>
+<pre tabindex="0"><code>acs-engine deploy
         --subscription-id &lt;your-subscription-id&gt; \
         --dns-prefix &lt;your-dns-prefix&gt; --location westeurope \
         --auto-suffix --api-model kubernetes18.json
-</code></pre><blockquote><p>Note the <code>orchestratorRelease</code> property in the JSON file set to <code>1.8</code>!
-Note that it automatically creates all assets for you including a service principal and a resource group.</p></blockquote><blockquote><p>Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elsewhere, the will be another step involved where you login to <code>aka.ms/devicelogin</code>.</p></blockquote><p><img src=/img/article-photos/k8s18-azure/shell.png alt></p><p>After the deployment succeeds, you should see a resource group in your subscription with all your Kubernetes assets:</p><p><img src=/img/article-photos/k8s18-azure/resource-group.png alt></p><p>The output of the command above is an <code>_output</code> folder where you have your SSH keys and the <code>kubeconfig</code> to access the cluster.</p><p>Now to access the cluster.</p><blockquote><p>Depending on which version of <code>kubectl</code> you have installed, you might want to <a href=https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl>upgrade to 1.8 as it is detailed here</a>.</p></blockquote><p>Now you need to point your <code>kubectl</code> to the <code>kubeconfig</code> file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:</p><p><code>export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json</code></p><p>At this point you can use <code>kubectl</code> to get information about your cluster and your nodes:</p><p><code>kubectl get nodes</code></p><p><img src=/img/article-photos/k8s18-azure/k8s18.png alt></p><blockquote><p>Note the <code>v1.8.0</code>!</p></blockquote><p>Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!</p><h3 id=configure-kubectl-from-outside-the-azure-cloud-shell>Configure <code>kubectl</code> from outside the Azure Cloud Shell</h3><p>Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the <code>_output</code> directory from where you executed the <code>acs-engine deploy</code> command.
-You will want to have access to your cluster from outside the browser (for obvious reasons), so you will have to download the certificates and keys.</p><p>After watching <a href=https://channel9.msdn.com/Shows/Azure-Friday/Azure-Cloud-Shell>this video on Channel9 explaining Azure Cloud Shell</a>, you simply need to put your files in <code>/home/&lt;your-username>/clouddrive</code>. Then you will find them in the Azure Storage account (more specifically in the the File Share) associated with your Cloud Shell.</p><blockquote><p>If you don&rsquo;t want to manually download each file (and you don&rsquo;t have to mount the share), simply make an archive of the entire folder download it.</p></blockquote><p>Then, point your local <code>kubectl</code> to the <code>kubeconfig.&lt;azure-location>.json</code> file and you have access to your cluster.</p><blockquote><p>Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, <a href=https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/>as described in the Bitnami documentation</a>.</p></blockquote><h3 id=conclusion-feedback>Conclusion, feedback</h3><p>In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell.
-If you have any ideas, comments or feedback, please use the comments below :)</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/kubernetes>kubernetes</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/azure>azure</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/k8s-helm-draft-azure/><span class=mr-1.5>←</span><span>Get started with Helm and Draft for Kubernetes</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/hybrid-swarmmode/><span>The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><blockquote>
+<p>Note the <code>orchestratorRelease</code> property in the JSON file set to <code>1.8</code>!
+Note that it automatically creates all assets for you including a service principal and a resource group.</p>
+</blockquote>
+<blockquote>
+<p>Since you are in the Azure Cloud Shell, you are already authenticated into your Azure account. If you run elsewhere, the will be another step involved where you login to <code>aka.ms/devicelogin</code>.</p>
+</blockquote>
+<p><img src="/img/article-photos/k8s18-azure/shell.png" alt=""></p>
+<p>After the deployment succeeds, you should see a resource group in your subscription with all your Kubernetes assets:</p>
+<p><img src="/img/article-photos/k8s18-azure/resource-group.png" alt=""></p>
+<p>The output of the command above is an <code>_output</code> folder where you have your SSH keys and the <code>kubeconfig</code> to access the cluster.</p>
+<p>Now to access the cluster.</p>
+<blockquote>
+<p>Depending on which version of <code>kubectl</code> you have installed, you might want to <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl">upgrade to 1.8 as it is detailed here</a>.</p>
+</blockquote>
+<p>Now you need to point your <code>kubectl</code> to the <code>kubeconfig</code> file location. This has to correspond to the Azure location where you deployed your cluster - in my case West Europe:</p>
+<p><code>export KUBECONFIG=_output/kubernetes1dot8-59d7ee12/kubeconfig/kubeconfig.westeurope.json</code></p>
+<p>At this point you can use <code>kubectl</code> to get information about your cluster and your nodes:</p>
+<p><code>kubectl get nodes</code></p>
+<p><img src="/img/article-photos/k8s18-azure/k8s18.png" alt=""></p>
+<blockquote>
+<p>Note the <code>v1.8.0</code>!</p>
+</blockquote>
+<p>Now you have a Kubernetes 1.8 cluster where you can go ahead and use all the awesome features!</p>
+<h3 id="configure-kubectl-from-outside-the-azure-cloud-shell">Configure <code>kubectl</code> from outside the Azure Cloud Shell</h3>
+<p>Since we deployed the cluster using the Azure Cloud Shell, all certificates and SSH keys are found in the <code>_output</code> directory from where you executed the <code>acs-engine deploy</code> command.
+You will want to have access to your cluster from outside the browser (for obvious reasons), so you will have to download the certificates and keys.</p>
+<p>After watching <a href="https://channel9.msdn.com/Shows/Azure-Friday/Azure-Cloud-Shell">this video on Channel9 explaining Azure Cloud Shell</a>, you simply need to put your files in <code>/home/&lt;your-username&gt;/clouddrive</code>. Then you will find them in the Azure Storage account (more specifically in the the File Share) associated with your Cloud Shell.</p>
+<blockquote>
+<p>If you don&rsquo;t want to manually download each file (and you don&rsquo;t have to mount the share), simply make an archive of the entire folder download it.</p>
+</blockquote>
+<p>Then, point your local <code>kubectl</code> to the <code>kubeconfig.&lt;azure-location&gt;.json</code> file and you have access to your cluster.</p>
+<blockquote>
+<p>Note that you can also create new users for your cluster, assign them roles and just download the key and certificate for the user, <a href="https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/">as described in the Bitnami documentation</a>.</p>
+</blockquote>
+<h3 id="conclusion-feedback">Conclusion, feedback</h3>
+<p>In this brief article we saw how to deploy a Kubernetes 1.8 cluster on Azure using <code>acs-engine</code> and the Azure Cloud Shell.
+If you have any ideas, comments or feedback, please use the comments below :)</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

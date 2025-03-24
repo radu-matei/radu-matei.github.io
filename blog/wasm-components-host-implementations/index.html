@@ -1,48 +1,150 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Building host implementations for WebAssembly interfaces - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/wasm-components-host-implementations/><meta name=description content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article introduces host implementations, and how to use tooling from the Bytecode Alliance to build and use such implementations."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Building host implementations for WebAssembly interfaces"><meta property="og:description" content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article introduces host implementations, and how to use tooling from the Bytecode Alliance to build and use such implementations."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/wasm-components-host-implementations/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-01-20T00:00:00+00:00"><meta property="article:modified_time" content="2022-01-20T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Building host implementations for WebAssembly interfaces"><meta name=twitter:description content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article introduces host implementations, and how to use tooling from the Bytecode Alliance to build and use such implementations."><meta itemprop=name content="Building host implementations for WebAssembly interfaces"><meta itemprop=description content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article introduces host implementations, and how to use tooling from the Bytecode Alliance to build and use such implementations."><meta itemprop=datePublished content="2022-01-20T00:00:00+00:00"><meta itemprop=dateModified content="2022-01-20T00:00:00+00:00"><meta itemprop=wordCount content="1361"><meta itemprop=keywords content="wasm,rust,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Building host implementations for WebAssembly interfaces</h1><div class="text-sm opacity-60"><time>Thursday, January 20, 2022</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>The WebAssembly
-<a href=https://github.com/WebAssembly/component-model>component model</a> defines <em>a
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building host implementations for WebAssembly interfaces | radu&#39;s blog</title>
+  <meta name="description" content="WebAssembly and WASI show great promise for the future of computing outside the browser, and the WebAssembly component model aims to improve the portability, cross-language, and composition story for Wasm. This article introduces host implementations, and how to use tooling from the Bytecode Alliance to build and use such implementations.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Building host implementations for WebAssembly interfaces</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">January 20, 2022</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p>The WebAssembly
+<a href="https://github.com/WebAssembly/component-model">component model</a> defines <em>a
 portable, load- and run-time-efficient binary format […] that enables portable,
 cross-language composition</em>, effectively enabling a wide range of scenarios for
 WebAssembly modules built in different programming languages to interoperate.
 The
-<a href=https://radu-matei.com/blog/intro-wasm-components/>previous article in this series</a>
+<a href="https://radu-matei.com/blog/intro-wasm-components/">previous article in this series</a>
 showcased how to start from a WebAssembly interface, implement it as a
 WebAssembly component in Rust, then consume the interface and its Rust
-implementation from other Wasm components built in C++ and Rust.</p><p>Satisfying interfaces through other WebAssembly components means they will be
+implementation from other Wasm components built in C++ and Rust.</p>
+<p>Satisfying interfaces through other WebAssembly components means they will be
 executed in the same WebAssembly sandbox, and will not get access to anything
 outside the sandbox — this means no default access to any host APIs, not
 hardware acceleration support, or no networking. So how could we build an
 implementation of an interface, get access to resources that are not available
 in the WebAssembly sandbox, but still ensure that we only expose the
-functionality needed for the interface we are implementing?</p><p>We could build a host implementation. We could use to all host capabilities
+functionality needed for the interface we are implementing?</p>
+<p>We could build a host implementation. We could use to all host capabilities
 (hardware acceleration, networking), and transparently expose them to guest
 modules through regular Wasm imports. Because we are implementing the same
 interface, users of it (consumer modules, such as
-<a href=https://radu-matei.com/blog/intro-wasm-components/>the components from the previous article</a>)
+<a href="https://radu-matei.com/blog/intro-wasm-components/">the components from the previous article</a>)
 don&rsquo;t have to change at all, but the host runtime can be updated, or potentially
 patched for a security vulnerability without recompiling the consumers of the
-interface.</p><p>Moreover, the host implementation has complete control over how to restrict the
+interface.</p>
+<p>Moreover, the host implementation has complete control over how to restrict the
 guest&rsquo;s access to resources — it can reject outgoing connections based on the
 domain, or file access based on the relative paths. The choice is up to the host
-implementation, not the guest module.</p><p>There are existing examples for this approach — <a href=https://wasi.dev/>WASI</a> itself
+implementation, not the guest module.</p>
+<p>There are existing examples for this approach — <a href="https://wasi.dev/">WASI</a> itself
 (for enabling host access to things like the filesystem or environment),
-<a href=https://github.com/Webassembly/wasi-nn>WASI-NN</a> (for high performance machine
+<a href="https://github.com/Webassembly/wasi-nn">WASI-NN</a> (for high performance machine
 learning inference), or
-<a href=https://github.com/deislabs/wasi-experimental-http>WASI experimental HTTP</a>
-(for performing outbound HTTP requests from Wasm modules).</p><p>The
-<a href=https://github.com/bytecodealliance/wit-bindgen>current tooling for the component model</a>
+<a href="https://github.com/deislabs/wasi-experimental-http">WASI experimental HTTP</a>
+(for performing outbound HTTP requests from Wasm modules).</p>
+<p>The
+<a href="https://github.com/bytecodealliance/wit-bindgen">current tooling for the component model</a>
 generates bindings that make it easier to write such host implementations (in
 Rust and Python, using the Wasmtime API), and this article will explore this
 topic by extending
-<a href=https://github.com/radu-matei/wasm-components-example>the project from the previous article</a>
+<a href="https://github.com/radu-matei/wasm-components-example">the project from the previous article</a>
 to use with a host implementation for a cache interface that stores the
-key/value pairs in Redis.</p><p>Let&rsquo;s start by having another look at the interface. Consumers will use language
+key/value pairs in Redis.</p>
+<p>Let&rsquo;s start by having another look at the interface. Consumers will use language
 bindings based on this API to access the caching functionality. The interface
-contains functions for setting, getting, and deleting values from a cache:</p><pre tabindex=0><code>// cache.wit
+contains functions for setting, getting, and deleting values from a cache:</p>
+<pre tabindex="0"><code>// cache.wit
 // Type for cache errors.
 enum error {
     runtime-error,
@@ -57,29 +159,40 @@ get: function(key: string) -&gt; expected&lt;payload, error&gt;
 // Delete the cache entry for the given key.
 delete: function(key: string) -&gt; expected&lt;_, error&gt;
 </code></pre><p>(A non-trivial example of using the new WIT format can be found
-<a href=https://github.com/bytecodealliance/wit-bindgen/blob/32e63116d469d8046727fae3c1333a7d35d0c5d3/tests/codegen/wasi-next/wasi_next.wit>here</a>.)</p><p>We want to have this host implementation in Rust, so we start with a new library
-crate:</p><pre tabindex=0><code>$ cargo new --lib wasmtime-impl-redis
+<a href="https://github.com/bytecodealliance/wit-bindgen/blob/32e63116d469d8046727fae3c1333a7d35d0c5d3/tests/codegen/wasi-next/wasi_next.wit">here</a>.)</p>
+<p>We want to have this host implementation in Rust, so we start with a new library
+crate:</p>
+<pre tabindex="0"><code>$ cargo new --lib wasmtime-impl-redis
 Created library `wasmtime-impl-redis` package
 </code></pre><p>The main dependency needed is
-<a href=https://github.com/bytecodealliance/wit-bindgen><code>wit-bindgen-wasmtime</code></a> — a
+<a href="https://github.com/bytecodealliance/wit-bindgen"><code>wit-bindgen-wasmtime</code></a> — a
 Bytecode Alliance project that, given a WebAssembly interface (WIT) file,
 generates Rust bindings that make it easy to implement (or consume) the
-interface from Wasmtime using its Rust API:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-toml data-lang=toml><span style=display:flex><span><span style=color:#75715e># Cargo.toml</span>
-</span></span><span style=display:flex><span>[<span style=color:#a6e22e>dependencies</span>]
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>wit-bindgen-wasmtime</span> = { <span style=color:#a6e22e>git</span> = <span style=color:#e6db74>&#34;https://github.com/bytecodealliance/wit-bindgen&#34;</span>,
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rev</span> = <span style=color:#e6db74>&#34;2e654dc82b7f9331719ba617a36ed5967b2aecb0&#34;</span> }
+interface from Wasmtime using its Rust API:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span><span style="color:#75715e"># Cargo.toml</span>
+</span></span><span style="display:flex;"><span>[<span style="color:#a6e22e">dependencies</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">wit-bindgen-wasmtime</span> = { <span style="color:#a6e22e">git</span> = <span style="color:#e6db74">&#34;https://github.com/bytecodealliance/wit-bindgen&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">rev</span> = <span style="color:#e6db74">&#34;2e654dc82b7f9331719ba617a36ed5967b2aecb0&#34;</span> }
 </span></span></code></pre></div><p>In general, generators from wit-bindgen have two operating modes, <em>import</em> and
-<em>export</em>:</p><ul><li>import bindings are for <em>consuming</em> an interface</li><li>export bindings are for <em>implementing</em> an interface.</li></ul><p>In this case, because we want to offer a host implementation for the cache
-interface, we need to generate <em>export</em> bindings.</p><p>The most important part here is the <code>wit_bindgen_wasmtime::export!</code> procedural
+<em>export</em>:</p>
+<ul>
+<li>import bindings are for <em>consuming</em> an interface</li>
+<li>export bindings are for <em>implementing</em> an interface.</li>
+</ul>
+<p>In this case, because we want to offer a host implementation for the cache
+interface, we need to generate <em>export</em> bindings.</p>
+<p>The most important part here is the <code>wit_bindgen_wasmtime::export!</code> procedural
 macro, which takes the interface file as input, and automatically generates
 Wasmtime-specific bindings to implement the interface in Rust. This is similar
-to directly using the CLI:</p><pre tabindex=0><code>$ wit-bindgen wasmtime --export ../cache.wit
+to directly using the CLI:</p>
+<pre tabindex="0"><code>$ wit-bindgen wasmtime --export ../cache.wit
 Generating &#34;bindings.rs&#34;;
 </code></pre><p>Inspecting the generated bindings, we can see types for the objects from the
 interface, a top-level <code>add_to_linker</code> function that allows linking all the
 functions from this implementation, and a trait that contains all functions we
 must implement. Let&rsquo;s look at the implementation for the <code>cache::Cache</code> trait
-and how to implement it:</p><pre tabindex=0><code>use cache::*;
+and how to implement it:</p>
+<pre tabindex="0"><code>use cache::*;
 wit_bindgen_wasmtime::export!(&#34;../cache.wit&#34;);
 
 struct RedisCache {}
@@ -102,9 +215,11 @@ impl cache::Cache for RedisCache {
 </code></pre><p>An important thing to note here is that the trait functions have an associated
 mutable receiver (<code>&amp;mut self</code>), which indicates a way of keeping and mutating
 state with the <code>RedisCache</code> structure (that will live throughout the execution
-of its Wasm caller).</p><p>At this point, the respective functions must use a Redis instance to store and
+of its Wasm caller).</p>
+<p>At this point, the respective functions must use a Redis instance to store and
 retrieve values — this can be achieved by modifying the cache structure to have
-a reference for the Redis instance address and a client connection:</p><pre tabindex=0><code>/// Redis implementation for the WASI cache interface.
+a reference for the Redis instance address and a client connection:</p>
+<pre tabindex="0"><code>/// Redis implementation for the WASI cache interface.
 pub struct RedisCache {
     /// The address of the Redis instance.
     pub address: String,
@@ -113,10 +228,11 @@ pub struct RedisCache {
     connection: Connection,
 }
 </code></pre><p>Next, you can implement the required functions by using
-<a href=https://crates.io/crates/redis>the Redis crate</a> to store and retrieve data.
+<a href="https://crates.io/crates/redis">the Redis crate</a> to store and retrieve data.
 For example, for the set function, we store the value associated with the key,
 and check whether there is a time-to-live argument passed — if present, set the
-expiry period in Redis:</p><pre tabindex=0><code>/// Set the payload in Redis using the given key and optional time-to-live (in seconds).
+expiry period in Redis:</p>
+<pre tabindex="0"><code>/// Set the payload in Redis using the given key and optional time-to-live (in seconds).
 fn set(&amp;mut self, key: &amp;str, value: &amp;[u8], ttl: Option&lt;u32&gt;) -&gt; Result&lt;()&gt; {
     self.connection.set(key, value)?;
     match ttl {
@@ -127,44 +243,92 @@ fn set(&amp;mut self, key: &amp;str, value: &amp;[u8], ttl: Option&lt;u32&gt;) -
 }
 </code></pre><p>The big advantage of using the WIT bindgen macro is that it abstracts almost all
 of the WebAssembly specific boilerplate, and the only remaining task is
-implementing the actual functionality.</p><h2 id=linking-the-implementation-at-runtime>Linking the implementation at runtime</h2><p>Now that the host implementation is built, it is time to start instantiating
-<a href=https://radu-matei.com/blog/intro-wasm-components/>the consumer components that were built in the previous part of this series</a>
+implementing the actual functionality.</p>
+<h2 id="linking-the-implementation-at-runtime">Linking the implementation at runtime</h2>
+<p>Now that the host implementation is built, it is time to start instantiating
+<a href="https://radu-matei.com/blog/intro-wasm-components/">the consumer components that were built in the previous part of this series</a>
 — but this time, instead of satisfying their interface import through another
 WebAssembly component, we will satisfy it through the host implementation built
-with Redis.</p><p>The entire process for setting up the runtime and creating an instance of a
+with Redis.</p>
+<p>The entire process for setting up the runtime and creating an instance of a
 WebAssembly module with Wasmtime can be found on GitHub and in the
-<a href=https://docs.wasmtime.dev/lang-rust.html>Wasmtime Rust API documentation</a>, but
+<a href="https://docs.wasmtime.dev/lang-rust.html">Wasmtime Rust API documentation</a>, but
 the relevant part to this article is linking the host implementation to satisfy
-the cache interface the consumer component is importing:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#75715e>// create an instance of the RedisCache object we just built
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>let</span> rc <span style=color:#f92672>=</span> RedisCache::new(<span style=color:#e6db74>&#34;redis://localhost:6379&#34;</span>)<span style=color:#f92672>?</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// use the auto-generated add_to_linker method to register the associated functions
-</span></span></span><span style=display:flex><span><span style=color:#75715e>// whenever interface functions are executed during this Wasm caller’s lifetime
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>cache::add_to_linker(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> linker, <span style=color:#f92672>|</span>ctx<span style=color:#f92672>|</span> -&gt; <span style=color:#66d9ef>&amp;</span><span style=color:#a6e22e>mut</span> RedisCache {
-</span></span><span style=display:flex><span>ctx.runtime_data.as_mut().unwrap()
-</span></span><span style=display:flex><span>})<span style=color:#f92672>?</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>..</span>.
-</span></span><span style=display:flex><span><span style=color:#75715e>// create a new instance of the module and call its entrypoint
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>let</span> instance <span style=color:#f92672>=</span> linker.instantiate(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> store, <span style=color:#f92672>&amp;</span>module)<span style=color:#f92672>?</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span> start <span style=color:#f92672>=</span> instance.get_func(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> store, <span style=color:#e6db74>&#34;_start&#34;</span>).unwrap();
-</span></span><span style=display:flex><span>start.call(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> store, <span style=color:#f92672>&amp;</span>[], <span style=color:#f92672>&amp;</span><span style=color:#66d9ef>mut</span> [])<span style=color:#f92672>?</span>;
+the cache interface the consumer component is importing:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// create an instance of the RedisCache object we just built
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> rc <span style="color:#f92672">=</span> RedisCache::new(<span style="color:#e6db74">&#34;redis://localhost:6379&#34;</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// use the auto-generated add_to_linker method to register the associated functions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// whenever interface functions are executed during this Wasm caller’s lifetime
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>cache::add_to_linker(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> linker, <span style="color:#f92672">|</span>ctx<span style="color:#f92672">|</span> -&gt; <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> RedisCache {
+</span></span><span style="display:flex;"><span>ctx.runtime_data.as_mut().unwrap()
+</span></span><span style="display:flex;"><span>})<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// create a new instance of the module and call its entrypoint
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">let</span> instance <span style="color:#f92672">=</span> linker.instantiate(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#f92672">&amp;</span>module)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> start <span style="color:#f92672">=</span> instance.get_func(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#e6db74">&#34;_start&#34;</span>).unwrap();
+</span></span><span style="display:flex;"><span>start.call(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> store, <span style="color:#f92672">&amp;</span>[], <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> [])<span style="color:#f92672">?</span>;
 </span></span></code></pre></div><p>The procedural macro we used when implementing the library also generated the
 <code>add_to_linker</code> method, which abstracts the entire process of linking the
 interface methods to the implementation. After creating a new instance of
 <code>RedisCache</code>, the state is added to the current Wasmtime store, and the module
-is instantiated.</p><p>Finally, the <code>_start</code> function from the module (the default entrypoint for WASI
-modules) is called, and the consumer module is executed.</p><p>The complete code for the host implementation and test suite can be found
-<a href=https://github.com/radu-matei/wasm-components-example>on GitHub</a>, and if you
+is instantiated.</p>
+<p>Finally, the <code>_start</code> function from the module (the default entrypoint for WASI
+modules) is called, and the consumer module is executed.</p>
+<p>The complete code for the host implementation and test suite can be found
+<a href="https://github.com/radu-matei/wasm-components-example">on GitHub</a>, and if you
 are interested in contributing to a standard set of WebAssembly interfaces,
-<a href=https://github.com/fermyon/wasi-experimental-toolkit/>check out this repository from Fermyon.</a></p><h2 id=conclusion>Conclusion</h2><p>In this article we explored using Bytecode Alliance tooling to build a host
+<a href="https://github.com/fermyon/wasi-experimental-toolkit/">check out this repository from Fermyon.</a></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article we explored using Bytecode Alliance tooling to build a host
 implementation for a WebAssembly interface, and used it to satisfy the imports
 of a previously built component at runtime. Using this tooling and Wasmtime, we
 can dynamically instantiate components by using either other Wasm components, or
-host implementations, based on runtime constraints or environment decisions.</p><p>The early stages of the WebAssembly component model show tremendous potential to
+host implementations, based on runtime constraints or environment decisions.</p>
+<p>The early stages of the WebAssembly component model show tremendous potential to
 enable new types of computing workloads, and further developments in the tooling
-will start unlocking this potential.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/rust>rust</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/six-ways-optimize-webassembly/><span class=mr-1.5>←</span><span>The Six Ways of Optimizing WebAssembly</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/intro-wasm-components/><span>Introduction to WebAssembly components</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+will start unlocking this potential.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

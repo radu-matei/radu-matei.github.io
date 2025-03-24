@@ -1,17 +1,187 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/rpi-sensehat-telemetry/><meta name=description content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite"><meta property="og:description" content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/rpi-sensehat-telemetry/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-10-10T00:00:00+00:00"><meta property="article:modified_time" content="2016-10-10T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite"><meta name=twitter:description content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)."><meta itemprop=name content="Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite"><meta itemprop=description content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications)."><meta itemprop=datePublished content="2016-10-10T00:00:00+00:00"><meta itemprop=dateModified content="2016-10-10T00:00:00+00:00"><meta itemprop=wordCount content="2082"><meta itemprop=keywords content="iot,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</h1><div class="text-sm opacity-60"><time>Monday, October 10, 2016</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><blockquote><p>You can check <a href=https://github.com/radu-matei/rpi-sensehat-cloud-telemetry>the GitHub repository of this project for the full source code</a></p></blockquote><p>In this blog post, we will get started with the <a href=https://www.raspberrypi.org/products/raspberry-pi-3-model-b/>Raspberry Pi3</a>, the <a href=https://www.raspberrypi.org/products/sense-hat/>Sense HAT</a> and Azure IoT Suite.
-More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, which we will detail a little later.</p><p>The end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications).</p><h3 id=what-is-sense-hat>What is Sense HAT?</h3><blockquote><p>The Sense HAT is an add-on board for Raspberry Pi, made especially for the <a href=https://astro-pi.org/>Astro Pi</a> mission to go in Space.
-The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the following sensors:</p></blockquote><blockquote><ul><li>Gyroscope</li><li>Accelerometer</li><li>Magnetometer</li><li>Barometric pressure sensor</li><li>Humidity sensors</li></ul></blockquote><p><img src=https://www.raspberrypi.org/wp-content/uploads/2015/06/astro-pi-hat.png alt="Sense HAT"></p><blockquote><p>The Sense HAT - image from <a href=https://www.raspberrypi.org/products/sense-hat/>the official Raspberry Pi website</a></p></blockquote><p>Basically, the Sense HAT is a board that has integrated sensors and a joystick, with an additional 8x8 LED matrix. It is a very fun board to play with and I recommend it if you don&rsquo;t want (or know, for that matter) to get tangled in wires and in calculating resistances.</p><h3 id=assembling-the-two-boards>Assembling the two boards</h3><p>In order to get started, we first need to assemble the HAT on the Pi.</p><p><img src=https://raw.githubusercontent.com/raspberrypilearning/astro-pi-guide/3ca15fd5e2a44121f0ac9bbcaf64f3c2f0b51a54/images/sense-hat-assembly.png alt></p><blockquote><p>Image from <a href=https://www.raspberrypi.org/learning/astro-pi-guide/assemble.md>the official Raspberry Pi website</a></p></blockquote><p>After carefully assembling the two boards (watching not to bend the pins of either boards) and putting the screws and the hexagonal stand-offs in place, you are ready to go. If successful, the end result should look similar to this:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/rpi-sensehat-assembly.jpg alt></p><p>You can <a href=https://developer.microsoft.com/en-us/windows/iot/docs/kitsetuprpi>follow the instructions here to install Windows IoT Core on your Raspberry Pi</a>.</p><p>Assuming you assembled the board and installed Windows on your Raspberry, we are ready to get started.</p><h3 id=creating-a-windows-universal-app-that-will-run-on-the-raspberry>Creating a Windows Universal App that will run on the Raspberry</h3><blockquote><p>At this moment there is no official .NET library to work with the Sense HAT. There is an official Python library and you <a href=http://pythonhosted.org/sense-hat/>can get started with it here.</a></p></blockquote><p>While there is no official .NET library, there is a library developed by <a href=http://www.laserbrain.se/>Mattias Larsson</a> which provides exactly the functionality we need. You can <a href=https://github.com/emmellsoft>find the source code on GitHub</a> and <a href=https://www.nuget.org/packages/Emmellsoft.IoT.RPi.SenseHat/>the package on NuGet</a>.</p><p>If you are a complete beginner with Windows IoT Core and the Raspberry Pi3, I strongly recommend you go through this step-by-step tutorial on how to get started with the installing, configuring and writing your first app on the Raspberry Pi3 with Windows IoT Core:</p><ul><li><a href=https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/GetStartedStep1.htm>Step 1 of 4: Get the Tools</a></li><li><a href=https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep2>Step 2 of 4: Set up your device</a></li><li><a href=https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep3>Step 3 of 4: Set up Visual Studio</a></li><li><a href=https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep4>Step 4 of 4: Write your first app</a></li></ul><p>After this, you can find multiple examples with various hardware components and software services, from the <a href=https://developer.microsoft.com/en-us/windows/iot>Windows IoT developer website</a> or from <a href=http://microsoft.hackster.io>Hackster</a>.</p><blockquote><p><a href=https://msdn.microsoft.com/en-us/windows/uwp/get-started/create-a-hello-world-app-xaml-universal>Here you can find a very brief introduction to creating UWP apps and a Hello, World example.</a></p></blockquote><h3 id=creating-the-app-architecture>Creating the app architecture</h3><p>At this point, we can choose between two approaches:</p><ul><li>have the entire logic (including the communication with the Sense HAT and the cloud) in the UWP application</li><li>create separate (and reusable) class library projects that can be referenced from the UWP application</li></ul><p>For this project, we will go with the second approach (and you can already <a href=https://github.com/radu-matei/rpi-sensehat-cloud-telemetry>review the source code on GitHub</a>).</p><blockquote><p>In this case, I went with the following naming conventions for the solution and the projects:</p></blockquote><blockquote><ul><li>the name of the solution: <code>RPiSenseHatTelemetry</code></li><li>the name of various projects: <code>RPiSenseHatTelemetry.SpecificProjectFunctionality</code></li></ul></blockquote><p>To get started, open Visual Studio and create a new Universal Windows app for Windows 10. There is nothing specific for Raspberry Pi or Sense HAT yet, just a typical UWP app. (In my case, the naming was: <code>RPiSenseHatTelemetry.Uwp</code>).</p><h3 id=the-telemetry-collected-and-analyzed>The telemetry collected and analyzed</h3><p>In this very simple example, we will only get the temperature telemetry, with the Celsius value and the timestamp of the measurement.
-Since we plan on taking more telemetry than temperature (and use these classes in other projects), we will create a project called <code>RPiSenseHatTelemetry.Common</code> that we will reference later.</p><pre tabindex=0><code>public class TemperatureTelemetry
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite | radu&#39;s blog</title>
+  <meta name="description" content="In this blog post, we will get started with the Raspberry Pi3, the Sense HAT and Azure IoT Suite. More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, and the end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications).">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">October 10, 2016</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <blockquote>
+<p>You can check <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry">the GitHub repository of this project for the full source code</a></p>
+</blockquote>
+<p>In this blog post, we will get started with the <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/">Raspberry Pi3</a>, the <a href="https://www.raspberrypi.org/products/sense-hat/">Sense HAT</a> and Azure IoT Suite.
+More specifically, from the IoT Suite we will use IoT Hub, and Stream Analytics, which we will detail a little later.</p>
+<p>The end goal of this little project is to acquire data from the sensors, upload the data to IoT Hub, which feeds it into Stream Analytics, with outputs to an Azure SQL database (for storage) and to Service Bus (for consuming the data in real-time from various applications).</p>
+<h3 id="what-is-sense-hat">What is Sense HAT?</h3>
+<blockquote>
+<p>The Sense HAT is an add-on board for Raspberry Pi, made especially for the <a href="https://astro-pi.org/">Astro Pi</a> mission to go in Space.
+The Sense HAT has an 8x8 RGB LED matrix, a five-button joystick and includes the following sensors:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>Gyroscope</li>
+<li>Accelerometer</li>
+<li>Magnetometer</li>
+<li>Barometric pressure sensor</li>
+<li>Humidity sensors</li>
+</ul>
+</blockquote>
+<p><img src="https://www.raspberrypi.org/wp-content/uploads/2015/06/astro-pi-hat.png" alt="Sense HAT"></p>
+<blockquote>
+<p>The Sense HAT - image from <a href="https://www.raspberrypi.org/products/sense-hat/">the official Raspberry Pi website</a></p>
+</blockquote>
+<p>Basically, the Sense HAT is a board that has integrated sensors and a joystick, with an additional 8x8 LED matrix. It is a very fun board to play with and I recommend it if you don&rsquo;t want (or know, for that matter) to get tangled in wires and in calculating resistances.</p>
+<h3 id="assembling-the-two-boards">Assembling the two boards</h3>
+<p>In order to get started, we first need to assemble the HAT on the Pi.</p>
+<p><img src="https://raw.githubusercontent.com/raspberrypilearning/astro-pi-guide/3ca15fd5e2a44121f0ac9bbcaf64f3c2f0b51a54/images/sense-hat-assembly.png" alt=""></p>
+<blockquote>
+<p>Image from <a href="https://www.raspberrypi.org/learning/astro-pi-guide/assemble.md">the official Raspberry Pi website</a></p>
+</blockquote>
+<p>After carefully assembling the two boards (watching not to bend the pins of either boards) and putting the screws and the hexagonal stand-offs in place, you are ready to go. If successful, the end result should look similar to this:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/rpi-sensehat-assembly.jpg" alt=""></p>
+<p>You can <a href="https://developer.microsoft.com/en-us/windows/iot/docs/kitsetuprpi">follow the instructions here to install Windows IoT Core on your Raspberry Pi</a>.</p>
+<p>Assuming you assembled the board and installed Windows on your Raspberry, we are ready to get started.</p>
+<h3 id="creating-a-windows-universal-app-that-will-run-on-the-raspberry">Creating a Windows Universal App that will run on the Raspberry</h3>
+<blockquote>
+<p>At this moment there is no official .NET library to work with the Sense HAT. There is an official Python library and you <a href="http://pythonhosted.org/sense-hat/">can get started with it here.</a></p>
+</blockquote>
+<p>While there is no official .NET library, there is a library developed by <a href="http://www.laserbrain.se/">Mattias Larsson</a> which provides exactly the functionality we need. You can <a href="https://github.com/emmellsoft">find the source code on GitHub</a> and <a href="https://www.nuget.org/packages/Emmellsoft.IoT.RPi.SenseHat/">the package on NuGet</a>.</p>
+<p>If you are a complete beginner with Windows IoT Core and the Raspberry Pi3, I strongly recommend you go through this step-by-step tutorial on how to get started with the installing, configuring and writing your first app on the Raspberry Pi3 with Windows IoT Core:</p>
+<ul>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/GetStartedStep1.htm">Step 1 of 4: Get the Tools</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep2">Step 2 of 4: Set up your device</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep3">Step 3 of 4: Set up Visual Studio</a></li>
+<li><a href="https://developer.microsoft.com/en-us/windows/iot/Docs/GetStarted/rpi3/sdcard/stable/getstartedstep4">Step 4 of 4: Write your first app</a></li>
+</ul>
+<p>After this, you can find multiple examples with various hardware components and software services, from the <a href="https://developer.microsoft.com/en-us/windows/iot">Windows IoT developer website</a> or from <a href="http://microsoft.hackster.io">Hackster</a>.</p>
+<blockquote>
+<p><a href="https://msdn.microsoft.com/en-us/windows/uwp/get-started/create-a-hello-world-app-xaml-universal">Here you can find a very brief introduction to creating UWP apps and a Hello, World example.</a></p>
+</blockquote>
+<h3 id="creating-the-app-architecture">Creating the app architecture</h3>
+<p>At this point, we can choose between two approaches:</p>
+<ul>
+<li>have the entire logic (including the communication with the Sense HAT and the cloud) in the UWP application</li>
+<li>create separate (and reusable) class library projects that can be referenced from the UWP application</li>
+</ul>
+<p>For this project, we will go with the second approach (and you can already <a href="https://github.com/radu-matei/rpi-sensehat-cloud-telemetry">review the source code on GitHub</a>).</p>
+<blockquote>
+<p>In this case, I went with the following naming conventions for the solution and the projects:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>the name of the solution: <code>RPiSenseHatTelemetry</code></li>
+<li>the name of various projects: <code>RPiSenseHatTelemetry.SpecificProjectFunctionality</code></li>
+</ul>
+</blockquote>
+<p>To get started, open Visual Studio and create a new Universal Windows app for Windows 10. There is nothing specific for Raspberry Pi or Sense HAT yet, just a typical UWP app. (In my case, the naming was: <code>RPiSenseHatTelemetry.Uwp</code>).</p>
+<h3 id="the-telemetry-collected-and-analyzed">The telemetry collected and analyzed</h3>
+<p>In this very simple example, we will only get the temperature telemetry, with the Celsius value and the timestamp of the measurement.
+Since we plan on taking more telemetry than temperature (and use these classes in other projects), we will create a project called <code>RPiSenseHatTelemetry.Common</code> that we will reference later.</p>
+<pre tabindex="0"><code>public class TemperatureTelemetry
 {
     public string Time { get; set; }
     public double Temperature { get; set; }
 }
-</code></pre><h3 id=the-sense-hat-communication-project>The Sense HAT Communication Project</h3><p>Right now, we need to have specific functionality for communicating with the Sense HAT. In a new class library project (in this case called: <code>RPiSenseHatTelemetry.SenseHatCommunication</code>), add the NuGet package for the Sense HAT: <code>Install-Package Emmellsoft.IoT.RPi.SenseHat</code>. This will add a bunch of files and folders to your project (mainly for demo and testing purposes) that we will not use, all we need is the reference to the <code>Emmellsoft.IoT.RPi.SenseHat</code> dll.</p><p>The main thing that we will use from this library is exposed through the <code>ISenseHat</code> interface, which you can find in <a href=https://github.com/emmellsoft/RPi.SenseHat/blob/master/RPi.SenseHat/Rpi.SenseHat/ISenseHat.cs>the library&rsquo;s GitHub repository</a>.</p><blockquote><p>The best place to learn how to use this library is <a href=https://github.com/emmellsoft/RPi.SenseHat/tree/master/RPi.SenseHat/RPi.SenseHat.Demo/Demos>the demo section of the repository</a>. There you can find how to create a compass, how to make disco lights from the 8x8 LED matrix or write the temperature on the LED matrix.</p></blockquote><p>We will create a new class that will only expose functionality related with the temperature telemetry, but you can expand this class to do all the things you want.</p><pre tabindex=0><code>using System;
+</code></pre><h3 id="the-sense-hat-communication-project">The Sense HAT Communication Project</h3>
+<p>Right now, we need to have specific functionality for communicating with the Sense HAT. In a new class library project (in this case called: <code>RPiSenseHatTelemetry.SenseHatCommunication</code>), add the NuGet package for the Sense HAT: <code>Install-Package Emmellsoft.IoT.RPi.SenseHat</code>. This will add a bunch of files and folders to your project (mainly for demo and testing purposes) that we will not use, all we need is the reference to the <code>Emmellsoft.IoT.RPi.SenseHat</code> dll.</p>
+<p>The main thing that we will use from this library is exposed through the <code>ISenseHat</code> interface, which you can find in <a href="https://github.com/emmellsoft/RPi.SenseHat/blob/master/RPi.SenseHat/Rpi.SenseHat/ISenseHat.cs">the library&rsquo;s GitHub repository</a>.</p>
+<blockquote>
+<p>The best place to learn how to use this library is <a href="https://github.com/emmellsoft/RPi.SenseHat/tree/master/RPi.SenseHat/RPi.SenseHat.Demo/Demos">the demo section of the repository</a>. There you can find how to create a compass, how to make disco lights from the 8x8 LED matrix or write the temperature on the LED matrix.</p>
+</blockquote>
+<p>We will create a new class that will only expose functionality related with the temperature telemetry, but you can expand this class to do all the things you want.</p>
+<pre tabindex="0"><code>using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Emmellsoft.IoT.Rpi.SenseHat;
@@ -54,7 +224,13 @@ using RPiSenseHatTelemetry.Common;
         }
     }
 </code></pre><p>We will obtain the actual object that does the communication with the board through <code>SenseHatFactory</code> and we will use this object throughout our class.
-In the <code>Activate</code> method, we get the reference to the <code>ISenseHat</code> object through the factory, then we turn off the LED matrix (since we don&rsquo;t want to have it on at all times when it&rsquo;s running).</p><p>We also have a <code>Dispose</code> method, since the <code>_senseHat</code> is disposable.</p><p>The <code>GetTemperature</code> method is pretty straightforward: we check if the temperature sensor has value. If it does, we create a new <code>TemperatureTelemetry</code> object with the corresponding timestamp and temperature that we return. If the sensor doesn&rsquo;t have a value, we wait half a second and try again.</p><p>This is the entire code that deals with the Sense HAT.</p><h3 id=displaying-the-temperature-in-the-uwp-app>Displaying the temperature in the UWP app</h3><p>In the <code>MainPage</code> of the UWP app, we need to have a <code>SenseHat</code> property in order to get the temperature once every three seconds, that we then display.</p><pre tabindex=0><code>public sealed partial class MainPage : Page
+In the <code>Activate</code> method, we get the reference to the <code>ISenseHat</code> object through the factory, then we turn off the LED matrix (since we don&rsquo;t want to have it on at all times when it&rsquo;s running).</p>
+<p>We also have a <code>Dispose</code> method, since the <code>_senseHat</code> is disposable.</p>
+<p>The <code>GetTemperature</code> method is pretty straightforward: we check if the temperature sensor has value. If it does, we create a new <code>TemperatureTelemetry</code> object with the corresponding timestamp and temperature that we return. If the sensor doesn&rsquo;t have a value, we wait half a second and try again.</p>
+<p>This is the entire code that deals with the Sense HAT.</p>
+<h3 id="displaying-the-temperature-in-the-uwp-app">Displaying the temperature in the UWP app</h3>
+<p>In the <code>MainPage</code> of the UWP app, we need to have a <code>SenseHat</code> property in order to get the temperature once every three seconds, that we then display.</p>
+<pre tabindex="0"><code>public sealed partial class MainPage : Page
 {
     private SenseHat _senseHat { get; set; }
 
@@ -88,8 +264,19 @@ In the <code>Activate</code> method, we get the reference to the <code>ISenseHat
         await _senseHat.Activate();
     }
 }
-</code></pre><p>After the page has loaded, we use a <code>DispatcherTimer</code> object and every 3 seconds we get a new value from the sensors and display it in the UWP app.</p><blockquote><p>Later, in the same place as we displayed in the app, we will send the data to IoT Hub and we will write the value on the HAT LED matrix.</p></blockquote><h3 id=communicating-with-the-cloud---azure-iot-hub>Communicating with the Cloud - Azure IoT Hub</h3><p>First of all, we need to create an Azure IoT Hub. To do this, <a href=https://azure.microsoft.com/en-gb/documentation/articles/iot-hub-csharp-csharp-getstarted/#create-an-iot-hub>follow the instructions here</a>.</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/iot-hub.JPG alt></p><p>At this point, you can <a href=https://github.com/Azure/azure-iot-sdks/blob/master/tools/DeviceExplorer/doc/how_to_use_device_explorer.md>start using the Device Explorer</a> - a small application that you can use to see the IoT Hubs from Azure and their connected devices.
-From here, you can add devices that are authorized to send data to the IoT Hub and see the messages that arrive on the IoT Hub in real-time, while also having the ability to send messages to the device.</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/device-explorer.JPG alt></p><p>In this case, I created a device called <code>RPi.SenseHat</code> that sends the temperature telemetry to the hub.</p><p>To communicate with the cloud, I created a separate project - <code>RPiSenseHatTelemetry.CloudCommunication</code>, where I created a class called <code>IoTHubCommunication</code> that deals with sending a receiving messages from the cloud.</p><pre tabindex=0><code>using System;
+</code></pre><p>After the page has loaded, we use a <code>DispatcherTimer</code> object and every 3 seconds we get a new value from the sensors and display it in the UWP app.</p>
+<blockquote>
+<p>Later, in the same place as we displayed in the app, we will send the data to IoT Hub and we will write the value on the HAT LED matrix.</p>
+</blockquote>
+<h3 id="communicating-with-the-cloud---azure-iot-hub">Communicating with the Cloud - Azure IoT Hub</h3>
+<p>First of all, we need to create an Azure IoT Hub. To do this, <a href="https://azure.microsoft.com/en-gb/documentation/articles/iot-hub-csharp-csharp-getstarted/#create-an-iot-hub">follow the instructions here</a>.</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/iot-hub.JPG" alt=""></p>
+<p>At this point, you can <a href="https://github.com/Azure/azure-iot-sdks/blob/master/tools/DeviceExplorer/doc/how_to_use_device_explorer.md">start using the Device Explorer</a> - a small application that you can use to see the IoT Hubs from Azure and their connected devices.
+From here, you can add devices that are authorized to send data to the IoT Hub and see the messages that arrive on the IoT Hub in real-time, while also having the ability to send messages to the device.</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/device-explorer.JPG" alt=""></p>
+<p>In this case, I created a device called <code>RPi.SenseHat</code> that sends the temperature telemetry to the hub.</p>
+<p>To communicate with the cloud, I created a separate project - <code>RPiSenseHatTelemetry.CloudCommunication</code>, where I created a class called <code>IoTHubCommunication</code> that deals with sending a receiving messages from the cloud.</p>
+<pre tabindex="0"><code>using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
@@ -135,7 +322,13 @@ using Microsoft.Azure.Devices.Client;
             _deviceClient.Dispose();
         }
     }
-</code></pre><p>Basically, the methods we will use are <code>SendEventAsync</code>, which sends an event asynchronously and <code>ReceiveEventAsync</code> which receives and event asynchronously.</p><blockquote><p>You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. <a href=https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97>Here you can find a tutorial on how to start publishing events from a UWP app with Azure IoT Hub</a>.</p></blockquote><h3 id=adding-cloud-communication-to-the-uwp-app>Adding cloud communication to the UWP app</h3><p>To add the cloud communication to the UWP app, simply create a new instance of our newly created class, <code>IoTHubConnection</code> and use the <code>SendEventAsync</code> method in the <code>MainPage.xaml.cs</code> file.</p><pre tabindex=0><code>timer.Tick += async (x, y) =&gt;
+</code></pre><p>Basically, the methods we will use are <code>SendEventAsync</code>, which sends an event asynchronously and <code>ReceiveEventAsync</code> which receives and event asynchronously.</p>
+<blockquote>
+<p>You can also use a VS extension to add a class that makes the communication with an IoT Hub you select. <a href="https://blogs.windows.com/buildingapps/2016/03/03/connect-your-windows-app-to-azure-iot-hub-with-visual-studio/#ULITBWxjbHHrwkSo.97">Here you can find a tutorial on how to start publishing events from a UWP app with Azure IoT Hub</a>.</p>
+</blockquote>
+<h3 id="adding-cloud-communication-to-the-uwp-app">Adding cloud communication to the UWP app</h3>
+<p>To add the cloud communication to the UWP app, simply create a new instance of our newly created class, <code>IoTHubConnection</code> and use the <code>SendEventAsync</code> method in the <code>MainPage.xaml.cs</code> file.</p>
+<pre tabindex="0"><code>timer.Tick += async (x, y) =&gt;
 {
     var temperatureTelemetry = _senseHat.GetTemperature();
     this.temperatureTextBlock.Text = &#34;Temperature: &#34; +
@@ -145,18 +338,93 @@ using Microsoft.Azure.Devices.Client;
 
     await _iotHubConnection.SendEventAsync(JsonConvert.SerializeObject(temperatureTelemetry));
 };
-</code></pre><h3 id=sending-the-data-from-iot-hub-to-stream-analytics>Sending the data from IoT Hub to Stream Analytics</h3><blockquote><p>You can <a href=https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-introduction/>get started on what is Stream Analytics here</a>.
-This is an <a href=https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-build-an-iot-solution-using-stream-analytics/>introduction on building IoT solutions with Stream Analytics</a>.</p></blockquote><p>Right now we have data going from the Raspberry Pi to the IoT Hub, but nothing more happens with that data. At first, we will send the data to an Azure SQL database.</p><blockquote><p>This is a <a href=https://azure.microsoft.com/en-us/documentation/articles/sql-database-get-started/>step-by-step tutorial on how to create an Azure SQL database.</a></p></blockquote><p>After creating the Stream Analytics service in Azure, we need to add input data, in this case from the IoT Hub:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/stream-analytics-input.JPG alt></p><p>We also need to configure an output, an Azure SQL database:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/stream-analytics-output.JPG alt></p><p>Notice how we also need to configure a table for our data to be stored. This table should have the same structure as our <code>TemperatureTelemetry</code> objects that we send.</p><p>This is the script I used for creating the table for the temperature telemetry:</p><pre tabindex=0><code>CREATE TABLE [dbo].[TemperatureTelemetry] (
+</code></pre><h3 id="sending-the-data-from-iot-hub-to-stream-analytics">Sending the data from IoT Hub to Stream Analytics</h3>
+<blockquote>
+<p>You can <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-introduction/">get started on what is Stream Analytics here</a>.
+This is an <a href="https://azure.microsoft.com/en-us/documentation/articles/stream-analytics-build-an-iot-solution-using-stream-analytics/">introduction on building IoT solutions with Stream Analytics</a>.</p>
+</blockquote>
+<p>Right now we have data going from the Raspberry Pi to the IoT Hub, but nothing more happens with that data. At first, we will send the data to an Azure SQL database.</p>
+<blockquote>
+<p>This is a <a href="https://azure.microsoft.com/en-us/documentation/articles/sql-database-get-started/">step-by-step tutorial on how to create an Azure SQL database.</a></p>
+</blockquote>
+<p>After creating the Stream Analytics service in Azure, we need to add input data, in this case from the IoT Hub:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/stream-analytics-input.JPG" alt=""></p>
+<p>We also need to configure an output, an Azure SQL database:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/stream-analytics-output.JPG" alt=""></p>
+<p>Notice how we also need to configure a table for our data to be stored. This table should have the same structure as our <code>TemperatureTelemetry</code> objects that we send.</p>
+<p>This is the script I used for creating the table for the temperature telemetry:</p>
+<pre tabindex="0"><code>CREATE TABLE [dbo].[TemperatureTelemetry] (
     [Time]        DATETIME   NULL,
     [Temperature] FLOAT (53) NOT NULL
 );
-</code></pre><p>At this point, we need a Stream Analytics query that takes the data from IoT Hub and puts it into our SQL database:</p><pre tabindex=0><code>SELECT
+</code></pre><p>At this point, we need a Stream Analytics query that takes the data from IoT Hub and puts it into our SQL database:</p>
+<pre tabindex="0"><code>SELECT
     Time, Temperature
 INTO
     [sql-database-output]
 FROM
     [rpi-sensehat-iot-hub-input]
-</code></pre><blockquote><p>The names <code>sql-database-output</code> and <code>rpi-sensehat-iot-hub-input</code> are the names I gave the SQL database as output and the IoT Hub as input, respectively.</p></blockquote><h3 id=testing-and-running-the-application>Testing and running the application</h3><p>Right now, we can run the application remotely from Visual Studio to our Raspberry Pi by finding the IP in the IoT Dashboard application:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/iot-dashboard.JPG alt></p><p>We can also connect from our browser through the device portal:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/device-portal.JPG alt></p><p>We can also create a remote desktop connection to our Raspberry:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/remote-client.JPG alt></p><p>From Visual Studio, we deploy our application to a remote device:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/set-remote.JPG alt></p><p>After the application is successfully deployed, we will see data coming into the IoT Hub through the Device Explorer, and also in the SQL database we created as output for the Stream Analytics job.</p><p>And here is the data that arrives in the SQL database:</p><p><img src=/img/article-photos/rpi-sensehat-telemetry/powershell-telemetry.JPG alt></p><blockquote><p>The query above is made through PowerShell, through a custom script I made for querying and making commands to a SQL database without the SQL Server Management Studio.
-You can <a href=https://github.com/radu-matei/excel-to-web-sql/blob/master/src/PowerShell%20Scripts/Execute-SqlStatement.ps1>find the script here with demo usage</a>.</p></blockquote><p>In a following article, we will configure an additional output for the Stream Analytics job, a Service Bus that will allow us to use the messages real-time in a web (or even mobile) application, with custom alerts. We will also create a command from the IoT Hub based on an alert from the Stream Analytics job that will turn on or off the LED matrix (and will even control an Arduino connected through USB). We will also write the current temperature on the LED matrix.</p><h3 id=conclusion>Conclusion</h3><p>We created a very simple UWP app that takes data from the Sense HAT sensors, displays it on the screen, then sends it through Azure IoT Hub, then to a Stream Analytics job that outputs it into an Azure SQL database.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/iot>iot</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-docker-azure/><span class=mr-1.5>←</span><span>Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-mvc-signalr/><span>ASP.NET Core MVC and SignalR Core</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><blockquote>
+<p>The names <code>sql-database-output</code> and <code>rpi-sensehat-iot-hub-input</code> are the names I gave the SQL database as output and the IoT Hub as input, respectively.</p>
+</blockquote>
+<h3 id="testing-and-running-the-application">Testing and running the application</h3>
+<p>Right now, we can run the application remotely from Visual Studio to our Raspberry Pi by finding the IP in the IoT Dashboard application:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/iot-dashboard.JPG" alt=""></p>
+<p>We can also connect from our browser through the device portal:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/device-portal.JPG" alt=""></p>
+<p>We can also create a remote desktop connection to our Raspberry:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/remote-client.JPG" alt=""></p>
+<p>From Visual Studio, we deploy our application to a remote device:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/set-remote.JPG" alt=""></p>
+<p>After the application is successfully deployed, we will see data coming into the IoT Hub through the Device Explorer, and also in the SQL database we created as output for the Stream Analytics job.</p>
+<p>And here is the data that arrives in the SQL database:</p>
+<p><img src="/img/article-photos/rpi-sensehat-telemetry/powershell-telemetry.JPG" alt=""></p>
+<blockquote>
+<p>The query above is made through PowerShell, through a custom script I made for querying and making commands to a SQL database without the SQL Server Management Studio.
+You can <a href="https://github.com/radu-matei/excel-to-web-sql/blob/master/src/PowerShell%20Scripts/Execute-SqlStatement.ps1">find the script here with demo usage</a>.</p>
+</blockquote>
+<p>In a following article, we will configure an additional output for the Stream Analytics job, a Service Bus that will allow us to use the messages real-time in a web (or even mobile) application, with custom alerts. We will also create a command from the IoT Hub based on an alert from the Stream Analytics job that will turn on or off the LED matrix (and will even control an Arduino connected through USB). We will also write the current temperature on the LED matrix.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>We created a very simple UWP app that takes data from the Sense HAT sensors, displays it on the screen, then sends it through Azure IoT Hub, then to a Stream Analytics job that outputs it into an Azure SQL database.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

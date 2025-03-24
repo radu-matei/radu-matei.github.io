@@ -1,9 +1,129 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/><meta name=description content="The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Running end-to-end tests on your Kubernetes cluster with Kind and Brigade"><meta property="og:description" content="The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/kubernetes-e2e-kind-brigade/"><meta property="og:image" content="https://radu-matei.com/img/article-photos/kubernetes-e2e-kind-brigade/kind-brigade.png"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-08-10T00:00:00+00:00"><meta property="article:modified_time" content="2019-08-10T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://radu-matei.com/img/article-photos/kubernetes-e2e-kind-brigade/kind-brigade.png"><meta name=twitter:title content="Running end-to-end tests on your Kubernetes cluster with Kind and Brigade"><meta name=twitter:description content="The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade."><meta itemprop=name content="Running end-to-end tests on your Kubernetes cluster with Kind and Brigade"><meta itemprop=description content="The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade."><meta itemprop=datePublished content="2019-08-10T00:00:00+00:00"><meta itemprop=dateModified content="2019-08-10T00:00:00+00:00"><meta itemprop=wordCount content="1295"><meta itemprop=image content="https://radu-matei.com/img/article-photos/kubernetes-e2e-kind-brigade/kind-brigade.png"><meta itemprop=keywords content="kubernetes,brigade,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</h1><div class="text-sm opacity-60"><time>Saturday, August 10, 2019</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><a href=https://kind.sigs.k8s.io/>Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p><blockquote><p>For a <a href=https://kind.sigs.k8s.io/docs/user/quick-start/>quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p></blockquote><h3 id=end-to-end-testing-in-kubernetes>End-to-end testing in Kubernetes</h3><p>If you&rsquo;re developing an application that will be deployed on Kubernetes, you want to actually deploy it on a cluster as part of your continuous integration pipeline, ideally on each pull request. So how would you approach this?</p><p>Because of its simplicity and easy setup, Kind is also suitable for running in continuous integration environments - to see sample configurations for running Kind in popular CI/CD platforms such as CircleCI, Travis, or Azure Pipelines, <a href=https://github.com/kind-ci/examples>visit this repository</a>.</p><p>But what if you&rsquo;re running your build pipelines <em>in a Kubernetes cluster</em>? One option could be to deploy your application on a new namespace, side-by-side the other workloads in the cluster. That works well if the application is contained in a simple namespace and it doesn&rsquo;t interact with the rest of the cluster in a disruptive way - but if you want to isolate the test even more, and run a dedicated cluster with no other workloads and configuration, running Kind might be a good option.</p><h3 id=configuring-kind-in-a-kubernetes-pod>Configuring Kind in a Kubernetes pod</h3><blockquote><p><strong>DANGER</strong></p></blockquote><blockquote><p>While configuring Kind locally or in a CI environment is straightforward, running in a Kubernetes pod is not that well documented, and bad configuration could potentially harm your cluster. Test all of the instructions presented here before running them in any production cluster, and monitor your environments for potential resource leaks.</p></blockquote><blockquote><p>For the ongoing discussion on documenting Kind in a Kubernetes pod, <a href=https://github.com/kubernetes-sigs/kind/issues/303>see this issue</a>.</p></blockquote><blockquote><p>For the discussion about the potential resource leaks, <a href=https://github.com/kubernetes-sigs/kind/issues/759>see this issue</a>.</p></blockquote><blockquote><p>The configuration for running Kind in a pod will need a privileged context, and will mount host path volumes for <code>/sys/fs/cgroup</code> and <code>/lib/modules</code> from your actual Kubernetes node - so again, <strong>proceed with care and at your own risk</strong>.</p></blockquote><p>Now that we got the disclaimer out of the way, let&rsquo;s see how to run Kind in a pod:</p><pre tabindex=0><code>apiVersion: v1
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade | radu&#39;s blog</title>
+  <meta name="description" content="The goal of this article is to show you how to configure running Kind in a pod in Kubernetes, then abstract the configuration and automate it using Brigade.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">August 10, 2019</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p><a href="https://kind.sigs.k8s.io/">Kind, or Kubernetes In Docker</a>, is a tool for running local Kubernetes clusters using a Docker daemon to configure the Kubernetes nodes and control plane. It has become one of the easiest ways of running a local or development Kubernetes cluster (when compared to configuring Kubernetes in a virtual machine, Minikube, Docker Desktop, or running a cluster in the cloud).</p>
+<blockquote>
+<p>For a <a href="https://kind.sigs.k8s.io/docs/user/quick-start/">quick guide to Kind, visit the official documentation</a> - essentially, with the <code>kind</code> binary and a Docker daemon, all you have to do is run <code>kind create cluster</code>, and you get a 1 node Kubernetes cluster.</p>
+</blockquote>
+<h3 id="end-to-end-testing-in-kubernetes">End-to-end testing in Kubernetes</h3>
+<p>If you&rsquo;re developing an application that will be deployed on Kubernetes, you want to actually deploy it on a cluster as part of your continuous integration pipeline, ideally on each pull request. So how would you approach this?</p>
+<p>Because of its simplicity and easy setup, Kind is also suitable for running in continuous integration environments - to see sample configurations for running Kind in popular CI/CD platforms such as CircleCI, Travis, or Azure Pipelines, <a href="https://github.com/kind-ci/examples">visit this repository</a>.</p>
+<p>But what if you&rsquo;re running your build pipelines <em>in a Kubernetes cluster</em>? One option could be to deploy your application on a new namespace, side-by-side the other workloads in the cluster. That works well if the application is contained in a simple namespace and it doesn&rsquo;t interact with the rest of the cluster in a disruptive way - but if you want to isolate the test even more, and run a dedicated cluster with no other workloads and configuration, running Kind might be a good option.</p>
+<h3 id="configuring-kind-in-a-kubernetes-pod">Configuring Kind in a Kubernetes pod</h3>
+<blockquote>
+<p><strong>DANGER</strong></p>
+</blockquote>
+<blockquote>
+<p>While configuring Kind locally or in a CI environment is straightforward, running in a Kubernetes pod is not that well documented, and bad configuration could potentially harm your cluster. Test all of the instructions presented here before running them in any production cluster, and monitor your environments for potential resource leaks.</p>
+</blockquote>
+<blockquote>
+<p>For the ongoing discussion on documenting Kind in a Kubernetes pod, <a href="https://github.com/kubernetes-sigs/kind/issues/303">see this issue</a>.</p>
+</blockquote>
+<blockquote>
+<p>For the discussion about the potential resource leaks, <a href="https://github.com/kubernetes-sigs/kind/issues/759">see this issue</a>.</p>
+</blockquote>
+<blockquote>
+<p>The configuration for running Kind in a pod will need a privileged context, and will mount host path volumes for <code>/sys/fs/cgroup</code> and <code>/lib/modules</code> from your actual Kubernetes node - so again, <strong>proceed with care and at your own risk</strong>.</p>
+</blockquote>
+<p>Now that we got the disclaimer out of the way, let&rsquo;s see how to run Kind in a pod:</p>
+<pre tabindex="0"><code>apiVersion: v1
 kind: Pod
 metadata:
   name: kind
@@ -32,14 +152,50 @@ spec:
       type: Directory
   - name: dind-storage
     emptyDir: {}
-</code></pre><p>Things to note here:</p><ul><li><p>the container image used is <code>radumatei/golang-kind:1.11-0.4</code> - it is based on <code>docker:dind</code>, and adds Go 1.11 and Kind 0.4. I highly recommend you build your own image (<a href=https://gist.github.com/radu-matei/56056810bb251ccb478f3f57b64b734a>see this Gist with the Dockerfile for this image</a>), and never trust random strangers from the Internet with running their images in privileged pods in your cluster.</p></li><li><p>the pod needs to run in a privileged security context for Docker in Docker to start.</p></li><li><p>the pod needs to a volume mounted at <code>/var/lib/docker</code> to correctly bootstrap the cluster (<a href=https://github.com/kubernetes-sigs/kind/issues/625#issuecomment-505184948>see this issue comment for more context</a>), as well as mounting <code>/lib/modules</code> and <code>/sys/fs/cgroup</code> from the host node (this is yet to be fully documented, <a href=https://github.com/kubernetes-sigs/kind/issues/303>see this issue</a>).</p></li><li><p>because of the privileged context and host mounts, you should isolate the node where this is running, and treat it as insecure.</p></li><li><p>when finished, always execute <code>kind delete cluster</code> to free the resources used by the cluster and avoid resource leaks (see <a href=https://github.com/kubernetes-sigs/kind/issues/759>this issue</a>).</p></li></ul><p>At this point, you would need to take this configuration and automate creating the pod, then actually running your end-to-end testing. Thankfully, Brigade can help us with this part!</p><h3 id=running-kind-jobs-with-brigade>Running Kind jobs with Brigade</h3><blockquote><p><a href=https://brigade.sh>Brigade</a> is a lightweight Kubernetes-native framework for event-driven scripting. It allows you to respond to certain events (such as a push in a repository, or a custom webhook) and execute a JavaScript script that controls the flow of executing tasks in Kubernetes pods, while also simplifying how to share storage between the jobs, add caches, or handle errors in jobs.</p></blockquote><blockquote><p>Check the following sessions from KubeCon Barcelona 2019 for <a href="https://www.youtube.com/watch?v=NTeJzvtiLWo">Introduction to Brigade</a> and a <a href="https://www.youtube.com/watch?v=Sd9S6GhUiwM">Deep Dive to Brigade</a>.</p></blockquote><blockquote><p>Note that the following configuration will work with Brigade 1.2, which is not yet released at the time of writing this article. Check out the <a href=https://github.com/brigadecore/brigade/releases>releases page in GitHub</a>.</p></blockquote><blockquote><p>For example, the following <code>brigade.js</code> file will execute the two <code>echo</code> tasks in an <code>alpine</code> container on each <code>exec</code> event received by Brigade:</p></blockquote><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript></code></pre></div></blockquote><p>const { events, Job } = require("@brigadecore/brigadier");
-events.on(&ldquo;exec&rdquo;, () => {
+</code></pre><p>Things to note here:</p>
+<ul>
+<li>
+<p>the container image used is <code>radumatei/golang-kind:1.11-0.4</code> - it is based on <code>docker:dind</code>, and adds Go 1.11 and Kind 0.4. I highly recommend you build your own image (<a href="https://gist.github.com/radu-matei/56056810bb251ccb478f3f57b64b734a">see this Gist with the Dockerfile for this image</a>), and never trust random strangers from the Internet with running their images in privileged pods in your cluster.</p>
+</li>
+<li>
+<p>the pod needs to run in a privileged security context for Docker in Docker to start.</p>
+</li>
+<li>
+<p>the pod needs to a volume mounted at <code>/var/lib/docker</code> to correctly bootstrap the cluster (<a href="https://github.com/kubernetes-sigs/kind/issues/625#issuecomment-505184948">see this issue comment for more context</a>), as well as mounting <code>/lib/modules</code> and <code>/sys/fs/cgroup</code> from the host node (this is yet to be fully documented, <a href="https://github.com/kubernetes-sigs/kind/issues/303">see this issue</a>).</p>
+</li>
+<li>
+<p>because of the privileged context and host mounts, you should isolate the node where this is running, and treat it as insecure.</p>
+</li>
+<li>
+<p>when finished, always execute <code>kind delete cluster</code> to free the resources used by the cluster and avoid resource leaks (see <a href="https://github.com/kubernetes-sigs/kind/issues/759">this issue</a>).</p>
+</li>
+</ul>
+<p>At this point, you would need to take this configuration and automate creating the pod, then actually running your end-to-end testing. Thankfully, Brigade can help us with this part!</p>
+<h3 id="running-kind-jobs-with-brigade">Running Kind jobs with Brigade</h3>
+<blockquote>
+<p><a href="https://brigade.sh">Brigade</a> is a lightweight Kubernetes-native framework for event-driven scripting. It allows you to respond to certain events (such as a push in a repository, or a custom webhook) and execute a JavaScript script that controls the flow of executing tasks in Kubernetes pods, while also simplifying how to share storage between the jobs, add caches, or handle errors in jobs.</p>
+</blockquote>
+<blockquote>
+<p>Check the following sessions from KubeCon Barcelona 2019 for <a href="https://www.youtube.com/watch?v=NTeJzvtiLWo">Introduction to Brigade</a> and a <a href="https://www.youtube.com/watch?v=Sd9S6GhUiwM">Deep Dive to Brigade</a>.</p>
+</blockquote>
+<blockquote>
+<p>Note that the following configuration will work with Brigade 1.2, which is not yet released at the time of writing this article. Check out the <a href="https://github.com/brigadecore/brigade/releases">releases page in GitHub</a>.</p>
+</blockquote>
+<blockquote>
+<p>For example, the following <code>brigade.js</code> file will execute the two <code>echo</code> tasks in an <code>alpine</code> container on each <code>exec</code> event received by Brigade:</p>
+</blockquote>
+<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"></code></pre></div></blockquote>
+<p>const { events, Job } = require(&quot;@brigadecore/brigadier&quot;);
+events.on(&ldquo;exec&rdquo;, () =&gt; {
 var job = new Job(&ldquo;do-nothing&rdquo;, &ldquo;alpine:3.8&rdquo;);
 job.tasks = [
 &ldquo;echo Hello&rdquo;,
 &ldquo;echo World&rdquo;
-];</p><p>job.run();
-});</p><pre tabindex=0><code>&gt; Check these resources for [a Brigade scripting guide][guide] and an [advanced scripting guide][advanced].
+];</p>
+<p>job.run();
+});</p>
+<pre tabindex="0"><code>&gt; Check these resources for [a Brigade scripting guide][guide] and an [advanced scripting guide][advanced].
 
 Brigade allows us to control the flow of executing tasks in containers in Kubernetes pods - so we can take the Kind configuration, and completely abstract it with a [custom Brigade job][utils].
 
@@ -54,7 +210,23 @@ function e2e(event, project) {
     return kind;
 }
 events.on(&#34;exec&#34;, e2e);
-</code></pre><p>The <a href=https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts><code>KindJob</code> class</a> creates the pod configuration described earlier:</p><ul><li>runs as a privileged pod</li><li>mounts the correct volumes to the pod</li><li>starts the Docker daemon</li><li>creates a 1-node Kind cluster and sets the <code>kubectl</code> context accordingly</li><li>ensures that the resource cleanup is always executed regardless of th exit code of your actual tasks.</li></ul><p>Additionally, the Brigade project must allow privileged jobs and host mounts.</p><p>That being said, <strong>all warnings for running Kind in a privileged pod apply, and you should be extremely careful and monitor your environment</strong>.</p><p>Now you can add your own tasks through <code>kind.tasks.push("your-tasks")</code> - you can start deploying your application, configure Helm and install Helm charts, or use any Kubernetes tools you might use for CI.</p><blockquote><p>Note that dynamic volume provisioning doesn&rsquo;t currently work in Kind (<a href=https://github.com/kubernetes-sigs/kind/issues/118>see this issue</a>).</p></blockquote><p>You can also completely change the configured tasks - <a href=https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts>check out how the steps are configured, and always ensure to delete the Kind cluster even when your tasks fail (by default, we are using Linux traps)</a>.</p><p>Sample output from running the job:</p><pre tabindex=0><code>time=&#34;2019-08-09T20:24:41.801448759Z&#34; level=info msg=&#34;Starting up&#34;
+</code></pre><p>The <a href="https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts"><code>KindJob</code> class</a> creates the pod configuration described earlier:</p>
+<ul>
+<li>runs as a privileged pod</li>
+<li>mounts the correct volumes to the pod</li>
+<li>starts the Docker daemon</li>
+<li>creates a 1-node Kind cluster and sets the <code>kubectl</code> context accordingly</li>
+<li>ensures that the resource cleanup is always executed regardless of th exit code of your actual tasks.</li>
+</ul>
+<p>Additionally, the Brigade project must allow privileged jobs and host mounts.</p>
+<p>That being said, <strong>all warnings for running Kind in a privileged pod apply, and you should be extremely careful and monitor your environment</strong>.</p>
+<p>Now you can add your own tasks through <code>kind.tasks.push(&quot;your-tasks&quot;)</code> - you can start deploying your application, configure Helm and install Helm charts, or use any Kubernetes tools you might use for CI.</p>
+<blockquote>
+<p>Note that dynamic volume provisioning doesn&rsquo;t currently work in Kind (<a href="https://github.com/kubernetes-sigs/kind/issues/118">see this issue</a>).</p>
+</blockquote>
+<p>You can also completely change the configured tasks - <a href="https://github.com/radu-matei/brigade-utils/blob/kind/src/kind.ts">check out how the steps are configured, and always ensure to delete the Kind cluster even when your tasks fail (by default, we are using Linux traps)</a>.</p>
+<p>Sample output from running the job:</p>
+<pre tabindex="0"><code>time=&#34;2019-08-09T20:24:41.801448759Z&#34; level=info msg=&#34;Starting up&#34;
 time=&#34;2019-08-09T20:24:48.589831337Z&#34; level=info msg=&#34;Daemon has completed initialization&#34;
 time=&#34;2019-08-09T20:24:49.497015690Z&#34; level=info msg=&#34;API listen on [::]:2376&#34;
 time=&#34;2019-08-09T20:24:49.497119288Z&#34; level=info msg=&#34;API listen on /var/run/docker.sock&#34;
@@ -78,7 +250,51 @@ kube-system   coredns-5c98db65d4-rpjld                     0/1     ContainerCrea
 kube-system   kindnet-zndzp                                1/1     Running             1          53s
 kube-system   kube-controller-manager-kind-control-plane   1/1     Running             0          13s
 kube-system   kube-proxy-lnj2s                             1/1     Running             0          53s
-</code></pre><h3 id=conclusion>Conclusion</h3><p>We&rsquo;ve seen how to configure Kind to run in a pod in a Kubernetes cluster, and how to abstract all of the configuration and automate running jobs with Brigade by simply instantiating a <code>KindJob</code> object.</p><p>Check out the <a href=https://github.com/brigadecore/brigade-utils>instructions in the Brigade utils library on how to add it to your Brigade project</a>, and stay tuned for the release of Brigade 1.2!</p><blockquote><p>Shoutout to the Kind team for the awesome project and to <a href=https://github.com/vdice>Vaughn Dice</a> for coming up with the really clean solution of using Linux traps to handle cluster cleanup!</p></blockquote></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/kubernetes>kubernetes</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/brigade>brigade</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/kubernetes-e2e-github-actions/><span class=mr-1.5>←</span><span>Running Kubernetes end-to-end tests with Kind and GitHub Actions</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/helm-wasm/><span>Rendering Helm templates in the browser, with WebAssembly</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><h3 id="conclusion">Conclusion</h3>
+<p>We&rsquo;ve seen how to configure Kind to run in a pod in a Kubernetes cluster, and how to abstract all of the configuration and automate running jobs with Brigade by simply instantiating a <code>KindJob</code> object.</p>
+<p>Check out the <a href="https://github.com/brigadecore/brigade-utils">instructions in the Brigade utils library on how to add it to your Brigade project</a>, and stay tuned for the release of Brigade 1.2!</p>
+<blockquote>
+<p>Shoutout to the Kind team for the awesome project and to <a href="https://github.com/vdice">Vaughn Dice</a> for coming up with the really clean solution of using Linux traps to handle cluster cleanup!</p>
+</blockquote>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

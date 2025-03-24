@@ -1,10 +1,116 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Adding dark mode to a Hugo static website without learning CSS - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/dark-mode/><meta name=description content="How I added a dark theme toggle to my Hugo website without writing a single line of CSS"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Adding dark mode to a Hugo static website without learning CSS"><meta property="og:description" content="How I added a dark theme toggle to my Hugo website without writing a single line of CSS"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/dark-mode/"><meta property="og:image" content="https://radu-matei.com/img/article-photos/dark-mode/dark.gif"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-09-01T00:00:00+00:00"><meta property="article:modified_time" content="2019-09-01T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://radu-matei.com/img/article-photos/dark-mode/dark.gif"><meta name=twitter:title content="Adding dark mode to a Hugo static website without learning CSS"><meta name=twitter:description content="How I added a dark theme toggle to my Hugo website without writing a single line of CSS"><meta itemprop=name content="Adding dark mode to a Hugo static website without learning CSS"><meta itemprop=description content="How I added a dark theme toggle to my Hugo website without writing a single line of CSS"><meta itemprop=datePublished content="2019-09-01T00:00:00+00:00"><meta itemprop=dateModified content="2019-09-01T00:00:00+00:00"><meta itemprop=wordCount content="792"><meta itemprop=image content="https://radu-matei.com/img/article-photos/dark-mode/dark.gif"><meta itemprop=keywords content="web,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Adding dark mode to a Hugo static website without learning CSS</h1><div class="text-sm opacity-60"><time>Sunday, September 1, 2019</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><img src=/img/article-photos/dark-mode/dark.gif alt></p><p>Everyone seems to be adding dark themes to their platforms these days. Recently, <a href=https://twitter.com/Microsoft365/status/1166742433134186497>Microsoft even released a trailer for the future dark mode</a> - an actual video trailer, produced to showcase a theme.</p><p>My blog, based on the <a href=https://themes.gohugo.io/future-imperfect/>Hugo Future Imperfect theme</a>, has a strikingly light theme - which makes it extremely difficult to read at night. But because my front-end skills are completely non-existent (no, really!), creating a dark theme stylesheet for my website was out of the question.
-So I wanted to cheat my way into adding a dark mode, but without putting in the effort of actually learning CSS.</p><h3 id=generating-a-dark-mode-theme>Generating a dark mode theme</h3><p>Recently, I&rsquo;ve started using the <a href=https://mybrowseraddon.com/dark-mode.html>Dark Mode Extension</a> for my browser, particularly during the night - and while it is not ideal, and lots of sites require their own custom-made dark theme (<a href=https://github.com/StylishThemes/Github-Dark>looking at you, GitHub!</a>), it works well enough not to destroy my eyes when I read StackOverflow answers in the middle of the night.</p><p>Additionally, the extension also allows you to select your preferred style for the dark theme. I never bothered to understand how the extension worked before discovering this setting. I also never learned CSS, and while I understand the basic way it works, the sheer complexity of themes today is daunting. But as it turns out, whenever you activate the dark mode for a website, the stylesheet you selected gets injected in the page.</p><p>So I tried all the themes the extension comes with, and found out that <em>Dark invert #5</em> was the style I liked best.</p><blockquote><p>The actual CSS file is located in the browser extension data directory - you can find it by inspecting a web page when the extension is active, and for Chromium-based browsers, you can access it from the at a URL that resembles:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash></code></pre></div></blockquote><p>chrome-extension:///data/content_script/general/dark_25.css</p><pre tabindex=0><code>
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adding dark mode to a Hugo static website without learning CSS | radu&#39;s blog</title>
+  <meta name="description" content="How I added a dark theme toggle to my Hugo website without writing a single line of CSS">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Adding dark mode to a Hugo static website without learning CSS</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">September 1, 2019</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p><img src="/img/article-photos/dark-mode/dark.gif" alt=""></p>
+<p>Everyone seems to be adding dark themes to their platforms these days. Recently, <a href="https://twitter.com/Microsoft365/status/1166742433134186497">Microsoft even released a trailer for the future dark mode</a> - an actual video trailer, produced to showcase a theme.</p>
+<p>My blog, based on the <a href="https://themes.gohugo.io/future-imperfect/">Hugo Future Imperfect theme</a>, has a strikingly light theme - which makes it extremely difficult to read at night. But because my front-end skills are completely non-existent (no, really!), creating a dark theme stylesheet for my website was out of the question.
+So I wanted to cheat my way into adding a dark mode, but without putting in the effort of actually learning CSS.</p>
+<h3 id="generating-a-dark-mode-theme">Generating a dark mode theme</h3>
+<p>Recently, I&rsquo;ve started using the <a href="https://mybrowseraddon.com/dark-mode.html">Dark Mode Extension</a> for my browser, particularly during the night - and while it is not ideal, and lots of sites require their own custom-made dark theme (<a href="https://github.com/StylishThemes/Github-Dark">looking at you, GitHub!</a>), it works well enough not to destroy my eyes when I read StackOverflow answers in the middle of the night.</p>
+<p>Additionally, the extension also allows you to select your preferred style for the dark theme. I never bothered to understand how the extension worked before discovering this setting. I also never learned CSS, and while I understand the basic way it works, the sheer complexity of themes today is daunting. But as it turns out, whenever you activate the dark mode for a website, the stylesheet you selected gets injected in the page.</p>
+<p>So I tried all the themes the extension comes with, and found out that <em>Dark invert #5</em> was the style I liked best.</p>
+<blockquote>
+<p>The actual CSS file is located in the browser extension data directory - you can find it by inspecting a web page when the extension is active, and for Chromium-based browsers, you can access it from the at a URL that resembles:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"></code></pre></div></blockquote>
+<p>chrome-extension://<!-- raw HTML omitted -->/data/content_script/general/dark_25.css</p>
+<pre tabindex="0"><code>
 After looking at the theme style, this is the entire CSS content injected by the extension - it changes the background color, inverts colors, adjusts brightness, colours, hue:
 
 ```css
@@ -24,9 +130,15 @@ body * [style*=&#34;background-image&#34;] {
     filter: hue-rotate(180deg) contrast(100%) invert(100%);
     -webkit-filter: hue-rotate(180deg) contrast(100%) invert(100%);
 }
-</code></pre><p>So I saved this file along with the other CSS files in my theme, referenced it in the header of my HTML pages, but disabled it by default (because I still want light mode by default):</p><pre tabindex=0><code>&lt;link disabled id=&#34;dark-mode-theme&#34; rel=&#34;stylesheet&#34; href=&#34;/css/dark.css&#34;&gt;
-</code></pre><p>Now that I have a style, it&rsquo;s time to add a way of toggling between light and dark modes.</p><h3 id=toggling-between-the-light-and-dark-modes>Toggling between the light and dark modes</h3><p>My theme comes with a navigation bar that is always visible at the top. In the top right, there is a button that opens the sharing menu, one for search, and another for a menu. That portion seemed perfect to add another button, since it&rsquo;s always in view.</p><p>My theme also comes with <a href=https://fontawesome.com/>Font Awesome</a> - and if you search, you can find icons for a moon and a sun - and we&rsquo;ll use them to toggle between dark and light modes. Because I want light mode by default, I added the moon icon in the navigation bar to toggle to dark mode:</p><pre tabindex=0><code>&lt;a id=&#34;dark-mode-toggle&#34; class=&#34;fal fa-moon-o&#34;&gt;Toggle Dark Mode&lt;/a&gt;
-</code></pre><p>Now we need a bit of JavaScript to add an event listener, so that when the moon icon is pressed, the dark mode is toggled:</p><pre tabindex=0><code>var toggle = document.getElementById(&#34;dark-mode-toggle&#34;);
+</code></pre><p>So I saved this file along with the other CSS files in my theme, referenced it in the header of my HTML pages, but disabled it by default (because I still want light mode by default):</p>
+<pre tabindex="0"><code>&lt;link disabled id=&#34;dark-mode-theme&#34; rel=&#34;stylesheet&#34; href=&#34;/css/dark.css&#34;&gt;
+</code></pre><p>Now that I have a style, it&rsquo;s time to add a way of toggling between light and dark modes.</p>
+<h3 id="toggling-between-the-light-and-dark-modes">Toggling between the light and dark modes</h3>
+<p>My theme comes with a navigation bar that is always visible at the top. In the top right, there is a button that opens the sharing menu, one for search, and another for a menu. That portion seemed perfect to add another button, since it&rsquo;s always in view.</p>
+<p>My theme also comes with <a href="https://fontawesome.com/">Font Awesome</a> - and if you search, you can find icons for a moon and a sun - and we&rsquo;ll use them to toggle between dark and light modes. Because I want light mode by default, I added the moon icon in the navigation bar to toggle to dark mode:</p>
+<pre tabindex="0"><code>&lt;a id=&#34;dark-mode-toggle&#34; class=&#34;fal fa-moon-o&#34;&gt;Toggle Dark Mode&lt;/a&gt;
+</code></pre><p>Now we need a bit of JavaScript to add an event listener, so that when the moon icon is pressed, the dark mode is toggled:</p>
+<pre tabindex="0"><code>var toggle = document.getElementById(&#34;dark-mode-toggle&#34;);
 var darkTheme = document.getElementById(&#34;dark-mode-theme&#34;);
 
 toggle.addEventListener(&#34;click&#34;, () =&gt; {
@@ -46,7 +158,10 @@ function setTheme(mode) {
         toggle.className = &#34;fal fa-moon-o&#34;;
     }
 }
-</code></pre><p>So when the icon is pressed, the style sheet is enabled or disabled, and the correct icon is set.</p><h3 id=using-local-storage-for-persistance>Using local storage for persistance</h3><p>This works well enough, but if you navigate to another page in the website, the default theme (light, in my case) is re-applied. Let&rsquo;s see how we can use local storage to save the preference for the theme - and just save the theme in local storage when the user changes it:</p><pre tabindex=0><code>// the default theme is light
+</code></pre><p>So when the icon is pressed, the style sheet is enabled or disabled, and the correct icon is set.</p>
+<h3 id="using-local-storage-for-persistance">Using local storage for persistance</h3>
+<p>This works well enough, but if you navigate to another page in the website, the default theme (light, in my case) is re-applied. Let&rsquo;s see how we can use local storage to save the preference for the theme - and just save the theme in local storage when the user changes it:</p>
+<pre tabindex="0"><code>// the default theme is light
 var savedTheme = localStorage.getItem(&#34;dark-mode-storage&#34;) || &#34;light&#34;;
 setTheme(savedTheme);
 
@@ -55,6 +170,48 @@ function setTheme(mode) {
 
     // same as above
 }
-</code></pre><h3 id=conclusion>Conclusion</h3><p>I managed to add a dark mode to my blog and persist the preference in local storage - all without writing a single line of CSS. It&rsquo;s not perfect, and it needs plenty of more work (for example, images are inverted in an iframe), but I&rsquo;m happy with the progress I made without much effort.</p><p>Thanks for reading :)</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/web>web</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/self-contained-dotnet-cli/><span class=mr-1.5>←</span><span>Building self-contained, single executable .NET Core 3 CLI tools</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/building-github-actions/><span>Building Reusable GitHub Actions in TypeScript, using the official toolkit</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><h3 id="conclusion">Conclusion</h3>
+<p>I managed to add a dark mode to my blog and persist the preference in local storage - all without writing a single line of CSS. It&rsquo;s not perfect, and it needs plenty of more work (for example, images are inverted in an iframe), but I&rsquo;m happy with the progress I made without much effort.</p>
+<p>Thanks for reading :)</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

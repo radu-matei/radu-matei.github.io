@@ -1,10 +1,431 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Blogs - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/><meta name=description content="A personal blog"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><link rel=alternate type=application/rss+xml href=https://radu-matei.com/blog/index.xml title="radu's blog"><meta property="og:title" content="Blogs"><meta property="og:description" content><meta property="og:type" content="website"><meta property="og:url" content="https://radu-matei.com/blog/"><meta name=twitter:card content="summary"><meta name=twitter:title content="Blogs"><meta name=twitter:description content><meta itemprop=name content="Blogs"><meta itemprop=description content></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><section class="relative my-10 first-of-type:mt-0 last-of-type:mb-0"><span class="mb-2 inline-block text-[0.8rem] font-medium uppercase tracking-wider text-[#ff3b2d] opacity-70">Featured</span><h2 class="!my-0 pb-1 font-bold !leading-none">A practical guide to WebAssembly memory</h2><time class="text-sm opacity-60">Monday, January 11, 2021</time>
-<a class="absolute inset-0 text-[0]" href=https://radu-matei.com/blog/practical-guide-to-wasm-memory/>A practical guide to WebAssembly memory</a></section><section class="relative my-10 first-of-type:mt-0 last-of-type:mb-0"><span class="mb-2 inline-block text-[0.8rem] font-medium uppercase tracking-wider text-[#ff3b2d] opacity-70">Featured</span><h2 class="!my-0 pb-1 font-bold !leading-none">From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</h2><time class="text-sm opacity-60">Sunday, January 12, 2020</time>
-<a class="absolute inset-0 text-[0]" href=https://radu-matei.com/blog/from-go-to-rust-static-linking-ffi/>From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</a></section><section class="relative my-10 first-of-type:mt-0 last-of-type:mb-0"><h2 class="!my-0 pb-1 font-bold !leading-none">Introducing Fermyon Serverless AI</h2><time class="text-sm opacity-60">Tuesday, September 5, 2023</time>
-<a class="absolute inset-0 text-[0]" href=https://radu-matei.com/blog/introducing-fermyon-serverless-ai/>Introducing Fermyon Serverless AI</a></section><section class="relative my-10 first-of-type:mt-0 last-of-type:mb-0"><h2 class="!my-0 pb-1 font-bold !leading-none">Spin 1.0 — The Developer Tool for Serverless WebAssembly</h2><time class="text-sm opacity-60">Wednesday, March 22, 2023</time>
-<a class="absolute inset-0 text-[0]" href=https://radu-matei.com/blog/introducing-spin-v1/>Spin 1.0 — The Developer Tool for Serverless WebAssembly</a></section><section class="relative my-10 first-of-type:mt-0 last-of-type:mb-0"><h2 class="!my-0 pb-1 font-bold !leading-none">The Six Ways of Optimizing WebAssembly</h2><time class="text-sm opacity-60">Thursday, January 26, 2023</time>
-<a class="absolute inset-0 text-[0]" href=https://radu-matei.com/blog/six-ways-optimize-webassembly/>The Six Ways of Optimizing WebAssembly</a></section><nav class="mt-24 flex"><a class="btn ml-auto" href=/blog/page/2/>Next Page →</a></nav></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blogs | radu&#39;s blog</title>
+  <meta name="description" content="">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<a href="/">
+  <h1 class="site-title">Radu Matei</h1>
+</a>
+
+
+<h2>Writing</h2>
+
+
+
+
+<ul>
+  
+  
+  
+  <li>
+    <span class="date">January 2021</span>
+    <a href="/blog/practical-guide-to-wasm-memory/">A practical guide to WebAssembly memory</a>
+  </li>
+  
+  <li>
+    <span class="date">January 2020</span>
+    <a href="/blog/from-go-to-rust-static-linking-ffi/">From (C)Go to Rust: A practical guide to building shared and static libraries, linking, and FFI</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2023</span>
+    <a href="/blog/introducing-fermyon-serverless-ai/">Introducing Fermyon Serverless AI</a>
+  </li>
+  
+  <li>
+    <span class="date">March 2023</span>
+    <a href="/blog/introducing-spin-v1/">Spin 1.0 — The Developer Tool for Serverless WebAssembly</a>
+  </li>
+  
+  <li>
+    <span class="date">January 2023</span>
+    <a href="/blog/six-ways-optimize-webassembly/">The Six Ways of Optimizing WebAssembly</a>
+  </li>
+  
+  <li>
+    <span class="date">January 2022</span>
+    <a href="/blog/wasm-components-host-implementations/">Building host implementations for WebAssembly interfaces</a>
+  </li>
+  
+  <li>
+    <span class="date">December 2021</span>
+    <a href="/blog/intro-wasm-components/">Introduction to WebAssembly components</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2021</span>
+    <a href="/blog/wasi-nn-onnx/">Neural network inferencing  for PyTorch and TensorFlow with ONNX, WebAssembly System Interface, and WASI NN</a>
+  </li>
+  
+  <li>
+    <span class="date">May 2021</span>
+    <a href="/blog/using-azure-services-wasi/">Using Azure services from WebAssembly modules</a>
+  </li>
+  
+  <li>
+    <span class="date">May 2021</span>
+    <a href="/blog/wagi-updates/">Updates on WAGI, the WebAssembly Gateway Interface</a>
+  </li>
+  
+  <li>
+    <span class="date">March 2021</span>
+    <a href="/blog/wasi-experimental-http/">An experimental outbound HTTP library for the WebAssembly System Interface</a>
+  </li>
+  
+  <li>
+    <span class="date">November 2020</span>
+    <a href="/blog/a-simple-wasm-linker-js/">A simple WebAssembly linker in JavaScript</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2020</span>
+    <a href="/blog/tensorflow-inferencing-wasi/">TensorFlow inferencing using WebAssembly and WASI</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2020</span>
+    <a href="/blog/towards-sockets-networking-wasi/">Towards sockets and networking in WebAssembly and WASI</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2020</span>
+    <a href="/blog/brigade-intro/">Introduction to Brigade - video demo</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2020</span>
+    <a href="/blog/nodejs-wasi/">Getting started with NodeJS and the WebAssembly System Interface</a>
+  </li>
+  
+  <li>
+    <span class="date">June 2020</span>
+    <a href="/blog/wasm-api-witx/">Writing a simple WASM API layer using interface types and Wasmtime</a>
+  </li>
+  
+  <li>
+    <span class="date">March 2020</span>
+    <a href="/blog/adding-wasi-syscall/">A beginner&rsquo;s guide to adding a new WASI syscall in Wasmtime</a>
+  </li>
+  
+  <li>
+    <span class="date">November 2019</span>
+    <a href="/blog/random-wsl-tips/">Random WSL tips &amp; tricks</a>
+  </li>
+  
+  <li>
+    <span class="date">November 2019</span>
+    <a href="/blog/wsl-versioned-filesystem-docker/">Version control for your WSL distribution with a Dockerfile</a>
+  </li>
+  
+  <li>
+    <span class="date">November 2019</span>
+    <a href="/blog/wasm-oci-tuf/">Securely distributing and signing WebAssembly modules using OCI and TUF</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2019</span>
+    <a href="/blog/wasm-to-oci/">Distributing WebAssembly modules using OCI registries</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2019</span>
+    <a href="/blog/github-action-cross-plat-configure-tools/">Cross platform GitHub Action for downloading, extracting, and adding tools to path</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2019</span>
+    <a href="/blog/state-of-cnab-part-2/">The state of CNAB: Part 2 - CNAB Registries</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2019</span>
+    <a href="/blog/state-of-cnab-part-1/">The state of CNAB: Part 1 - CNAB Core</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2019</span>
+    <a href="/blog/self-contained-dotnet-cli/">Building self-contained, single executable .NET Core 3 CLI tools</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2019</span>
+    <a href="/blog/dark-mode/">Adding dark mode to a Hugo static website without learning CSS</a>
+  </li>
+  
+  <li>
+    <span class="date">August 2019</span>
+    <a href="/blog/building-github-actions/">Building Reusable GitHub Actions in TypeScript, using the official toolkit</a>
+  </li>
+  
+  <li>
+    <span class="date">August 2019</span>
+    <a href="/blog/kubernetes-e2e-github-actions/">Running Kubernetes end-to-end tests with Kind and GitHub Actions</a>
+  </li>
+  
+  <li>
+    <span class="date">August 2019</span>
+    <a href="/blog/kubernetes-e2e-kind-brigade/">Running end-to-end tests on your Kubernetes cluster with Kind and Brigade</a>
+  </li>
+  
+  <li>
+    <span class="date">May 2019</span>
+    <a href="/blog/helm-wasm/">Rendering Helm templates in the browser, with WebAssembly</a>
+  </li>
+  
+  <li>
+    <span class="date">May 2019</span>
+    <a href="/blog/kubernetes-controller-csharp/">Writing controllers for Kubernetes CRDs with C#</a>
+  </li>
+  
+  <li>
+    <span class="date">April 2019</span>
+    <a href="/blog/brigade-scaling-vk/">Instant Scaling on Demand: Serverless Kubernetes with Brigade</a>
+  </li>
+  
+  <li>
+    <span class="date">August 2018</span>
+    <a href="/blog/filter-k8s-logs/">Filter secrets from Kubernetes logs</a>
+  </li>
+  
+  <li>
+    <span class="date">May 2018</span>
+    <a href="/blog/state-of-debugging-microservices-on-k8s/">The state of debugging microservices on Kubernetes</a>
+  </li>
+  
+  <li>
+    <span class="date">April 2018</span>
+    <a href="/blog/debug-helm-tiller/">Debug Helm and Tiller using VS Code and Draft</a>
+  </li>
+  
+  <li>
+    <span class="date">April 2018</span>
+    <a href="/blog/real-world-draft/">Using Draft to develop front-end + back-end applications. Experimenting with Draft, VS Code and remote debugging.</a>
+  </li>
+  
+  <li>
+    <span class="date">December 2017</span>
+    <a href="/blog/kube-toolkit/">kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</a>
+  </li>
+  
+  <li>
+    <span class="date">December 2017</span>
+    <a href="/blog/aci-update/">Update Azure Container Instances with Docker Hub webhooks</a>
+  </li>
+  
+  <li>
+    <span class="date">November 2017</span>
+    <a href="/blog/signalr-core/">Getting started with SignalR Alpha 2</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2017</span>
+    <a href="/blog/k8s-appsvc/">Best of Both worlds: Azure App Service and Kubernetes</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2017</span>
+    <a href="/blog/kubernetes-jenkins-azure/">Jenkins pipelines with Kubernetes</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2017</span>
+    <a href="/blog/k8s-helm-draft-azure/">Get started with Helm and Draft for Kubernetes</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2017</span>
+    <a href="/blog/k8s18-azure/">Kubernetes 1.8 on Azure</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2017</span>
+    <a href="/blog/hybrid-swarmmode/">The Hybrid Cluster: A CI/CD Story [Part 1] - Configuring a hybrid swarm mode cluster in Azure with acs-engine</a>
+  </li>
+  
+  <li>
+    <span class="date">February 2017</span>
+    <a href="/blog/real-time-aspnet-core/">Real-Time ASP .NET Core</a>
+  </li>
+  
+  <li>
+    <span class="date">December 2016</span>
+    <a href="/blog/aspnet-core-websockets-middleware/">Creating a WebSockets middleware for ASP .NET Core 3</a>
+  </li>
+  
+  <li>
+    <span class="date">November 2016</span>
+    <a href="/blog/aspnet-core-docker-azure/">Dockerizing an ASP.NET Core application with GitHub, Docker Cloud and Azure</a>
+  </li>
+  
+  <li>
+    <span class="date">October 2016</span>
+    <a href="/blog/rpi-sensehat-telemetry/">Get started with Raspberry Pi3, Sense HAT and Azure IoT Suite</a>
+  </li>
+  
+  <li>
+    <span class="date">September 2016</span>
+    <a href="/blog/aspnet-core-mvc-signalr/">ASP.NET Core MVC and SignalR Core</a>
+  </li>
+  
+  <li>
+    <span class="date">August 2016</span>
+    <a href="/blog/aspnet-core-json-dependency-injection/">Inject ASP.NET Core Dependencies from JSON files</a>
+  </li>
+  
+  <li>
+    <span class="date">August 2016</span>
+    <a href="/blog/aspnet-core-api/">Introduction to ASP .NET Core MVC API</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2016</span>
+    <a href="/blog/aspnet-core-configuration-greeting/">ASP .NET Core JSON Configuration and Dependency Injection</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2016</span>
+    <a href="/blog/aspnet-core-routing/">ASP .NET Core Routing</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2016</span>
+    <a href="/blog/aspnet-core-startup/">ASP .NET Core Startup</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2016</span>
+    <a href="/blog/aspnet-core-getting-started/">ASP .NET Core Introduction</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2016</span>
+    <a href="/blog/dot-net-core-getting-started/">Getting Started with .NET Core and VS Code</a>
+  </li>
+  
+  <li>
+    <span class="date">July 2016</span>
+    <a href="/blog/dot-net-core-introduction/">Introduction to .NET Core</a>
+  </li>
+  
+</ul>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

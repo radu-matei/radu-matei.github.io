@@ -1,9 +1,140 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/kube-toolkit/><meta name=description content="Building tools like Helm and Draft for Kubernetes using gRPC and Go"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go"><meta property="og:description" content="Building tools like Helm and Draft for Kubernetes using gRPC and Go"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/kube-toolkit/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2017-12-18T00:00:00+00:00"><meta property="article:modified_time" content="2017-12-18T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go"><meta name=twitter:description content="Building tools like Helm and Draft for Kubernetes using gRPC and Go"><meta itemprop=name content="kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go"><meta itemprop=description content="Building tools like Helm and Draft for Kubernetes using gRPC and Go"><meta itemprop=datePublished content="2017-12-18T00:00:00+00:00"><meta itemprop=dateModified content="2017-12-18T00:00:00+00:00"><meta itemprop=wordCount content="2051"><meta itemprop=keywords content="kubernetes,golang,grpc,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</h1><div class="text-sm opacity-60"><time>Monday, December 18, 2017</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>If you ever used <a href=https://github.com/kubernetes/helm>Helm</a> or <a href=https://github.com/azure/draft>Draft</a>, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p><p><a href=https://github.com/radu-matei/kube-toolkit><code>kube-toolkit</code></a> aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.</p><blockquote><p>This project started as a learning experience / small experiment of mine in building a tool for Kubernetes that allowed you to connect to all major cloud providers - then the Open Broker API became mainstream, and I realized I was reinventing the Service Broker wheel - so decided to take the good parts and make them available to anyone starting to build a Kubernetes tool.</p></blockquote><h3 id=architecture>Architecture</h3><p><a href=https://github.com/radu-matei/kube-toolkit><code>kube-toolkit</code></a> has two major components:</p><ul><li><code>ktk</code> (short for Kubernetes ToolKit) - client that you install locally</li><li><code>ktkd</code> (short for Kuberentes ToolKit Daemon) - server-side component that is deployed on your Kubernetes cluster</li></ul><p>The <code>kube-toolkit</code> client (<code>ktk</code>) interacts with the server-side component (<code>ktkd</code>) using the Kubernetes API to create authenticated tunnels back to the cluster, using gRPC as the underlying communication protocol. The server runs as a pod in Kubernetes, and since it is only a starting point for future tools, it only knows how to return its version, and showcases how to stream data back to the client.</p><p>In order to communicate with the cluster you need to pass the <code>kubeconfig</code> file, and the tool will start a tunnel to the cluster for each command you execute, then will tear it down so there are no open connections to the cluster when no command is executed.</p><blockquote><p>Please note that there are still lots of things left to add, such as SSL, RBAC support or state management - you are more than welcome to contribute in any way to the project!</p></blockquote><p>As stated earlier, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.</p><p>Now for the actual implementation and how you can get started, and the first issue I bumped in was gathering the correct dependencies for Kubernetes 1.8:</p><h3 id=vendoring-kube-toolkit>Vendoring <code>kube-toolkit</code></h3><p>Since this tool was built from the ground-up, the first step was to put together the correct versions of the dependencies to <code>k8s.io/client-go</code>, <code>github.com/kubernetes/helm</code>, <code>k8s.io/api</code>, <code>k8s.io/apimachinery</code> and a bunch more. A trivial step you might say, but in the times of Kubernetes 1.8, this was incredibly frustrating&mldr;</p><blockquote class=twitter-tweet><p lang=en dir=ltr>For example: Helm v2.7.0, client-go v5.0.0 and Kubernetes v1.8.0 all target 1.8.0 - somehow, apiserver needs the previous beta of client-go...<br><br>It is increasingly frustrating... <a href=https://t.co/kj8HD2aKQZ>pic.twitter.com/kj8HD2aKQZ</a></p>&mdash; Radu Matei (@matei_radu) <a href="https://twitter.com/matei_radu/status/924321387128508419?ref_src=twsrc%5Etfw">October 28, 2017</a></blockquote><script async src=https://platform.twitter.com/widgets.js></script><p>Essentially, during a 4 hour period (is was probably much more than that&mldr;), I was in the process of swapping git commit hashes and plugging them into <code>dep</code>, then trying to compile the project&mldr; Word of advice - check various release branches when working with vendored dependencies of Kubernetes!</p><p>After finally getting it to work, <a href=https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml>I ended up with a Gopkg.toml you can find here</a> and I simply included the <code>vendor</code> folder in the repo to ensure reproducible builds.</p><blockquote><p>Please note that this setup is for Kubernetes release 1.8 - you are more than welcome to port the dependencies to release 1.9!</p></blockquote><blockquote><p>Having the <code>vendor</code> folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproducible builds - you can put it in <code>.gitignore</code> if you want to.</p></blockquote><h2 id=defining-and-using-grpc-services>Defining and using gRPC services</h2><blockquote><p>If you&rsquo;re not familiar with gRPC for Go, there is a <a href=https://grpc.io/docs/tutorials/basic/go.html>great basics tutorial you can get started with</a> and understand how to use the client and server.</p></blockquote><p>In its current form, <a href=https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1><code>v0.1</code></a>, the service is able to return the server and client version and showcase how to stream some data - <a href=https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto>essentially, the <code>.proto</code> looks like this</a>:</p><pre tabindex=0><code>syntax = &#34;proto3&#34;;
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go | radu&#39;s blog</title>
+  <meta name="description" content="Building tools like Helm and Draft for Kubernetes using gRPC and Go">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">December 18, 2017</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>If you ever used <a href="https://github.com/kubernetes/helm">Helm</a> or <a href="https://github.com/azure/draft">Draft</a>, you know they are very cool command-line tools that connect to a Kubernetes cluster, more specifically to a server-side component (Tiller in the case of Helm, Draftd for Draft) without exposing ports on the Internet, and allow you to interact with your cluster through gRPC-based services.</p>
+<p><a href="https://github.com/radu-matei/kube-toolkit"><code>kube-toolkit</code></a> aims to help you build similar tools, acting as a starting point in the journey to building new experiences and tools for Kubernetes.</p>
+<blockquote>
+<p>This project started as a learning experience / small experiment of mine in building a tool for Kubernetes that allowed you to connect to all major cloud providers - then the Open Broker API became mainstream, and I realized I was reinventing the Service Broker wheel - so decided to take the good parts and make them available to anyone starting to build a Kubernetes tool.</p>
+</blockquote>
+<h3 id="architecture">Architecture</h3>
+<p><a href="https://github.com/radu-matei/kube-toolkit"><code>kube-toolkit</code></a> has two major components:</p>
+<ul>
+<li><code>ktk</code> (short for Kubernetes ToolKit) - client that you install locally</li>
+<li><code>ktkd</code> (short for Kuberentes ToolKit Daemon) - server-side component that is deployed on your Kubernetes cluster</li>
+</ul>
+<p>The <code>kube-toolkit</code> client (<code>ktk</code>) interacts with the server-side component (<code>ktkd</code>) using the Kubernetes API to create authenticated tunnels back to the cluster, using gRPC as the underlying communication protocol. The server runs as a pod in Kubernetes, and since it is only a starting point for future tools, it only knows how to return its version, and showcases how to stream data back to the client.</p>
+<p>In order to communicate with the cluster you need to pass the <code>kubeconfig</code> file, and the tool will start a tunnel to the cluster for each command you execute, then will tear it down so there are no open connections to the cluster when no command is executed.</p>
+<blockquote>
+<p>Please note that there are still lots of things left to add, such as SSL, RBAC support or state management - you are more than welcome to contribute in any way to the project!</p>
+</blockquote>
+<p>As stated earlier, this tool is based on the great work done by the awesome Helm and Draft teams, and is essentially a stripped down version, written from the ground-up.</p>
+<p>Now for the actual implementation and how you can get started, and the first issue I bumped in was gathering the correct dependencies for Kubernetes 1.8:</p>
+<h3 id="vendoring-kube-toolkit">Vendoring <code>kube-toolkit</code></h3>
+<p>Since this tool was built from the ground-up, the first step was to put together the correct versions of the dependencies to <code>k8s.io/client-go</code>, <code>github.com/kubernetes/helm</code>, <code>k8s.io/api</code>, <code>k8s.io/apimachinery</code> and a bunch more. A trivial step you might say, but in the times of Kubernetes 1.8, this was incredibly frustrating&hellip;</p>
+<!-- raw HTML omitted -->
+<p>Essentially, during a 4 hour period (is was probably much more than that&hellip;), I was in the process of swapping git commit hashes and plugging them into <code>dep</code>, then trying to compile the project&hellip; Word of advice - check various release branches when working with vendored dependencies of Kubernetes!</p>
+<p>After finally getting it to work, <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Gopkg.toml">I ended up with a  Gopkg.toml you can find here</a> and I simply included the <code>vendor</code> folder in the repo to ensure reproducible builds.</p>
+<blockquote>
+<p>Please note that this setup is for Kubernetes release 1.8 - you are more than welcome to port the dependencies to release 1.9!</p>
+</blockquote>
+<blockquote>
+<p>Having the <code>vendor</code> folder in the repo significantly increases the size of the repo, but if you ask me, this is a small price to pay for having really reproducible builds - you can put it in <code>.gitignore</code> if you want to.</p>
+</blockquote>
+<h2 id="defining-and-using-grpc-services">Defining and using gRPC services</h2>
+<blockquote>
+<p>If you&rsquo;re not familiar with gRPC for Go, there is a <a href="https://grpc.io/docs/tutorials/basic/go.html">great basics tutorial you can get started with</a> and understand how to use the client and server.</p>
+</blockquote>
+<p>In its current form, <a href="https://github.com/radu-matei/kube-toolkit/releases/tag/v0.1"><code>v0.1</code></a>, the service is able to return the server and client version and showcase how to stream some data - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/rpc/rpc.proto">essentially, the <code>.proto</code> looks like this</a>:</p>
+<pre tabindex="0"><code>syntax = &#34;proto3&#34;;
 
 package rpc;
 
@@ -20,18 +151,26 @@ message Version {
 message StreamingMessage {
 	string message = 1;
 }
-</code></pre><p>This defines a service with two methods, <code>GetVersion</code> and <code>ServerStream</code> (which returns a stream of <code>StreamingMessage</code> back to the client), and <strong>this is the place where you will first define your service methods!</strong></p><p>Now if we take a look at the <a href=https://github.com/radu-matei/kube-toolkit/blob/master/Makefile><code>Makefile</code></a>, there is an <code>rpc</code> target that will use the <code>protoc</code> compiler and build the client and server in Golang for our service in <code>pkg/rpc</code> (as defined in the <code>Makefile</code>).</p><p>Now it&rsquo;s about creating actual implementations for the client and server. <a href=https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40>For example, the client implementation for <code>GetVersion</code> is as straightforward as simply as calling the <code>GetVersion</code> on the generated client</a>:</p><pre tabindex=0><code>// GetVersion returns the ktk version
+</code></pre><p>This defines a service with two methods, <code>GetVersion</code> and <code>ServerStream</code> (which returns a stream of <code>StreamingMessage</code> back to the client), and <strong>this is the place where you will first define your service methods!</strong></p>
+<p>Now if we take a look at the <a href="https://github.com/radu-matei/kube-toolkit/blob/master/Makefile"><code>Makefile</code></a>, there is an <code>rpc</code> target that will use the <code>protoc</code> compiler and build the client and server in Golang for our service in <code>pkg/rpc</code> (as defined in the <code>Makefile</code>).</p>
+<p>Now it&rsquo;s about creating actual implementations for the client and server. <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L40">For example, the client implementation for <code>GetVersion</code> is as straightforward as simply as calling the <code>GetVersion</code> on the generated client</a>:</p>
+<pre tabindex="0"><code>// GetVersion returns the ktk version
 func (client *Client) GetVersion(ctx context.Context) (*rpc.Version, error) {
 	return client.RPC.GetVersion(ctx, &amp;rpc.Empty{})
 }
-</code></pre><p>This function call will simply return the version from the server - note that we have to <a href=https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74>implement the server method as below</a>:</p><pre tabindex=0><code>// GetVersion returns the current version of the server.
+</code></pre><p>This function call will simply return the version from the server - note that we have to <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L74">implement the server method as below</a>:</p>
+<pre tabindex="0"><code>// GetVersion returns the current version of the server.
 func (server *Server) GetVersion(ctx context.Context, _ *rpc.Empty) (*rpc.Version, error) {
 	log.Debugf(&#34;executing ktkd version&#34;)
 	return &amp;rpc.Version{
 		SemVer:    version.SemVer,
 		GitCommit: version.GitCommit}, nil
 }
-</code></pre><blockquote><p>The version and commit hash are injected at build time through compile flags. See Makefile.</p></blockquote><p>Now let&rsquo;s take a look at some streaming messages - <a href=https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82>first the server</a>:</p><pre tabindex=0><code>// ServerStream starts a new stream from the server
+</code></pre><blockquote>
+<p>The version and commit hash are injected at build time through compile flags. See Makefile.</p>
+</blockquote>
+<p>Now let&rsquo;s take a look at some streaming messages - <a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktkd/server.go#L82">first the server</a>:</p>
+<pre tabindex="0"><code>// ServerStream starts a new stream from the server
 func (server *Server) ServerStream(_ *rpc.Empty, stream rpc.KTK_ServerStreamServer) error {
 	log.Debugf(&#34;received server stream command&#34;)
 	for i := 0; i &lt; 5; i++ {
@@ -47,7 +186,9 @@ func (server *Server) ServerStream(_ *rpc.Empty, stream rpc.KTK_ServerStreamServ
 
 	return nil
 }
-</code></pre><p>This will send 5 messages back to the client, 2 seconds apart.</p><p><a href=https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49>Receiving the stream is done like this</a>:</p><pre tabindex=0><code>// ServerStream starts a stream from the server
+</code></pre><p>This will send 5 messages back to the client, 2 seconds apart.</p>
+<p><a href="https://github.com/radu-matei/kube-toolkit/blob/master/pkg/ktk/client.go#L49">Receiving the stream is done like this</a>:</p>
+<pre tabindex="0"><code>// ServerStream starts a stream from the server
 func (client *Client) ServerStream(ctx context.Context, opts ...grpc.CallOption) error {
 	log.Debugf(&#34;called InitializeCloud client method...&#34;)
 
@@ -71,7 +212,12 @@ func (client *Client) ServerStream(ctx context.Context, opts ...grpc.CallOption)
 
 	return nil
 }
-</code></pre><p>With this proto service, you should have a clear understanding on how to write additional methods for the gRPC service and implement the client and the server.</p><p>Now that you have a pretty good understanding on how to write gRPC client and server methods, let&rsquo;s explore how to connect to the Kubernetes cluster.</p><h3 id=connecting-to-the-kubernetes-cluster>Connecting to the Kubernetes cluster</h3><p>For this part, I will <a href=https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go>give 100% credits to the Draft team</a> as I merely copied their implementation of a port forwarder that uses the Helm packages.</p><p>Essentially, this creates a new &ldquo;SSH-like tunnel&rdquo; back to a pod in the Kubernetes cluster - normally, the pod is the one running our server-side component, <code>ktkd</code> (you have to specify the name and labels for it):</p><pre tabindex=0><code>//New returns a tunnel to the ktkd pod.
+</code></pre><p>With this proto service, you should have a clear understanding on how to write additional methods for the gRPC service and implement the client and the server.</p>
+<p>Now that you have a pretty good understanding on how to write gRPC client and server methods, let&rsquo;s explore how to connect to the Kubernetes cluster.</p>
+<h3 id="connecting-to-the-kubernetes-cluster">Connecting to the Kubernetes cluster</h3>
+<p>For this part, I will <a href="https://github.com/Azure/draft/blob/master/pkg/draftd/portforwarder/portforwarder.go">give 100% credits to the Draft team</a> as I merely copied their implementation of a port forwarder that uses the Helm packages.</p>
+<p>Essentially, this creates a new &ldquo;SSH-like tunnel&rdquo; back to a pod in the Kubernetes cluster - normally, the pod is the one running our server-side component, <code>ktkd</code> (you have to specify the name and labels for it):</p>
+<pre tabindex="0"><code>//New returns a tunnel to the ktkd pod.
 func New(clientset *kubernetes.Clientset, config *restclient.Config, namespace string) (*kube.Tunnel, error) {
 	podName, err := getKTKDPodName(clientset, namespace)
 	if err != nil {
@@ -86,7 +232,17 @@ func New(clientset *kubernetes.Clientset, config *restclient.Config, namespace s
 	t := kube.NewTunnel(clientset.CoreV1().RESTClient(), config, namespace, podName, ktkdPort)
 	return t, t.ForwardPort()
 }
-</code></pre><p>This tunnel is created for every executed command, and allows us to execute commands against <code>localhost:some-random-port</code> and then it forwards the request to <code>ktkdpod-internal-ip:10000</code>. As stated earlier, behind the scenes it uses the Go client for Kubernetes and packages from Helm.</p><blockquote><p>Please note that there is no need to publicly expose any port on the pod.</p></blockquote><h3 id=using-cobra-folder-structure-and-adding-your-own-commands>Using cobra, folder structure and adding your own commands</h3><p>Both the client and the server are essentially <a href=https://github.com/spf13/cobra><code>cobra</code></a> CLI apps.</p><blockquote><p>If you are not familiar with cobra, it is a library created by <a href=https://github.com/spf13>Steve Francia, or @spf13</a> for creating CLI apps, and tools like Kubernetes, Docker, rkt, etcd or Hugo are built upon cobra.</p></blockquote><p>Let&rsquo;s have a look at the folder structure:</p><pre tabindex=0><code>kube-toolkit
+</code></pre><p>This tunnel is created for every executed command, and allows us to execute commands against <code>localhost:some-random-port</code> and then it forwards the request to <code>ktkdpod-internal-ip:10000</code>. As stated earlier, behind the scenes it uses the Go client for Kubernetes and packages from Helm.</p>
+<blockquote>
+<p>Please note that there is no need to publicly expose any port on the pod.</p>
+</blockquote>
+<h3 id="using-cobra-folder-structure-and-adding-your-own-commands">Using cobra, folder structure and adding your own commands</h3>
+<p>Both the client and the server are essentially <a href="https://github.com/spf13/cobra"><code>cobra</code></a> CLI apps.</p>
+<blockquote>
+<p>If you are not familiar with cobra, it is a library created by <a href="https://github.com/spf13">Steve Francia, or @spf13</a> for creating CLI apps, and tools like Kubernetes, Docker, rkt, etcd or Hugo are built upon cobra.</p>
+</blockquote>
+<p>Let&rsquo;s have a look at the folder structure:</p>
+<pre tabindex="0"><code>kube-toolkit
 └───cmd
 │   └───ktk
 │   |    │--- ktk.go
@@ -107,10 +263,22 @@ func New(clientset *kubernetes.Clientset, config *restclient.Config, namespace s
 |   |    |--- rpc.pb.go
 │   └───version
 │   |    │--- version.go
-</code></pre><p>In the <code>cmd</code> directory we have the CLIs for <code>ktk</code> and <code>ktkd</code>, and in <code>pkg</code> we have all packages that we use throughout the tool - the implementations for the gRPC client and server, the port forwarder, the generated Go service and proto.</p><p>Let&rsquo;s take a look at how everything works together for the version command:</p><ul><li>first of all, I briefly mentioned that the version and git commit are injected at build time using compilation flags - the <code>LFFLAGS</code> inject into <code>GitCommit</code>and <code>SemVer</code> the respective values from the <code>version</code> package from <code>pkg</code> into both the client and the server (which can have different versions!):</li></ul><pre tabindex=0><code>VERSION_PACKAGE = github.com/radu-matei/kube-toolkit/pkg/version
+</code></pre><p>In the <code>cmd</code> directory we have the CLIs for <code>ktk</code> and <code>ktkd</code>, and in <code>pkg</code> we have all packages that we use throughout the tool - the implementations for the gRPC client and server, the port forwarder, the generated Go service and proto.</p>
+<p>Let&rsquo;s take a look at how everything works together for the version command:</p>
+<ul>
+<li>first of all, I briefly mentioned that the version and git commit are injected at build time using compilation flags - the <code>LFFLAGS</code> inject into <code>GitCommit</code>and <code>SemVer</code> the respective values from the <code>version</code> package from <code>pkg</code> into both the client and the server (which can have different versions!):</li>
+</ul>
+<pre tabindex="0"><code>VERSION_PACKAGE = github.com/radu-matei/kube-toolkit/pkg/version
 LDFLAGS += -X $(VERSION_PACKAGE).GitCommit=${GIT_COMMIT}
 LDFLAGS += -X $(VERSION_PACKAGE).SemVer=${SEMVER}
-</code></pre><blockquote><p>There is a <a href=https://blog.alexellis.io/inject-build-time-vars-golang/>great article by Alex Ellis explaining everything about injecting build-time variables</a></p></blockquote><ul><li>earlier we saw the client and the server implementation of <code>GetVersion</code></li></ul><p>Now let&rsquo;s see how to put together the server app:</p><pre tabindex=0><code>func newStartCmd(out io.Writer) *cobra.Command {
+</code></pre><blockquote>
+<p>There is a <a href="https://blog.alexellis.io/inject-build-time-vars-golang/">great article by Alex Ellis explaining everything about injecting build-time variables</a></p>
+</blockquote>
+<ul>
+<li>earlier we saw the client and the server implementation of <code>GetVersion</code></li>
+</ul>
+<p>Now let&rsquo;s see how to put together the server app:</p>
+<pre tabindex="0"><code>func newStartCmd(out io.Writer) *cobra.Command {
 	startCmd := &amp;startCmd{}
 
 	cmd := &amp;cobra.Command{
@@ -136,7 +304,11 @@ func (cmd *startCmd) run() error {
 
 	return ktkd.NewServer(cfg).Serve(context.Background())
 }
-</code></pre><p>We will simply call <code>ktkd start</code>, which will start the gRPC server and we will be ready to accept incoming requests from clients.</p><ul><li>now the cobra <code>run</code> method for <code>ktk version</code>:</li></ul><pre tabindex=0><code>func (cmd *versionCmd) run() error {
+</code></pre><p>We will simply call <code>ktkd start</code>, which will start the gRPC server and we will be ready to accept incoming requests from clients.</p>
+<ul>
+<li>now the cobra <code>run</code> method for <code>ktk version</code>:</li>
+</ul>
+<pre tabindex="0"><code>func (cmd *versionCmd) run() error {
 
 	log.Debugf(&#34;making request to: %s&#34;, ktkdHost)
 
@@ -158,8 +330,72 @@ func (cmd *startCmd) run() error {
 
 	return nil
 }
-</code></pre><ul><li>here, we get an instance of the gRPC client, then call the server for its version. Then we simply print the version.</li></ul><p>For every new functionality, we need to add a new cobra command (and remember to add it to the root command) and implement it accordingly.</p><h3 id=see-in-in-action>See in in action</h3><p>First of all, you need to deploy the <code>ktkd</code> pod to a Kubernetes cluster.</p><blockquote><p>As of right now, there isn&rsquo;t an automated way to deploy this to Kubernetes, <a href=https://github.com/radu-matei/kube-toolkit/issues/9>but there is an open issue for anyone that wants to contribute!</a></p></blockquote><p>First, you need to <code>make ktkd-linux</code> - this will create the linux binary that we will then package into a Docker container and deploy to the cluster - <code>docker build -t your-username/ktkd</code>. Then, deploy this to Kubernetes:</p><p><img src=/img/article-photos/kube-toolkit/pod.jpg alt></p><blockquote><p>Notice there is not port exposed!</p></blockquote><blockquote><p>You can easily do this using <code>kubectl</code></p></blockquote><p>Then, we need to build our client: <code>make ktk</code>, then, passing the <code>kubeconfig</code> file, attempt to get the version:</p><p><img src=/img/article-photos/kube-toolkit/ktk.jpg alt></p><blockquote><p>Remember to pass the path to your <code>kubeconfig</code> file!</p></blockquote><h2 id=conclusion>Conclusion</h2><p>And just like this, we managed to get a tool that connects to a Kubernetes cluster from a CLI application through tunnels and gRPC! You can now build your own functionality on top of this, extend the proto service and implement the client and server!</p><p>This started with me looking at Helm and Draft and trying to understand how to build a similar tool and trying to understand all concepts involved. It is by no means as complex as Helm and Draft (it actually removes some abstraction compared to Draft, in that this tool uses directly the generated gRPC client) and it should serve as a starting point building the next awesome tool for Kubernetes!</p><p>You are invited to <a href=https://github.com/radu-matei/kube-toolkit>contribute on the GitHub repo, tackle some of the issues there and provide your feedback!</a></p><p>I would love to hear your thoughts - feel free to comment below, <a href=/contact>or send me an email</a></p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/kubernetes>kubernetes</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/golang>golang</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/grpc>grpc</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/real-world-draft/><span class=mr-1.5>←</span><span>Using Draft to develop front-end + back-end applications. Experimenting with Draft, VS Code and remote debugging.</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aci-update/><span>Update Azure Container Instances with Docker Hub webhooks</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><ul>
+<li>here, we get an instance of the gRPC client, then call the server for its version. Then we simply print the version.</li>
+</ul>
+<p>For every new functionality, we need to add a new cobra command (and remember to add it to the root command) and implement it accordingly.</p>
+<h3 id="see-in-in-action">See in in action</h3>
+<p>First of all, you need to deploy the <code>ktkd</code> pod to a Kubernetes cluster.</p>
+<blockquote>
+<p>As of right now, there isn&rsquo;t an automated way to deploy this to Kubernetes, <a href="https://github.com/radu-matei/kube-toolkit/issues/9">but there is an open issue for anyone that wants to contribute!</a></p>
+</blockquote>
+<p>First, you need to <code>make ktkd-linux</code> - this will create the linux binary that we will then package into a Docker container and deploy to the cluster - <code>docker build -t your-username/ktkd</code>. Then, deploy this to Kubernetes:</p>
+<p><img src="/img/article-photos/kube-toolkit/pod.jpg" alt=""></p>
+<blockquote>
+<p>Notice there is not port exposed!</p>
+</blockquote>
+<blockquote>
+<p>You can easily do this using <code>kubectl</code></p>
+</blockquote>
+<p>Then, we need to build our client: <code>make ktk</code>, then, passing the <code>kubeconfig</code> file, attempt to get the version:</p>
+<p><img src="/img/article-photos/kube-toolkit/ktk.jpg" alt=""></p>
+<blockquote>
+<p>Remember to pass the path to your <code>kubeconfig</code> file!</p>
+</blockquote>
+<h2 id="conclusion">Conclusion</h2>
+<p>And just like this, we managed to get a tool that connects to a Kubernetes cluster from a CLI application through tunnels and gRPC! You can now build your own functionality on top of this, extend the proto service and implement the client and server!</p>
+<p>This started with me looking at Helm and Draft and trying to understand how to build a similar tool and trying to understand all concepts involved. It is by no means as complex as Helm and Draft (it actually removes some abstraction compared to Draft, in that this tool uses directly the generated gRPC client) and it should serve as a starting point building the next awesome tool for Kubernetes!</p>
+<p>You are invited to <a href="https://github.com/radu-matei/kube-toolkit">contribute on the GitHub repo, tackle some of the issues there and provide your feedback!</a></p>
+<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a></p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

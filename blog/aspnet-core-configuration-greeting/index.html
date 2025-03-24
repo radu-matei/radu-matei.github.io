@@ -1,21 +1,143 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>ASP .NET Core JSON Configuration and Dependency Injection - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aspnet-core-configuration-greeting/><meta name=description content="The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to create your custom configuration provider. Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in Startup anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="ASP .NET Core JSON Configuration and Dependency Injection"><meta property="og:description" content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-configuration-greeting/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-07-23T00:00:00+00:00"><meta property="article:modified_time" content="2016-07-23T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="ASP .NET Core JSON Configuration and Dependency Injection"><meta name=twitter:description content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection"><meta itemprop=name content="ASP .NET Core JSON Configuration and Dependency Injection"><meta itemprop=description content="Creating a configurable Greeting service with ASP .NET Core, using Dependency Injection"><meta itemprop=datePublished content="2016-07-23T00:00:00+00:00"><meta itemprop=dateModified content="2016-07-23T00:00:00+00:00"><meta itemprop=wordCount content="1682"><meta itemprop=keywords content="dotnet-core,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">ASP .NET Core JSON Configuration and Dependency Injection</h1><div class="text-sm opacity-60"><time>Saturday, July 23, 2016</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><blockquote><p>This article was originally written in July 2016, and has been updated in November 2019 to the latest .NET Core 3 version, and the <a href=https://github.com/radu-matei/dotnetcore-samples/tree/dotnetcore3/dotnetcore3-configuration>updated sample can be found in this GitHub repository</a>.</p></blockquote><p>In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in <code>web.config</code> <a href=http://www.codeproject.com/Articles/301726/Web-config-File-ASP-NET>(complete description of the old <code>web.config</code> file)</a>, or added in a separate XML file and referenced in <code>web.config</code> (for scenarios like database connection strings, or storing APIs access tokens).</p><p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to <a href=https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers>create your custom configuration provider</a>.</p><p>Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in <code>Startup</code> anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.</p><p>More clearly, we want to map the keys from the JSON file below as routes and the values as the responses we want our application to give, so when a user browses in our application to <code>/some-route</code>, if <code>some-route</code> is present in the JSON configuration file, then the response will be the value from the file, if else to display a default message.</p><pre tabindex=0><code>{
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASP .NET Core JSON Configuration and Dependency Injection | radu&#39;s blog</title>
+  <meta name="description" content="The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to create your custom configuration provider. Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in Startup anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>ASP .NET Core JSON Configuration and Dependency Injection</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">July 23, 2016</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<blockquote>
+<p>This article was originally written in July 2016, and has been updated in November 2019 to the latest .NET Core 3 version, and the <a href="https://github.com/radu-matei/dotnetcore-samples/tree/dotnetcore3/dotnetcore3-configuration">updated sample can be found in this GitHub repository</a>.</p>
+</blockquote>
+<p>In the previous versions of ASP .NET, any configuration setting or parameter you needed was added in <code>web.config</code> <a href="http://www.codeproject.com/Articles/301726/Web-config-File-ASP-NET">(complete description of the old <code>web.config</code> file)</a>, or added in a separate XML file and referenced in <code>web.config</code> (for scenarios like database connection strings, or storing APIs access tokens).</p>
+<p>The new configuration system provides support for JSON, XML, INI and for in-memory configuration, while also allowing you to <a href="https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers">create your custom configuration provider</a>.</p>
+<p>Let&rsquo;s assume that in our application we want the response messages not to be hard-coded in <code>Startup</code> anymore, but stored in a configuration file so we don&rsquo;t have to stop, modify or recompile our application every time the messages or the routes change.</p>
+<p>More clearly, we want to map the keys from the JSON file below as routes and the values as the responses we want our application to give, so when a user browses in our application to <code>/some-route</code>, if <code>some-route</code> is present in the JSON configuration file, then the response will be the value from the file, if else to display a default message.</p>
+<pre tabindex="0"><code>{
     &#34;hi&#34;: &#34;Hi!&#34;,
     &#34;hello&#34;: &#34;Hello!&#34;,
     &#34;bye&#34;: &#34;Goodbye!&#34;,
     &#34;default&#34;: &#34;This is default!&#34;
 }
-</code></pre><p>Also, if we modify the configuration file while the application is running, our application should be able to use the latest configuration. (As we will see, we will not have much to do here since this is built into ASP .NET).</p><p>There can be any number of defined paths in our configuration file and they can change with any frequency (so that hard-coding them in our application is not an option).</p><h3 id=using-the-asp-net-core-json-configuration-provider>Using the ASP .NET Core JSON Configuration Provider</h3><p>As we said earlier, the new ASP .NET implements a JSON configuration provider that allows us to read and use configurations from JSON files (and not only), and we can have strong typing (where we define classes for our configuration settings) or we can access them using directly their key.</p><blockquote><p>For a complete article on creating <a href=https://weblog.west-wind.com/posts/2016/May/23/Strongly-Typed-Configuration-Settings-in-ASPNET-Core>Strongly Typed Configuration Settings in ASP .NET Core, see this article by Rick Strahl</a>.</p></blockquote><p>To use configuration settings in ASP .NET Core, simply instantiate a <code>Configuration</code> object (using a <code>ConfigurationBuilder</code>) and indicate the source of the JSON file. Then, we can add multiple sources and types of sources that populate our application&rsquo;s configuration.</p><blockquote><p>At its simplest, <code>Configuration</code> is just a collection of sources, which provide the ability to read and write name/value pairs. If a name/value pair is written to <code>Configuration</code>, it is not persisted. This means that the written value will be lost when the sources are read again.</p></blockquote><blockquote><p>Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.</p></blockquote><p>Because at the time when we write the application we can&rsquo;t know the exact paths, we will not create strongly-typed configurations but we will take the path from our application an check to see wether that path exists in our configuration file.</p><h3 id=building-the-configurable-greeting-service>Building the configurable Greeting service</h3><p>First of all, we create a new web application using the <code>dotnet</code> CLI, then, we create a new file, <code>greetings.json</code>, in the same directory as our <code>Program.cs</code>, <code>Startup.cs</code> files, where we add our custom routes and messages we want our application to respond with:</p><pre tabindex=0><code>{
+</code></pre><p>Also, if we modify the configuration file while the application is running, our application should be able to use the latest configuration. (As we will see, we will not have much to do here since this is built into ASP .NET).</p>
+<p>There can be any number of defined paths in our configuration file and they can change with any frequency (so that hard-coding them in our application is not an option).</p>
+<h3 id="using-the-asp-net-core-json-configuration-provider">Using the ASP .NET Core JSON Configuration Provider</h3>
+<p>As we said earlier, the new ASP .NET implements a JSON configuration provider that allows us to read and use configurations from JSON files (and not only), and we can have strong typing (where we define classes for our configuration settings) or we can access them using directly their key.</p>
+<blockquote>
+<p>For a complete article on creating <a href="https://weblog.west-wind.com/posts/2016/May/23/Strongly-Typed-Configuration-Settings-in-ASPNET-Core">Strongly Typed Configuration Settings in ASP .NET Core, see this article by Rick Strahl</a>.</p>
+</blockquote>
+<p>To use configuration settings in ASP .NET Core, simply instantiate a <code>Configuration</code> object (using a <code>ConfigurationBuilder</code>)  and indicate the source of the JSON file. Then, we can add multiple sources and types of sources that populate our application&rsquo;s configuration.</p>
+<blockquote>
+<p>At its simplest, <code>Configuration</code> is just a collection of sources, which provide the ability to read and write name/value pairs. If a name/value pair is written to <code>Configuration</code>, it is not persisted. This means that the written value will be lost when the sources are read again.</p>
+</blockquote>
+<blockquote>
+<p>Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.</p>
+</blockquote>
+<p>Because at the time when we write the application we can&rsquo;t know the exact paths, we will not create strongly-typed configurations but we will take the path from our application an check to see wether that path exists in our configuration file.</p>
+<h3 id="building-the-configurable-greeting-service">Building the configurable Greeting service</h3>
+<p>First of all, we create a new web application using the <code>dotnet</code> CLI, then, we create a new file, <code>greetings.json</code>, in the same directory as our <code>Program.cs</code>, <code>Startup.cs</code> files, where we add our custom routes and messages we want our application to respond with:</p>
+<pre tabindex="0"><code>{
     &#34;hi&#34;: &#34;Hi!&#34;,
     &#34;hello&#34;: &#34;Hello!&#34;,
     &#34;bye&#34;: &#34;Goodbye!&#34;,
     &#34;default&#34;: &#34;This is default!&#34;
 }
-</code></pre><p>In <code>Startup</code> we create a property of type <code>IConfiguration</code> where we will keep the data from the configuration file, the add a constructor for the <code>Startup</code> class that will instantiate a <code>ConfigurationBuilder</code>, which will populate the configuration object:</p><pre tabindex=0><code>public IConfiguration Configuration { get; set; }
+</code></pre><p>In <code>Startup</code> we create a property of type <code>IConfiguration</code> where we will keep the data from the configuration file, the add a constructor for the <code>Startup</code> class that will instantiate a <code>ConfigurationBuilder</code>, which will populate the configuration object:</p>
+<pre tabindex="0"><code>public IConfiguration Configuration { get; set; }
 public Startup()
 {
     var cb = new ConfigurationBuilder(IWebHostEnvironment env)
@@ -24,11 +146,20 @@ public Startup()
 
     Configuration = cb.Build();
 }
-</code></pre><p>The constructor has an <code>IWebHostEnvironment</code> parameter that can be used to establish the directory of the JSON configuration file. Since we placed it in the same folder as the other files, we can simply get the current directory: <code>Directory.GetCurrentDirectory()</code>.</p><p>After we instantiate the <code>ConfigurationBuilder</code> we chain two method calls - one for establishing the directory of the configuration file, the other for determine the actual name of the file. Then, we call the <code>.AddJsonFile()</code> method takes the following arguments:</p><ul><li>the name of the file - in our case <code>greetings.json</code></li><li>a <code>bool</code> that determines wether this configuration file is optional or not, used to determine the order in which the system searches the files (if there are multiple files) if the same configuration name exists in multiple files.</li><li>a <code>bool</code> that specifies what happens if the configuration file is modified while the application is running - <code>reloadOnChange</code></li></ul><p>Next, we add routing to our application:</p><pre tabindex=0><code>public void ConfigureServices(IServiceCollection services)
+</code></pre><p>The constructor has an <code>IWebHostEnvironment</code> parameter that can be used to establish the directory of the JSON configuration file. Since we placed it in the same folder as the other files, we can simply get the current directory: <code>Directory.GetCurrentDirectory()</code>.</p>
+<p>After we instantiate the <code>ConfigurationBuilder</code> we chain two method calls - one for establishing the directory of the configuration file, the other for determine the actual name of the file. Then, we call the <code>.AddJsonFile()</code> method takes the following arguments:</p>
+<ul>
+<li>the name of the file - in our case <code>greetings.json</code></li>
+<li>a <code>bool</code> that determines wether this configuration file is optional or not, used to determine the order in which the system searches the files (if there are multiple files) if the same configuration name exists in multiple files.</li>
+<li>a <code>bool</code> that specifies what happens if the configuration file is modified while the application is running - <code>reloadOnChange</code></li>
+</ul>
+<p>Next, we add routing to our application:</p>
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddRouting();
 }
-</code></pre><p>Now it&rsquo;s time to put everything together in the <code>Configure</code> method:</p><pre tabindex=0><code>public void Configure(IApplicationBuilder app)
+</code></pre><p>Now it&rsquo;s time to put everything together in the <code>Configure</code> method:</p>
+<pre tabindex="0"><code>public void Configure(IApplicationBuilder app)
 {
     var rb = new RouteBuilder(app);
     rb.MapGet(&#34;{route}&#34;, ctx =&gt;
@@ -47,22 +178,44 @@ public Startup()
 
     app.UseRouter(rb.Build());
 }
-</code></pre><p>We create a new <code>RouteBuilder</code> and map a new <code>GET</code> request, then read the route parameter and try to retrieve it from our configuration file, through <code>Configuration</code>, which contains all configuration data:</p><pre tabindex=0><code>var routeMessage = Configuration.AsEnumerable()
+</code></pre><p>We create a new <code>RouteBuilder</code> and map a new <code>GET</code> request, then read the route parameter and try to retrieve it from our configuration file, through <code>Configuration</code>, which contains all configuration data:</p>
+<pre tabindex="0"><code>var routeMessage = Configuration.AsEnumerable()
     .FirstOrDefault(r =&gt; r.Key == context.GetRouteValue(&#34;route&#34;)
     .ToString())
     .Value;
-</code></pre><p>We know that our configuration is now accessible through the <code>Configuration</code> property that we populated in the <code>Startup</code> constructor, and the configuration settings are an <code>IEnumerable&lt;KeyValuePair&lt;string, string>></code>, that is a collection of key-value pairs of strings, so we can use Linq to search for the key-value pair in our file that has the same key as our path and take the value from that pair.</p><blockquote><p>For some examples of using Linq with lambdas <a href=http://www.codemag.com/article/1001051>check this article from Code Magazine</a>.</p></blockquote><p>We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard response.</p><pre tabindex=0><code>var defaultMessage = Configuration.AsEnumerable()
+</code></pre><p>We know that our configuration is now accessible through the <code>Configuration</code> property that we populated in the <code>Startup</code> constructor, and the configuration settings are an <code>IEnumerable&lt;KeyValuePair&lt;string, string&gt;&gt;</code>, that is a collection of key-value pairs of strings, so we can use Linq to search for the key-value pair in our file that has the same key as our path and take the value from that pair.</p>
+<blockquote>
+<p>For some examples of using Linq with lambdas <a href="http://www.codemag.com/article/1001051">check this article from Code Magazine</a>.</p>
+</blockquote>
+<p>We also search for the default message in our JSON so that if the path does not exist in the file, we have a standard response.</p>
+<pre tabindex="0"><code>var defaultMessage = Configuration.AsEnumerable()
     .FirstOrDefault(r =&gt; r.Key == &#34;default&#34;)
     .Value;
-</code></pre><p>Then, depending on wether the route actually exists in our configuration file or not, we return either the message of that specific route, or the default message.</p><p>If we run the application and open a browser, we can check if our routing works:</p><pre tabindex=0><code>http://localhost:5000/hello - This should display Hello!
+</code></pre><p>Then, depending on wether the route actually exists in our configuration file or not, we return either the message of that specific route, or the default message.</p>
+<p>If we run the application and open a browser, we can check if our routing works:</p>
+<pre tabindex="0"><code>http://localhost:5000/hello - This should display Hello!
 http://localhost:5000/hi - This should display Hi!
 http://localhost:5000/bye - This should display Goodbye!
 http://localhost:5000/default or http://localhost:5000/anything-else - This should display This is default!
-</code></pre><p>Without closing the application, go to <code>greeting.json</code> and either add a new key-value pair, or modify an existing one&rsquo;s value, save the file and navigate to that path. You will see that the application was able to load the configuration file without restarting or recompiling.</p><h3 id=making-use-of-asp-net-core-dependency-injection>Making use of ASP .NET Core Dependency Injection</h3><blockquote><p>For a more detailed view of dependency injection in ASP .NET Core applications, <a href=https://docs.asp.net/en/latest/fundamentals/dependency-injection.html>read the article from the Official ASP .NET Core Documentation</a>.</p></blockquote><p>Our application works, but there is a lot of logic code in <code>Startup</code>, a place for configuration.</p><p>We will try to extract the part of <code>Startup</code> that deals with actually getting the response from the <code>JSON</code> file in a separate class and learn how to inject that service in various places (like other services, controllers or even in <code>Startup</code>).</p><p>First of all, let&rsquo;s think at what public methods and properties should a greeting service should have. Basically, it should only have a single method that receives the path a user navigated to and should return a string, the response taken from the JSON file.</p><p>In order to make dependency injection work, we will make use of interfaces. Meaning we will build an interface for the greeting service, <code>IGreetingService</code>.</p><blockquote><p>To see an example with interfaces, <a href=https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp09%20-%20Interfaces>check this tutorial</a>.</p></blockquote><p>Let&rsquo;s create a new file, <code>IGreetingService.cs</code>:</p><pre tabindex=0><code>public interface IGreetingService
+</code></pre><p>Without closing the application, go to <code>greeting.json</code> and either add a new key-value pair, or modify an existing one&rsquo;s value, save the file and navigate to that path. You will see that the application was able to load the configuration file without restarting or recompiling.</p>
+<h3 id="making-use-of-asp-net-core-dependency-injection">Making use of ASP .NET Core Dependency Injection</h3>
+<blockquote>
+<p>For a more detailed view of dependency injection in ASP .NET Core applications, <a href="https://docs.asp.net/en/latest/fundamentals/dependency-injection.html">read the article from the Official ASP .NET Core Documentation</a>.</p>
+</blockquote>
+<p>Our application works, but there is a lot of logic code in <code>Startup</code>, a place for configuration.</p>
+<p>We will try to extract the part of <code>Startup</code> that deals with actually getting the response from the <code>JSON</code> file in a separate class and learn how to inject that service in various places (like other services, controllers or even in <code>Startup</code>).</p>
+<p>First of all, let&rsquo;s think at what public methods and properties should a greeting service should have. Basically, it should only have a single method that receives the path a user navigated to and should return a string, the response taken from the JSON file.</p>
+<p>In order to make dependency injection work, we will make use of interfaces. Meaning we will build an interface for the greeting service, <code>IGreetingService</code>.</p>
+<blockquote>
+<p>To see an example with interfaces, <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp09%20-%20Interfaces">check this tutorial</a>.</p>
+</blockquote>
+<p>Let&rsquo;s create a new file, <code>IGreetingService.cs</code>:</p>
+<pre tabindex="0"><code>public interface IGreetingService
 {
     string Greet(string route);
 }
-</code></pre><p>Now, in another file, <code>GreetingService.cs</code> we will add the actual implementation of the service:</p><pre tabindex=0><code>using System.Linq;
+</code></pre><p>Now, in another file, <code>GreetingService.cs</code> we will add the actual implementation of the service:</p>
+<pre tabindex="0"><code>using System.Linq;
 using Microsoft.Extensions.Configuration;
 
 public class GreetingService : IGreetingService
@@ -86,7 +239,9 @@ public class GreetingService : IGreetingService
             return (routeMessage != null) ? routeMessage : defaultMessage;
     }
 }
-</code></pre><p>Basically, this class has the <code>Greet</code> method which contains most of the logic we had in <code>Startup</code> for retrieving the response from the JSON file. It also has an <code>IConfiguration</code> property, this time injected in the controller (we will see a bit later where and how this is done).</p><p>Now let&rsquo;s take a look at the <code>Startup</code> class, this time at the <code>Configure</code> method:</p><pre tabindex=0><code>public void Configure(IApplicationBuilder app, IGreetingService greetingService)
+</code></pre><p>Basically, this class has the <code>Greet</code> method which contains most of the logic we had in <code>Startup</code> for retrieving  the response from the JSON file. It also has an <code>IConfiguration</code> property, this time injected in the controller (we will see a bit later where and how this is done).</p>
+<p>Now let&rsquo;s take a look at the <code>Startup</code> class, this time at the <code>Configure</code> method:</p>
+<pre tabindex="0"><code>public void Configure(IApplicationBuilder app, IGreetingService greetingService)
 {
     var routeBuilder = new RouteBuilder(app);
 
@@ -98,7 +253,9 @@ public class GreetingService : IGreetingService
 
     app.UseRouter(routeBuilder.Build());
 }
-</code></pre><p>The new thing here is that we have an <code>IGreetingService</code> parameter in the method signature that we use when returning the message.</p><p>Both the <code>IGreetingService</code> and <code>IConfiguration</code> parameters are configured in the <code>ConfigureServices</code> method, also from <code>Startup</code>:</p><pre tabindex=0><code>public void ConfigureServices(IServiceCollection services)
+</code></pre><p>The new thing here is that we have an <code>IGreetingService</code> parameter in the method signature that we use when returning the message.</p>
+<p>Both the <code>IGreetingService</code> and <code>IConfiguration</code> parameters are configured in the <code>ConfigureServices</code> method, also from <code>Startup</code>:</p>
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddRouting();
 
@@ -113,12 +270,57 @@ public class GreetingService : IGreetingService
 
     services.AddTransient&lt;IGreetingService, GreetingService&gt;();
 }
-</code></pre><p>First of all we add the routing service (just like in the previous examples).</p><p>The last line of this method states that every time some class requests a parameter of type <code>IGreetingService</code>, the DI (dependency injection) engine will provide it with a new (every time a new) implementation of <code>GreetingService</code>.</p><p>The second method call is the most difficult of all: it says that every time someone requests an <code>IConfiguration</code> parameter, the engine should provide the same instance (singleton) generated by this chain of method calls:</p><pre tabindex=0><code> new ConfigurationBuilder()
+</code></pre><p>First of all we add the routing service (just like in the previous examples).</p>
+<p>The last line of this method states that every time some class requests a parameter of type <code>IGreetingService</code>, the DI (dependency injection) engine will provide it with a new (every time a new) implementation of <code>GreetingService</code>.</p>
+<p>The second method call is the most difficult of all: it says that every time someone requests an <code>IConfiguration</code> parameter, the engine should provide the same instance (singleton) generated by this chain of method calls:</p>
+<pre tabindex="0"><code> new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile(&#34;greetings.json&#34;,
                  optional: false,
                  reloadOnChange: true)
      .Build(),
-</code></pre><p>which is the same as earlier.</p><h3 id=conclusion>Conclusion</h3><p>We created a web application for which we configured the paths and the associated responses in an external JSON file. We extracted this functionality in a service, <code>GreetingService</code> that was provided using dependency injection.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-api/><span class=mr-1.5>←</span><span>Introduction to ASP .NET Core MVC API</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-routing/><span>ASP .NET Core Routing</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><p>which is the same as earlier.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>We created a web application for which we configured the paths and the associated responses in an external JSON file. We extracted this functionality in a service, <code>GreetingService</code> that was provided using dependency injection.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

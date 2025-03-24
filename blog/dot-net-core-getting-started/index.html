@@ -1,24 +1,147 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Getting Started with .NET Core and VS Code - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/dot-net-core-getting-started/><meta name=description content="We will see how to get started with VS Code and .NET Core"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Getting Started with .NET Core and VS Code"><meta property="og:description" content="We will see how to get started with VS Code and .NET Core"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/dot-net-core-getting-started/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-07-17T00:00:00+00:00"><meta property="article:modified_time" content="2016-07-17T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Getting Started with .NET Core and VS Code"><meta name=twitter:description content="We will see how to get started with VS Code and .NET Core"><meta itemprop=name content="Getting Started with .NET Core and VS Code"><meta itemprop=description content="We will see how to get started with VS Code and .NET Core"><meta itemprop=datePublished content="2016-07-17T00:00:00+00:00"><meta itemprop=dateModified content="2016-07-17T00:00:00+00:00"><meta itemprop=wordCount content="1018"><meta itemprop=keywords content="dotnet-core,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Getting Started with .NET Core and VS Code</h1><div class="text-sm opacity-60"><time>Sunday, July 17, 2016</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><a href=/blog/dot-net-core-introduction>In the previous article</a>, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.</p><blockquote><p>This tutorial can be done using Windows, Linux or macOS..</p></blockquote><h1 id=installing-net-core>Installing .NET Core</h1><p>Wether your OS is Windows, Linux or macOS, you can <a href=https://www.microsoft.com/net/core>go to this page and follow the instructions</a> for getting .NET Core on your machine.</p><p>When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: <a href=https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet><code>dotnet</code></a>.</p><p><img src=/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG alt="dotnet PowerShell"></p><blockquote><p>Output for the <a href=https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet><code>dotnet</code></a> command in PowerShell. The output is similar for Linux and macOS.</p></blockquote><p>At this point, you have successfully installed .NET Core and you can start building applications.</p><h1 id=building-a-net-core-application-using-the-command-line-interface>Building a .NET Core application using the command line interface</h1><p>In Windows PowerShell or the Linux / macOS Terminal, let&rsquo;s create a new directory. I will call it <code>dot-net-tutorial</code> and navigate to it and create a new console application here using the <a href=https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new><code>dotnet new</code></a> command.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ mkdir dot-net-tutorial
-</span></span><span style=display:flex><span>$ cd dot-net-tutorial
-</span></span><span style=display:flex><span>$ dotnet new
-</span></span></code></pre></div><p>This is how it should look like after executing these commands.</p><p><img src=https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG alt="enter image description here"></p><p>Notice how we got two files after creating the project:</p><ul><li><code>Program.cs</code>- C# file containing the entry point in the console application - the <code>Main</code> method</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>using</span> System;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>namespace</span> ConsoleApplication
-</span></span><span style=display:flex><span>  {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Program</span>
-</span></span><span style=display:flex><span>      {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> Main(<span style=color:#66d9ef>string</span>[] args)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            Console.WriteLine(<span style=color:#e6db74>&#34;Hello World!&#34;</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>      }
-</span></span><span style=display:flex><span>  }
-</span></span></code></pre></div><blockquote><p>This is a basic <code>Hello World</code> example in C# and you can <a href=https://radu.microsoft.pub.ro/csharp-fundamentals-01/>find more information about everything in the code in this article</a>.</p></blockquote><ul><li><code>project.json</code> - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.</li></ul><pre tabindex=0><code>  {
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting Started with .NET Core and VS Code | radu&#39;s blog</title>
+  <meta name="description" content="We will see how to get started with VS Code and .NET Core">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Getting Started with .NET Core and VS Code</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">July 17, 2016</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p><a href="/blog/dot-net-core-introduction">In the previous article</a>, we saw what is .NET Core and what can we build with it. In this article, we will install .NET Core and start with some basic examples using the command line and Visual Studio Code.</p>
+<blockquote>
+<p>This tutorial can be done using Windows, Linux or macOS..</p>
+</blockquote>
+<h1 id="installing-net-core">Installing .NET Core</h1>
+<p>Wether your OS is Windows, Linux or macOS, you can <a href="https://www.microsoft.com/net/core">go to this page and follow the instructions</a> for getting .NET Core on your machine.</p>
+<p>When the installation is complete, you should be able to open a command line interface (CMD, PowerShell for Windows, Terminal for Linux and macOS) and check if the installation was successful by executing the following command: <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet"><code>dotnet</code></a>.</p>
+<p><img src="/img/article-photos/dot-net-getting-started/dotnet-powershell.JPG" alt="dotnet PowerShell"></p>
+<blockquote>
+<p>Output for the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet"><code>dotnet</code></a> command in PowerShell. The output is similar for Linux and macOS.</p>
+</blockquote>
+<p>At this point, you have successfully installed .NET Core and you can start building applications.</p>
+<h1 id="building-a-net-core-application-using-the-command-line-interface">Building a .NET Core application using the command line interface</h1>
+<p>In Windows PowerShell or the Linux / macOS Terminal, let&rsquo;s create a new directory. I will call it <code>dot-net-tutorial</code> and navigate to it and create a new console application here using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new"><code>dotnet new</code></a> command.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ mkdir dot-net-tutorial
+</span></span><span style="display:flex;"><span>$ cd dot-net-tutorial
+</span></span><span style="display:flex;"><span>$ dotnet new
+</span></span></code></pre></div><p>This is how it should look like after executing these commands.</p>
+<p><img src="https://raw.githubusercontent.com/radu-matei/blog-content/master/media/dot-net-getting-started/dotnet-powershell-new.JPG" alt="enter image description here"></p>
+<p>Notice how we got two files after creating the project:</p>
+<ul>
+<li><code>Program.cs</code>- C# file containing the entry point in the console application - the <code>Main</code> method</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> ConsoleApplication
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Console.WriteLine(<span style="color:#e6db74">&#34;Hello World!&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><blockquote>
+<p>This is a basic <code>Hello World</code> example in C# and you can <a href="https://radu.microsoft.pub.ro/csharp-fundamentals-01/">find more information about everything in the code in this article</a>.</p>
+</blockquote>
+<ul>
+<li><code>project.json</code> - JSON file that contains all necessary dependencies and the frameworks for the application to run, including .NET frameworks and NuGet packages.</li>
+</ul>
+<pre tabindex="0"><code>  {
       &#34;version&#34;: &#34;1.0.0-*&#34;,
       &#34;buildOptions&#34;: {
           &#34;debugType&#34;: &#34;portable&#34;,
@@ -37,8 +160,44 @@
           }
       }
   }
-</code></pre><blockquote><p>In a future release, the <code>project</code> file will return to a <code>.csproj</code> extension in order to maintain compatibility with all Visual Studio and Xamarin projects.</p></blockquote><p>Calling <a href=https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore><code>dotnet restore</code></a> will restore all dependencies of the application.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ dotnet restore
-</span></span></code></pre></div><blockquote><p><a href=https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore><code>dotnet restore</code></a> calls into NuGet to restore the tree of dependencies. NuGet analyzes the <code>project.json</code> file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the <code>project.lock.json</code> file. The <code>project.lock.json</code> file is necessary to be able to compile and run.</p></blockquote><blockquote><p>The <code>project.lock.json</code> file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.</p></blockquote><p><img src=/img/article-photos/dot-net-getting-started/dotnet-restore.JPG alt></p><p>At this point, we can run the application and see if the output is the expected one using the <a href=https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run><code>dotnet run</code></a> command.</p><p><img src=/img/article-photos/dot-net-getting-started/dotnet-run.JPG alt></p><p>This is how you create, build and run a basic .NET Core application using the command line.</p><h2 id=installing-visual-studio-code>Installing Visual Studio Code</h2><p>We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - <a href=https://code.visualstudio.com/>Visual Studio Code</a>.</p><blockquote><p><a href=https://code.visualstudio.com/>Install Visual Studio code from here</a></p></blockquote><p>In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs <a href=omnisharp.net/>OmniSharp</a> for IntelliSense.</p><p><img src=/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG alt></p><p>After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.</p><blockquote><p>You can do this in the command line by using <code>code .</code></p></blockquote><h2 id=running-in-visual-studio-code>Running in Visual Studio Code</h2><p>In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.</p><p><img src=/img/article-photos/dot-net-getting-started/vs-code-assets.JPG alt></p><blockquote><p>This will add a <code>.vscode</code> folder in the solution root with two <code>.json</code> files - <code>tasks.json</code> and <code>launch.json</code></p></blockquote><p>We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).</p><p><img src=/img/article-photos/dot-net-getting-started/vs-code-run.jpg alt></p><p>If everything goes well, you should be able to see the output in the debug console.</p><h2 id=debugging-in-visual-studio-code>Debugging in Visual Studio Code</h2><p>We saw how to run the application, not let&rsquo;s add a method that adds two integers.</p><pre tabindex=0><code>using System;
+</code></pre><blockquote>
+<p>In a future release, the <code>project</code> file will return to a <code>.csproj</code> extension in order to maintain compatibility with all Visual Studio and Xamarin projects.</p>
+</blockquote>
+<p>Calling <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore"><code>dotnet restore</code></a>  will restore all dependencies of the application.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ dotnet restore
+</span></span></code></pre></div><blockquote>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-restore"><code>dotnet restore</code></a> calls into NuGet to restore the tree of dependencies. NuGet analyzes the <code>project.json</code> file, downloads the dependencies stated in the file (or grabs them from a cache on your machine), and writes the <code>project.lock.json</code> file. The <code>project.lock.json</code> file is necessary to be able to compile and run.</p>
+</blockquote>
+<blockquote>
+<p>The <code>project.lock.json</code> file is a persisted and complete set of the graph of NuGet dependencies and other information describing an app. This file is read by other tools, such as dotnet build and dotnet run, enabling them to process the source code with a correct set of NuGet dependencies and binding resolutions.</p>
+</blockquote>
+<p><img src="/img/article-photos/dot-net-getting-started/dotnet-restore.JPG" alt=""></p>
+<p>At this point, we can run the application and see if the output is the expected one using the <a href="https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-run"><code>dotnet run</code></a> command.</p>
+<p><img src="/img/article-photos/dot-net-getting-started/dotnet-run.JPG" alt=""></p>
+<p>This is how you create, build and run a basic .NET Core application using the command line.</p>
+<h2 id="installing-visual-studio-code">Installing Visual Studio Code</h2>
+<p>We saw how to create, build and run applications from the command line, now it is time to move to a complete code editor that has IntelliSense and debugging built in - <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</p>
+<blockquote>
+<p><a href="https://code.visualstudio.com/">Install Visual Studio code from here</a></p>
+</blockquote>
+<p>In order to get IntelliSense working, you need to install the C# extension for Visual Studio Code that also installs <a href="omnisharp.net/">OmniSharp</a> for IntelliSense.</p>
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-extensions.JPG" alt=""></p>
+<p>After it installs, enable it and restart VS Code. At this point, we can open the folder with the earlier project in VS Code.</p>
+<blockquote>
+<p>You can do this in the command line by using <code>code .</code></p>
+</blockquote>
+<h2 id="running-in-visual-studio-code">Running in Visual Studio Code</h2>
+<p>In order to enable debugging and running the code from VS Code, a prompt is shown asking to add the configuration files.</p>
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-assets.JPG" alt=""></p>
+<blockquote>
+<p>This will add a <code>.vscode</code> folder in the solution root with two <code>.json</code> files - <code>tasks.json</code> and <code>launch.json</code></p>
+</blockquote>
+<p>We can run the application by going to the Debug pane (or by pressing Ctrl(Cmd)+Shift+D) and press the run button (or F5).</p>
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-run.jpg" alt=""></p>
+<p>If everything goes well, you should be able to see the output in the debug console.</p>
+<h2 id="debugging-in-visual-studio-code">Debugging in Visual Studio Code</h2>
+<p>We saw how to run the application, not let&rsquo;s add a method that adds two integers.</p>
+<pre tabindex="0"><code>using System;
 
 namespace ConsoleApplication
 {
@@ -58,7 +217,16 @@ namespace ConsoleApplication
         }
     }
 }
-</code></pre><p>If we add a breakpoint at the <code>return sum</code> line and we run the application, we get the following output:</p><p><img src=/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg alt></p><p>The execution stopped at the line with the breakpoint and we can see the state of our program at this point.</p><h2 id=adding-classes-and-navigating-through-code>Adding classes and navigating through code</h2><p>At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.</p><blockquote><p>You can see a <a href=https://github.com/Microsoft/vscode-tips-and-tricks>full list of VS Code tips and tricks on the official Microsoft GitHub organization here</a>.</p></blockquote><p>We will add a very basic <code>Person</code> class based on <a href=https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes>this project</a>.</p><pre tabindex=0><code>public class Person
+</code></pre><p>If we add a breakpoint at the <code>return sum</code> line and we run the application, we get the following output:</p>
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-breakpoint.jpg" alt=""></p>
+<p>The execution stopped at the line with the breakpoint and we can see the state of our program at this point.</p>
+<h2 id="adding-classes-and-navigating-through-code">Adding classes and navigating through code</h2>
+<p>At this point, we can start using VS Code to its full potential - IntelliSense, code completion, navigating code and going to definitions.</p>
+<blockquote>
+<p>You can see a <a href="https://github.com/Microsoft/vscode-tips-and-tricks">full list of VS Code tips and tricks on the official Microsoft GitHub organization here</a>.</p>
+</blockquote>
+<p>We will add a very basic <code>Person</code> class based on <a href="https://github.com/microsoft-dx/csharp-fundamentals/tree/master/CSharpFundamentals/csharp05%20-%20Classes">this project</a>.</p>
+<pre tabindex="0"><code>public class Person
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -78,6 +246,54 @@ namespace ConsoleApplication
             Console.WriteLine(&#34;First Name: {0}, Last Name: {1}, Age: {2}&#34;, FirstName, LastName, Age);
         }
     }
-</code></pre><p>It is a very basic class with three properties, two constructors and a method that prints the information to the console.</p><blockquote><p>You can <a href=https://github.com/microsoft-dx/csharp-fundamentals>find all necessary materials to learn C# in this repository</a>.</p></blockquote><p>In the <code>Main</code> method, we instantiate a new <code>Person</code> object and use the <code>PrintPerson</code> method to display the properties.</p><p><img src=/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG alt></p><h2 id=conclusion>Conclusion</h2><p>We saw how to install .NET Core and how to build and run a console application using the command line.</p><p>Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-getting-started/><span class=mr-1.5>←</span><span>ASP .NET Core Introduction</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/dot-net-core-introduction/><span>Introduction to .NET Core</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><p>It is a very basic class with three properties, two constructors and a method that prints the information to the console.</p>
+<blockquote>
+<p>You can <a href="https://github.com/microsoft-dx/csharp-fundamentals">find all necessary materials to learn C# in this repository</a>.</p>
+</blockquote>
+<p>In the <code>Main</code> method, we instantiate a new <code>Person</code> object and use the <code>PrintPerson</code> method to display the properties.</p>
+<p><img src="/img/article-photos/dot-net-getting-started/vs-code-person-debugging.JPG" alt=""></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>We saw how to install .NET Core and how to build and run a console application using the command line.</p>
+<p>Then, we installed Visual Studio Code and saw how easy it is to debug, navigate through and run our code.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

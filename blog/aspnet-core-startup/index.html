@@ -1,45 +1,164 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>ASP .NET Core Startup - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aspnet-core-startup/><meta name=description content="Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the Startup class, which is also the entry point for any incoming HTTP request."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="ASP .NET Core Startup"><meta property="og:description" content="The ASP .NET Startup class"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-startup/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-07-19T00:00:00+00:00"><meta property="article:modified_time" content="2016-07-19T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="ASP .NET Core Startup"><meta name=twitter:description content="The ASP .NET Startup class"><meta itemprop=name content="ASP .NET Core Startup"><meta itemprop=description content="The ASP .NET Startup class"><meta itemprop=datePublished content="2016-07-19T00:00:00+00:00"><meta itemprop=dateModified content="2016-07-19T00:00:00+00:00"><meta itemprop=wordCount content="479"><meta itemprop=keywords content="dotnet-core,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">ASP .NET Core Startup</h1><div class="text-sm opacity-60"><time>Tuesday, July 19, 2016</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>In the <a href=/blog/aspnet-core-getting-started>previous article</a> we built a very basic web application that for every request had the same response - <code>Hello, Universe</code> with the server current time and date.
-Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the <code>Startup</code> class, which is also the entry point for any incoming HTTP request.</p><h3 id=the-anatomy-of-the-startup-class>The anatomy of the <code>Startup</code> class</h3><p>The <code>Startup</code> class needs to have two methods:</p><ul><li><code>Configure</code> - this method will respond to each incoming HTTP request. In the following example, we will use it to have the same functionality as in our previous example - returning a message with the current server time.</li></ul><blockquote><p>However, most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in <a href=https://docs.asp.net/en/latest/fundamentals/middleware.html>middleware</a> and added using extension methods on <code>IApplicationBuilder</code>.</p><p>Your <code>Configure</code> method must accept an <a href=https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html><code>IApplicationBuilder</code></a> parameter. Additional services, like <code>IHostingEnvironment</code> and <code>ILoggerFactory</code> may also be specified, in which case these services will be injected by the server if they are available.</p></blockquote><ul><li><code>ConfigureServices</code> - this <strong>optional</strong> method is used for configuring services used by the application and is called before the <code>Configure</code> method.</li></ul><blockquote><p>This is the place where we will start discussing dependency injection, which will be covered in a separate topic.</p></blockquote><h3 id=building-the-hello-world-web-application-with-startup>Building the <code>Hello, World</code> web application with <code>Startup</code></h3><p>We are going to build the same application that responds with <code>Hello, World</code> and the current time, this time with a <code>Startup</code> class.</p><p>First of all, if this is a new application (created using <code>dotnet new</code>), you should add the dependency to the web server Kestrel in <code>project.json</code>, which should look like this:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;1.0.0-*&#34;</span>,
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;buildOptions&#34;</span>: {
-</span></span><span style=display:flex><span>        <span style=color:#f92672>&#34;debugType&#34;</span>: <span style=color:#e6db74>&#34;portable&#34;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#f92672>&#34;emitEntryPoint&#34;</span>: <span style=color:#66d9ef>true</span>
-</span></span><span style=display:flex><span>    },
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;dependencies&#34;</span>: {},
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;frameworks&#34;</span>: {
-</span></span><span style=display:flex><span>        <span style=color:#f92672>&#34;netcoreapp1.0&#34;</span>: {
-</span></span><span style=display:flex><span>            <span style=color:#f92672>&#34;dependencies&#34;</span>: {
-</span></span><span style=display:flex><span>                <span style=color:#f92672>&#34;Microsoft.NETCore.App&#34;</span>: {
-</span></span><span style=display:flex><span>                    <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;platform&#34;</span>,
-</span></span><span style=display:flex><span>                    <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>
-</span></span><span style=display:flex><span>                },
-</span></span><span style=display:flex><span>                <span style=color:#f92672>&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>
-</span></span><span style=display:flex><span>            },
-</span></span><span style=display:flex><span>            <span style=color:#f92672>&#34;imports&#34;</span>: <span style=color:#e6db74>&#34;dnxcore50&#34;</span>
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>Then, add a new file called <code>Startup.cs</code> and add the following code:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>using</span> System;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>using</span> Microsoft.AspNetCore.Builder;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>using</span> Microsoft.AspNetCore.Http;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Startup</span>
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> Configure(IApplicationBuilder app)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        app.Run(context =&gt;
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>var</span> response = String.Format(<span style=color:#e6db74>&#34;Hello, Universe! It is {0}&#34;</span>, DateTime.Now);
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> context.Response.WriteAsync(response);
-</span></span><span style=display:flex><span>        });
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>As you can see, the code in <code>Configure</code> is the same as the code in <code>Main</code> from the previous example.</p><p>Then, in the <code>Main</code> method we simply indicate that we have a <code>Startup</code> class we want to use.</p><pre tabindex=0><code>using Microsoft.AspNetCore.Hosting;
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASP .NET Core Startup | radu&#39;s blog</title>
+  <meta name="description" content="Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the Startup class, which is also the entry point for any incoming HTTP request.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>ASP .NET Core Startup</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">July 19, 2016</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>In the <a href="/blog/aspnet-core-getting-started">previous article</a> we built a very basic web application that for every request had the same response - <code>Hello, Universe</code> with the server current time and date.
+Any non-trivial application is going to need a mechanism to handle different types of requests and map them to specific services and middleware and configure services. This is accomplished through the <code>Startup</code> class, which is also the entry point for any incoming HTTP request.</p>
+<h3 id="the-anatomy-of-the-startup-class">The anatomy of the <code>Startup</code> class</h3>
+<p>The <code>Startup</code> class needs to have two methods:</p>
+<ul>
+<li><code>Configure</code> - this method will respond to each incoming HTTP request. In the following example, we will use it to have the same functionality as in our previous example - returning a message with the current server time.</li>
+</ul>
+<blockquote>
+<p>However,  most real-world applications require more functionality than this. More complex sets of pipeline configuration can be encapsulated in <a href="https://docs.asp.net/en/latest/fundamentals/middleware.html">middleware</a> and added using extension methods on <code>IApplicationBuilder</code>.</p>
+<p>Your <code>Configure</code> method must accept an <a href="https://docs.asp.net/projects/api/en/latest/autoapi/Microsoft/AspNetCore/Builder/IApplicationBuilder/index.html"><code>IApplicationBuilder</code></a> parameter. Additional services, like <code>IHostingEnvironment</code> and <code>ILoggerFactory</code> may also be specified, in which case these services will be injected by the server if they are available.</p>
+</blockquote>
+<ul>
+<li><code>ConfigureServices</code> - this <strong>optional</strong> method is used for configuring services used by the application and is called before the <code>Configure</code> method.</li>
+</ul>
+<blockquote>
+<p>This is the place where we will start discussing dependency injection, which will be covered in a separate topic.</p>
+</blockquote>
+<h3 id="building-the-hello-world-web-application-with-startup">Building the <code>Hello, World</code> web application with <code>Startup</code></h3>
+<p>We are going to build the same application that responds with <code>Hello, World</code> and the current time, this time with a <code>Startup</code> class.</p>
+<p>First of all, if this is a new application (created using <code>dotnet new</code>), you should add the dependency to the web server Kestrel in <code>project.json</code>, which should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0-*&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;buildOptions&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;debugType&#34;</span>: <span style="color:#e6db74">&#34;portable&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;emitEntryPoint&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;dependencies&#34;</span>: {},
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;frameworks&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;netcoreapp1.0&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;dependencies&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;imports&#34;</span>: <span style="color:#e6db74">&#34;dnxcore50&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Then, add a new file called <code>Startup.cs</code> and add the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Builder;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Http;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Startup</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Configure(IApplicationBuilder app)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        app.Run(context =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">var</span> response = String.Format(<span style="color:#e6db74">&#34;Hello, Universe! It is {0}&#34;</span>, DateTime.Now);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> context.Response.WriteAsync(response);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>As you can see, the code in <code>Configure</code> is the same as the code in <code>Main</code> from the previous example.</p>
+<p>Then, in the <code>Main</code> method we simply indicate that we have a <code>Startup</code> class we want to use.</p>
+<pre tabindex="0"><code>using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 
 namespace ConsoleApplication
@@ -57,6 +176,47 @@ namespace ConsoleApplication
         }
     }
 }
-</code></pre><p>Now if we run the application (from the command line or from VS Code) and navigate to http://localhost:5000, we see the expected output.</p><p>From now on, we will use the <code>Startup</code> class when building web applications with ASP .NET Core and we will add middleware and services in it.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-routing/><span class=mr-1.5>←</span><span>ASP .NET Core Routing</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-getting-started/><span>ASP .NET Core Introduction</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><p>Now if we run the application (from the command line or from VS Code) and navigate to http://localhost:5000, we see the expected output.</p>
+<p>From now on, we will use the <code>Startup</code> class when building web applications with ASP .NET Core and we will add middleware and services in it.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

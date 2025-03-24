@@ -1,24 +1,166 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Trying something new - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/notes/trying-something-new/><meta name=description content="I&rsquo;ve been writing on this blog since 2016. I&rsquo;ve written about .NET, WebSockets, debugging microservices on Kubernetes, or about WebAssembly memory.
-I rarely have the time to write lengthy blog posts anymore, and social media seems to be the worst place to have a conversation these days; so I stopped posting almost entirely.
-I&rsquo;m trying to change that with a new notes section of my blog where I&rsquo;m trying to write more by sharing something in-between a tweet and a fully fledged blog post."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Trying something new"><meta property="og:description" content="I&rsquo;ve been writing on this blog since 2016. I&rsquo;ve written about .NET, WebSockets, debugging microservices on Kubernetes, or about WebAssembly memory.
-I rarely have the time to write lengthy blog posts anymore, and social media seems to be the worst place to have a conversation these days; so I stopped posting almost entirely.
-I&rsquo;m trying to change that with a new notes section of my blog where I&rsquo;m trying to write more by sharing something in-between a tweet and a fully fledged blog post."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/notes/trying-something-new/"><meta property="article:section" content="notes"><meta property="article:published_time" content="2024-04-07T00:00:00+00:00"><meta property="article:modified_time" content="2024-04-07T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Trying something new"><meta name=twitter:description content="I&rsquo;ve been writing on this blog since 2016. I&rsquo;ve written about .NET, WebSockets, debugging microservices on Kubernetes, or about WebAssembly memory.
-I rarely have the time to write lengthy blog posts anymore, and social media seems to be the worst place to have a conversation these days; so I stopped posting almost entirely.
-I&rsquo;m trying to change that with a new notes section of my blog where I&rsquo;m trying to write more by sharing something in-between a tweet and a fully fledged blog post."><meta itemprop=name content="Trying something new"><meta itemprop=description content="I&rsquo;ve been writing on this blog since 2016. I&rsquo;ve written about .NET, WebSockets, debugging microservices on Kubernetes, or about WebAssembly memory.
-I rarely have the time to write lengthy blog posts anymore, and social media seems to be the worst place to have a conversation these days; so I stopped posting almost entirely.
-I&rsquo;m trying to change that with a new notes section of my blog where I&rsquo;m trying to write more by sharing something in-between a tweet and a fully fledged blog post."><meta itemprop=datePublished content="2024-04-07T00:00:00+00:00"><meta itemprop=dateModified content="2024-04-07T00:00:00+00:00"><meta itemprop=wordCount content="115"><meta itemprop=keywords content="notes,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Trying something new</h1><div class="text-sm opacity-60"><time>Sunday, April 7, 2024</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>I&rsquo;ve been writing on this blog since 2016.
-I&rsquo;ve written about <a href=/blog/self-contained-dotnet-cli/>.NET</a>,
-<a href=/blog/aspnet-core-websockets-middleware/>WebSockets</a>, <a href=/blog/state-of-debugging-microservices-on-k8s/>debugging microservices on Kubernetes</a>,
-or about <a href=/blog/practical-guide-to-wasm-memory/>WebAssembly memory</a>.</p><p>I rarely have the time to write lengthy blog posts anymore, and social media
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trying something new | radu&#39;s blog</title>
+  <meta name="description" content="I&rsquo;ve been writing on this blog since 2016.
+I&rsquo;ve written about .NET,
+WebSockets, debugging microservices on Kubernetes,
+or about WebAssembly memory.
+I rarely have the time to write lengthy blog posts anymore, and social media
 seems to be the worst place to have a conversation these days; so I stopped
-posting almost entirely.</p><p>I&rsquo;m trying to change that with a new <a href=/tags/notes>notes</a>
+posting almost entirely.
+I&rsquo;m trying to change that with a new notes
 section of my blog where I&rsquo;m trying to write more by sharing something
 in-between a tweet and a fully fledged blog post.
 I might write about personal projects and experiments around Wasm, Spin, distributed
-systems, dotfiles and fonts, interesting conference talks, or bike rides.</p><p>If any of that seems remotely interesting, <a href=/index.xml>follow along</a>!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/notes>notes</a></footer></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+systems, dotfiles and fonts, interesting conference talks, or bike rides.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Trying something new</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">April 7, 2024</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p>I&rsquo;ve been writing on this blog since 2016.
+I&rsquo;ve written about <a href="/blog/self-contained-dotnet-cli/">.NET</a>,
+<a href="/blog/aspnet-core-websockets-middleware/">WebSockets</a>, <a href="/blog/state-of-debugging-microservices-on-k8s/">debugging microservices on Kubernetes</a>,
+or about <a href="/blog/practical-guide-to-wasm-memory/">WebAssembly memory</a>.</p>
+<p>I rarely have the time to write lengthy blog posts anymore, and social media
+seems to be the worst place to have a conversation these days; so I stopped
+posting almost entirely.</p>
+<p>I&rsquo;m trying to change that with a new <a href="/tags/notes">notes</a>
+section of my blog where I&rsquo;m trying to write more by sharing something
+in-between a tweet and a fully fledged blog post.
+I might write about personal projects and experiments around Wasm, Spin, distributed
+systems, dotfiles and fonts, interesting conference talks, or bike rides.</p>
+<p>If any of that seems remotely interesting, <a href="/index.xml">follow along</a>!</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

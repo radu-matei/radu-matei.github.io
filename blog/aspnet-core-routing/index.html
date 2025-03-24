@@ -1,37 +1,181 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>ASP .NET Core Routing - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aspnet-core-routing/><meta name=description content="So far we built simple web applications that responded with the same message for each request. However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI - we will explore the low-level Routing API."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="ASP .NET Core Routing"><meta property="og:description" content="Introduction to ASP .NET Core Routing"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-routing/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-07-20T00:00:00+00:00"><meta property="article:modified_time" content="2016-07-20T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="ASP .NET Core Routing"><meta name=twitter:description content="Introduction to ASP .NET Core Routing"><meta itemprop=name content="ASP .NET Core Routing"><meta itemprop=description content="Introduction to ASP .NET Core Routing"><meta itemprop=datePublished content="2016-07-20T00:00:00+00:00"><meta itemprop=dateModified content="2016-07-20T00:00:00+00:00"><meta itemprop=wordCount content="789"><meta itemprop=keywords content="dotnet-core,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">ASP .NET Core Routing</h1><div class="text-sm opacity-60"><time>Wednesday, July 20, 2016</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>In the previous example we built a very simple web application that responded with <code>Hello, Universe</code> and the current server time for every request.</p><blockquote><p>When the application is running and you navigate to http://localhost5000, regardless of the path followed (http://localhost:5000/something/something-else/etc), the response is the same.</p></blockquote><p>However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI.</p><blockquote><p>The best place to start learning about Routing is the <a href=https://docs.asp.net/en/latest/fundamentals/routing.html>Official ASP .NET Core Documentation</a>.</p></blockquote><blockquote><p>Since we haven&rsquo;t started talking about MVC, the routing discussed here will not include any MVC-specific routing on controllers, actions or parameters, but routing done using <a href=https://docs.asp.net/en/latest/fundamentals/routing.html#using-routing-middleware>Routing Middleware</a>.</p></blockquote><h3 id=installing-the-routing-package>Installing the <code>Routing</code> package</h3><p>First of all, we need to add the <code>Microsoft.AspNetCore.Routing</code> dependency from NuGet.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span><span style=color:#e6db74>&#34;dependencies&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> {
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;Microsoft.NETCore.App&#34;</span>: {
-</span></span><span style=display:flex><span>        <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;platform&#34;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>
-</span></span><span style=display:flex><span>    },
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>,
-</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;Microsoft.AspNetCore.Routing&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>This is how the <code>dependencies</code> node of <code>project.json</code> should look like.</p><blockquote><p>The difference form the <a href=/blog/aspnet-core-startup#building-the-hello-world-web-application-with-startup>previous example</a> is just the addition of the <code>Routing</code> package.</p></blockquote><blockquote><p>From now on, when adding a new dependency from NuGet the full <code>project.json</code> will not be shown anymore, but only the new package added.</p></blockquote><blockquote><p>At the time of writing this article, the latest version for all ASP .NET Core libraries is <code>1.0.0</code>. As newer versions are released, check the release notes to see if there are any breaking changes when updating packages.</p></blockquote><h3 id=adding-the-routing-service-in-startup>Adding the <code>Routing</code> Service in <code>Startup</code></h3><p>When we discussed <a href=/blog/aspnet-core-startup#the-anatomy-of-the-startup-class>the anatomy of the <code>Startup</code> class</a>, besides the <code>Configure</code> method we have used before, there was also a method called <code>ConfigureServices</code> used for configuring services that our application needs.</p><p>Since we are going to use Routing, we should add it as a service in <code>Startup</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> ConfigureServices(IServiceCollection services)
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    services.AddRouting();
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=adding-and-handling-custom-routes>Adding and handling custom routes</h3><p>First of all, in the <code>Configure</code> method from <code>Startup</code> we need to instantiate a new instance of the <code>RouteBuilder</code> class that will allow us to build custom routes and handle them.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>var</span> routeBuilder = <span style=color:#66d9ef>new</span> RouteBuilder(app);
-</span></span></code></pre></div><p>We will then use this instance to map requests to to specific paths with our request handlers, allowing us to handle<code>GET</code> and <code>POST</code> requests from clients.</p><p>The way to map a <code>GET</code> request is to use the <code>MapGet</code> method from <code>RouteBuilder</code>. Mapping the application root - http://localhost:5000 is done through:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>routeBuilder.MapGet(<span style=color:#e6db74>&#34;&#34;</span>, context =&gt; context.Response.WriteAsync(<span style=color:#e6db74>&#34;Hello from root!&#34;</span>));
-</span></span></code></pre></div><p>Mapping specific paths for <code>GET</code> - for example http://localhost:5000/hello is done in the following way.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>routeBuilder.MapGet(<span style=color:#e6db74>&#34;hello&#34;</span>, context =&gt; context.Response.WriteAsync(<span style=color:#e6db74>&#34;Hello from /hello&#34;</span>));
-</span></span></code></pre></div><p>We can create paths that contain multiple elements and we can extract the parameters entered when making the request. For example, when requesting on <code>hello/{name}</code>, we can extract the parameter <code>{name}</code> and use it when constructing the response:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>routeBuilder.MapGet(<span style=color:#e6db74>&#34;hello/{name}&#34;</span>, context =&gt; context.Response
-</span></span><span style=display:flex><span>    .WriteAsync(<span style=color:#e6db74>$&#34;Hello, {context.GetRouteValue(&#34;</span>name<span style=color:#e6db74>&#34;)}&#34;</span>));
-</span></span></code></pre></div><p>We can also add constrains on the parameters. For example, let&rsquo;s create a respond for requests coming to the path <code>/square/{number}</code>, where <code>{number}</code> is an <code>int</code> and responds with the square of the number.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>routeBuilder.MapGet(<span style=color:#e6db74>&#34;square/{number:int}&#34;</span>, context =&gt;
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> number = Convert.ToInt32(context.GetRouteValue(<span style=color:#e6db74>&#34;number&#34;</span>));
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> context.Response.WriteAsync(<span style=color:#e6db74>$&#34;The square of {number} is {number * number}&#34;</span>);
-</span></span><span style=display:flex><span>    });
-</span></span></code></pre></div><blockquote><p>For a full list of parameter constraints, see this table from <a href=https://docs.asp.net/en/latest/fundamentals/routing.html#id7>the Official ASP .NET Core Documentation</a>.</p></blockquote><p>In order to test wether the routing works properly, open a browser and navigate to your custom route and check if the output is the desired one.</p><blockquote><p>You can also place some breakpoint inside the custom route handlers and iterate through the handlers step-by-step, watching how the response is formed.</p></blockquote><pre tabindex=0><code>http://localhost:5000
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASP .NET Core Routing | radu&#39;s blog</title>
+  <meta name="description" content="So far we built simple web applications that responded with the same message for each request. However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI - we will explore the low-level Routing API.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>ASP .NET Core Routing</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">July 20, 2016</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>In the previous example we built a very simple web application that responded with <code>Hello, Universe</code> and the current server time for every request.</p>
+<blockquote>
+<p>When the application is running and you navigate to http://localhost5000, regardless of the path followed (http://localhost:5000/something/something-else/etc), the response is the same.</p>
+</blockquote>
+<p>However, any real-world application is going to need a more complex way of handling requests, so in this article we will see how to create route handlers for specific routes and how to extract parameters from the request URI.</p>
+<blockquote>
+<p>The best place to start learning about Routing is the <a href="https://docs.asp.net/en/latest/fundamentals/routing.html">Official ASP .NET Core Documentation</a>.</p>
+</blockquote>
+<blockquote>
+<p>Since we haven&rsquo;t started talking about MVC, the routing discussed here will not include any MVC-specific routing on controllers, actions or parameters, but routing done using <a href="https://docs.asp.net/en/latest/fundamentals/routing.html#using-routing-middleware">Routing Middleware</a>.</p>
+</blockquote>
+<h3 id="installing-the-routing-package">Installing the <code>Routing</code> package</h3>
+<p>First of all, we need to add the <code>Microsoft.AspNetCore.Routing</code> dependency from NuGet.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#e6db74">&#34;dependencies&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Microsoft.AspNetCore.Routing&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is how the <code>dependencies</code> node of <code>project.json</code> should look like.</p>
+<blockquote>
+<p>The difference form the <a href="/blog/aspnet-core-startup#building-the-hello-world-web-application-with-startup">previous example</a> is just the addition of the <code>Routing</code> package.</p>
+</blockquote>
+<blockquote>
+<p>From now on, when adding a new dependency from NuGet the full <code>project.json</code> will not be shown anymore, but only the new package added.</p>
+</blockquote>
+<blockquote>
+<p>At the time of writing this article, the latest version for all ASP .NET Core libraries is <code>1.0.0</code>. As newer versions are released, check the release notes to see if there are any breaking changes when updating packages.</p>
+</blockquote>
+<h3 id="adding-the-routing-service-in-startup">Adding the <code>Routing</code> Service in <code>Startup</code></h3>
+<p>When we discussed <a href="/blog/aspnet-core-startup#the-anatomy-of-the-startup-class">the anatomy of the <code>Startup</code> class</a>, besides the <code>Configure</code> method we have used before, there was also a method called <code>ConfigureServices</code> used for configuring services that our application needs.</p>
+<p>Since we are going to use Routing, we should add it as a service in <code>Startup</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ConfigureServices(IServiceCollection services)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    services.AddRouting();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="adding-and-handling-custom-routes">Adding and handling custom routes</h3>
+<p>First of all, in the <code>Configure</code> method from <code>Startup</code> we need to instantiate a new instance of the <code>RouteBuilder</code> class that will allow us to build custom routes and handle them.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> routeBuilder = <span style="color:#66d9ef">new</span> RouteBuilder(app);
+</span></span></code></pre></div><p>We will then use this instance to map requests to to specific paths with our request handlers, allowing us to handle<code>GET</code> and <code>POST</code> requests from clients.</p>
+<p>The way to map a <code>GET</code> request is to use the <code>MapGet</code> method from <code>RouteBuilder</code>. Mapping the application root - http://localhost:5000 is done through:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>routeBuilder.MapGet(<span style="color:#e6db74">&#34;&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Hello from root!&#34;</span>));
+</span></span></code></pre></div><p>Mapping specific paths for <code>GET</code> - for example http://localhost:5000/hello is done in the following way.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Hello from /hello&#34;</span>));
+</span></span></code></pre></div><p>We can create paths that contain multiple elements and we can extract the parameters entered when making the request. For example, when requesting on <code>hello/{name}</code>, we can extract the parameter <code>{name}</code> and use it when constructing the response:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>routeBuilder.MapGet(<span style="color:#e6db74">&#34;hello/{name}&#34;</span>, context =&gt; context.Response
+</span></span><span style="display:flex;"><span>    .WriteAsync(<span style="color:#e6db74">$&#34;Hello, {context.GetRouteValue(&#34;</span>name<span style="color:#e6db74">&#34;)}&#34;</span>));
+</span></span></code></pre></div><p>We can also add constrains on the parameters. For example, let&rsquo;s create a respond for requests coming to the path <code>/square/{number}</code>, where <code>{number}</code> is an <code>int</code> and responds with the square of the number.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>routeBuilder.MapGet(<span style="color:#e6db74">&#34;square/{number:int}&#34;</span>, context =&gt;
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> number = Convert.ToInt32(context.GetRouteValue(<span style="color:#e6db74">&#34;number&#34;</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> context.Response.WriteAsync(<span style="color:#e6db74">$&#34;The square of {number} is {number * number}&#34;</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span></code></pre></div><blockquote>
+<p>For a full list of parameter constraints, see this table from <a href="https://docs.asp.net/en/latest/fundamentals/routing.html#id7">the Official ASP .NET Core Documentation</a>.</p>
+</blockquote>
+<p>In order to test wether the routing works properly, open a browser and navigate to your custom route and check if the output is the desired one.</p>
+<blockquote>
+<p>You can also place some breakpoint inside the custom route handlers and iterate through the handlers step-by-step, watching how the response is formed.</p>
+</blockquote>
+<pre tabindex="0"><code>http://localhost:5000
 http://localhost:5000/hello
 http://localhost:5000/hello/John
 http://localhost:5000/square/3
 </code></pre><p>So far we only created routing mapped for the <code>GET</code> method, so we can test the output from a browser tab.
-Now we will add routing for a <code>POST</code> method (so we will not be able to test it by navigating to the URL in the browser).</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>routeBuilder.MapPost(<span style=color:#e6db74>&#34;post&#34;</span>, context =&gt; context.Response.WriteAsync(<span style=color:#e6db74>&#34;Posting!&#34;</span>));
-</span></span></code></pre></div><p>In order to test this route, we need to use a tool that sends <code>HTTP</code> requests to our application. We will use <a href=https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop>PostMan for Google Chrome</a>.</p><p><img src=/img/article-photos/aspnet-core-routing/routing-postman.JPG alt></p><blockquote><p>If we try and change the method type in PostMan from <code>POST</code> to <code>GET</code>, we notice how the request fails.</p></blockquote><h3 id=the-full-startup-class>The full <code>Startup</code> class</h3><pre tabindex=0><code>using System;
+Now we will add routing for a <code>POST</code> method (so we will not be able to test it by navigating to the URL in the browser).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>routeBuilder.MapPost(<span style="color:#e6db74">&#34;post&#34;</span>, context =&gt; context.Response.WriteAsync(<span style="color:#e6db74">&#34;Posting!&#34;</span>));
+</span></span></code></pre></div><p>In order to test this route, we need to use a tool that sends <code>HTTP</code> requests to our application. We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">PostMan for Google Chrome</a>.</p>
+<p><img src="/img/article-photos/aspnet-core-routing/routing-postman.JPG" alt=""></p>
+<blockquote>
+<p>If we try and change the method type in PostMan from <code>POST</code> to <code>GET</code>, we notice how the request fails.</p>
+</blockquote>
+<h3 id="the-full-startup-class">The full <code>Startup</code> class</h3>
+<pre tabindex="0"><code>using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -66,6 +210,47 @@ public class Startup
         services.AddRouting();
     }
 }
-</code></pre><h3 id=conclusion>Conclusion</h3><p>We created a basic web application and we defined and handled custom routes. We also saw how to manage <code>GET</code> and <code>POST</code> requests.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-configuration-greeting/><span class=mr-1.5>←</span><span>ASP .NET Core JSON Configuration and Dependency Injection</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-startup/><span>ASP .NET Core Startup</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><h3 id="conclusion">Conclusion</h3>
+<p>We created a basic web application and we defined and handled custom routes. We also saw how to manage <code>GET</code> and <code>POST</code> requests.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

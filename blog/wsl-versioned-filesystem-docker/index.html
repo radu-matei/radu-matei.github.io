@@ -1,52 +1,170 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Version control for your WSL distribution with a Dockerfile - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/wsl-versioned-filesystem-docker/><meta name=description content="In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Version control for your WSL distribution with a Dockerfile"><meta property="og:description" content="In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration."><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/wsl-versioned-filesystem-docker/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-11-07T00:00:00+00:00"><meta property="article:modified_time" content="2019-11-07T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Version control for your WSL distribution with a Dockerfile"><meta name=twitter:description content="In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration."><meta itemprop=name content="Version control for your WSL distribution with a Dockerfile"><meta itemprop=description content="In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration."><meta itemprop=datePublished content="2019-11-07T00:00:00+00:00"><meta itemprop=dateModified content="2019-11-07T00:00:00+00:00"><meta itemprop=wordCount content="1026"><meta itemprop=keywords content="wsl,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Version control for your WSL distribution with a Dockerfile</h1><div class="text-sm opacity-60"><time>Thursday, November 7, 2019</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><img src=/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png alt></p><blockquote><p>Disclaimer: I do not work on the WSL team at Microsoft, and this article
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Version control for your WSL distribution with a Dockerfile | radu&#39;s blog</title>
+  <meta name="description" content="In this article, we will explore how to build a WSL distribution using a Dockerfile, allowing us to version our entire WSL configuration.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Version control for your WSL distribution with a Dockerfile</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">November 7, 2019</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p><img src="/img/article-photos/wsl-versioned-filesystem-docker/wsl-store.png" alt=""></p>
+<blockquote>
+<p>Disclaimer: I do not work on the WSL team at Microsoft, and this article
 represents my experience using WSL in the past months and creating custom
-distributions.</p></blockquote><p>I&rsquo;ve been using <a href=https://docs.microsoft.com/en-us/windows/wsl/wsl2-install>WSL2</a> as my primary development environment ever
-since its launch, together with <a href=https://code.visualstudio.com/docs/remote/wsl>VS Code Remote WSL</a> and the <a href=https://github.com/microsoft/terminal>new
+distributions.</p>
+</blockquote>
+<p>I&rsquo;ve been using <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install">WSL2</a> as my primary development environment ever
+since its launch, together with <a href="https://code.visualstudio.com/docs/remote/wsl">VS Code Remote WSL</a> and the <a href="https://github.com/microsoft/terminal">new
 Windows terminal</a>. My particular workflows allow me to exclusively use
 the WSL filesystem and tools, so almost my entire work happens to be a
 combination of the terminal and VS Code. This means I rely on the configuration
 of my WSL distribution quite a bit, and I want to be able to quickly re-create
-it in case of a re-install, or replicate my environment for testing.</p><p>Up to this point I didn&rsquo;t have major issues with Windows or WSL, so I didn&rsquo;t
+it in case of a re-install, or replicate my environment for testing.</p>
+<p>Up to this point I didn&rsquo;t have major issues with Windows or WSL, so I didn&rsquo;t
 need to re-install my system yet. I also don&rsquo;t claim that the experience is
 perfect, and since WSL2 requires Windows Insiders, proceed with care and at your
 own risk. This article is not trying to convince you to switch to WSL2, nor it
 is a step-by-step tutorial on how to configure it. Rather, it is me documenting
 a declarative approach to creating distributions already configured with the
-tools for your workflows, and how to version control them.</p><h3 id=back-up-your-wsl-distribution>Back-up your WSL distribution</h3><p>The <code>wsl.exe</code> tool comes with an <code>--export</code> command that allows you to export
+tools for your workflows, and how to version control them.</p>
+<h3 id="back-up-your-wsl-distribution">Back-up your WSL distribution</h3>
+<p>The <code>wsl.exe</code> tool comes with an <code>--export</code> command that allows you to export
 the file system of your distribution to an archive. This is the easiest way to
 back-up your distribution if you plan on re-installing your system.
 Additionally, if you manually configured your instance, you can back-up the
-entire virtual hard disk.</p><p>In both cases, you are creating a snapshot of your file system that contains all
+entire virtual hard disk.</p>
+<p>In both cases, you are creating a snapshot of your file system that contains all
 files, including temporary files - meaning that your back-up could be tens of GB
 in size. You could start cleaning up temporary files, downloads, and other
 unnecessary files, but if you only want a clean environment that contains all of
-your tools, there could be an easier solution.</p><h3 id=import-a-distribution-from-a-filesystem>Import a distribution from a filesystem</h3><p>You can import a distribution from an archived filesystem. That filesystem can
+your tools, there could be an easier solution.</p>
+<h3 id="import-a-distribution-from-a-filesystem">Import a distribution from a filesystem</h3>
+<p>You can import a distribution from an archived filesystem. That filesystem can
 be generated using the <code>--export</code> command, but this is not a requirement - any
 valid Linux filesystem should be able to be imported as a WSL distribution (I
 haven&rsquo;t found documentation yet on things required in the filesystem - I&rsquo;ve been
-able to import distributions based on both Debian and Arch - but check <a href=https://github.com/microsoft/WSL/issues/4371#issuecomment-521107556>this
+able to import distributions based on both Debian and Arch - but check <a href="https://github.com/microsoft/WSL/issues/4371#issuecomment-521107556">this
 issue</a> if your distribution has symlinks for tools in <code>/bin</code>
-or <code>/sbin</code>).</p><p>A very neat way of defining a Linux filesystem is to create a container (which
+or <code>/sbin</code>).</p>
+<p>A very neat way of defining a Linux filesystem is to create a container (which
 is made up of a filesystem, among others), then export its filesystem as a
 <code>.tar</code> file - which is exactly what you can import in WSL. This would allow you
-to:</p><ul><li>create a Dockerfile containing the desired state of the distribution</li><li>build a container image based on the Dockerfile</li><li>run a container based on that image and export its filesystem as an archive</li><li>import the archive as a WSL distribution</li></ul><p>Put the Dockerfile and configuration files in a git repository, and you built
-yourself version control for your distribution.</p><h3 id=writing-a-dockerfile-for-a-wsl-distribution>Writing a Dockerfile for a WSL distribution</h3><p>For a complete example have a look at <a href=https://github.com/radu-matei/dotfiles/blob/master/Dockerfile>this repo</a> - but you can
+to:</p>
+<ul>
+<li>create a Dockerfile containing the desired state of the distribution</li>
+<li>build a container image based on the Dockerfile</li>
+<li>run a container based on that image and export its filesystem as an archive</li>
+<li>import the archive as a WSL distribution</li>
+</ul>
+<p>Put the Dockerfile and configuration files in a git repository, and you built
+yourself version control for your distribution.</p>
+<h3 id="writing-a-dockerfile-for-a-wsl-distribution">Writing a Dockerfile for a WSL distribution</h3>
+<p>For a complete example have a look at <a href="https://github.com/radu-matei/dotfiles/blob/master/Dockerfile">this repo</a> - but you can
 start from a base distribution - Ubuntu 18.04 in this case, and install all the
-tools you need.</p><p>The example below is based on my Dockerfile for building distributions - because
+tools you need.</p>
+<p>The example below is based on my Dockerfile for building distributions - because
 I don&rsquo;t want to always run as <code>root</code>, this creates another user, adds it to the
 <code>sudo</code> group, and gives the new user ownership over <code>/home/radu</code>. I still get
 <code>sudo</code> access, but the password is required. (Setting up the additional user is
-optional, and not a required step for a working WSL distribution.)</p><p>The user password is provided as a build argument - using the
-<code>--build-arg pwd=&lt;password></code> flag. While this is better than hard-coding the
+optional, and not a required step for a working WSL distribution.)</p>
+<p>The user password is provided as a build argument - using the
+<code>--build-arg pwd=&lt;password&gt;</code> flag. While this is better than hard-coding the
 value in the Dockerfile, keep in mind that the value is present in the layers of
 the built image - so be careful if you are publishing the image to a container
 registry. You can always put a generic password and change it after booting up
-the distribution.</p><pre tabindex=0><code>FROM ubuntu:18.04
+the distribution.</p>
+<pre tabindex="0"><code>FROM ubuntu:18.04
 ENV HOME /home/radu
 
 RUN apt-get update
@@ -64,28 +182,77 @@ USER radu
 </code></pre><p>Finally, one thing this Dockerfile does not handle is configuring private keys
 and passwords. If you are absolutely sure the image will never leave your
 machine, there is nothing stopping you from copying signing keys, or tokens, or
-passwords and configuring them.</p><h3 id=importing-the-distribution-into-wsl>Importing the distribution into WSL</h3><p>First, build the image based on your Dockerfile:</p><pre tabindex=0><code>$ docker build -t my-custom-fs .
+passwords and configuring them.</p>
+<h3 id="importing-the-distribution-into-wsl">Importing the distribution into WSL</h3>
+<p>First, build the image based on your Dockerfile:</p>
+<pre tabindex="0"><code>$ docker build -t my-custom-fs .
 $ docker run --name fs -it -d my-custom-fs
 $ docker export --output my-custom-fs.tar fs
 </code></pre><p>The size of the filesystem depends on what tools you configured. A blank Ubuntu
 18.04 filesystem starts at around 60MB, and for example, my configuration is
 around 4 GB (but it contains multiple SDKs and frameworks, a container runtime,
-and a full browser, among others).</p><p>At this point, you can import the distribution:</p><pre tabindex=0><code>$ wsl --import my-custom-distro .\my-custom-distro-location\ .\my-custom-fs.tar
+and a full browser, among others).</p>
+<p>At this point, you can import the distribution:</p>
+<pre tabindex="0"><code>$ wsl --import my-custom-distro .\my-custom-distro-location\ .\my-custom-fs.tar
 $ wsl --list --verbose
   NAME                STATE           VERSION
   my-custom-distro    Stopped         2
 </code></pre><p>If the version of your distribution is 1, you can convert it using <code>wsl</code>, or
-directly set the default version to be 2. Check <a href=https://docs.microsoft.com/en-us/windows/wsl/wsl2-install#set-a-distro-to-be-backed-by-wsl-2-using-the-command-line>the WSL
+directly set the default version to be 2. Check <a href="https://docs.microsoft.com/en-us/windows/wsl/wsl2-install#set-a-distro-to-be-backed-by-wsl-2-using-the-command-line">the WSL
 documentation</a> for more on this topic. If you are using the new
 Windows terminal, the distribution should be automatically added to your
 configuration list after restarting the terminal. Otherwise, you can manually
-open a shell to your distribution using <code>wsl</code>:</p><pre tabindex=0><code>$ wsl --distribution my-custom-distro
+open a shell to your distribution using <code>wsl</code>:</p>
+<pre tabindex="0"><code>$ wsl --distribution my-custom-distro
 root@surface:~#
 </code></pre><p>If you configured a user, you can pass it to the <code>wsl</code> command using the
 <code>--user</code> flag, or you can configure the Windows terminal to always login as that
-user:</p><pre tabindex=0><code>&#34;commandline&#34;: &#34;wsl.exe --distribution my-custom-distro --user radu&#34;,
-</code></pre><h3 id=conclusion>Conclusion</h3><p>In this article, we explored a way of pre-configuring a WSL distribution using a
+user:</p>
+<pre tabindex="0"><code>&#34;commandline&#34;: &#34;wsl.exe --distribution my-custom-distro --user radu&#34;,
+</code></pre><h3 id="conclusion">Conclusion</h3>
+<p>In this article, we explored a way of pre-configuring a WSL distribution using a
 Dockerfile. You can use this method to configure all the tools you use
-regularly, and version your environment using git.</p><p>Thanks for reading!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wsl>wsl</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/random-wsl-tips/><span class=mr-1.5>←</span><span>Random WSL tips & tricks</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/wasm-oci-tuf/><span>Securely distributing and signing WebAssembly modules using OCI and TUF</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+regularly, and version your environment using git.</p>
+<p>Thanks for reading!</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

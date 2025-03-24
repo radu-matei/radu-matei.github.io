@@ -1,13 +1,129 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Introduction to ASP .NET Core MVC API - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aspnet-core-api/><meta name=description content="In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop. We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Introduction to ASP .NET Core MVC API"><meta property="og:description" content="Create an ASP .NET Core MVC API"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aspnet-core-api/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2016-08-05T00:00:00+00:00"><meta property="article:modified_time" content="2016-08-05T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Introduction to ASP .NET Core MVC API"><meta name=twitter:description content="Create an ASP .NET Core MVC API"><meta itemprop=name content="Introduction to ASP .NET Core MVC API"><meta itemprop=description content="Create an ASP .NET Core MVC API"><meta itemprop=datePublished content="2016-08-05T00:00:00+00:00"><meta itemprop=dateModified content="2016-08-05T00:00:00+00:00"><meta itemprop=wordCount content="1498"><meta itemprop=keywords content="dotnet-core,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Introduction to ASP .NET Core MVC API</h1><div class="text-sm opacity-60"><time>Friday, August 5, 2016</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>Up to this point, we have been learning about <a href=https://radu-matei.github.io/blog/dot-net-core-introduction/>.NET Core</a> and <a href=https://radu-matei.github.io/blog/dot-net-core-getting-started/>VS Code</a>, about <a href=https://radu-matei.github.io/blog/aspnet-core-getting-started/>ASP .NET Core</a>, the <a href=https://radu-matei.github.io/blog/aspnet-core-startup/><code>Startup</code> class</a>, <a href=https://radu-matei.github.io/blog/aspnet-core-routing/>Routing</a> and <a href=https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/>how to use JSON Configuration</a>.</p><p>In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.</p><p>We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data.</p><p>We will start this article by building on the code form the <a href=https://radu-matei.github.io/blog/aspnet-core-startup/>Startup class</a> tutorial.</p><h3 id=adding-the-mvc-services-to-our-application>Adding the MVC services to our application</h3><p>The first thing we have to do is add the <code>"Microsoft.AspNetCore.Mvc": "1.0.0"</code> dependency in <code>project.json</code>, then add the <code>ConfigureServices</code> method in the <code>Startup</code> class.</p><pre tabindex=0><code>public void ConfigureServices(IServiceCollection services)
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Introduction to ASP .NET Core MVC API | radu&#39;s blog</title>
+  <meta name="description" content="In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop. We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Introduction to ASP .NET Core MVC API</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">August 5, 2016</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>Up to this point, we have been learning about <a href="https://radu-matei.github.io/blog/dot-net-core-introduction/">.NET Core</a> and <a href="https://radu-matei.github.io/blog/dot-net-core-getting-started/">VS Code</a>, about <a href="https://radu-matei.github.io/blog/aspnet-core-getting-started/">ASP .NET Core</a>, the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/"><code>Startup</code> class</a>, <a href="https://radu-matei.github.io/blog/aspnet-core-routing/">Routing</a> and <a href="https://radu-matei.github.io/blog/aspnet-core-configuration-greeting/">how to use JSON Configuration</a>.</p>
+<p>In this article we will be looking at ASP .NET Core MVC, more specifically at how to build an API that can be consumed from any type of application, be it web, mobile or desktop.</p>
+<p>We will build a very simple application that will enable the creation of posts (much like messages) and that will take us through adding the MVC services, creating models, controllers and consuming some data.</p>
+<p>We will start this article by building on the code form the <a href="https://radu-matei.github.io/blog/aspnet-core-startup/">Startup class</a> tutorial.</p>
+<h3 id="adding-the-mvc-services-to-our-application">Adding the MVC services to our application</h3>
+<p>The first thing we have to do is add the <code>&quot;Microsoft.AspNetCore.Mvc&quot;: &quot;1.0.0&quot;</code> dependency in <code>project.json</code>, then add the <code>ConfigureServices</code> method in the <code>Startup</code> class.</p>
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
 }
-</code></pre><p>Now we have to register some routes for the incoming requests, in this case, any incoming requests that match <code>/api/{controller}/{action}/{id?}</code>.</p><blockquote><p><code>{controller}</code> - the name of the controller (for example, <code>TestController</code> - <code>/api/test</code>)</p></blockquote><blockquote><p><code>{action}</code> - the name of the method from the controller</p></blockquote><blockquote><p><code>{id?}</code> - optional parameter passed to the method</p></blockquote><blockquote><p>So a request for <code>/api/test/hello/3</code> will be mapped to <code>TestController</code> in the <code>Hello</code> method which will have 3 as parameter for <code>id</code>.</p></blockquote><pre tabindex=0><code>public void Configure(IApplicationBuilder app)
+</code></pre><p>Now we have to register some routes for the incoming requests, in this case, any incoming requests that match <code>/api/{controller}/{action}/{id?}</code>.</p>
+<blockquote>
+<p><code>{controller}</code> - the name of the controller (for example, <code>TestController</code> - <code>/api/test</code>)</p>
+</blockquote>
+<blockquote>
+<p><code>{action}</code> - the name of the method from the controller</p>
+</blockquote>
+<blockquote>
+<p><code>{id?}</code> - optional parameter passed to the method</p>
+</blockquote>
+<blockquote>
+<p>So a request for <code>/api/test/hello/3</code> will be mapped to <code>TestController</code> in the <code>Hello</code> method which will have 3 as parameter for <code>id</code>.</p>
+</blockquote>
+<pre tabindex="0"><code>public void Configure(IApplicationBuilder app)
 {
     app.UseMvc(routes =&gt;
     {
@@ -17,7 +133,11 @@
         );
     });
 }
-</code></pre><blockquote><p>Note that you can customize your route template in any way, I chose the <code>/api</code> option because in previous versions of ASP .NET (Web Api) this was the default route for creating an API.</p></blockquote><p>At this point, we can add a controller and make some requests to test our framework. So let&rsquo;s add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p><pre tabindex=0><code>using Microsoft.AspNetCore.Mvc;
+</code></pre><blockquote>
+<p>Note that you can customize your route template in any way, I chose the <code>/api</code> option because in previous versions of ASP .NET (Web Api) this was the default route for creating an API.</p>
+</blockquote>
+<p>At this point, we can add a controller and make some requests to test our framework. So let&rsquo;s add a controller, I will call it <code>PostsController</code> and it will have a very simple method that will return a <code>string</code>.</p>
+<pre tabindex="0"><code>using Microsoft.AspNetCore.Mvc;
 
 public class PostsController : Controller
 {
@@ -26,7 +146,10 @@ public class PostsController : Controller
 		return &#34;Hello from MVC!&#34;;
 	}
 }
-</code></pre><p>To run the application, execute <code>dotnet restore</code> and <code>dotnet run</code> in the root of the project and browse to <code>http://localhost:5000/api/Posts/Hello</code>. If everything works, you should see the message received from the controller.</p><h3 id=adding-the-post-class>Adding the <code>Post</code> class</h3><p>As we said earlier, each user that enters can publish a post containing his user name and a text, so our <code>Post</code> class only contains two properties for the <code>UserName</code> and <code>Text</code> of the post and an <code>Id</code>.</p><pre tabindex=0><code>public class Post
+</code></pre><p>To run the application, execute <code>dotnet restore</code> and <code>dotnet run</code> in the root of the project and browse to <code>http://localhost:5000/api/Posts/Hello</code>. If everything works, you should see the message received from the controller.</p>
+<h3 id="adding-the-post-class">Adding the <code>Post</code> class</h3>
+<p>As we said earlier, each user that enters can publish a post containing his user name and a text, so our <code>Post</code> class only contains two properties for the <code>UserName</code> and <code>Text</code> of the post and an <code>Id</code>.</p>
+<pre tabindex="0"><code>public class Post
 {
     public int Id { get; set; }
     public string UserName { get; set; }
@@ -41,7 +164,14 @@ public class PostsController : Controller
 
     public Post() {}
 }
-</code></pre><p>There is also a constructor without arguments, and one that takes arguments the three properties.</p><blockquote><p>If you add a constructor in a C# class, the compiler will no longer create the default constructor, and JSON serialization needs a parameterless constructor when serializing and deserializing objects.</p></blockquote><h3 id=creating-an-ipostrepository-interface>Creating an <code>IPostRepository</code> interface</h3><p>In order for our API to work, we are going to need a way for it to store data. Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, <code>IPostRepository</code>, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p><p>So the interface should look like this:</p><pre tabindex=0><code>using System.Collections.Generic;
+</code></pre><p>There is also a constructor without arguments, and one that takes arguments the three properties.</p>
+<blockquote>
+<p>If you add a constructor in a C# class, the compiler will no longer create the default  constructor, and JSON serialization needs a parameterless constructor when serializing and deserializing objects.</p>
+</blockquote>
+<h3 id="creating-an-ipostrepository-interface">Creating an <code>IPostRepository</code> interface</h3>
+<p>In order for our API to work, we are going to need a way for it to store data. Regardless of where that data is going to be stored, there should be a consistent way of reading and writing, and we will achieve this through an interface, <code>IPostRepository</code>, that will expose the minimum necessary methods: a method to read all posts, a method to add a post and a method to retrieve a post with a specified id.</p>
+<p>So the interface should look like this:</p>
+<pre tabindex="0"><code>using System.Collections.Generic;
 
 public interface IPostRepository
 {
@@ -49,12 +179,16 @@ public interface IPostRepository
     Post GetPost(int id);
     void AddPost(Post post);
 }
-</code></pre><p>Since this is a very simple example, we are going to store the data in a list in memory, but regardless of the location, the publicly available methods will be exactly the same, making any modifications to the data store easy to implement (more on this later).</p><h3 id=creating-an-in-memory-implementation-of-ipostrepository>Creating an in-memory implementation of <code>IPostRepository</code></h3><p>We will implement the <code>IPostRepository</code> interface through an in-memory class we will call <code>PostRepository</code> that will hold the data in a list.</p><pre tabindex=0><code>private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
+</code></pre><p>Since this is a very simple example, we are going to store the data in a list in memory, but regardless of the location, the publicly available methods will be exactly the same, making any modifications to the data store easy to implement (more on this later).</p>
+<h3 id="creating-an-in-memory-implementation-of-ipostrepository">Creating an in-memory implementation of <code>IPostRepository</code></h3>
+<p>We will implement the <code>IPostRepository</code> interface through an in-memory class we will call <code>PostRepository</code> that will hold the data in a list.</p>
+<pre tabindex="0"><code>private List&lt;Post&gt; _posts = new List&lt;Post&gt;()
 {
     new Post(1, &#34;Obi-Wan Kenobi&#34;,&#34;These are not the droids you&#39;re looking for&#34;),
     new Post(2, &#34;Darth Vader&#34;,&#34;I find your lack of faith disturbing&#34;)
 };
-</code></pre><p>Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it will be private. Besides the list, we only need to implement the three methods from the interface, so here is the full <code>PostRepository</code> class:</p><pre tabindex=0><code>using System.Collections.Generic;
+</code></pre><p>Since we have the three methods to access the data, there is no need to expose the post list outside the class, so it will be private. Besides the list, we only need to implement the three methods from the interface, so here is the full <code>PostRepository</code> class:</p>
+<pre tabindex="0"><code>using System.Collections.Generic;
 using System.Linq;
 
 public class PostRepository : IPostRepository
@@ -79,7 +213,11 @@ public class PostRepository : IPostRepository
         return _posts.FirstOrDefault(p =&gt; p.Id == id);
     }
 }
-</code></pre><h3 id=the-postcontroller-class>The <code>PostController</code> class</h3><p>ASP .NET (MVC Core and other versions) maps requests to classes called controllers that are responsible for processing incoming requests, handling user input and generating the response (by themselves or by calling other services).</p><p>We will create a very simple <code>PostController</code> that will have methods to get all posts, add a post and retrieve a single post based on the id.</p><p>The controller will have some instance of <code>IPostRepository</code>(we will see shortly how it will have it) and will call methods from the repository.</p><pre tabindex=0><code>using System.Collections.Generic;
+</code></pre><h3 id="the-postcontroller-class">The <code>PostController</code> class</h3>
+<p>ASP .NET (MVC Core and other versions) maps requests to classes called controllers that are responsible for processing incoming requests, handling user input and generating the response (by themselves or by calling other services).</p>
+<p>We will create a very simple <code>PostController</code>  that will have methods to get all posts, add a post and retrieve a single post based on the id.</p>
+<p>The controller will have some instance of <code>IPostRepository</code>(we will see shortly how it will have it) and will call methods from the repository.</p>
+<pre tabindex="0"><code>using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 public class PostsController : Controller
@@ -106,12 +244,23 @@ public class PostsController : Controller
         _postRepository.AddPost(post);
     }
 }
-</code></pre><blockquote><p>Notice how the <code>AddPost</code> method accepts a <code>Post</code> parameter. Because it has the <code>FromBody</code> attribute, the framework will automatically try to map the body of the request to an object of type <code>Post</code> that is deserialized from JSON.</p></blockquote><p>Besides from the publicly exposed methods of the API (any public method placed in a controller is publicly accessible from the web), we also have a constructor through which we can provide the appropriate implementation of <code>IPostRepository</code> and we will specify this in the <code>Startup</code> of our application.</p><h3 id=registering-the-repository-service-in-startup>Registering the repository service in <code>Startup</code></h3><p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven&rsquo;t specified what instance of <code>IPostRepository</code> our application is supposed to use.</p><pre tabindex=0><code>public void ConfigureServices(IServiceCollection services)
+</code></pre><blockquote>
+<p>Notice how the <code>AddPost</code> method accepts a <code>Post</code> parameter. Because it has the <code>FromBody</code> attribute, the framework will automatically try to map the body of the request to an object of type <code>Post</code> that is deserialized from JSON.</p>
+</blockquote>
+<p>Besides from the publicly exposed methods of the API (any public method placed in a controller is publicly accessible from the web), we also have a constructor through which we can provide the appropriate implementation of <code>IPostRepository</code> and we will specify this in the <code>Startup</code> of our application.</p>
+<h3 id="registering-the-repository-service-in-startup">Registering the repository service in <code>Startup</code></h3>
+<p>So far, we have created an <code>IPostRepository</code> interface, implemented it in <code>PostRepository</code> and used it in <code>PostController</code>(without creating any instance). So if we ran the application right now and navigated to <code>http://localhost:5000/api/Posts/GetPosts</code> we would get a null reference exception simply because we haven&rsquo;t specified what instance of <code>IPostRepository</code> our application is supposed to use.</p>
+<pre tabindex="0"><code>public void ConfigureServices(IServiceCollection services)
 {
     services.AddMvc();
     services.AddSingleton&lt;IPostRepository, PostRepository&gt;();
 }
-</code></pre><p>We only need to specify that whenever someone needs an <code>IPostRepository</code>, the framework should provide them (the same) instance of <code>PostRepository</code>. So when the <code>PostController</code> constructor has a parameter of type <code>IPostRepository</code>, the framework will provide an instance of <code>PostRepository</code>.</p><blockquote><p>We added the repository as singleton because of the in-memory implementation: if we made a new instance of <code>PostRepository</code> for every request, then the post list would be instantiated every time, not saving the modifications.</p></blockquote><h3 id=startupcs><code>Startup.cs</code></h3><pre tabindex=0><code>using Microsoft.AspNetCore.Builder;
+</code></pre><p>We only need to specify that whenever someone needs an <code>IPostRepository</code>, the framework should provide them (the same) instance of <code>PostRepository</code>. So when the <code>PostController</code> constructor has a parameter of type <code>IPostRepository</code>, the framework will provide an instance of <code>PostRepository</code>.</p>
+<blockquote>
+<p>We added the repository as singleton because of the in-memory implementation: if we made a new instance of <code>PostRepository</code> for every request, then the post list would be instantiated every time, not saving the modifications.</p>
+</blockquote>
+<h3 id="startupcs"><code>Startup.cs</code></h3>
+<pre tabindex="0"><code>using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 public class Startup
@@ -133,16 +282,73 @@ public class Startup
         });
     }
 }
-</code></pre><h3 id=testing-the-application>Testing the application</h3><p>At this point, we can either execute <code>dotnet run</code> in the root of our project or press <code>F5</code> in Visual Studio Code.</p><blockquote><p>We will use <a href=https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop>PostMan for Google Chrome</a> in order to test the functionality of our API.</p></blockquote><p>If we open PostMan and create a GET request to <code>http://localhost:5000/api/Posts/GetPosts</code>, we will see the two posts that we used to populate the list in <code>PostRepository</code>.</p><p><img src=/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get.JPG alt></p><p>We can see that the response was JSON and it returned a 200 OK HTML code.</p><p>In order to test the post functionality, we create a POST request to <code>http://localhost:5000/api/Posts/AddPost</code> with a JSON object containing the properties of a <code>Post</code>.</p><pre tabindex=0><code>{
+</code></pre><h3 id="testing-the-application">Testing the application</h3>
+<p>At this point, we can either execute <code>dotnet run</code> in the root of our project or press <code>F5</code> in Visual Studio Code.</p>
+<blockquote>
+<p>We will use <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">PostMan for Google Chrome</a> in order to test the functionality of our API.</p>
+</blockquote>
+<p>If we open PostMan and create a GET request to <code>http://localhost:5000/api/Posts/GetPosts</code>, we will see the two posts that we used to populate the list in <code>PostRepository</code>.</p>
+<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get.JPG" alt=""></p>
+<p>We can see that the response was JSON and it returned a 200 OK HTML code.</p>
+<p>In order to test the post functionality, we create a POST request to <code>http://localhost:5000/api/Posts/AddPost</code> with a JSON object containing the properties of a <code>Post</code>.</p>
+<pre tabindex="0"><code>{
     &#34;Id&#34;: 3,
     &#34;UserName&#34;: &#34;Darth Vader&#34;,
     &#34;Text&#34;: &#34;Luke, I am your father!&#34;
 }
-</code></pre><blockquote><p>You can either use the upper camel case or the lower camel case notation (as you saw in the response from the server, the objects were in lower camel case), but the name and type of the properties must match the ones on the server:</p></blockquote><pre tabindex=0><code>{
+</code></pre><blockquote>
+<p>You can either use the upper camel case or the lower camel case notation (as you saw in the response from the server, the objects were in lower camel case), but the name and type of the properties must match the ones on the server:</p>
+</blockquote>
+<pre tabindex="0"><code>{
     &#34;id&#34;: 3,
     &#34;userName&#34;: &#34;Darth Vader&#34;,
     &#34;text&#34;: &#34;Luke, I am your father!&#34;
 }
-</code></pre><p><img src=/img/article-photos/aspnet-core-api/aspnet-core-api-postman-post.JPG alt></p><p>Now, if we create another request to <code>http://localhost:5000/api/Posts/GetPosts</code> we can see that the post we added was saved.</p><p><img src=/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get-posts.JPG alt></p><h3 id=conclusion>Conclusion</h3><p>So far we created an API that adds and reads posts from an in-memory data store. A real-life application would have a different type of data store (SQL/NoSQL database) and most certainly an application that consumes this data rather than using it from PostMan.</p><p>This API can be consumed from a web application (HTML + JavaScript), a mobile application (virtually any type of mobile application, regardless of the OS), a desktop application (again, any type of desktop application for any OS), even console applications.</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/dotnet-core>dotnet-core</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-json-dependency-injection/><span class=mr-1.5>←</span><span>Inject ASP.NET Core Dependencies from JSON files</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/aspnet-core-configuration-greeting/><span>ASP .NET Core JSON Configuration and Dependency Injection</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+</code></pre><p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-post.JPG" alt=""></p>
+<p>Now, if we create another request to <code>http://localhost:5000/api/Posts/GetPosts</code> we can see that the post we added was saved.</p>
+<p><img src="/img/article-photos/aspnet-core-api/aspnet-core-api-postman-get-posts.JPG" alt=""></p>
+<h3 id="conclusion">Conclusion</h3>
+<p>So far we created an API that adds and reads posts from an in-memory data store. A real-life application would have a different type of data store (SQL/NoSQL database) and most certainly an application that consumes this data rather than using it from PostMan.</p>
+<p>This API can be consumed from a web application (HTML + JavaScript), a mobile application (virtually any type of mobile application, regardless of the OS), a desktop application (again, any type of desktop application for any OS), even console applications.</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

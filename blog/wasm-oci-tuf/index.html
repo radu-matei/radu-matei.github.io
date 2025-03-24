@@ -1,51 +1,177 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Securely distributing and signing WebAssembly modules using OCI and TUF - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/wasm-oci-tuf/><meta name=description content="Attacks on software repositories happen all the time, and any future WebAssembly repository and client tooling should be prepared to mitigate these attacks. In this article we will explore a minimum security model for WebAssembly registries and client tooling based on The Update Framework, and how to integrate this model when distributing WebAssembly modules using OCI registries."><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Securely distributing and signing WebAssembly modules using OCI and TUF"><meta property="og:description" content="Attacks on software repositories happen all the time, and any future WebAssembly repository and client tooling should be prepared to mitigate these attacks. In this article we will explore a minimum security model for WebAssembly registries and client tooling based on The Update Framework, and how to integrate this model when distributing WebAssembly modules using OCI registries. "><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/wasm-oci-tuf/"><meta property="og:image" content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png"><meta property="article:section" content="blog"><meta property="article:published_time" content="2019-11-03T00:00:00+00:00"><meta property="article:modified_time" content="2019-11-03T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png"><meta name=twitter:title content="Securely distributing and signing WebAssembly modules using OCI and TUF"><meta name=twitter:description content="Attacks on software repositories happen all the time, and any future WebAssembly repository and client tooling should be prepared to mitigate these attacks. In this article we will explore a minimum security model for WebAssembly registries and client tooling based on The Update Framework, and how to integrate this model when distributing WebAssembly modules using OCI registries. "><meta itemprop=name content="Securely distributing and signing WebAssembly modules using OCI and TUF"><meta itemprop=description content="Attacks on software repositories happen all the time, and any future WebAssembly repository and client tooling should be prepared to mitigate these attacks. In this article we will explore a minimum security model for WebAssembly registries and client tooling based on The Update Framework, and how to integrate this model when distributing WebAssembly modules using OCI registries. "><meta itemprop=datePublished content="2019-11-03T00:00:00+00:00"><meta itemprop=dateModified content="2019-11-03T00:00:00+00:00"><meta itemprop=wordCount content="1236"><meta itemprop=image content="https://radu-matei.com/img/article-photos/wasm-to-oci/wasm-to-oci.png"><meta itemprop=keywords content="wasm,golang,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Securely distributing and signing WebAssembly modules using OCI and TUF</h1><div class="text-sm opacity-60"><time>Sunday, November 3, 2019</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p><img src=/img/article-photos/wasm-to-oci/wasm-to-oci.png alt></p><p><a href=/blog/wasm-to-oci>In the previous article</a> we started exploring how the <a href=https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/>WebAssembly
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Securely distributing and signing WebAssembly modules using OCI and TUF | radu&#39;s blog</title>
+  <meta name="description" content="Attacks on software repositories happen all the time, and any future WebAssembly repository and client tooling should be prepared to mitigate these attacks. In this article we will explore a minimum security model for WebAssembly registries and client tooling based on The Update Framework, and how to integrate this model when distributing WebAssembly modules using OCI registries.">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Securely distributing and signing WebAssembly modules using OCI and TUF</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">November 3, 2019</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <p><img src="/img/article-photos/wasm-to-oci/wasm-to-oci.png" alt=""></p>
+<p><a href="/blog/wasm-to-oci">In the previous article</a> we started exploring how the <a href="https://hacks.mozilla.org/2019/03/standardizing-wasi-a-webassembly-system-interface/">WebAssembly
 System Interface project (WASI)</a> aims to standardize
 WebAssembly to run outside of the web by bringing a portable and sandboxed
-environment, and how runtimes like <a href=https://github.com/CraneStation/wasmtime><code>wasmtime</code></a> come closer and closer
+environment, and how runtimes like <a href="https://github.com/CraneStation/wasmtime"><code>wasmtime</code></a> come closer and closer
 to being a viable alternative to the current container ecosystem. In order to
 achieve this, we need a way to distribute WebAssembly modules that is
-independent of toolchain - and we used the <a href=https://github.com/opencontainers/artifacts>OCI Artifacts</a>
+independent of toolchain - and we used the <a href="https://github.com/opencontainers/artifacts">OCI Artifacts</a>
 project to distribute them using container registries. Taking this line of
 thought one step further, we also need a way to ensure the secure delivery of
 modules between publishers, registries, and clients - and in this article we
-will explore how to use <a href=https://github.com/theupdateframework/specification>The Update Framework</a> and <a href=https://github.com/theupdateframework/notary>Notary</a> to sign
-and validate WebAssembly modules.</p><h3 id=tuf-and-notary>TUF and Notary</h3><p>Consider the general scenario of a client pulling a target file from a
+will explore how to use <a href="https://github.com/theupdateframework/specification">The Update Framework</a> and <a href="https://github.com/theupdateframework/notary">Notary</a> to sign
+and validate WebAssembly modules.</p>
+<h3 id="tuf-and-notary">TUF and Notary</h3>
+<p>Consider the general scenario of a client pulling a target file from a
 repository. While the use of SSL / TLS protects the client from
 man-in-the-middle attacks, the system is not compromise-resilient - if an
 attacker compromises the infrastructure of the registry, they can modify or
 change the target file. In other words, the use of SSL / TLS secures the target
-file while in transit, but not at rest. This is where <a href=https://github.com/theupdateframework/specification>The Update
+file while in transit, but not at rest. This is where <a href="https://github.com/theupdateframework/specification">The Update
 Framework</a> comes into play - a CNCF Incubation project that provides a
 <em>flexible framework and specification that developers can adopt into any
 software update system, which helps protect even against attackers that
-compromise the repository or signing keys</em>.</p><p>If we were to use TUF to securely distribute WebAssembly modules, the publisher
-of a module would:</p><ul><li>sign the content digest of the module using a private key</li><li>push the content digest and the public key used to sign it to a trust server</li><li>push the module to an OCI registry</li></ul><p>Then, a client tool that wished to use the module would:</p><ul><li>pull the content digest and public key from the trust server (by performing
-all necessary steps in the <a href=https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#5-detailed-workflows>TUF workflow</a>)</li><li>pull the WebAssembly module from the OCI registry</li><li>compare the signed digest pulled from the trust server with the actual content
+compromise the repository or signing keys</em>.</p>
+<p>If we were to use TUF to securely distribute WebAssembly modules, the publisher
+of a module would:</p>
+<ul>
+<li>sign the content digest of the module using a private key</li>
+<li>push the content digest and the public key used to sign it to a trust server</li>
+<li>push the module to an OCI registry</li>
+</ul>
+<p>Then, a client tool that wished to use the module would:</p>
+<ul>
+<li>pull the content digest and public key from the trust server (by performing
+all necessary steps in the <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#5-detailed-workflows">TUF workflow</a>)</li>
+<li>pull the WebAssembly module from the OCI registry</li>
+<li>compare the signed digest pulled from the trust server with the actual content
 digest of the pulled module. If any verification fails, the client would stop
-execution and abort any further usage of the module.</li></ul><p>Following this workflow guarantees protection against a <a href=https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction>wide range of possible
+execution and abort any further usage of the module.</li>
+</ul>
+<p>Following this workflow guarantees protection against a <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction">wide range of possible
 attacks</a>, and ultimately ensures that the original content of a
 module reaches a client unaltered. Of course, there are numerous other types of
 attacks that TUF doesn&rsquo;t protect against, and if you are interested in the goals
-and non-goals of the TUF project, I recommend you read <a href=https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction>the introduction of the
-specification</a>. <a href=https://github.com/theupdateframework/notary>Notary</a> is an implementation of TUF used
-by multiple container registries through <a href=https://docs.docker.com/engine/security/trust/content_trust/>Docker Content Trust</a>, and we
-will use it to perform the TUF workflows for WebAssembly modules.</p><blockquote><p>Work to implement the TUF workflows for PyPi is underway in <a href=https://www.python.org/dev/peps/pep-0458/>PEP 458</a>
-and <a href=https://www.python.org/dev/peps/pep-0480/>PEP 480</a>.</p></blockquote><blockquote><p>The <a href=https://cnab.io>Cloud Native Application Bundles project (CNAB)</a> also proposes the
+and non-goals of the TUF project, I recommend you read <a href="https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#1-introduction">the introduction of the
+specification</a>. <a href="https://github.com/theupdateframework/notary">Notary</a> is an implementation of TUF used
+by multiple container registries through <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker Content Trust</a>, and we
+will use it to perform the TUF workflows for WebAssembly modules.</p>
+<blockquote>
+<p>Work to implement the TUF workflows for PyPi is underway in <a href="https://www.python.org/dev/peps/pep-0458/">PEP 458</a>
+and <a href="https://www.python.org/dev/peps/pep-0480/">PEP 480</a>.</p>
+</blockquote>
+<blockquote>
+<p>The <a href="https://cnab.io">Cloud Native Application Bundles project (CNAB)</a> also proposes the
 use of TUF to ensure the integrity of bundles between registries and clients.
-You can find the <a href=https://github.com/deislabs/cnab-spec/pull/253>work in progress for the CNAB specification
-here</a>, as well as draft implementations in <a href=https://github.com/engineerd/signy>Go</a> and
-<a href=https://github.com/engineerd/pysigny/pull/1>Python</a>. The example for WebAssembly modules in this article is
-based on the Go integration of Notary done for CNAB.</p></blockquote><h3 id=signing-and-validating-webassembly-modules-using-tuf>Signing and validating WebAssembly modules using TUF</h3><p>In the next section we will see how to expand the <a href=https://github.com/engineerd/wasm-to-oci><code>wasm-to-oci</code></a> tool we
-started in the previous article to perform TUF signatures and verifications.</p><p>At a very high level, before pushing the module we&rsquo;re using the Notary client
-libraries to:</p><ul><li>initialize a new trust repository - this will generate the signing keys and
-add them to the repository</li><li>add the target WebAssembly module to the repository - specifically, this step
+You can find the <a href="https://github.com/deislabs/cnab-spec/pull/253">work in progress for the CNAB specification
+here</a>, as well as draft implementations in <a href="https://github.com/engineerd/signy">Go</a> and
+<a href="https://github.com/engineerd/pysigny/pull/1">Python</a>. The example for WebAssembly modules in this article is
+based on the Go integration of Notary done for CNAB.</p>
+</blockquote>
+<h3 id="signing-and-validating-webassembly-modules-using-tuf">Signing and validating WebAssembly modules using TUF</h3>
+<p>In the next section we will see how to expand the <a href="https://github.com/engineerd/wasm-to-oci"><code>wasm-to-oci</code></a> tool we
+started in the previous article to perform TUF signatures and verifications.</p>
+<p>At a very high level, before pushing the module we&rsquo;re using the Notary client
+libraries to:</p>
+<ul>
+<li>initialize a new trust repository - this will generate the signing keys and
+add them to the repository</li>
+<li>add the target WebAssembly module to the repository - specifically, this step
 will compute the content digest of the module, then add it to the <code>targets</code>
-role of the collection, with the public part of the key</li><li>publish the repository to the trust server</li></ul><pre tabindex=0><code>// initialize a new TUF repository
+role of the collection, with the public part of the key</li>
+<li>publish the repository to the trust server</li>
+</ul>
+<pre tabindex="0"><code>// initialize a new TUF repository
 err = notaryRepo.Initialize(rootKeyIDs);
 
 // add our target module to the repository
@@ -59,7 +185,8 @@ signing the content digest of the actual WebAssembly module, not of the OCI
 manifest, so the signature is persisted regardless of any compression or
 archiving operation done by the registry. Integrating this to our existing
 functionality, we first push the signed content digest to the trust server, then
-push the module to the OCI registry:</p><pre tabindex=0><code>$ sha256sum testdata/hello.wasm
+push the module to the OCI registry:</p>
+<pre tabindex="0"><code>$ sha256sum testdata/hello.wasm
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510  testdata/hello.wasm
 
 $ wasm-to-oci push testdata/hello.wasm localhost:5000/hello-wasm-signed:v1
@@ -73,7 +200,8 @@ INFO[0000] Size: 1624962
 INFO[0000] Digest: sha256:9c82cbe576ee947c00435ac8053a800a1969f4757ae4a81f870f714674afc91a
 </code></pre><p>Then, a client that wishes to consume the module will pull the module from the
 OCI registry and the trust data from the TUF server, then will compare the two
-content digests - if the digests match, the client can further use the module:</p><pre tabindex=0><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
+content digests - if the digests match, the client can further use the module:</p>
+<pre tabindex="0"><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
     --sign
     --tlscacert=$NOTARY_CA
     --server https://localhost:4443
@@ -91,7 +219,8 @@ $ wasmtime test.wasm
 Hello from WebAssembly!
 </code></pre><p>But let&rsquo;s explore what happens if the registry infrastructure has been
 compromised, and the initial module we published has been either modified, or
-replaced with a vulnerable one.</p><pre tabindex=0><code># we&#39;re inside the OCI registry - we see the module that we pushed earlier
+replaced with a vulnerable one.</p>
+<pre tabindex="0"><code># we&#39;re inside the OCI registry - we see the module that we pushed earlier
 $ sha256sum blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510  blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 
@@ -103,14 +232,16 @@ $ sha256sum blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40a
 b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5  blobs/sha256/4c/4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510/data
 </code></pre><p>Assuming that the attacker also updated the manifests (trivial, if they had
 access to the registry), a client can pull the vulnerable module and start using
-it:</p><pre tabindex=0><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1 -o hacked
+it:</p>
+<pre tabindex="0"><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1 -o hacked
 INFO[0000] Pulled: localhost:5000/hello-wasm-signed:v1
 INFO[0000] Digest: sha256:b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
 
 $ wasmtime hacked
 YOU HAVE BEEN HACKED
 </code></pre><p>Now let&rsquo;s perform the same operation, this time by performing the signature
-verification first:</p><pre tabindex=0><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
+verification first:</p>
+<pre tabindex="0"><code>$ wasm-to-oci pull localhost:5000/hello-wasm-signed:v1
     --sign --tlscacert=$NOTARY_CA
     --server https://localhost:4443
 
@@ -124,18 +255,61 @@ Error: the digest sum of the artifact from the trusted collection is not equal t
 4c7915b4c1f9b0c13f962998e4199ceb00db39a4a7fa4554f40ae0bed83d9510
 b4a152df0c4ba62a98d00c489b036d4e1e48ed0c2a27ba05d8d489149bc267d5
 </code></pre><p>We see that the use of TUF prevents us from using a module that has been
-tampered with.</p><h3 id=conclusion>Conclusion</h3><p><a href=https://github.com/theupdateframework/pip/wiki/Attacks-on-software-repositories>Attacks on software repositories</a> happen all the time, and any future
+tampered with.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p><a href="https://github.com/theupdateframework/pip/wiki/Attacks-on-software-repositories">Attacks on software repositories</a> happen all the time, and any future
 WebAssembly repository and client tooling should be prepared to mitigate these
 attacks. What we explored in this article represents a minimum security model in
 the event of an attack, and while the particular implementations used here for
 registry and TUF server (OCI registry and Notary) will most likely not end up
 being popular for WebAssembly, the concept of using TUF, or any other framework
 that ensures the integrity of modules should be considered for future
-implementations.</p><p>This concludes the experiment of trying to securely distribute WebAssembly
-modules OCI registries and TUF. You can <a href=https://github.com/engineerd/wasm-to-oci/pull/1>find the complete implementation of
+implementations.</p>
+<p>This concludes the experiment of trying to securely distribute WebAssembly
+modules OCI registries and TUF. You can <a href="https://github.com/engineerd/wasm-to-oci/pull/1">find the complete implementation of
 <code>wasm-to-oci</code> used in the articles on GitHub</a>. Let me know if you have
 thoughts on using the methods presented here, or other ideas on ensuring the
-integrity when distributing WebAssembly modules.</p><p>Thanks for reading!</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/wasm>wasm</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/golang>golang</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/wsl-versioned-filesystem-docker/><span class=mr-1.5>←</span><span>Version control for your WSL distribution with a Dockerfile</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/wasm-to-oci/><span>Distributing WebAssembly modules using OCI registries</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+integrity when distributing WebAssembly modules.</p>
+<p>Thanks for reading!</p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+

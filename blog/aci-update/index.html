@@ -1,19 +1,248 @@
-<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#faf6f1 lang=en-us><head><link rel=preload as=font href=/fonts/spin-quasi-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><link rel=preload as=font href=/fonts/spin-mono-regular-subset.woff2 type=font/woff2 crossorigin=anonymous><style>@font-face{font-family:spin quasi;src:url(/fonts/spin-quasi-regular-subset.woff2)format('woff2');font-display:swap}@font-face{font-family:spin mono;src:url(/fonts/spin-mono-regular-subset.woff2)format('woff2');font-display:swap}html{font-family:spin quasi,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,noto sans,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji}code,kbd,samp,pre{font-family:spin mono,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,liberation mono,courier new,monospace}</style><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Update Azure Container Instances with Docker Hub webhooks - radu's blog</title>
-<meta name=theme-color><link rel=canonical href=https://radu-matei.com/blog/aci-update/><meta name=description content="Back in July, Microsoft announced Azure Container Instances, a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud. In this article we will see how to update Azure Container Instances based on webhooks from Docker Hub"><meta name=author content="Radu Matei"><link rel="preload stylesheet" as=style href=https://radu-matei.com/main.min.css><script defer src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js onload=hljs.highlightAll()></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/atelier-estuary-light.min.css media=screen><link disabled id=hljs-dark rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/gruvbox-dark-hard.min.css media=screen><link rel=preload as=image href=https://radu-matei.com/theme.svg><link rel=preload as=image href=https://radu-matei.com/twitter.svg><link rel=preload as=image href=https://radu-matei.com/github.svg><link rel=icon href=https://radu-matei.com/favicon.ico><link rel=apple-touch-icon href=https://radu-matei.com/apple-touch-icon.png><meta name=generator content="Hugo 0.124.1"><meta property="og:title" content="Update Azure Container Instances with Docker Hub webhooks"><meta property="og:description" content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group"><meta property="og:type" content="article"><meta property="og:url" content="https://radu-matei.com/blog/aci-update/"><meta property="article:section" content="blog"><meta property="article:published_time" content="2017-12-14T00:00:00+00:00"><meta property="article:modified_time" content="2017-12-14T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Update Azure Container Instances with Docker Hub webhooks"><meta name=twitter:description content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group"><meta itemprop=name content="Update Azure Container Instances with Docker Hub webhooks"><meta itemprop=description content="Automatically update the image of your Azure Container Instance and keep the public IP address of the container group"><meta itemprop=datePublished content="2017-12-14T00:00:00+00:00"><meta itemprop=dateModified content="2017-12-14T00:00:00+00:00"><meta itemprop=wordCount content="1152"><meta itemprop=keywords content="azure,docker,golang,"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://radu-matei.com/>radu's blog</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const hljsDark=document.getElementById("hljs-dark"),btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf6f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e),e?hljsDark.disabled=!1:hljsDark.disabled=!0},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/notes/>Notes</a>
-<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>About</a></nav><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:ml-12 lg:mt-0 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./twitter.svg) href=https://twitter.com/matei_radu target=_blank rel=me>twitter
-</a><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/radu-matei target=_blank rel=me>github</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pb-24 pt-16 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">Update Azure Container Instances with Docker Hub webhooks</h1><div class="text-sm opacity-60"><time>Thursday, December 14, 2017</time>
-<span class=mx-1>&#183;</span>
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank style=text-decoration:none><span>Radu Matei</span></a></div></header><section><p>Back in July, <a href=https://azure.microsoft.com/en-us/blog/announcing-azure-container-instances/>Microsoft announced Azure Container Instances</a>, <em>a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud.</em></p><p>Essentially, this allowed you to run single or multi-container groups (scheduled on the same host machine, within the same local network, storage and lifetime) with fast startup times, hypervisor-level security, public IP address connectivity and billing by the second.</p><blockquote><p><a href=https://docs.microsoft.com/en-us/azure/container-instances/>Here&rsquo;s the quickstart from the Azure Documentation where you can get started with ACI from the portal or the CLI</a></p></blockquote><blockquote><p><a href=https://medium.com/@lizrice/azure-container-instances-with-multiple-containers-512c022c04ec>Here&rsquo;s an awesome Medium article by Liz Rice where you can learn how to deploy multi-container groups on ACI</a></p></blockquote><p>One thing that Azure Container Instances didn&rsquo;t have when first launched was the ability to update the image of a container while keeping the public IP address of the container group - essentially, when you had a new version / tag of your image, you had to redeploy the everything and you would have gotten a different public IP address.</p><blockquote><p>Here we are only talking about using ACI without any orchestrator - you can use ACI with Kubernetes through the <a href=https://github.com/Azure/aci-connector-k8s>aci-connector-k8s</a> project, or through the new <a href=https://github.com/virtual-kubelet/virtual-kubelet>virtual-kubelet</a>, which creates a virtual node in your Kubernetes cluster that schedules pods on top of Azure Container Instances.</p></blockquote><p>In this article we will not use any of the two projects mentioned, but build a simple app that listens for webhooks from Docker Hub (or any other container registry) and uses the <a href=https://github.com/Azure/azure-sdk-for-go>Azure Go SDK</a> to update the container.</p><p>Please note that while you will not be able to do this from the portal, it can be done through the Azure REST API or various language SDKs.</p><h3 id=webhooks-from-docker-hub>Webhooks from Docker Hub</h3><p>As I was saying earlier, we will accept incoming webhooks from Docker Hub and update the Azure containers accordingly. First let&rsquo;s see how a Docker Hub webhook looks like:</p><script src=https://gist.github.com/radu-matei/92aad3a204d954f4316875528fbe6a23.js></script><blockquote><p><a href=https://docs.docker.com/docker-hub/webhooks/>Taken from the Docker Hub documentation</a></p></blockquote><p>Essentially, in the webhook data we have all necessary information to update the container with the newly pushed image.</p><p>Now taking that JSON and using it with <a href=https://mholt.github.io/json-to-go/>this little cool utility that generates Go structs from JSON</a>, we get the Go struct that contains the webhook data:</p><script src=https://gist.github.com/radu-matei/bf9c1eaf61cd7bc548a2fc80e6c40421.js></script><blockquote><p>You can <a href=https://github.com/radu-matei/aci-hooks/blob/master/main.go#L17>find the project on GitHub</a></p></blockquote><p>From this point, we&rsquo;ll create a simple web server that listens for webhook requests and will update the container using the Go SDK.</p><h3 id=using-the-azure-go-sdk-to-update-container-groups>Using the Azure Go SDK to update container groups</h3><p>In order to use the Azure Go SDK you need some credentials - first of all, <a href=https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal>go through the documentation showing you how to create a service principal</a>.</p><p>You will need the following:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>AZURE_TENANT_ID: contains your Azure Active Directory tenant ID or domain
-</span></span><span style=display:flex><span>AZURE_SUBSCRIPTION_ID: contains your Azure Subscription ID
-</span></span><span style=display:flex><span>AZURE_CLIENT_ID: contains your Azure Active Directory Application Client ID
-</span></span><span style=display:flex><span>AZURE_CLIENT_SECRET: contains your Azure Active Directory Application Secret
-</span></span></code></pre></div><p>The credentials above allow us to programmatically access Azure resources through the REST API or through an SDK - in our case, we&rsquo;ll use the Go SDK - they are used as environment variables in the program, together with the resource group name and container group name:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>RESOURCE_GROUP_NAME: the name of the resource group where the container group is deployed
-</span></span><span style=display:flex><span>CONTAINER_GROUP_NAME: name of the container group
-</span></span></code></pre></div><blockquote><p>If you use <code>vndr</code> as dependency manager for Go, check the <code>vndr.conf</code> file for this project - otherwise, add <code>github.com/Azure/azure-sdk-for-go</code> to your project, or <a href=https://github.com/radu-matei/aci-hooks>simply clone this repo which contains the entire application</a>.</p></blockquote><p>First, we need an instance of <code>ContainerGroupsClient</code>:</p><script src=https://gist.github.com/radu-matei/2e3e0a95640c65b33940f7a9c5ff73e5.js></script><p>Here we simply use the SDK to authenticate using the credentials we got earlier and retrieve a new instance of <code>ContainerGroupsClient</code>.</p><blockquote><p>This is the standard procedure to authenticate the Go SDK to your Azure subscription and you can use it to create <a href=https://github.com/Azure/azure-sdk-for-go/tree/master/arm>other types of clients</a>.</p></blockquote><p>Then, we iterate through the desired container group, searching for the container with the same image as the one in the webhook, then update it:</p><script src=https://gist.github.com/radu-matei/e886f85fcb4dd316f3016aa9a60210a2.js></script><p>Because you can have multiple containers in your group, we need to iterate through all of them to find the one with the image from the webhook. When we find it, we set the image to be the newly received from the webhook and call <code>containerGroupsClient.CreateOrUpdate()</code>.</p><p>All you have to do now is read the body of the HTTP request containing the webhook and execute the function:</p><script src=https://gist.github.com/radu-matei/17ab85c46b8e2ca4eac1b86ce4e31af5.js></script><h3 id=see-it-in-action>See it in action</h3><p>First of all, we need to deploy an Azure Container Instance based on an image (<strong>we own</strong>) from Docker Hub:</p><p><img src=/img/article-photos/aci-update/select-aci.jpg alt></p><p>We give it a name, an image and a resource group:</p><p><img src=/img/article-photos/aci-update/basics.png alt></p><p>Now we can setup the OS type, resources (CPU and memory) and the public IP address:</p><p><img src=/img/article-photos/aci-update/config.png alt></p><p>After a few moments, you should have a running container with a public IP address:</p><p><img src=/img/article-photos/aci-update/deployed.png alt></p><p>This is the container running:</p><p><img src=/img/article-photos/aci-update/v1.jpg alt></p><p>Now we need to:</p><ul><li>start the web server that accepts webhooks from Docker Hub</li><li>setup the webhook from Docker Hub to push to our web server</li><li>update the Docker image and have our container updated</li></ul><blockquote><p>Don&rsquo;t forget to add the environment variables for the Azure credentials and the resource group and container group name!</p></blockquote><blockquote><p>I will use <a href=https://ngrok.com/download>ngrok to expose my local webserver</a> to accept webhooks from Docker Hub - in another article we will see another way to run our function that updates the container group.</p></blockquote><p><a href=https://github.com/radu-matei/aci-hooks>The webserver from the repo</a> listens on port 8080 by default (you can change it) - so I will start a tunnel to my local port 8080 through: <code>ngrok http 8080</code>:</p><p><img src=/img/article-photos/aci-update/ngrok.png alt></p><p>Then, I&rsquo;ll setup the Docker Hub webhook to push to the public endpoint exposed by <code>ngrok</code>:</p><p><img src=/img/article-photos/aci-update/hub.jpg alt></p><p>Now let&rsquo;s see what happens when we <code>docker push radumatei/aci-hooks:v2</code> to Docker Hub:</p><p>Our webserver gets called and starts executing the container update method:
-<img src=/img/article-photos/aci-update/aci-hooks.png alt></p><p>The container in the portal gets automatically updated:
-<img src=/img/article-photos/aci-update/portal-update.png alt></p><p>Our container is actually updated to the new version (notice the public IP address is unchanged):
-<img src=/img/article-photos/aci-update/v2.jpg alt></p><blockquote><p><a href=https://github.com/ashleymcnamara/gophers>Credit for the awesome Gophers photo used in the sample goes to Ashley McNamara!</a></p></blockquote><blockquote><p>Of course, we can deploy this application to Azure Container Instance - Inception!</p></blockquote><h3 id=conclusion>Conclusion</h3><p>This app was quickly put together to show that using the SDK you can update Azure Container Instances using webhooks from Docker Hub - of course, it can be extended to take webhooks from your favourite container registry, and even keep track of multiple ACI instances to update - this is outside the scope of the article.</p><p>Hopefully in a future article we will see how to stop using <code>ngrok</code> and a full web server and move towards serverless - Azure Functions.</p><blockquote><p>Please note that while the container gets updated, your app will be down for a couple of seconds!</p></blockquote><p>Thanks for reading! If you want to extend the functionality of this little tool, <a href=https://github.com/radu-matei/aci-hooks>you are welcome to contribute on GitHub</a> with issues and pull requests.</p><p>I would love to hear your thoughts - feel free to comment below, <a href=/contact>or send me an email</a></p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/azure>azure</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/docker>docker</a>
-<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://radu-matei.com/tags/golang>golang</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/kube-toolkit/><span class=mr-1.5>←</span><span>kube-toolkit: Toolkit for creating gRPC-based CLI tools for Kubernetes, written in Go</span></a>
-<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://radu-matei.com/blog/signalr-core/><span>Getting started with SignalR Alpha 2</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2024
-<a class=link href=https://twitter.com/matei_radu rel=noreferrer target=_blank>Radu Matei</a></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Update Azure Container Instances with Docker Hub webhooks | radu&#39;s blog</title>
+  <meta name="description" content="Back in July, Microsoft announced Azure Container Instances, a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud. In this article we will see how to update Azure Container Instances based on webhooks from Docker Hub">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/fonts.css" />
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                
+                const content = block.innerHTML;
+                
+                const newContent = document.createTextNode(block.textContent);
+                
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+
+<script>
+    
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
+
+</head>
+
+<body>
+  <header>
+
+  </header>
+</body>
+
+<article>
+    <header class="article-meta">
+        <h2>Update Azure Container Instances with Docker Hub webhooks</h2>
+        <a href="/">
+            <div class="metadata">
+                
+                <time class="date">Radu Matei</time>
+                 • <time class="date">December 14, 2017</time>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>Back in July, <a href="https://azure.microsoft.com/en-us/blog/announcing-azure-container-instances/">Microsoft announced Azure Container Instances</a>, <em>a new Azure service delivering containers with great simplicity and speed and without any Virtual Machine infrastructure to manage. ACIs are the fastest and easiest way to run a container in the cloud.</em></p>
+<p>Essentially, this allowed you to run single or multi-container groups (scheduled on the same host machine, within the same local network, storage and lifetime) with fast startup times, hypervisor-level security, public IP address connectivity and billing by the second.</p>
+<blockquote>
+<p><a href="https://docs.microsoft.com/en-us/azure/container-instances/">Here&rsquo;s the quickstart from the Azure Documentation where you can get started with ACI from the portal or the CLI</a></p>
+</blockquote>
+<blockquote>
+<p><a href="https://medium.com/@lizrice/azure-container-instances-with-multiple-containers-512c022c04ec">Here&rsquo;s an awesome Medium article by Liz Rice where you can learn how to deploy multi-container groups on ACI</a></p>
+</blockquote>
+<p>One thing that Azure Container Instances didn&rsquo;t have when first launched was the ability to update the image of a container while keeping the public IP address of the container group - essentially, when you had a new version / tag of your image, you had to redeploy the everything and you would have gotten a different public IP address.</p>
+<blockquote>
+<p>Here we are only talking about using ACI without any orchestrator - you can use ACI with Kubernetes through the <a href="https://github.com/Azure/aci-connector-k8s">aci-connector-k8s</a> project, or through the new <a href="https://github.com/virtual-kubelet/virtual-kubelet">virtual-kubelet</a>, which creates a virtual node in your Kubernetes cluster that schedules pods on top of Azure Container Instances.</p>
+</blockquote>
+<p>In this article we will not use any of the two projects mentioned, but build a simple app that listens for webhooks from Docker Hub (or any other container registry) and uses the <a href="https://github.com/Azure/azure-sdk-for-go">Azure Go SDK</a> to update the container.</p>
+<p>Please note that while you will not be able to do this from the portal, it can be done through the Azure REST API or various language SDKs.</p>
+<h3 id="webhooks-from-docker-hub">Webhooks from Docker Hub</h3>
+<p>As I was saying earlier, we will accept incoming webhooks from Docker Hub and update the Azure containers accordingly. First let&rsquo;s see how a Docker Hub webhook looks like:</p>
+<script src="https://gist.github.com/radu-matei/92aad3a204d954f4316875528fbe6a23.js"></script>
+
+<blockquote>
+<p><a href="https://docs.docker.com/docker-hub/webhooks/">Taken from the Docker Hub documentation</a></p>
+</blockquote>
+<p>Essentially, in the webhook data we have all necessary information to update the container with the newly pushed image.</p>
+<p>Now taking that JSON and using it with <a href="https://mholt.github.io/json-to-go/">this little cool utility that generates Go structs from JSON</a>, we get the Go struct that contains the webhook data:</p>
+<script src="https://gist.github.com/radu-matei/bf9c1eaf61cd7bc548a2fc80e6c40421.js"></script>
+
+<blockquote>
+<p>You can <a href="https://github.com/radu-matei/aci-hooks/blob/master/main.go#L17">find the project on GitHub</a></p>
+</blockquote>
+<p>From this point, we&rsquo;ll create a simple web server that listens for webhook requests and will update the container using the Go SDK.</p>
+<h3 id="using-the-azure-go-sdk-to-update-container-groups">Using the Azure Go SDK to update container groups</h3>
+<p>In order to use the Azure Go SDK you need some credentials - first of all, <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal">go through the documentation showing you how to create a service principal</a>.</p>
+<p>You will need the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>AZURE_TENANT_ID: contains your Azure Active Directory tenant ID or domain
+</span></span><span style="display:flex;"><span>AZURE_SUBSCRIPTION_ID: contains your Azure Subscription ID
+</span></span><span style="display:flex;"><span>AZURE_CLIENT_ID: contains your Azure Active Directory Application Client ID
+</span></span><span style="display:flex;"><span>AZURE_CLIENT_SECRET: contains your Azure Active Directory Application Secret
+</span></span></code></pre></div><p>The credentials above allow us to programmatically access Azure resources through the REST API or through an SDK - in our case, we&rsquo;ll use the Go SDK - they are used as environment variables in the program, together with the resource group name and container group name:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>RESOURCE_GROUP_NAME: the name of the resource group where the container group is deployed
+</span></span><span style="display:flex;"><span>CONTAINER_GROUP_NAME: name of the container group
+</span></span></code></pre></div><blockquote>
+<p>If you use <code>vndr</code> as dependency manager for Go, check the <code>vndr.conf</code> file for this project - otherwise, add <code>github.com/Azure/azure-sdk-for-go</code> to your project, or <a href="https://github.com/radu-matei/aci-hooks">simply clone this repo which contains the entire application</a>.</p>
+</blockquote>
+<p>First, we need an instance of <code>ContainerGroupsClient</code>:</p>
+<script src="https://gist.github.com/radu-matei/2e3e0a95640c65b33940f7a9c5ff73e5.js"></script>
+
+<p>Here we simply use the SDK to authenticate using the credentials we got earlier and retrieve a new instance of <code>ContainerGroupsClient</code>.</p>
+<blockquote>
+<p>This is the standard procedure to authenticate the Go SDK to your Azure subscription and you can use it to create <a href="https://github.com/Azure/azure-sdk-for-go/tree/master/arm">other types of clients</a>.</p>
+</blockquote>
+<p>Then, we iterate through the desired container group, searching for the container with the same image as the one in the webhook, then update it:</p>
+<script src="https://gist.github.com/radu-matei/e886f85fcb4dd316f3016aa9a60210a2.js"></script>
+
+<p>Because you can have multiple containers in your group, we need to iterate through all of them to find the one with the image from the webhook. When we find it, we set the image to be the newly received from the webhook and call <code>containerGroupsClient.CreateOrUpdate()</code>.</p>
+<p>All you have to do now is read the body of the HTTP request containing the webhook and execute the function:</p>
+<script src="https://gist.github.com/radu-matei/17ab85c46b8e2ca4eac1b86ce4e31af5.js"></script>
+
+<h3 id="see-it-in-action">See it in action</h3>
+<p>First of all, we need to deploy an Azure Container Instance based on an image (<strong>we own</strong>) from Docker Hub:</p>
+<p><img src="/img/article-photos/aci-update/select-aci.jpg" alt=""></p>
+<p>We give it a name, an image and a resource group:</p>
+<p><img src="/img/article-photos/aci-update/basics.png" alt=""></p>
+<p>Now we can setup the OS type, resources (CPU and memory) and the public IP address:</p>
+<p><img src="/img/article-photos/aci-update/config.png" alt=""></p>
+<p>After a few moments, you should have a running container with a public IP address:</p>
+<p><img src="/img/article-photos/aci-update/deployed.png" alt=""></p>
+<p>This is the container running:</p>
+<p><img src="/img/article-photos/aci-update/v1.jpg" alt=""></p>
+<p>Now we need to:</p>
+<ul>
+<li>start the web server that accepts webhooks from Docker Hub</li>
+<li>setup the webhook from Docker Hub to push to our web server</li>
+<li>update the Docker image and have our container updated</li>
+</ul>
+<blockquote>
+<p>Don&rsquo;t forget to add the environment variables for the Azure credentials and the resource group and container group name!</p>
+</blockquote>
+<blockquote>
+<p>I will use <a href="https://ngrok.com/download">ngrok to expose my local webserver</a> to accept webhooks from Docker Hub - in another article we will see another way to run our function that updates the container group.</p>
+</blockquote>
+<p><a href="https://github.com/radu-matei/aci-hooks">The webserver from the repo</a> listens on port 8080 by default (you can change it) - so I will start a tunnel to my local port 8080 through: <code>ngrok http 8080</code>:</p>
+<p><img src="/img/article-photos/aci-update/ngrok.png" alt=""></p>
+<p>Then, I&rsquo;ll setup the Docker Hub webhook to push to the public endpoint exposed by <code>ngrok</code>:</p>
+<p><img src="/img/article-photos/aci-update/hub.jpg" alt=""></p>
+<p>Now let&rsquo;s see what happens when we <code>docker push radumatei/aci-hooks:v2</code> to Docker Hub:</p>
+<p>Our webserver gets called and starts executing the container update method:
+<img src="/img/article-photos/aci-update/aci-hooks.png" alt=""></p>
+<p>The container in the portal gets automatically updated:
+<img src="/img/article-photos/aci-update/portal-update.png" alt=""></p>
+<p>Our container is actually updated to the new version (notice the public IP address is unchanged):
+<img src="/img/article-photos/aci-update/v2.jpg" alt=""></p>
+<blockquote>
+<p><a href="https://github.com/ashleymcnamara/gophers">Credit for the awesome Gophers photo used in the sample goes to Ashley McNamara!</a></p>
+</blockquote>
+<blockquote>
+<p>Of course, we can deploy this application to Azure Container Instance - Inception!</p>
+</blockquote>
+<h3 id="conclusion">Conclusion</h3>
+<p>This app was quickly put together to show that using the SDK you can update Azure Container Instances using webhooks from Docker Hub - of course, it can be extended to take webhooks from your favourite container registry, and even keep track of multiple ACI instances to update - this is outside the scope of the article.</p>
+<p>Hopefully in a future article we will see how to stop using <code>ngrok</code> and a full web server and move towards serverless - Azure Functions.</p>
+<blockquote>
+<p>Please note that while the container gets updated, your app will be down for a couple of seconds!</p>
+</blockquote>
+<p>Thanks for reading! If you want to extend the functionality of this little tool, <a href="https://github.com/radu-matei/aci-hooks">you are welcome to contribute on GitHub</a> with issues and pull requests.</p>
+<p>I would love to hear your thoughts - feel free to comment below, <a href="/contact">or send me an email</a></p>
+
+    </main>
+</article>
+
+<footer>
+  <script>
+    
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    
+    
+</script>
+
+  <div class="footer-links">
+    <a href="/about/">About</a>
+    <span class="separator">•</span>
+    <a href="/tags/notes/">Notes</a>
+  </div>
+  
+</footer>
+</body>
+
+</html>
+
