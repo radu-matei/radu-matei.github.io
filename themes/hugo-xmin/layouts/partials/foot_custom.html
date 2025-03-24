@@ -1,0 +1,25 @@
+<script>
+    // Check for system preference
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Apply dark mode if preferred
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+
+    // Create and append theme toggle button
+    const nav = document.querySelector('nav');
+    const themeToggle = document.createElement('button');
+    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+    themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+    themeToggle.style.cssText = 'background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: auto; padding: 0.5rem; color: var(--gray-600); position: absolute; top: 1.5rem; right: 1.5rem;';
+
+    // Add click handler
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        themeToggle.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    // Add to page
+    // document.body.appendChild(themeToggle);
+</script>

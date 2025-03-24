@@ -1,0 +1,47 @@
+{{ partial "header.html" . }}
+<a href="/">
+    <h1 class="site-title">{{ .Site.Params.name }}</h1>
+</a> <br>
+<div class="container">
+    <div class="hero">
+        <!-- <p class="bio">{{ .Site.Params.bio }}</p> -->
+        <p class="bio">I'm an engineer, founder, and CTO of <a href="https://fermyon.com">Fermyon</a>.</p>
+
+    </div>
+
+
+    <div class="recent-posts">
+        <h3>Writing</h3>
+        <ul>
+            {{ range first 5 (where .Site.RegularPages "Section" "blog") }}
+            <li>
+                <!-- <span class="date">{{ .Date.Format "January 2, 2006" }} </span> -->
+                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            </li>
+            {{ end }}
+        </ul>
+        <a href="/blog" class="view-all">View all posts →</a>
+    </div>
+
+    <div class="projects">
+        <h3>Projects</h3>
+        <ul>
+            <li>
+                <a href="https://github.com/spinframework/spin" target="_blank"
+                    rel="noopener noreferrer">@spinframework/spin</a>
+                <p>The CNCF framework for serverless functions with WebAssembly.</p>
+            </li>
+            <li>
+                <a href="https://fermyon.com" target="_blank" rel="noopener noreferrer">fermyon.com</a>
+                <p>Tools and platforms for running Wasm-powered functions at scale.</p>
+            </li>
+            <li>
+                <a href="https://github.com/engineerd/setup-kind" target="_blank"
+                    rel="noopener noreferrer">@engineerd/setup-kind</a>
+                <p>A GitHub Action to setup a Kubernetes cluster using Kind.</p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{{ partial "footer.html" . }}

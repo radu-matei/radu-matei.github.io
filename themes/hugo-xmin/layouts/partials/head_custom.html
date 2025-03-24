@@ -1,0 +1,68 @@
+<!-- highlight.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<!-- Additional languages -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+
+<!-- Custom styles to remove dark backgrounds -->
+<style>
+    pre code.hljs {
+        background: var(--code-bg) !important;
+        padding: 0 !important;
+    }
+
+    pre {
+        background: var(--code-bg) !important;
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        border-radius: var(--radius) !important;
+    }
+</style>
+
+<script>
+    // Custom script to ensure HTML is properly escaped in code blocks
+    document.addEventListener('DOMContentLoaded', function () {
+        // Wait for highlight.js to do its work
+        setTimeout(function () {
+            document.querySelectorAll('pre code').forEach(function (block) {
+                // Replace any unescaped HTML with escaped versions
+                const content = block.innerHTML;
+                // Create a new text node to ensure proper escaping
+                const newContent = document.createTextNode(block.textContent);
+                // Clear the block and append properly escaped content
+                block.innerHTML = '';
+                block.appendChild(newContent);
+                // Re-apply highlighting
+                if (window.hljs) {
+                    window.hljs.highlightElement(block);
+                }
+            });
+        }, 100);
+    });
+</script>
+
+<!-- Dark mode support for highlight.js -->
+<script>
+    // Function to toggle between light and dark syntax highlighting
+    function toggleSyntaxTheme(isDark) {
+        let link = document.querySelector('link[href*="highlight.js"]');
+        if (isDark) {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+        } else {
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+    }
+
+    // Watch for system dark mode changes
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+            toggleSyntaxTheme(e.matches);
+        });
+
+        // Set initial theme
+        toggleSyntaxTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+</script>
