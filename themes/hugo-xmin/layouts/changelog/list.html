@@ -1,0 +1,17 @@
+{{ partial "header.html" . }}
+<main class="changelog">
+  <h1 class="page-title">{{ .Title }}</h1>
+  {{ with .Content }}<div class="post-content">{{ . }}</div>{{ end }}
+  <div class="cl-list">
+    {{ range .RegularPages }}
+    <article class="cl-entry">
+      <a class="cl-date" href="{{ .RelPermalink }}">{{ .Date.Format "Jan 2006" }}</a>
+      <div class="cl-body">
+        <a class="cl-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ with .Content }}<div class="cl-text">{{ . }}</div>{{ end }}
+      </div>
+    </article>
+    {{ end }}
+  </div>
+</main>
+{{ partial "footer.html" . }}

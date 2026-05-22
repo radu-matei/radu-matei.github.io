@@ -1,19 +1,19 @@
 {{ partial "header.html" . }}
-<article>
-    <header class="article-meta">
-        <h2>{{ .Title | markdownify }}</h2>
-        <a href="/">
-            <div class="metadata">
-                <!--Add a link to the author here pointing to /-->
-                <time class="date">Radu Matei</time>
-                {{ if (gt .Params.date 0) }} • <time class="date">{{ .Date.Format "January 2, 2006" }}</time>{{ end }}
-            </div>
-        </a>
+<main class="post">
+  <article>
+    <header class="post-header">
+      <h1 class="post-title">{{ .Title }}</h1>
+      <p class="post-meta">
+        <a href="/">{{ .Site.Params.name }}</a>
+        {{- if not .Date.IsZero }}
+        <span class="dot">·</span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2006" }}</time>
+        {{- end }}
+        {{- if ne .Section "changelog" }}<span class="dot">·</span>{{ .ReadingTime }} min read{{ end }}
+      </p>
     </header>
-
-    <main>
-        {{ .Content }}
-    </main>
-</article>
-
+    <div class="post-content">
+      {{ .Content }}
+    </div>
+  </article>
+</main>
 {{ partial "footer.html" . }}

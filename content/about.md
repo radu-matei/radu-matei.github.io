@@ -1,5 +1,6 @@
 +++
 title = "Hi!"
+layout = "about"
 # date = "2017-09-05"
 +++
 

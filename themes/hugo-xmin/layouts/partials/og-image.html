@@ -1,0 +1,34 @@
+{{- /* Returns the URL of a generated 1200x630 social card for the page,
+       or "" if the assets are missing. */ -}}
+{{- $bg := resources.Get "og/bg.png" -}}
+{{- $font := resources.Get "fonts/spin-mono-regular.ttf" -}}
+{{- $title := cond .IsHome .Site.Title .Title -}}
+{{- $out := "" -}}
+{{- if and $bg $font $title -}}
+  {{- /* word-wrap the title to ~27 characters per line */ -}}
+  {{- $lines := slice -}}
+  {{- $cur := "" -}}
+  {{- range (split $title " ") -}}
+    {{- $try := cond (eq $cur "") . (printf "%s %s" $cur .) -}}
+    {{- if and (gt (len $try) 27) (ne $cur "") -}}
+      {{- $lines = $lines | append $cur -}}
+      {{- $cur = . -}}
+    {{- else -}}
+      {{- $cur = $try -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if ne $cur "" }}{{ $lines = $lines | append $cur }}{{ end -}}
+  {{- /* vertically center the title block in the upper region (size 56, line pitch 80) */ -}}
+  {{- $blockH := add (mul (sub (len $lines) 1) 80) 56 -}}
+  {{- $titleY := div (sub 560 $blockH) 2 -}}
+  {{- $card := $bg.Filter
+      (images.Text (delimit $lines "\n") (dict
+        "font" $font "size" 56 "linespacing" 24
+        "color" "#131313" "x" 84 "y" $titleY))
+      (images.Text "radu-matei.com" (dict
+        "font" $font "size" 26
+        "color" "#9a9a92" "x" 84 "y" 548))
+  -}}
+  {{- $out = $card.Permalink -}}
+{{- end -}}
+{{- return $out -}}

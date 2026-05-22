@@ -1,0 +1,76 @@
+/* ===========================================================================
+   Syntax highlighting — calm, low-saturation Chroma theme (light + dark)
+   The code-block background comes from style.css (--code-bg).
+   =========================================================================== */
+
+:root {
+  --syn-comment:  #a1a199;
+  --syn-keyword:  #5b6f8f;
+  --syn-type:     #8a6d4f;
+  --syn-string:   #6f8257;
+  --syn-number:   #9a6a4f;
+  --syn-punct:    #7c7c74;
+  --syn-deleted:  #9a5b5b;
+  --syn-inserted: #5f7a52;
+  --syn-error:    #b0564a;
+  --syn-hl:       rgba(0, 0, 0, 0.045);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --syn-comment:  #6f6f64;
+    --syn-keyword:  #8aa6c4;
+    --syn-type:     #c4a07a;
+    --syn-string:   #9bb07d;
+    --syn-number:   #c89a78;
+    --syn-punct:    #8f8f85;
+    --syn-deleted:  #c98a8a;
+    --syn-inserted: #9bb07d;
+    --syn-error:    #d08a7e;
+    --syn-hl:       rgba(255, 255, 255, 0.055);
+  }
+}
+
+.chroma { background: transparent; }
+
+/* highlighted line */
+.chroma .hl { display: block; background-color: var(--syn-hl); }
+
+/* line numbers */
+.chroma .ln,
+.chroma .lnt { color: var(--syn-comment); margin-right: 0.6rem; }
+
+/* comments */
+.chroma .c,  .chroma .ch, .chroma .cm, .chroma .c1, .chroma .cs { color: var(--syn-comment); font-style: italic; }
+.chroma .cp, .chroma .cpf { color: var(--syn-comment); }
+
+/* keywords */
+.chroma .k,  .chroma .kc, .chroma .kd, .chroma .kn, .chroma .kp, .chroma .kr { color: var(--syn-keyword); }
+.chroma .kt { color: var(--syn-type); }
+
+/* names */
+.chroma .nb, .chroma .bp { color: var(--syn-keyword); }
+.chroma .nc, .chroma .nn, .chroma .no, .chroma .ne { color: var(--syn-type); }
+.chroma .nt { color: var(--syn-keyword); }
+.chroma .na { color: var(--syn-string); }
+
+/* strings */
+.chroma .s,  .chroma .sa, .chroma .sb, .chroma .sc, .chroma .dl, .chroma .sd,
+.chroma .s2, .chroma .se, .chroma .sh, .chroma .si, .chroma .sx, .chroma .sr,
+.chroma .s1, .chroma .ss { color: var(--syn-string); }
+
+/* numbers */
+.chroma .m,  .chroma .mb, .chroma .mf, .chroma .mh, .chroma .mi, .chroma .il, .chroma .mo { color: var(--syn-number); }
+
+/* operators and punctuation */
+.chroma .o, .chroma .ow { color: var(--syn-punct); }
+.chroma .p { color: var(--syn-punct); }
+
+/* diffs and generic output */
+.chroma .gd { color: var(--syn-deleted); }
+.chroma .gi { color: var(--syn-inserted); }
+.chroma .gh, .chroma .gu { color: var(--syn-keyword); }
+.chroma .ge { font-style: italic; }
+.chroma .gs { font-weight: 600; }
+
+.chroma .err { color: var(--syn-error); }

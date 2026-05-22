@@ -1,23 +1,16 @@
 {{ partial "header.html" . }}
-<a href="/">
-  <h1 class="site-title">{{ .Site.Params.name }}</h1>
-</a>
-{{if not .IsHome }}
-<!-- <h1>{{ .Title | markdownify }}</h1> -->
-<h2>Writing</h2>
-{{ end }}
-
-{{ .Content }}
-
-<ul>
-  {{ $pages := .Pages }}
-  {{ if .IsHome }}{{ $pages = .Site.RegularPages }}{{ end }}
-  {{ range (where $pages "Section" "!=" "") }}
-  <li>
-    <span class="date">{{ .Date.Format "January 2006" }}</span>
-    <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
-  </li>
+<main class="archive">
+  <h1 class="page-title">{{ if eq .Section "blog" }}Writing{{ else }}{{ .Title }}{{ end }}</h1>
+  {{ with .Content }}<div class="post-content">{{ . }}</div>{{ end }}
+  {{ range .RegularPages.GroupByDate "2006" }}
+  <section class="year-group">
+    <h2 class="year-label">{{ .Key }}</h2>
+    <ul class="post-list">
+      {{ range .Pages }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{ end }}
+    </ul>
+  </section>
   {{ end }}
-</ul>
-
+</main>
 {{ partial "footer.html" . }}

@@ -4,23 +4,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
-  <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Summary }}{{ end }}">
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/fonts.css" />
-  <script>
-    // Immediately invoked function to set dark mode
-    (function () {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      }
-    })();
-  </script>
+
+  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} · {{ .Site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Summary | plainify | truncate 160 }}{{ end }}{{ end }}">
+  <link rel="canonical" href="{{ .Permalink }}">
+
+  {{ partial "head_meta.html" . }}
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  {{ with .Site.Home.OutputFormats.Get "rss" }}
+  <link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">
+  {{ end }}
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+
   {{ partial "head_custom.html" . }}
 </head>
 
 <body>
-  <header>
-
+  <header class="masthead">
+    {{ if .IsHome }}
+    <h1 class="masthead-h"><a class="masthead-name" href="/">{{ .Site.Params.name }}</a></h1>
+    {{ else }}
+    <a class="masthead-name" href="/">{{ .Site.Params.name }}</a>
+    {{ end }}
   </header>
-</body>
