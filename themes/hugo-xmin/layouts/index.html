@@ -1,16 +1,16 @@
 {{ partial "header.html" . }}
 <main class="home">
 
-  {{/* TODO(radu): replace with the real bio once the new role is settled. */}}
-  <p class="bio">I'm an engineer and founder, writing about systems, WebAssembly, and the craft of building software.</p>
+  <section class="intro">
+    <p class="bio">I'm an engineer and founder, currently Chief Product Architect at <a href="https://www.akamai.com">Akamai</a>.</p>
+    <a class="more-link" href="/about/">More about me &rarr;</a>
+  </section>
 
-  {{ with first 3 (where .Site.RegularPages "Section" "changelog") }}
+  {{ range first 1 (where .Site.RegularPages "Section" "changelog") }}
   <section class="listing">
     <h2 class="section-label">Changelog</h2>
     <ul class="post-list">
-      {{ range . }}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-      {{ end }}
     </ul>
     <a class="more-link" href="/changelog/">All updates &rarr;</a>
   </section>
@@ -26,13 +26,16 @@
     <a class="more-link" href="/blog/">All writing &rarr;</a>
   </section>
 
-  {{/* TODO(radu): revise the project list as needed. */}}
   <section class="listing">
     <h2 class="section-label">Projects</h2>
     <ul class="project-list">
       <li>
-        <a class="project-name" href="https://github.com/spinframework/spin">spin</a>
+        <a class="project-name" href="https://github.com/spinframework/spin">@spinframework/spin</a>
         <span class="project-desc">The CNCF framework for serverless functions with WebAssembly.</span>
+      </li>
+      <li>
+        <a class="project-name" href="https://fermyon.com">fermyon.com</a>
+        <span class="project-desc">Tools and platforms for running Wasm-powered functions at scale.</span>
       </li>
       <li>
         <a class="project-name" href="https://github.com/engineerd/setup-kind">setup-kind</a>

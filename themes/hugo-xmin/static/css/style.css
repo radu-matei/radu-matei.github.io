@@ -62,9 +62,12 @@ a {
   text-decoration-color: var(--underline);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
-  transition: text-decoration-color 0.15s ease;
+  transition: text-decoration-color 0.15s ease, text-decoration-thickness 0.15s ease;
 }
-a:hover { text-decoration-color: currentColor; }
+a:hover {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+}
 a:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 2px;
@@ -96,9 +99,10 @@ h1, h2, h3, h4, h5, h6 {
    Homepage
    =========================================================================== */
 .bio {
-  margin-bottom: 2.85rem;
+  margin-bottom: 0;
   max-width: 34em;
 }
+.intro { margin-bottom: 2.6rem; }
 .listing { margin-bottom: 2.6rem; }
 .section-label {
   font-size: 0.72rem;
@@ -112,12 +116,10 @@ h1, h2, h3, h4, h5, h6 {
 .post-list a {
   display: inline-block;
   padding: 0.34rem 0;
-  text-decoration: none;
 }
-.post-list a:hover { text-decoration: underline; text-decoration-color: var(--underline); }
 .more-link {
   display: inline-block;
-  margin-top: 0.9rem;
+  margin-top: 0.34rem;
   font-size: 0.875rem;
   color: var(--muted);
   text-decoration: none;
@@ -125,8 +127,6 @@ h1, h2, h3, h4, h5, h6 {
 .more-link:hover { color: var(--text); }
 .project-list { list-style: none; }
 .project-list li { margin-bottom: 1rem; }
-.project-name { text-decoration: none; }
-.project-name:hover { text-decoration: underline; text-decoration-color: var(--underline); }
 .project-desc {
   display: block;
   font-size: 0.9rem;
@@ -314,9 +314,7 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 .cl-title {
   color: var(--text-strong);
   font-weight: 600;
-  text-decoration: none;
 }
-.cl-title:hover { text-decoration: underline; text-decoration-color: var(--underline); }
 .cl-text { margin-top: 0.4rem; font-size: 0.97rem; }
 .cl-text p { margin: 0 0 0.7rem; }
 .cl-text > :last-child { margin-bottom: 0; }

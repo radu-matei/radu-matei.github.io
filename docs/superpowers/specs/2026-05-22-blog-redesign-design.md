@@ -110,8 +110,6 @@ algorithm conflicts with the minimal/fast goal.
 
 ## Out of scope / deferred
 
-- About-page copy (new role, Fermyon acquisition line) — Radu writes it later;
-  the theme ships a clearly-marked placeholder.
 - No comments, no analytics, no client-side search.
 
 ## Addendum — 2026-05-22 (post-launch)
@@ -119,6 +117,7 @@ algorithm conflicts with the minimal/fast goal.
 - The `notes` section was retired and replaced by a **Changelog**: a
   `content/changelog/` section of short, dated posts. Each entry is its own
   page (permalink + RSS feed); `/changelog/` renders the entries inline; the
-  homepage shows recent entry titles in a section that mirrors Writing; the
-  footer links it. The two former notes are the changelog's first entries, and
+  homepage shows the latest entry under a small "Changelog" label — same block
+  shape as the Writing and Projects sections, but just one entry so the
+  homepage stays sparse; the footer links the full log. The two former notes are the changelog's first entries, and
   the old `/notes/` URLs redirect (`/notes/` itself to `/changelog/`).
